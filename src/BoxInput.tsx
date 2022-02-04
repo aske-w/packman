@@ -3,7 +3,7 @@ import Header from "./components/Header";
 import RectInput from "./components/RectInput";
 import React from "react";
 import { TrashIcon } from "@heroicons/react/outline";
-import { Dimensions } from "./algorithms/Dimensions.interface";
+import { Dimensions } from "./types/Dimensions.interface";
 
 interface BoxInputProps {
     dimensionsStorage: Dimensions[],
