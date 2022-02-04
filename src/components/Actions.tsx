@@ -18,6 +18,8 @@ interface Props {
   canvasHandle: React.RefObject<CanvasHandle>;
   selectedAlgorithm: PackingAlgorithms;
   setSelectedAlgorithm: React.Dispatch<React.SetStateAction<PackingAlgorithms>>;
+  dimensionsStorage: Dimensions[];
+  setDimensionsStorage: React.Dispatch<React.SetStateAction<Dimensions[]>>;
 }
 
 const Actions: React.FC<Props> = ({
@@ -27,6 +29,8 @@ const Actions: React.FC<Props> = ({
   canvasHandle,
   setSelectedAlgorithm,
   selectedAlgorithm,
+  dimensionsStorage,
+  setDimensionsStorage,
 }) => {
   const { checked, updateChecked } = useToggle();
   const { progress, updateProgress } = useRangeSlider();
@@ -53,13 +57,19 @@ const Actions: React.FC<Props> = ({
 
       <div className="w-full flex items-center justify-around ">
         <button
+          onClick={() => setDimensionsStorage(genData(20))}
+          className="px-2 py-1 font-medium text-white bg-blue-500 rounded shadow "
+        >
+          Generate data
+        </button>
+        <button
           onClick={() => {
             canvasHandle.current?.reset();
-            start(genData(100));
+            start(dimensionsStorage);
           }}
           className="px-2 py-1 font-medium text-white bg-blue-500 rounded shadow "
         >
-          Start!
+          Start
         </button>
       </div>
 
