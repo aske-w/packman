@@ -1,12 +1,7 @@
+import { Dimensions } from '../types/Dimensions.interface';
 import { PackingAlgorithm } from '../types/PackingAlgorithm.interface';
-import { Dimensions } from './Dimensions.interface';
 import { Rectangle } from '../types/Rectangle.interface';
-
-interface Shelf {
-  remainingWidth: number;
-  bottomY: number; // this is the bottom edge of the shelf
-  height: number; // height of the first rectangle placed on the shelf
-}
+import { Shelf } from '../types/Shelf.interface';
 
 export class NextFitDecreasingHeight implements PackingAlgorithm {
   data: Dimensions[] = [];
@@ -66,8 +61,5 @@ export class NextFitDecreasingHeight implements PackingAlgorithm {
   }
   isFinished(): boolean {
     return this.data.length === 0;
-  }
-  getShelfHeight() {
-    return this.shelf.height;
   }
 }

@@ -6,7 +6,7 @@ import { PackingAlgorithms } from '../types/PackingAlgorithm.interface';
 interface AlgoSelectProps<T = PackingAlgorithms> {
   value: T;
   onChange: (val: T) => void;
-  options: T[];
+  readonly options: T[];
 }
 
 const AlgoSelect: React.FC<AlgoSelectProps> = ({

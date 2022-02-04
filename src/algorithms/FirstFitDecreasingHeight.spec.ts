@@ -2,18 +2,19 @@ import {
   ExpectedData,
   GameSize,
   TestData,
-} from './fixtures/NextFitDecreasingHeight.fixture';
+  LastShelf,
+} from './fixtures/FirstFitDecreasingHeight.fixture';
 import { Dimensions } from '../types/Dimensions.interface';
-import { NextFitDecreasingHeight } from './NextFitDecreasingHeight';
+import { FirstFitDecreasingHeight } from './FirstFitDecreasingHeight';
 
-describe('Next fit decreasing height test', () => {
-  let nfdh = new NextFitDecreasingHeight(GameSize);
+describe('First fit decreasing height test', () => {
+  let ffdh = new FirstFitDecreasingHeight(GameSize);
 
   beforeEach(() => {
-    nfdh = new NextFitDecreasingHeight(GameSize);
+    ffdh = new FirstFitDecreasingHeight(GameSize);
   });
   it('should return is finished with no data', () => {
-    expect(nfdh.isFinished()).toBe(true);
+    expect(ffdh.isFinished()).toBe(true);
   });
 
   const rawData: Dimensions[] = [
@@ -53,36 +54,32 @@ describe('Next fit decreasing height test', () => {
     },
   ];
   it('should sort data by non increasing height', () => {
-    nfdh.load(rawData);
+    ffdh.load(rawData);
 
-    expect(nfdh.data).toEqual(sortedData);
+    expect(ffdh.data).toEqual(sortedData);
   });
 
-  it('should place rectangles correctly', () => {
-    nfdh.load(rawData);
-    nfdh.place();
-    expect(nfdh.shelf.height).toBe(sortedData[0].height);
-    expect(nfdh.shelf.remainingWidth).toBe(
+  it('should place first rectangle correctly', () => {
+    ffdh.load(rawData);
+    ffdh.place();
+    expect(ffdh.lastShelf.height).toBe(sortedData[0].height);
+    expect(ffdh.lastShelf.remainingWidth).toBe(
       GameSize.width - sortedData[0].width
     );
   });
 
   it('should create a new shelf when width overflows current shelf width', () => {
-    nfdh.load(TestData);
+    ffdh = new FirstFitDecreasingHeight(GameSize);
+
+    ffdh.load(TestData);
 
     ExpectedData.forEach(expected => {
-      const actual = nfdh.place();
+      const actual = ffdh.place();
       expect(expected).toEqual(actual);
     });
 
-    expect(nfdh.isFinished()).toBe(true);
+    expect(ffdh.isFinished()).toBe(true);
 
-    const lastShelf: NextFitDecreasingHeight['shelf'] = {
-      remainingWidth: GameSize.width - 120,
-      bottomY: -200,
-      height: 160,
-    };
-
-    expect(nfdh.shelf).toEqual(lastShelf);
+    expect(ffdh.lastShelf).toEqual(LastShelf);
   });
 });

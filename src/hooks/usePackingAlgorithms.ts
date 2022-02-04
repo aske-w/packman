@@ -1,13 +1,15 @@
 import { useCallback, useState } from 'react';
-import { Dimensions } from '../algorithms/Dimensions.interface';
+import { Dimensions } from '../types/Dimensions.interface';
 import { NextFitDecreasingHeight } from '../algorithms/NextFitDecreasingHeight';
 import {
   PackingAlgorithm,
   PackingAlgorithms,
 } from '../types/PackingAlgorithm.interface';
 import { useStats } from './useStats';
+import { FirstFitDecreasingHeight } from '../algorithms/FirstFitDecreasingHeight';
 
-const { NEXT_FIT_DECREASING_HEIGHT } = PackingAlgorithms;
+const { NEXT_FIT_DECREASING_HEIGHT, FIRST_FIT_DECREASING_HEIGHT } =
+  PackingAlgorithms;
 
 export const usePackingAlgorithms = (
   size: Dimensions,
@@ -43,10 +45,14 @@ export const usePackingAlgorithms = (
         case NEXT_FIT_DECREASING_HEIGHT:
           {
             const algo = new NextFitDecreasingHeight(size).load(data);
-
             setAlgorithm(algo);
           }
-
+          break;
+        case FIRST_FIT_DECREASING_HEIGHT:
+          {
+            const algo = new FirstFitDecreasingHeight(size).load(data);
+            setAlgorithm(algo);
+          }
           break;
 
         default:
