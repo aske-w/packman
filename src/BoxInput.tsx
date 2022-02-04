@@ -1,14 +1,18 @@
-import { FormEvent, useEffect, useRef, useState } from "react";
-import Header from "./box-input-components/Header";
-import { Rectangle } from "./box-input-components/Interfaces";
-import RectInput from "./box-input-components/RectInput";
+import { FormEvent, useRef, useState } from "react";
+import Header from "./components/Header";
+import RectInput from "./components/RectInput";
 import React from "react";
+import { TrashIcon } from "@heroicons/react/outline";
+import { Dimensions } from "./algorithms/Dimensions.interface";
 
-interface BoxInputProps {}
+interface BoxInputProps {
+    dimensionsStorage: Dimensions[],
+    setDimensionsStorage: React.Dispatch<React.SetStateAction<Dimensions[]>>
+}
 
-const BoxInput: React.FC<BoxInputProps> = ({}) => {
-
-    const [rectangles, setRectangles] = useState<Rectangle[]>([{width: 150, height: 200}, {width: 50, height: 25}]);
+const BoxInput: React.FC<BoxInputProps> = ({dimensionsStorage, setDimensionsStorage}) => {
+    const rectangles = dimensionsStorage;
+    const setRectangles = setDimensionsStorage;
     const [width, setWidth] = useState<string>("");
     const [height, setHeight] = useState<string>("");
 
@@ -25,9 +29,11 @@ const BoxInput: React.FC<BoxInputProps> = ({}) => {
     };
 
     const removeRectangle = (index: number) => {
-        let newRects = rectangles;
-        newRects.splice(index, 1);
-        setRectangles(newRects);
+        setRectangles((r) => {
+            const temp = [...r];
+            temp.splice(index, 1); 
+            return temp;
+        });
     };
 
     const isInt = (x: string): boolean => {
@@ -44,23 +50,26 @@ const BoxInput: React.FC<BoxInputProps> = ({}) => {
             inputRef.current?.focus()
         }
     }
-
-    return <div className="bg-white grid grid-cols-2 gap-2 p-2">
+    
+    return <div className="bg-white grid grid-cols-11 gap-2 p-2 max-h-screen">
         <Header title="Width"></Header>
         <Header title="Height"></Header>
-        <div className="col-span-2 h-0 border-b-2 border-gray-400 w-full"></div>
-        {rectangles.map((r, index) => (
-            <div key={index} className="col-span-2 grid grid-cols-11 gap-2">
-                <RectInput cssClasses="rounded-full text-center px-3 border-2 col-span-5" readonly={true} value={r.width}></RectInput>
-                <RectInput cssClasses="rounded-full text-center px-3 border-2 col-span-5" readonly={true} value={r.height}></RectInput>
-
-            </div>
-        ))}
-        <form action="" onSubmit={handleFormSubmit} className="col-span-2 grid grid-cols-2 gap-2">
-            <RectInput value={width} onChangeHandler={e => setWidth(e.target.value)} reference={inputRef}></RectInput>
-            <RectInput value={height} onChangeHandler={e => setHeight(e.target.value)}></RectInput>
-            <button type="submit" className="hidden"></button>
-        </form>
+        <div className="col-span-11 h-0 border-b-2 border-gray-400 w-full"></div>
+        <div className="col-span-11 grid grid-cols-11 gap-2 max-h-full overflow-y-scroll pt-2">
+            {rectangles.map((r, index) => (
+                <div key={index} className="col-span-11 grid grid-cols-11 gap-2 px-2">
+                    <RectInput readonly={true} value={r.width}></RectInput>
+                    <RectInput readonly={true} value={r.height}></RectInput>
+                    <TrashIcon className="col-span-1 hover:cursor-pointer hover:text-red-600 hover:scale-110" onClick={e => removeRectangle(index)}/>
+                </div>
+            ))}
+            <form action="" onSubmit={handleFormSubmit} className="col-span-11 grid grid-cols-11 gap-2 px-2 pb-2">
+                <RectInput value={width} onChangeHandler={e => setWidth(e.target.value)} reference={inputRef}></RectInput>
+                <RectInput value={height} onChangeHandler={e => setHeight(e.target.value)}></RectInput>
+                <TrashIcon className="text-white"/>
+                <button type="submit" className="hidden"></button>
+            </form>
+        </div>
     </div>;
 }
 

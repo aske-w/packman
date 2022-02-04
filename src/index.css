@@ -3,5 +3,5 @@
 @tailwind utilities;
 
 @layer components {
-    .rect-input {@apply rounded-full text-center px-3 border-2 col-span-1}
+    .rect-input {@apply rounded-full text-center px-3 border-2 col-span-5 font-medium}
 }

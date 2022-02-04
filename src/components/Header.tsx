@@ -5,7 +5,7 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({title}) => {
-  return <div className="text-center">{title}</div>;
+  return <div className="text-center col-span-5 font-medium">{title}</div>;
 };
 
 export default Header;
