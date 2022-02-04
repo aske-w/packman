@@ -3,20 +3,15 @@ import Slider from 'react-slider';
 
 const RangeSlider: React.FC = () => {
   return (
-    <>
-      <Slider
-        className=""
-        renderThumb={(props, state) => <div {...props}>{state.valueNow}</div>}
-      />
-      {/* <input
-        type="range"
-        min="1"
-        max="100"
-        value="50"
-        class="slider"
-        id="myRange"
-      /> */}
-    </>
+    <Slider
+      className=""
+      renderThumb={(props, state) => (
+        <div {...props} style={{ ...props.style }}>
+          test: {state.valueNow}
+        </div>
+      )}
+    />
+
     // <div className="flex  w-64 m-auto items-center h-32 justify-center">
     //   <div className="py-1 relative min-w-full">
     //     <div className="h-2 bg-gray-200 rounded-full">
