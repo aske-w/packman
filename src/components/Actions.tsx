@@ -13,8 +13,10 @@ import AlgoSelect from "./AlgoSelect";
 
 interface Props {
   isFinished: boolean;
+  isStarted: boolean;
   placeNext(): void;
   start(data: Dimensions[]): void;
+  reset(): void; 
   canvasHandle: React.RefObject<CanvasHandle>;
   selectedAlgorithm: PackingAlgorithms;
   setSelectedAlgorithm: React.Dispatch<React.SetStateAction<PackingAlgorithms>>;
@@ -24,8 +26,10 @@ interface Props {
 
 const Actions: React.FC<Props> = ({
   isFinished,
+  isStarted,
   placeNext,
   start,
+  reset,
   canvasHandle,
   setSelectedAlgorithm,
   selectedAlgorithm,
@@ -45,6 +49,7 @@ const Actions: React.FC<Props> = ({
           options={ALL_PACKING_ALGORITHMS}
           onChange={setSelectedAlgorithm}
           value={selectedAlgorithm}
+          disabled={isStarted}
         />
 
         <Switch
@@ -58,7 +63,8 @@ const Actions: React.FC<Props> = ({
       <div className="w-full flex items-center justify-around ">
         <button
           onClick={() => setDimensionsStorage(genData(20))}
-          className="px-2 py-1 font-medium text-white bg-blue-500 rounded shadow "
+          className={`px-2 py-1 font-medium text-white rounded shadow ${isStarted ? "bg-blue-300" : "bg-blue-500"}`}
+          disabled={isStarted}
         >
           Generate data
         </button>
@@ -67,9 +73,16 @@ const Actions: React.FC<Props> = ({
             canvasHandle.current?.reset();
             start(dimensionsStorage);
           }}
-          className="px-2 py-1 font-medium text-white bg-blue-500 rounded shadow "
+          disabled={isStarted}
+          className={`px-2 py-1 font-medium text-white rounded shadow ${isStarted ? "bg-blue-300" : "bg-blue-500"}`}
         >
           Start
+        </button>
+        <button
+          className="px-2 py-1 font-medium text-white rounded shadow bg-blue-500"  
+          onClick={() => {reset();}}
+        >
+          Reset
         </button>
       </div>
 
