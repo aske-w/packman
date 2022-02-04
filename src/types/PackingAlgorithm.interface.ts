@@ -3,7 +3,6 @@ import { Rectangle } from './Rectangle.interface';
 
 export interface PackingAlgorithm {
   gameSize: Dimensions;
-  data: Dimensions[];
   load(data: Dimensions[]): PackingAlgorithm;
   next(): Dimensions;
   place(): Rectangle;
