@@ -34,8 +34,8 @@ export class FirstFitDecreasingHeight implements PackingAlgorithm {
     return this.data[0];
   }
 
-  get numShelves() {
-    return this.shelves.length;
+  get lastShelf() {
+    return this.shelves[this.shelves.length - 1];
   }
 
   place(): Rectangle {
@@ -58,10 +58,10 @@ export class FirstFitDecreasingHeight implements PackingAlgorithm {
       }
     }
 
-    // if no return then create new shelf
-    const prevShelf = this.shelves[this.numShelves - 1];
+    // if no return, then create new shelf
+
     const newShelf = {
-      bottomY: prevShelf.bottomY - prevShelf.height,
+      bottomY: this.lastShelf.bottomY - this.lastShelf.height,
       height: nextRect.height,
       remainingWidth: this.gameSize.width - nextRect.width,
     };
