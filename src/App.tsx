@@ -51,6 +51,12 @@ function App() {
           value={selectedAlgorithm}
         />
         <button
+          onClick={() => setDimensionsStorage(genData(20))}
+          className='px-2 py-1 font-medium text-white bg-blue-500 rounded shadow'
+          >
+          Generate data
+        </button>
+        <button
           onClick={() => {
             canvasHandle.current?.reset();
             start(dimensionsStorage);
