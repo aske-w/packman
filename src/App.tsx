@@ -2,6 +2,7 @@ import { Listbox } from '@headlessui/react';
 import { useRef, useState } from 'react';
 import { start } from 'repl';
 import { Dimensions } from './types/Dimensions.interface';
+import BoxInput from './BoxInput';
 import AlgoSelect from './components/AlgoSelect';
 import Canvas, { CanvasHandle } from './components/Canvas';
 import { usePackingAlgorithms } from './hooks/usePackingAlgorithms';
@@ -32,9 +33,13 @@ function App() {
     }
   };
 
+  const [dimensionsStorage, setDimensionsStorage] = useState<Dimensions[]>([]);
+
   return (
     <div className="grid grid-cols-3 gap-5">
-      <div></div>
+      <div className='flex flex-col items-center justify-start'>
+        <BoxInput dimensionsStorage={dimensionsStorage} setDimensionsStorage={setDimensionsStorage}></BoxInput>
+      </div>
 
       <div className="flex items-center justify-center h-screen bg-red-400">
         <Canvas ref={canvasHandle} size={size} />
@@ -46,9 +51,15 @@ function App() {
           value={selectedAlgorithm}
         />
         <button
+          onClick={() => setDimensionsStorage(genData(20))}
+          className='px-2 py-1 font-medium text-white bg-blue-500 rounded shadow'
+          >
+          Generate data
+        </button>
+        <button
           onClick={() => {
             canvasHandle.current?.reset();
-            start(genData(100));
+            start(dimensionsStorage);
           }}
           className="px-2 py-1 font-medium text-white bg-blue-500 rounded shadow ">
           Start!
