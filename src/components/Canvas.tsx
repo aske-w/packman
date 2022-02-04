@@ -1,16 +1,15 @@
-import Konva from 'konva';
-import { RectConfig, Rect as KonvaRect } from 'konva/lib/shapes/Rect';
+import Konva from "konva";
+import { RectConfig, Rect as KonvaRect } from "konva/lib/shapes/Rect";
 import React, {
   forwardRef,
   useEffect,
   useImperativeHandle,
   useRef,
   useState,
-} from 'react';
-import { Stage, Rect, Layer, KonvaNodeComponent } from 'react-konva';
-import { Dimensions } from '../types/Dimensions.interface';
-import { genData } from '../App';
-import { Rectangle } from '../types/Rectangle.interface';
+} from "react";
+import { Stage, Rect, Layer, KonvaNodeComponent } from "react-konva";
+import { Dimensions } from "../types/Dimensions.interface";
+import { Rectangle } from "../types/Rectangle.interface";
 interface CanvasProps {
   size: Dimensions;
 }
@@ -27,8 +26,8 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(({ size }, handle) => {
   useImperativeHandle(
     handle,
     () => ({
-      place: rect => {
-        setRects(old => [
+      place: (rect) => {
+        setRects((old) => [
           ...old,
           { ...rect, color: Konva.Util.getRandomColor() },
         ]);
@@ -42,9 +41,10 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(({ size }, handle) => {
     <div
       className="flex w-full h-full bg-white "
       style={{
-        width: size.width + 'px',
-        height: size.height + 'px',
-      }}>
+        width: size.width + "px",
+        height: size.height + "px",
+      }}
+    >
       <Stage width={size.width} height={size.height}>
         <Layer>
           {rects.map((rect, i) => {
@@ -53,7 +53,8 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(({ size }, handle) => {
                 key={i}
                 {...rect}
                 y={rect.y + size.height}
-                fill={rect.color}></MyRect>
+                fill={rect.color}
+              ></MyRect>
             );
           })}
         </Layer>
