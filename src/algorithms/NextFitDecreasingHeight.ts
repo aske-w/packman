@@ -1,5 +1,5 @@
 import { PackingAlgorithm } from '../types/PackingAlgorithm.interface';
-import { Dimensions } from './Dimensions.interface';
+import { Dimensions } from '../types/Dimensions.interface';
 import { Rectangle } from '../types/Rectangle.interface';
 
 interface Shelf {
@@ -66,8 +66,5 @@ export class NextFitDecreasingHeight implements PackingAlgorithm {
   }
   isFinished(): boolean {
     return this.data.length === 0;
-  }
-  getShelfHeight() {
-    return this.shelf.height;
   }
 }

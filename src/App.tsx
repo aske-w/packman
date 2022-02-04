@@ -1,11 +1,14 @@
 import { Listbox } from '@headlessui/react';
 import { useRef, useState } from 'react';
 import { start } from 'repl';
-import { Dimensions } from './algorithms/Dimensions.interface';
+import { Dimensions } from './types/Dimensions.interface';
 import AlgoSelect from './components/AlgoSelect';
 import Canvas, { CanvasHandle } from './components/Canvas';
 import { usePackingAlgorithms } from './hooks/usePackingAlgorithms';
-import { PackingAlgorithms } from './types/PackingAlgorithm.interface';
+import {
+  ALL_PACKING_ALGORITHMS,
+  PackingAlgorithms,
+} from './types/PackingAlgorithm.interface';
 
 function App() {
   const [size, setSize] = useState<Dimensions>({
@@ -38,7 +41,7 @@ function App() {
       </div>
       <div className="flex flex-col items-center justify-start">
         <AlgoSelect
-          options={[PackingAlgorithms.NEXT_FIT_DECREASING_HEIGHT]}
+          options={ALL_PACKING_ALGORITHMS}
           onChange={setSelectedAlgorithm}
           value={selectedAlgorithm}
         />
@@ -66,7 +69,7 @@ export default App;
 export const genData = (amount = 10): Dimensions[] => {
   return Array.from({ length: amount }, (_, _i) => {
     return {
-      width: Math.round(Math.random() * 100),
+      width: Math.round(Math.random() * 200),
       height: Math.round(Math.random() * 100),
     };
   });

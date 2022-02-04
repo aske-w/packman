@@ -1,4 +1,4 @@
-import { Dimensions } from '../algorithms/Dimensions.interface';
+import { Dimensions } from './Dimensions.interface';
 
 export interface Rectangle extends Dimensions {
   x: number;

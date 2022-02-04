@@ -1,4 +1,4 @@
-import { Dimensions } from '../algorithms/Dimensions.interface';
+import { Dimensions } from '../types/Dimensions.interface';
 import { Rectangle } from '../types/Rectangle.interface';
 
 export const GameSize: Dimensions = {

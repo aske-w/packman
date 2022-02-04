@@ -1,4 +1,4 @@
-import { Dimensions } from '../algorithms/Dimensions.interface';
+import { Dimensions } from './Dimensions.interface';
 import { Rectangle } from './Rectangle.interface';
 
 export interface PackingAlgorithm {
@@ -8,9 +8,14 @@ export interface PackingAlgorithm {
   next(): Dimensions;
   place(): Rectangle;
   isFinished(): boolean;
-  getShelfHeight(): number;
 }
 
 export enum PackingAlgorithms {
   NEXT_FIT_DECREASING_HEIGHT = 'Next Fit Decreasing Height',
+  FIRST_FIT_DECREASING_HEIGHT = 'First Fit Decreasing Height',
 }
+
+export const ALL_PACKING_ALGORITHMS = [
+  PackingAlgorithms.FIRST_FIT_DECREASING_HEIGHT,
+  PackingAlgorithms.NEXT_FIT_DECREASING_HEIGHT,
+];
