@@ -1,12 +1,10 @@
-import { Listbox } from "@headlessui/react";
 import { useRef, useState } from "react";
-import { start } from "repl";
 import { Dimensions } from "./types/Dimensions.interface";
-import AlgoSelect from "./components/AlgoSelect";
 import Canvas, { CanvasHandle } from "./components/Canvas";
 import { usePackingAlgorithms } from "./hooks/usePackingAlgorithms";
 import { PackingAlgorithms } from "./types/PackingAlgorithm.interface";
 import Actions from "./components/Actions";
+import BoxInput from "./BoxInput";
 
 function App() {
   const [size, setSize] = useState<Dimensions>({
@@ -30,8 +28,17 @@ function App() {
     }
   };
 
+  const [dimensionsStorage, setDimensionsStorage] = useState<Dimensions[]>([]);
+
   return (
     <div className="grid grid-cols-3 gap-5">
+      <div className="flex flex-col items-center justify-start">
+        <BoxInput
+          dimensionsStorage={dimensionsStorage}
+          setDimensionsStorage={setDimensionsStorage}
+        ></BoxInput>
+      </div>
+
       <div className="flex items-center justify-center h-screen bg-red-400">
         <Canvas ref={canvasHandle} size={size} />
       </div>
@@ -45,6 +52,8 @@ function App() {
             placeNext,
             start,
             canvasHandle,
+            dimensionsStorage,
+            setDimensionsStorage,
           }}
         />
       </div>

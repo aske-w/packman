@@ -1,12 +1,7 @@
 import { PackingAlgorithm } from '../types/PackingAlgorithm.interface';
 import { Dimensions } from '../types/Dimensions.interface';
 import { Rectangle } from '../types/Rectangle.interface';
-
-interface Shelf {
-  remainingWidth: number;
-  bottomY: number; // this is the bottom edge of the shelf
-  height: number; // height of the first rectangle placed on the shelf
-}
+import { Shelf } from '../types/Shelf.interface';
 
 export class FirstFitDecreasingHeight implements PackingAlgorithm {
   data: Dimensions[] = [];
@@ -34,8 +29,8 @@ export class FirstFitDecreasingHeight implements PackingAlgorithm {
     return this.data[0];
   }
 
-  get numShelves() {
-    return this.shelves.length;
+  get lastShelf() {
+    return this.shelves[this.shelves.length - 1];
   }
 
   place(): Rectangle {
@@ -58,10 +53,10 @@ export class FirstFitDecreasingHeight implements PackingAlgorithm {
       }
     }
 
-    // if no return then create new shelf
-    const prevShelf = this.shelves[this.numShelves - 1];
+    // if no return, then create new shelf
+
     const newShelf = {
-      bottomY: prevShelf.bottomY - prevShelf.height,
+      bottomY: this.lastShelf.bottomY - this.lastShelf.height,
       height: nextRect.height,
       remainingWidth: this.gameSize.width - nextRect.width,
     };
