@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Dimensions } from '../types/Dimensions.interface';
 import { NextFitDecreasingHeight } from '../algorithms/NextFitDecreasingHeight';
 import {
@@ -13,10 +13,11 @@ const { NEXT_FIT_DECREASING_HEIGHT, FIRST_FIT_DECREASING_HEIGHT } =
 
 export const usePackingAlgorithms = (
   size: Dimensions,
-  selectedAlgorithm: PackingAlgorithms
+  selectedAlgorithm: PackingAlgorithms,
+  setDimensionStorage: React.Dispatch<React.SetStateAction<Dimensions[]>>
 ) => {
   const { addArea, getStats } = useStats(size.width);
-
+  const [isStarted, setIsStarted] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const [algorithm, setAlgorithm] = useState<PackingAlgorithm>(
     () => new NextFitDecreasingHeight(size)
@@ -24,11 +25,15 @@ export const usePackingAlgorithms = (
 
   const reset = useCallback(() => {
     setIsFinished(false);
-  }, []);
+    setIsStarted(false);
+    setDimensionStorage([]);
+    algorithm.load([]);
+  }, [algorithm, setDimensionStorage]);
 
   const place = useCallback(() => {
     if (algorithm.isFinished()) {
       setIsFinished(true);
+      setIsStarted(false);
       return null;
     }
 
@@ -39,8 +44,8 @@ export const usePackingAlgorithms = (
 
   const start = useCallback(
     (data: Dimensions[]) => {
-      reset();
-
+      setIsFinished(false);
+      setIsStarted(true);
       switch (selectedAlgorithm) {
         case NEXT_FIT_DECREASING_HEIGHT:
           {
@@ -57,11 +62,12 @@ export const usePackingAlgorithms = (
 
         default:
           console.error('unkown algorithm: ', selectedAlgorithm);
+          setIsStarted(false);
           break;
       }
     },
-    [selectedAlgorithm, size, reset]
+    [selectedAlgorithm, size]
   );
 
-  return { start, getStats, place, isFinished, reset };
+  return { start, getStats, place, isFinished, reset, isStarted };
 };

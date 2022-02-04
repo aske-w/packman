@@ -15,9 +15,12 @@ function App() {
     PackingAlgorithms.NEXT_FIT_DECREASING_HEIGHT
   );
 
-  const { start, place, getStats, isFinished, reset } = usePackingAlgorithms(
+  const [dimensionsStorage, setDimensionsStorage] = useState<Dimensions[]>([]);
+  
+  const { start, place, getStats, isFinished, reset, isStarted } = usePackingAlgorithms(
     size,
-    selectedAlgorithm
+    selectedAlgorithm,
+    setDimensionsStorage
   );
 
   const canvasHandle = useRef<CanvasHandle>(null);
@@ -28,7 +31,6 @@ function App() {
     }
   };
 
-  const [dimensionsStorage, setDimensionsStorage] = useState<Dimensions[]>([]);
 
   return (
     <div className="grid grid-cols-3 gap-5">
@@ -36,6 +38,7 @@ function App() {
         <BoxInput
           dimensionsStorage={dimensionsStorage}
           setDimensionsStorage={setDimensionsStorage}
+          disabled={isStarted}
         ></BoxInput>
       </div>
 
@@ -48,9 +51,11 @@ function App() {
           {...{
             selectedAlgorithm,
             setSelectedAlgorithm,
+            isStarted,
             isFinished,
             placeNext,
             start,
+            reset,
             canvasHandle,
             dimensionsStorage,
             setDimensionsStorage,

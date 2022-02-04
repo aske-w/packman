@@ -8,9 +8,10 @@ import { Dimensions } from "./types/Dimensions.interface";
 interface BoxInputProps {
     dimensionsStorage: Dimensions[],
     setDimensionsStorage: React.Dispatch<React.SetStateAction<Dimensions[]>>
+    disabled?: boolean
 }
 
-const BoxInput: React.FC<BoxInputProps> = ({dimensionsStorage, setDimensionsStorage}) => {
+const BoxInput: React.FC<BoxInputProps> = ({dimensionsStorage, setDimensionsStorage, disabled = false}) => {
     const rectangles = dimensionsStorage;
     const setRectangles = setDimensionsStorage;
     const [width, setWidth] = useState<string>("");
@@ -23,17 +24,23 @@ const BoxInput: React.FC<BoxInputProps> = ({dimensionsStorage, setDimensionsStor
     };
 
     const saveRectangle = (width: number, height: number) => {
-        let newRects = rectangles;
-        newRects.push({width, height});
-        setRectangles(newRects);
+        if(!disabled)
+        {
+            let newRects = rectangles;
+            newRects.push({width, height});
+            setRectangles(newRects);
+        }
     };
 
     const removeRectangle = (index: number) => {
-        setRectangles((r) => {
-            const temp = [...r];
-            temp.splice(index, 1); 
-            return temp;
-        });
+        if(!disabled)
+        {
+            setRectangles((r) => {
+                const temp = [...r];
+                temp.splice(index, 1); 
+                return temp;
+            });
+        }
     };
 
     const isInt = (x: string): boolean => {
@@ -60,14 +67,14 @@ const BoxInput: React.FC<BoxInputProps> = ({dimensionsStorage, setDimensionsStor
                 <div key={index} className="col-span-11 grid grid-cols-11 gap-2 px-2">
                     <RectInput readonly={true} value={r.width}></RectInput>
                     <RectInput readonly={true} value={r.height}></RectInput>
-                    <TrashIcon className="col-span-1 hover:cursor-pointer hover:text-red-600 hover:scale-110" onClick={e => removeRectangle(index)}/>
+                    <TrashIcon className={`col-span-1 ${disabled ? 'text-gray-200' : 'hover:cursor-pointer hover:text-red-600 hover:scale-110'}`} onClick={e => removeRectangle(index)}/>
                 </div>
             ))}
             <form action="" onSubmit={handleFormSubmit} className="col-span-11 grid grid-cols-11 gap-2 px-2 pb-2">
-                <RectInput value={width} onChangeHandler={e => setWidth(e.target.value)} reference={inputRef}></RectInput>
-                <RectInput value={height} onChangeHandler={e => setHeight(e.target.value)}></RectInput>
+                <RectInput value={width} onChangeHandler={e => setWidth(e.target.value)} reference={inputRef} disabled={disabled}></RectInput>
+                <RectInput value={height} onChangeHandler={e => setHeight(e.target.value)} disabled={disabled}></RectInput>
                 <TrashIcon className="text-gray-200"/>
-                <button type="submit" className="hidden"></button>
+                <button type="submit" className="hidden" disabled={disabled}></button>
             </form>
         </div>
     </div>;
