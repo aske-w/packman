@@ -1,10 +1,11 @@
-import { PackingAlgorithm } from './PackingAlgorithm.interface';
-import { Dimensions } from './Dimensions.interface';
-import { Rectangle } from './Rectangle.interface';
+import { PackingAlgorithm } from '../types/PackingAlgorithm.interface';
+import { Dimensions } from '../types/Dimensions.interface';
+import { Rectangle } from '../types/Rectangle.interface';
 
 interface Shelf {
   remainingWidth: number;
-  y: number;
+  bottomY: number; // this is the bottom edge of the shelf
+  height: number; // height of the first rectangle placed on the shelf
 }
 
 export class NextFitDecreasingHeight implements PackingAlgorithm {
@@ -13,11 +14,13 @@ export class NextFitDecreasingHeight implements PackingAlgorithm {
   constructor(readonly gameSize: Dimensions) {
     this.shelf = {
       remainingWidth: gameSize.width,
-      y: 0,
+      bottomY: 0,
+      height: 0,
     };
   }
   load(data: Dimensions[]): void {
     this.data = data;
+    this.prepareData();
   }
 
   private prepareData() {
@@ -30,20 +33,34 @@ export class NextFitDecreasingHeight implements PackingAlgorithm {
 
   place(): Rectangle {
     if (this.isFinished()) throw new Error('isFinished');
-    const next = this.data.shift()!;
+    const nextRect = this.data.shift()!;
 
-    if (next.width <= this.shelf.remainingWidth) {
+    if (nextRect.width <= this.shelf.remainingWidth) {
       // can place on the shelf
+      if (this.shelf.height === 0) {
+        // first time we access
+        this.shelf.height = nextRect.height;
+      }
+      // update shelf width
+      this.shelf.remainingWidth = this.shelf.remainingWidth - nextRect.width;
       return {
-        ...next,
+        ...nextRect,
         x: this.gameSize.width - this.shelf.remainingWidth,
-        y: this.shelf.y - next.height,
+        y: this.shelf.bottomY - nextRect.height,
       };
     }
 
     // new shelf
     this.shelf = {
-      y: this.shelf.y,
+      bottomY: this.shelf.bottomY - this.shelf.height,
+      remainingWidth: this.gameSize.width - nextRect.width,
+      height: nextRect.height,
+    };
+
+    return {
+      ...nextRect,
+      x: 0,
+      y: this.shelf.bottomY - nextRect.height,
     };
   }
   isFinished(): boolean {

@@ -1,7 +1,7 @@
 import Konva from 'konva';
 import React, { useState } from 'react';
 import { Stage, Rect, Layer } from 'react-konva';
-import { Dimensions } from './algorithms/Dimensions.interface';
+import { Dimensions } from './types/Dimensions.interface';
 interface CanvasProps {}
 const gameSize: Dimensions = {
   width: 400,
