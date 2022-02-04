@@ -3,7 +3,7 @@ import {
   GameSize,
   TestData,
 } from '../fixtures/NextFitDecreasingHeight.fixture';
-import { Dimensions } from '../types/Dimensions.interface';
+import { Dimensions } from './Dimensions.interface';
 import { NextFitDecreasingHeight } from './NextFitDecreasingHeight';
 
 describe('Next fit decreasing height test', () => {

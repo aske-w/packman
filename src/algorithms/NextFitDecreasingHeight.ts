@@ -1,5 +1,5 @@
 import { PackingAlgorithm } from '../types/PackingAlgorithm.interface';
-import { Dimensions } from '../types/Dimensions.interface';
+import { Dimensions } from './Dimensions.interface';
 import { Rectangle } from '../types/Rectangle.interface';
 
 interface Shelf {
@@ -18,9 +18,10 @@ export class NextFitDecreasingHeight implements PackingAlgorithm {
       height: 0,
     };
   }
-  load(data: Dimensions[]): void {
+  load(data: Dimensions[]): this {
     this.data = data;
     this.prepareData();
+    return this;
   }
 
   private prepareData() {
@@ -45,7 +46,7 @@ export class NextFitDecreasingHeight implements PackingAlgorithm {
       this.shelf.remainingWidth = this.shelf.remainingWidth - nextRect.width;
       return {
         ...nextRect,
-        x: this.gameSize.width - this.shelf.remainingWidth,
+        x: this.gameSize.width - this.shelf.remainingWidth - nextRect.width,
         y: this.shelf.bottomY - nextRect.height,
       };
     }
@@ -65,5 +66,8 @@ export class NextFitDecreasingHeight implements PackingAlgorithm {
   }
   isFinished(): boolean {
     return this.data.length === 0;
+  }
+  getShelfHeight() {
+    return this.shelf.height;
   }
 }
