@@ -66,7 +66,7 @@ const BoxInput: React.FC<BoxInputProps> = ({dimensionsStorage, setDimensionsStor
             <form action="" onSubmit={handleFormSubmit} className="col-span-11 grid grid-cols-11 gap-2 px-2 pb-2">
                 <RectInput value={width} onChangeHandler={e => setWidth(e.target.value)} reference={inputRef}></RectInput>
                 <RectInput value={height} onChangeHandler={e => setHeight(e.target.value)}></RectInput>
-                <TrashIcon className="text-white"/>
+                <TrashIcon className="text-gray-200"/>
                 <button type="submit" className="hidden"></button>
             </form>
         </div>
