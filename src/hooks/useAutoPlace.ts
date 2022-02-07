@@ -27,6 +27,7 @@ export const useAutoPlace = (
       }, scaledSpeed);
     };
     go();
+
     return () => {
       if (tid) clearTimeout(tid);
     };

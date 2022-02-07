@@ -45,7 +45,7 @@ export const usePackingAlgorithms = (
     const rec = algorithm.current.place();
     addArea(rec);
     return rec;
-  }, [addArea, algorithm]);
+  }, [addArea, algorithm, reset]);
 
   const start = useCallback(
     (data: Dimensions[]) => {
@@ -53,23 +53,21 @@ export const usePackingAlgorithms = (
 
       switch (selectedAlgorithm) {
         case NEXT_FIT_DECREASING_HEIGHT:
-          {
-            algorithm.current = new NextFitDecreasingHeight(size).load(data);
-          }
+          algorithm.current = new NextFitDecreasingHeight(size).load(data);
           break;
+
         case FIRST_FIT_DECREASING_HEIGHT:
-          {
-            algorithm.current = new FirstFitDecreasingHeight(size).load(data);
-          }
+          algorithm.current = new FirstFitDecreasingHeight(size).load(data);
           break;
 
         default:
+          reset();
           console.error("unkown algorithm: ", selectedAlgorithm);
           break;
       }
     },
-    [selectedAlgorithm, size, reset]
+    [intializeOnStart, selectedAlgorithm, reset, size]
   );
 
-  return { start, getStats, place, isFinished, algoState, pause };
+  return { start, getStats, place, isFinished, algoState, pause, reset };
 };
