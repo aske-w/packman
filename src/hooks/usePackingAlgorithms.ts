@@ -7,9 +7,13 @@ import {
 } from '../types/PackingAlgorithm.interface';
 import { useStats } from './useStats';
 import { FirstFitDecreasingHeight } from '../algorithms/FirstFitDecreasingHeight';
+import { BestFitDecreasingHeight } from '../algorithms/BestFitDecreasingHeight';
 
-const { NEXT_FIT_DECREASING_HEIGHT, FIRST_FIT_DECREASING_HEIGHT } =
-  PackingAlgorithms;
+const {
+  BEST_FIT_DECREASING_HEIGHT,
+  NEXT_FIT_DECREASING_HEIGHT,
+  FIRST_FIT_DECREASING_HEIGHT,
+} = PackingAlgorithms;
 
 export const usePackingAlgorithms = (
   size: Dimensions,
@@ -51,6 +55,12 @@ export const usePackingAlgorithms = (
         case FIRST_FIT_DECREASING_HEIGHT:
           {
             const algo = new FirstFitDecreasingHeight(size).load(data);
+            setAlgorithm(algo);
+          }
+          break;
+        case BEST_FIT_DECREASING_HEIGHT:
+          {
+            const algo = new BestFitDecreasingHeight(size).load(data);
             setAlgorithm(algo);
           }
           break;
