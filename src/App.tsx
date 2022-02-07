@@ -17,7 +17,7 @@ function App() {
     PackingAlgorithms.NEXT_FIT_DECREASING_HEIGHT
   );
 
-  const { start, place, algoState, isFinished } = usePackingAlgorithms(
+  const { start, pause, place, algoState, isFinished } = usePackingAlgorithms(
     size,
     selectedAlgorithm
   );
@@ -64,6 +64,7 @@ function App() {
             setDimensionsStorage,
             algoState,
             reset,
+            pause,
           }}
         />
       </div>

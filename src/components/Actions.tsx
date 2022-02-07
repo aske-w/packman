@@ -23,6 +23,7 @@ interface Props {
   dimensionsStorage: Dimensions[];
   setDimensionsStorage: React.Dispatch<React.SetStateAction<Dimensions[]>>;
   reset(): void;
+  pause(): void;
 }
 
 const Actions: React.FC<Props> = ({
@@ -35,6 +36,7 @@ const Actions: React.FC<Props> = ({
   setDimensionsStorage,
   algoState,
   reset,
+  pause,
 }) => {
   const { checked, updateChecked } = useToggle();
   const { speed, updateSpeed } = useAutoPlace(checked, placeNext, algoState);
@@ -85,7 +87,18 @@ const Actions: React.FC<Props> = ({
       )}
 
       {checked && (
-        <div>
+        <div className="space-y-12">
+          {algoState !== "STOPPED" && (
+            <button
+              onClick={pause}
+              className={
+                "px-2 py-1 font-medium text-white rounded shadow " +
+                (algoState === "PAUSED" ? "bg-green-500" : "bg-amber-500")
+              }
+            >
+              {algoState === "RUNNING" ? "Pause" : "Resume"}
+            </button>
+          )}
           <RangeSlider
             progress={speed}
             onChange={updateSpeed}

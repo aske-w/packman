@@ -11,7 +11,7 @@ import { FirstFitDecreasingHeight } from "../algorithms/FirstFitDecreasingHeight
 const { NEXT_FIT_DECREASING_HEIGHT, FIRST_FIT_DECREASING_HEIGHT } =
   PackingAlgorithms;
 
-export type AlgoStates = "RUNNING" | "STOPPED" | "PAUSE";
+export type AlgoStates = "RUNNING" | "STOPPED" | "PAUSED";
 
 export const usePackingAlgorithms = (
   size: Dimensions,
@@ -30,6 +30,10 @@ export const usePackingAlgorithms = (
   const intializeOnStart = useCallback(() => {
     setIsFinished(false);
     setAlgoState("RUNNING");
+  }, []);
+
+  const pause = useCallback(() => {
+    setAlgoState((prev) => (prev === "PAUSED" ? "RUNNING" : "PAUSED"));
   }, []);
 
   const place = useCallback(() => {
@@ -67,5 +71,5 @@ export const usePackingAlgorithms = (
     [selectedAlgorithm, size, reset]
   );
 
-  return { start, getStats, place, isFinished, algoState };
+  return { start, getStats, place, isFinished, algoState, pause };
 };
