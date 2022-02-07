@@ -92,9 +92,9 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(({ size }, handle) => {
           {rects.map((rect, i) => {
             return (
               <MyRect
+                key={i}
                 onMouseMove={() => enableTooltip(rect)}
                 onMouseOut={() => disableTooltip()}
-                key={i}
                 {...rect}
                 y={rect.y + size.height}
                 fill={rect.color}></MyRect>
@@ -138,16 +138,38 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(({ size }, handle) => {
   );
 });
 
-const MyRect: React.FC<RectConfig & KonvaNodeEvents> = ({ x, y, ...props }) => {
+const MyRect: React.FC<RectConfig & KonvaNodeEvents> = ({
+  x,
+  y,
+
+  ...props
+}) => {
   const ref = useRef<KonvaRect>(null);
   useEffect(() => {
-    ref.current?.to({
+    new Konva.Tween({
+      node: ref.current!,
+      duration: 0.4,
       x,
       y,
-      duration: 0.4,
-    });
+      opacity: 1,
+      easing: Konva.Easings.StrongEaseInOut,
+      scaleX: 1,
+      scaleY: 1,
+      rotation: 0,
+    }).play();
   }, [x, y]);
-  return <Rect ref={ref} x={0} y={800} {...props}></Rect>;
+
+  return (
+    <Rect
+      ref={ref}
+      x={0}
+      y={800}
+      opacity={0}
+      scaleX={3}
+      scaleY={3}
+      rotation={45}
+      {...props}></Rect>
+  );
 };
 
 export default Canvas;
