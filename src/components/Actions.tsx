@@ -11,6 +11,7 @@ import {
 import AlgoSelect from "./AlgoSelect";
 import { useAutoPlace } from "../hooks/useAutoPlace";
 import { AlgoStates } from "../hooks/usePackingAlgorithms";
+import Card from "./Card";
 
 interface Props {
   isFinished: boolean;
@@ -42,7 +43,7 @@ const Actions: React.FC<Props> = ({
   const isStarted = algoState === "RUNNING";
 
   return (
-    <div className="p-3 flex flex-col bg-zinc-200 rounded-md space-y-4">
+    <Card className="p-3 flex flex-col bg-slate-200 space-y-4">
       <div className="flex flex-row space-x-4 items-center justify-center">
         <AlgoSelect
           options={ALL_PACKING_ALGORITHMS}
@@ -118,7 +119,7 @@ const Actions: React.FC<Props> = ({
           />
         </div>
       )}
-    </div>
+    </Card>
   );
 };
 

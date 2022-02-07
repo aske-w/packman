@@ -4,6 +4,7 @@ import RectInput from "./components/RectInput";
 import React from "react";
 import { TrashIcon } from "@heroicons/react/outline";
 import { Dimensions } from "./types/Dimensions.interface";
+import Card from "./components/Card";
 
 interface BoxInputProps {
   disabled?: boolean;
@@ -70,7 +71,7 @@ const BoxInput: React.FC<BoxInputProps> = ({
   };
 
   return (
-    <div className="bg-white grid grid-cols-11 gap-2 p-2 max-h-screen">
+    <Card className="bg-white w-full h-full grid grid-cols-11 gap-2 p-2 overflow-y-scroll">
       <Header title="Width"></Header>
       <Header title="Height"></Header>
       <div className="col-span-11 h-0 border-b-2 border-gray-400 w-full"></div>
@@ -109,7 +110,7 @@ const BoxInput: React.FC<BoxInputProps> = ({
           <button type="submit" className="hidden" disabled={disabled}></button>
         </form>
       </div>
-    </div>
+    </Card>
   );
 };
 

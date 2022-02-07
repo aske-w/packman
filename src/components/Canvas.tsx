@@ -73,7 +73,7 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(
     };
     return (
       <div
-        className="flex w-full h-full bg-white "
+        className="flex w-full h-full bg-white rounded "
         style={{
           width: size.width + "px",
           height: size.height + "px",
