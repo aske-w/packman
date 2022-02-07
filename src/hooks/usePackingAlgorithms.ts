@@ -23,7 +23,6 @@ export const usePackingAlgorithms = (
   const algorithm = useRef<PackingAlgorithm>(new NextFitDecreasingHeight(size));
 
   const reset = useCallback(() => {
-    console.log("finsished");
     setIsFinished(true);
     setAlgoState("STOPPED");
   }, []);
@@ -46,7 +45,7 @@ export const usePackingAlgorithms = (
     const rec = algorithm.current.place();
     addArea(rec);
     return rec;
-  }, [addArea, algorithm]);
+  }, [addArea, algorithm, reset]);
 
   const start = useCallback(
     (data: Dimensions[]) => {

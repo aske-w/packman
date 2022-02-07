@@ -19,6 +19,7 @@ export const useAutoPlace = (
     const go = () => {
       tid = setTimeout(() => {
         console.log("going");
+
         if (!shouldRun || algoState === "STOPPED" || algoState === "PAUSED") {
           return;
         }
@@ -27,6 +28,7 @@ export const useAutoPlace = (
       }, scaledSpeed);
     };
     go();
+
     return () => {
       if (tid) clearTimeout(tid);
     };

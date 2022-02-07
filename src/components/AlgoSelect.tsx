@@ -17,9 +17,12 @@ const AlgoSelect: React.FC<AlgoSelectProps> = ({
   disabled,
 }) => {
   return (
-    <div className="w-72">
-      <Listbox value={value} onChange={onChange} disabled={disabled}>
-        <div className="relative mt-1">
+    <div className="w-72 relative">
+      {disabled && (
+        <div className="w-full h-full absolute bg-gray-50 opacity-70 rounded-lg z-50"></div>
+      )}
+      <Listbox value={value} onChange={onChange}>
+        <div className="relative">
           <Listbox.Button className="relative w-full py-2 pl-3 pr-10 text-left bg-white rounded-lg shadow-md cursor-default focus:outline-none focus-visible:ring-2 focus-visible:ring-opacity-75 focus-visible:ring-white focus-visible:ring-offset-orange-300 focus-visible:ring-offset-2 focus-visible:border-indigo-500 sm:text-sm">
             <span
               className={`block truncate ${disabled ? "text-gray-400" : ""}`}
