@@ -71,11 +71,13 @@ const BoxInput: React.FC<BoxInputProps> = ({
   };
 
   return (
-    <Card className="bg-white w-full h-full grid grid-cols-11 gap-2 p-2 overflow-y-scroll">
-      <Header title="Width"></Header>
-      <Header title="Height"></Header>
-      <div className="col-span-11 h-0 border-b-2 border-gray-400 w-full"></div>
-      <div className="col-span-11 grid grid-cols-11 gap-2 max-h-full overflow-y-scroll pt-2">
+    <Card className="bg-white w-full h-full p-2  overflow-y-scroll">
+      <div className="flex flex-row justify-around py-2">
+        <Header title="Width" />
+        <Header title="Height" />
+      </div>
+      <div className="col-span-11 h-0 border-b-2 border-stone-400 w-full"></div>
+      <div className="col-span-11 grid grid-cols-11 gap-2 pt-2">
         {rectangles.map((r, index) => (
           <div key={index} className="col-span-11 grid grid-cols-11 gap-2 px-2">
             <RectInput readonly={true} value={r.width}></RectInput>

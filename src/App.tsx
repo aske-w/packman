@@ -8,8 +8,10 @@ import BoxInput from "./BoxInput";
 import { Rectangle } from "./types/Rectangle.interface";
 import Konva from "konva";
 import Nav from "./components/Nav";
+import Sidebar from "./components/Sidebar";
 
 const NAV_HEIGHT = 64;
+const SIDEBAR_WIDTH = 400;
 
 function App() {
   const [size, setSize] = useState<Dimensions>({
@@ -48,39 +50,53 @@ function App() {
   };
 
   return (
-    <div className=" bg-slate-500 h-screen w-screen">
-      <Nav height={NAV_HEIGHT} />
-      <div
-        className="grid grid-cols-3 gap-5 p-4 h-full"
-        style={{ height: NAV_HEIGHT }}
-      >
-        <BoxInput
-          dimensionsStorage={dimensionsStorage}
-          setDimensionsStorage={setDimensionsStorage}
-          disabled={algoState === "RUNNING"}
-        ></BoxInput>
+    <div className=" bg-slate-500 h-screen w-screen flex flex-col">
+      <Nav height={NAV_HEIGHT}>
+        <Sidebar
+          width={SIDEBAR_WIDTH}
+          {...{
+            selectedAlgorithm,
+            setSelectedAlgorithm,
+            isFinished,
+            placeNext,
+            start,
+            dimensionsStorage,
+            setDimensionsStorage,
+            algoState,
+            reset,
+            pause,
+          }}
+        >
+          <div className="grid grid-cols-3 gap-5 p-4 h-full w-full">
+            <BoxInput
+              dimensionsStorage={dimensionsStorage}
+              setDimensionsStorage={setDimensionsStorage}
+              disabled={algoState === "RUNNING"}
+            ></BoxInput>
 
-        <div className="flex items-center justify-center h-full">
-          <Canvas rects={rects} size={size} />
-        </div>
+            <div className="flex items-center justify-center h-full">
+              <Canvas rects={rects} size={size} />
+            </div>
 
-        <div className="flex flex-col items-center justify-start">
-          <Actions
-            {...{
-              selectedAlgorithm,
-              setSelectedAlgorithm,
-              isFinished,
-              placeNext,
-              start,
-              dimensionsStorage,
-              setDimensionsStorage,
-              algoState,
-              reset,
-              pause,
-            }}
-          />
-        </div>
-      </div>
+            <div className="flex flex-col items-center justify-start">
+              {/* <Actions
+                {...{
+                  selectedAlgorithm,
+                  setSelectedAlgorithm,
+                  isFinished,
+                  placeNext,
+                  start,
+                  dimensionsStorage,
+                  setDimensionsStorage,
+                  algoState,
+                  reset,
+                  pause,
+                }}
+              /> */}
+            </div>
+          </div>
+        </Sidebar>
+      </Nav>
     </div>
   );
 }

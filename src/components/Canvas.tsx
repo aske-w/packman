@@ -14,6 +14,7 @@ import {
 } from "react-konva";
 import { Dimensions } from "../types/Dimensions.interface";
 import { Rectangle } from "../types/Rectangle.interface";
+import Card from "./Card";
 interface CanvasProps {
   size: Dimensions;
   rects: WithColor<Rectangle>[];
@@ -72,8 +73,8 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(
       if (closeToRight) return "right";
     };
     return (
-      <div
-        className="flex w-full h-full bg-white rounded "
+      <Card
+        className="flex w-full h-full bg-white "
         style={{
           width: size.width + "px",
           height: size.height + "px",
@@ -129,7 +130,7 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(
             </Label>
           </Layer>
         </Stage>
-      </div>
+      </Card>
     );
   }
 );
