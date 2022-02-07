@@ -71,7 +71,7 @@ const BoxInput: React.FC<BoxInputProps> = ({
   };
 
   return (
-    <Card className="bg-white w-full h-full p-2  overflow-y-scroll">
+    <Card className="bg-white w-full grow p-2  overflow-y-scroll">
       <div className="flex flex-row justify-around py-2">
         <Header title="Width" />
         <Header title="Height" />

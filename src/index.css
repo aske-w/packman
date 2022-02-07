@@ -5,3 +5,22 @@
 @layer components {
     .rect-input {@apply rounded-full text-center px-3 border-2 col-span-5 font-medium}
 }
+
+      /* width */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+/* Track */
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: gray;
+  border-radius: 10px;
+}
+/* Handle */
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #d6d3d1;
+  border-radius: 10px;
+}
+/* Handle on hover */
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #e7e5e4;
+}
