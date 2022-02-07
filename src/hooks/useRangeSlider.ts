@@ -1,9 +1,13 @@
 import React from "react";
 
-export const useRangeSlider = () => {
-  const [progress, setProgress] = React.useState(0);
+export const useRangeSlider = (intial = 0, scale = 1) => {
+  const [progress, setProgress] = React.useState(intial);
 
   const updateProgress = (progress: number) => setProgress(progress);
 
-  return { progress, updateProgress };
+  return {
+    progress: progress,
+    updateProgress,
+    scaledProgress: progress * scale,
+  };
 };

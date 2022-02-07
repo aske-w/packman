@@ -1,11 +1,19 @@
 import React, { useEffect } from "react";
 import { AlgoStates } from "./usePackingAlgorithms";
+import { useRangeSlider } from "./useRangeSlider";
 
 export const useAutoPlace = (
   shouldRun: boolean,
   place: () => void,
   algoState: AlgoStates
 ) => {
+  const SCALE_FACTOR = 20;
+  const {
+    progress: speed,
+    updateProgress: updateSpeed,
+    scaledProgress: scaledSpeed,
+  } = useRangeSlider(10, SCALE_FACTOR);
+
   useEffect(() => {
     let tid: NodeJS.Timeout | null = null;
     const go = () => {
@@ -15,11 +23,13 @@ export const useAutoPlace = (
         }
         place();
         go();
-      }, 10);
+      }, scaledSpeed);
     };
     go();
     return () => {
       if (tid) clearTimeout(tid);
     };
-  }, [shouldRun, algoState]);
+  }, [shouldRun, algoState, scaledSpeed]);
+
+  return { speed, updateSpeed };
 };

@@ -37,8 +37,7 @@ const Actions: React.FC<Props> = ({
   reset,
 }) => {
   const { checked, updateChecked } = useToggle();
-  const { progress, updateProgress } = useRangeSlider();
-  useAutoPlace(checked, placeNext, algoState);
+  const { speed, updateSpeed } = useAutoPlace(checked, placeNext, algoState);
 
   return (
     <div className="p-3 flex flex-col bg-zinc-200 rounded-md space-y-4">
@@ -59,7 +58,7 @@ const Actions: React.FC<Props> = ({
 
       <div className="w-full flex items-center justify-around ">
         <button
-          onClick={() => setDimensionsStorage(genData(10))}
+          onClick={() => setDimensionsStorage(genData(100))}
           className="px-2 py-1 font-medium text-white bg-blue-500 rounded shadow "
         >
           Generate data
@@ -88,8 +87,8 @@ const Actions: React.FC<Props> = ({
       {checked && (
         <div>
           <RangeSlider
-            progress={progress}
-            onChange={updateProgress}
+            progress={speed}
+            onChange={updateSpeed}
             className="mt-6"
           />
         </div>
