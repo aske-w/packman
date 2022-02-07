@@ -3,8 +3,8 @@ import Header from "./Header";
 import RectInput from "./RectInput";
 import React from "react";
 import { TrashIcon } from "@heroicons/react/outline";
-import { Dimensions } from "./types/Dimensions.interface";
-import Card from "./components/Card";
+import { Dimensions } from "../types/Dimensions.interface";
+import Card from "./Card";
 
 interface BoxInputProps {
   disabled?: boolean;
