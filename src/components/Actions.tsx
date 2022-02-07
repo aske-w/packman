@@ -71,7 +71,6 @@ const Actions: React.FC<Props> = ({
         </button>
         <button
           onClick={() => {
-            reset();
             start(dimensionsStorage);
           }}
           disabled={isStarted}
