@@ -4,7 +4,6 @@ import { useToggle } from "../hooks/useToggle";
 import RangeSlider from "./RangeSlider";
 import Switch from "react-switch";
 import { Dimensions } from "../types/Dimensions.interface";
-import { CanvasHandle } from "./Canvas";
 import {
   ALL_PACKING_ALGORITHMS,
   PackingAlgorithms,
@@ -40,6 +39,7 @@ const Actions: React.FC<Props> = ({
 }) => {
   const { checked, updateChecked } = useToggle();
   const { speed, updateSpeed } = useAutoPlace(checked, placeNext, algoState);
+  const isStarted = algoState === "RUNNING";
 
   return (
     <div className="p-3 flex flex-col bg-zinc-200 rounded-md space-y-4">
@@ -48,6 +48,7 @@ const Actions: React.FC<Props> = ({
           options={ALL_PACKING_ALGORITHMS}
           onChange={setSelectedAlgorithm}
           value={selectedAlgorithm}
+          disabled={isStarted}
         />
 
         <Switch
@@ -61,7 +62,10 @@ const Actions: React.FC<Props> = ({
       <div className="w-full flex items-center justify-around ">
         <button
           onClick={() => setDimensionsStorage(genData(100))}
-          className="px-2 py-1 font-medium text-white bg-blue-500 rounded shadow "
+          className={`px-2 py-1 font-medium text-white rounded shadow ${
+            isStarted ? "bg-blue-300" : "bg-blue-500"
+          }`}
+          disabled={isStarted}
         >
           Generate data
         </button>
@@ -70,9 +74,18 @@ const Actions: React.FC<Props> = ({
             reset();
             start(dimensionsStorage);
           }}
-          className="px-2 py-1 font-medium text-white bg-blue-500 rounded shadow "
+          disabled={isStarted}
+          className={`px-2 py-1 font-medium text-white rounded shadow ${
+            isStarted ? "bg-blue-300" : "bg-blue-500"
+          }`}
         >
           Start
+        </button>
+        <button
+          className="px-2 py-1 font-medium text-white rounded shadow bg-blue-500"
+          onClick={reset}
+        >
+          Reset
         </button>
       </div>
 
@@ -96,7 +109,7 @@ const Actions: React.FC<Props> = ({
                 (algoState === "PAUSED" ? "bg-green-500" : "bg-amber-500")
               }
             >
-              {algoState === "RUNNING" ? "Pause" : "Resume"}
+              {isStarted ? "Pause" : "Resume"}
             </button>
           )}
           <RangeSlider

@@ -16,11 +16,14 @@ function App() {
   const [selectedAlgorithm, setSelectedAlgorithm] = useState<PackingAlgorithms>(
     PackingAlgorithms.NEXT_FIT_DECREASING_HEIGHT
   );
-
-  const { start, pause, place, algoState, isFinished } = usePackingAlgorithms(
-    size,
-    selectedAlgorithm
-  );
+  const {
+    start,
+    pause,
+    place,
+    algoState,
+    isFinished,
+    reset: resetAlgo,
+  } = usePackingAlgorithms(size, selectedAlgorithm);
 
   const placeNext = () => {
     const rect = place();
@@ -37,6 +40,8 @@ function App() {
 
   const reset = () => {
     setRects([]);
+    setDimensionsStorage([]);
+    resetAlgo();
   };
 
   return (
@@ -45,6 +50,7 @@ function App() {
         <BoxInput
           dimensionsStorage={dimensionsStorage}
           setDimensionsStorage={setDimensionsStorage}
+          disabled={algoState === "RUNNING"}
         ></BoxInput>
       </div>
 

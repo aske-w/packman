@@ -23,6 +23,7 @@ export const usePackingAlgorithms = (
   const algorithm = useRef<PackingAlgorithm>(new NextFitDecreasingHeight(size));
 
   const reset = useCallback(() => {
+    console.log("finsished");
     setIsFinished(true);
     setAlgoState("STOPPED");
   }, []);
@@ -53,23 +54,21 @@ export const usePackingAlgorithms = (
 
       switch (selectedAlgorithm) {
         case NEXT_FIT_DECREASING_HEIGHT:
-          {
-            algorithm.current = new NextFitDecreasingHeight(size).load(data);
-          }
+          algorithm.current = new NextFitDecreasingHeight(size).load(data);
           break;
+
         case FIRST_FIT_DECREASING_HEIGHT:
-          {
-            algorithm.current = new FirstFitDecreasingHeight(size).load(data);
-          }
+          algorithm.current = new FirstFitDecreasingHeight(size).load(data);
           break;
 
         default:
+          reset();
           console.error("unkown algorithm: ", selectedAlgorithm);
           break;
       }
     },
-    [selectedAlgorithm, size, reset]
+    [intializeOnStart, selectedAlgorithm, reset, size]
   );
 
-  return { start, getStats, place, isFinished, algoState, pause };
+  return { start, getStats, place, isFinished, algoState, pause, reset };
 };
