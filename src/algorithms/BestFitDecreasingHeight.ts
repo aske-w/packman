@@ -81,7 +81,6 @@ export class BestFitDecreasingHeight implements PackingAlgorithm {
       height: nextRect.height,
       remainingWidth: this.gameSize.width - nextRect.width,
     };
-    console.log({ newShelf });
 
     this.shelves.push(newShelf);
 

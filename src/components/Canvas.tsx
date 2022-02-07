@@ -69,6 +69,17 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(({ size }, handle) => {
       visible: false,
     });
   };
+
+  const getTooltipPos = (x: number) => {
+    const threshold = 100;
+    const closeToLeft = x < threshold;
+    const closeToRight = size.width - x < threshold;
+    if (!closeToLeft && !closeToRight) {
+      return 'down';
+    }
+    if (closeToLeft) return 'left';
+    if (closeToRight) return 'right';
+  };
   return (
     <div
       className="flex w-full h-full bg-white "
@@ -100,7 +111,7 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(({ size }, handle) => {
             <Tag
               {...{
                 fill: 'black',
-                pointerDirection: 'down',
+                pointerDirection: getTooltipPos(tooltip.x!),
                 pointerWidth: 10,
                 pointerHeight: 10,
                 lineJoin: 'round',

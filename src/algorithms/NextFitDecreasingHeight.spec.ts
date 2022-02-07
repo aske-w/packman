@@ -2,7 +2,7 @@ import {
   ExpectedData,
   GameSize,
   TestData,
-} from './fixtures/NextFitDecreasingHeight.fixture';
+} from './NextFitDecreasingHeight.fixture';
 import { Dimensions } from '../types/Dimensions.interface';
 import { NextFitDecreasingHeight } from './NextFitDecreasingHeight';
 

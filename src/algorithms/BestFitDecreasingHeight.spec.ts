@@ -3,18 +3,18 @@ import {
   GameSize,
   TestData,
   LastShelf,
-} from './FirstFitDecreasingHeight.fixture';
+} from './BestFitDecreasingHeight.fixture';
 import { Dimensions } from '../types/Dimensions.interface';
-import { FirstFitDecreasingHeight } from './FirstFitDecreasingHeight';
+import { BestFitDecreasingHeight } from './BestFitDecreasingHeight';
 
-describe('First fit decreasing height test', () => {
-  let ffdh = new FirstFitDecreasingHeight(GameSize);
+describe('Best fit decreasing height tests', () => {
+  let bfdh = new BestFitDecreasingHeight(GameSize);
 
   beforeEach(() => {
-    ffdh = new FirstFitDecreasingHeight(GameSize);
+    bfdh = new BestFitDecreasingHeight(GameSize);
   });
   it('should return is finished with no data', () => {
-    expect(ffdh.isFinished()).toBe(true);
+    expect(bfdh.isFinished()).toBe(true);
   });
 
   const rawData: Dimensions[] = [
@@ -54,30 +54,30 @@ describe('First fit decreasing height test', () => {
     },
   ];
   it('should sort data by non increasing height', () => {
-    ffdh.load(rawData);
+    bfdh.load(rawData);
 
-    expect(ffdh.data).toEqual(sortedData);
+    expect(bfdh.data).toEqual(sortedData);
   });
 
   it('should place first rectangle correctly', () => {
-    ffdh.load(rawData);
-    ffdh.place();
-    expect(ffdh.lastShelf.height).toBe(sortedData[0].height);
-    expect(ffdh.lastShelf.remainingWidth).toBe(
+    bfdh.load(rawData);
+    bfdh.place();
+    expect(bfdh.lastShelf.height).toBe(sortedData[0].height);
+    expect(bfdh.lastShelf.remainingWidth).toBe(
       GameSize.width - sortedData[0].width
     );
   });
 
   it('should create a new shelf when width overflows current shelf width', () => {
-    ffdh.load(TestData);
+    bfdh.load(TestData);
 
     ExpectedData.forEach(expected => {
-      const actual = ffdh.place();
+      const actual = bfdh.place();
       expect(expected).toEqual(actual);
     });
 
-    expect(ffdh.isFinished()).toBe(true);
+    expect(bfdh.isFinished()).toBe(true);
 
-    expect(ffdh.lastShelf).toEqual(LastShelf);
+    expect(bfdh.lastShelf).toEqual(LastShelf);
   });
 });
