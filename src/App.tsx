@@ -4,7 +4,7 @@ import Canvas, { WithColor } from "./components/Canvas";
 import { usePackingAlgorithms } from "./hooks/usePackingAlgorithms";
 import { PackingAlgorithms } from "./types/PackingAlgorithm.interface";
 import Actions from "./components/Actions";
-import BoxInput from "./BoxInput";
+import BoxInput from "./components/BoxInput";
 import { Rectangle } from "./types/Rectangle.interface";
 import Konva from "konva";
 

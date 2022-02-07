@@ -1,9 +1,9 @@
 import { FormEvent, useRef, useState } from "react";
-import Header from "./components/Header";
-import RectInput from "./components/RectInput";
+import Header from "./Header";
+import RectInput from "./RectInput";
 import React from "react";
 import { TrashIcon } from "@heroicons/react/outline";
-import { Dimensions } from "./types/Dimensions.interface";
+import { Dimensions } from "../types/Dimensions.interface";
 
 interface BoxInputProps {
   disabled?: boolean;
