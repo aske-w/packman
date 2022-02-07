@@ -18,7 +18,6 @@ export const useAutoPlace = (
     let tid: NodeJS.Timeout | null = null;
     const go = () => {
       tid = setTimeout(() => {
-        console.log("going");
         if (!shouldRun || algoState === "STOPPED" || algoState === "PAUSED") {
           return;
         }
