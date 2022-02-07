@@ -12,56 +12,54 @@ import { Dimensions } from "../types/Dimensions.interface";
 import { Rectangle } from "../types/Rectangle.interface";
 interface CanvasProps {
   size: Dimensions;
+  rects: WithColor<Rectangle>[];
 }
 
-export interface CanvasHandle {
-  place: (rect: Rectangle) => void;
-  reset: () => void;
-}
-type WithColor<T> = T & { color: string };
+export interface CanvasHandle {}
+export type WithColor<T> = T & { color: string };
 
-const Canvas = forwardRef<CanvasHandle, CanvasProps>(({ size }, handle) => {
-  const [rects, setRects] = useState<WithColor<Rectangle>[]>([]);
+const Canvas = forwardRef<CanvasHandle, CanvasProps>(
+  ({ size, rects }, handle) => {
+    // useImperativeHandle(
+    //   handle,
+    //   () => ({
+    //     place: (rect) => {
+    //       setRects((old) => [
+    //         ...old,
+    //         { ...rect, color: Konva.Util.getRandomColor() },
+    //       ]);
+    //     },
+    //     reset: () => setRects([]),
+    //   }),
+    //   []
+    // );
 
-  useImperativeHandle(
-    handle,
-    () => ({
-      place: (rect) => {
-        setRects((old) => [
-          ...old,
-          { ...rect, color: Konva.Util.getRandomColor() },
-        ]);
-      },
-      reset: () => setRects([]),
-    }),
-    []
-  );
-
-  return (
-    <div
-      className="flex w-full h-full bg-white "
-      style={{
-        width: size.width + "px",
-        height: size.height + "px",
-      }}
-    >
-      <Stage width={size.width} height={size.height}>
-        <Layer>
-          {rects.map((rect, i) => {
-            return (
-              <MyRect
-                key={i}
-                {...rect}
-                y={rect.y + size.height}
-                fill={rect.color}
-              ></MyRect>
-            );
-          })}
-        </Layer>
-      </Stage>
-    </div>
-  );
-});
+    return (
+      <div
+        className="flex w-full h-full bg-white "
+        style={{
+          width: size.width + "px",
+          height: size.height + "px",
+        }}
+      >
+        <Stage width={size.width} height={size.height}>
+          <Layer>
+            {rects.map((rect, i) => {
+              return (
+                <MyRect
+                  key={i}
+                  {...rect}
+                  y={rect.y + size.height}
+                  fill={rect.color}
+                ></MyRect>
+              );
+            })}
+          </Layer>
+        </Stage>
+      </div>
+    );
+  }
+);
 
 const MyRect: React.FC<RectConfig> = ({ x, y, ...props }) => {
   const ref = useRef<KonvaRect>(null);

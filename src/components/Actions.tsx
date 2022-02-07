@@ -10,33 +10,35 @@ import {
   PackingAlgorithms,
 } from "../types/PackingAlgorithm.interface";
 import AlgoSelect from "./AlgoSelect";
+import { useAutoPlace } from "../hooks/useAutoPlace";
+import { AlgoStates } from "../hooks/usePackingAlgorithms";
 
 interface Props {
   isFinished: boolean;
   placeNext(): void;
+  algoState: AlgoStates;
   start(data: Dimensions[]): void;
-  canvasHandle: React.RefObject<CanvasHandle>;
   selectedAlgorithm: PackingAlgorithms;
   setSelectedAlgorithm: React.Dispatch<React.SetStateAction<PackingAlgorithms>>;
   dimensionsStorage: Dimensions[];
   setDimensionsStorage: React.Dispatch<React.SetStateAction<Dimensions[]>>;
+  reset(): void;
 }
 
 const Actions: React.FC<Props> = ({
   isFinished,
   placeNext,
   start,
-  canvasHandle,
   setSelectedAlgorithm,
   selectedAlgorithm,
   dimensionsStorage,
   setDimensionsStorage,
+  algoState,
+  reset,
 }) => {
   const { checked, updateChecked } = useToggle();
   const { progress, updateProgress } = useRangeSlider();
-
-  if (checked) {
-  }
+  useAutoPlace(checked, placeNext, algoState);
 
   return (
     <div className="p-3 flex flex-col bg-zinc-200 rounded-md space-y-4">
@@ -57,14 +59,14 @@ const Actions: React.FC<Props> = ({
 
       <div className="w-full flex items-center justify-around ">
         <button
-          onClick={() => setDimensionsStorage(genData(20))}
+          onClick={() => setDimensionsStorage(genData(10))}
           className="px-2 py-1 font-medium text-white bg-blue-500 rounded shadow "
         >
           Generate data
         </button>
         <button
           onClick={() => {
-            canvasHandle.current?.reset();
+            reset();
             start(dimensionsStorage);
           }}
           className="px-2 py-1 font-medium text-white bg-blue-500 rounded shadow "
