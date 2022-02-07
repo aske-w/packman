@@ -61,7 +61,7 @@ const Actions: React.FC<Props> = ({
 
       <div className="w-full flex items-center justify-around ">
         <button
-          onClick={() => setDimensionsStorage(genData(100))}
+          onClick={() => setDimensionsStorage(genData(20))}
           className={`px-2 py-1 font-medium text-white rounded shadow ${
             isStarted ? "bg-blue-300" : "bg-blue-500"
           }`}
