@@ -7,7 +7,7 @@ import {
   ALL_PACKING_ALGORITHMS,
   PackingAlgorithms,
 } from "../../types/PackingAlgorithm.interface";
-import Actions, { genData } from "../Actions";
+import { genData } from "../Actions";
 import AlgoSelect from "../AlgoSelect";
 import SideBarItem from "./SidebarItem";
 import SideBarSection from "./SideBarSection";
@@ -51,15 +51,10 @@ const Sidebar: React.FC<SidebarProps> = ({
   console.log("algostate:", algoState);
 
   return (
-    <div
-      className="flex flex-row h-full"
-      style={{
-        width: `calc(100% - ${width}px)`,
-      }}
-    >
+    <div className="flex flex-row h-full">
       <div
         style={{ width, backgroundColor: "#232323" }}
-        className="h-full bg-black"
+        className="h-full bg-main overflow-hidden"
       >
         <SideBarSection title="Algorithms">
           <AlgoSelect
@@ -136,7 +131,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         <SideBarSection
           title="Manuel data set"
-          className="custom-scrollbar bg-transparent overflow-y-scroll"
+          className="max-h-full overflow-y-scroll custom-scrollbar"
         >
           <BoxInput
             dimensionsStorage={dimensionsStorage}

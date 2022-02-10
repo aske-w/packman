@@ -4,7 +4,13 @@ module.exports = {
     fontFamily: {
       default: '"Roboto", "Helvetica", "Arial", sans-serif',
     },
-    extend: {},
+    extend: {
+      colors: {
+        main: "#232323",
+        lightMain: "#2E2E31",
+        canvas: "#383838",
+      },
+    },
   },
   plugins: [],
 };

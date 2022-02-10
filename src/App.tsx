@@ -3,8 +3,6 @@ import { Dimensions } from "./types/Dimensions.interface";
 import Canvas, { WithColor } from "./components/Canvas";
 import { usePackingAlgorithms } from "./hooks/usePackingAlgorithms";
 import { PackingAlgorithms } from "./types/PackingAlgorithm.interface";
-import Actions from "./components/Actions";
-import BoxInput from "./components/BoxInput";
 import { Rectangle } from "./types/Rectangle.interface";
 import Konva from "konva";
 import Nav from "./components/Nav";
@@ -50,7 +48,7 @@ function App() {
   };
 
   return (
-    <div className=" bg-slate-500 h-screen w-screen flex flex-col">
+    <div className=" bg-canvas h-screen w-screen flex flex-col">
       <Nav height={NAV_HEIGHT}>
         <Sidebar
           width={SIDEBAR_WIDTH}
@@ -67,27 +65,8 @@ function App() {
             pause,
           }}
         >
-          <div className="p-4 h-full w-full">
-            <div className="flex items-center justify-center h-full">
-              <Canvas rects={rects} size={size} />
-            </div>
-
-            <div className="flex flex-col items-center justify-start">
-              {/* <Actions
-                {...{
-                  selectedAlgorithm,
-                  setSelectedAlgorithm,
-                  isFinished,
-                  placeNext,
-                  start,
-                  dimensionsStorage,
-                  setDimensionsStorage,
-                  algoState,
-                  reset,
-                  pause,
-                }}
-              /> */}
-            </div>
+          <div className="p-4 h-full w-full flex items-center justify-center">
+            <Canvas rects={rects} size={size} />
           </div>
         </Sidebar>
       </Nav>

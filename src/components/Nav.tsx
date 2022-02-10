@@ -10,10 +10,11 @@ const Nav: React.FC<NavProps> = ({ height, children }) => {
     <div
       style={{
         height: `calc(100% - ${height}px)`,
+        width: "100%",
       }}
     >
       <nav
-        className=" bg-gray-700 w-full p-4 border-b border-gray-500"
+        className=" bg-main w-full p-4 border-b border-gray-800"
         style={{ height }}
       >
         <div className="h-full flex flex-row items-center space-x-4 justify-start">

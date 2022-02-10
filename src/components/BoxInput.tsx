@@ -1,5 +1,4 @@
 import { FormEvent, useRef, useState } from "react";
-import Header from "./Header";
 import RectInput from "./RectInput";
 import React from "react";
 import { TrashIcon } from "@heroicons/react/outline";
@@ -71,46 +70,60 @@ const BoxInput: React.FC<BoxInputProps> = ({
   };
 
   return (
-    <Card className="bg-white w-full grow p-2  overflow-y-scroll">
-      <div className="flex flex-row justify-around py-2">
+    <Card className="w-full grow">
+      {/* <div className="flex flex-row justify-around py-2">
         <Header title="Width" />
         <Header title="Height" />
-      </div>
-      <div className="col-span-11 h-0 border-b-2 border-stone-400 w-full"></div>
-      <div className="col-span-11 grid grid-cols-11 gap-2 pt-2">
-        {rectangles.map((r, index) => (
-          <div key={index} className="col-span-11 grid grid-cols-11 gap-2 px-2">
-            <RectInput readonly={true} value={r.width}></RectInput>
-            <RectInput readonly={true} value={r.height}></RectInput>
-            <TrashIcon
-              className={`col-span-1 ${
-                disabled
-                  ? "text-gray-200"
-                  : "hover:cursor-pointer hover:text-red-600 hover:scale-110"
-              }`}
-              onClick={(e) => removeRectangle(index)}
-            />
-          </div>
-        ))}
+      </div> */}
+      {/* <div className="col-span-11 h-0 border-b-2 border-stone-400 w-full"></div> */}
+      <div className="w-full flex flex-col justify-center items-center space-y-4">
         <form
           action=""
           onSubmit={handleFormSubmit}
-          className="col-span-11 grid grid-cols-11 gap-2 px-2 pb-2"
+          className="w-full flex flex-row items-center space-x-6"
         >
           <RectInput
             value={width}
             onChangeHandler={(e) => setWidth(e.target.value)}
             reference={inputRef}
             disabled={disabled}
+            dimension="w"
           ></RectInput>
           <RectInput
             value={height}
             onChangeHandler={(e) => setHeight(e.target.value)}
             disabled={disabled}
+            dimension="h"
           ></RectInput>
-          <TrashIcon className="text-gray-200" />
+          {/* <TrashIcon className="w-14 text-gray-200" /> */}
           <button type="submit" className="hidden" disabled={disabled}></button>
         </form>
+
+        {rectangles.map((r, index) => (
+          <div
+            key={index}
+            className="w-full flex flex-row items-center space-x-6"
+          >
+            <RectInput
+              readonly={true}
+              value={r.width}
+              dimension="w"
+            ></RectInput>
+            <RectInput
+              readonly={true}
+              value={r.height}
+              dimension="h"
+            ></RectInput>
+            <TrashIcon
+              className={`w-14 ${
+                disabled
+                  ? "text-gray-500"
+                  : "hover:cursor-pointer hover:text-red-400 hover:scale-110 text-gray-200"
+              }`}
+              onClick={(e) => removeRectangle(index)}
+            />
+          </div>
+        ))}
       </div>
     </Card>
   );
