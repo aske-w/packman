@@ -1,5 +1,5 @@
-import { Dimensions } from './Dimensions.interface';
-import { Rectangle } from './Rectangle.interface';
+import { Dimensions } from "./Dimensions.interface";
+import { Rectangle } from "./Rectangle.interface";
 
 export interface PackingAlgorithm {
   gameSize: Dimensions;
@@ -10,13 +10,15 @@ export interface PackingAlgorithm {
 }
 
 export enum PackingAlgorithms {
-  NEXT_FIT_DECREASING_HEIGHT = 'Next Fit Decreasing Height',
-  FIRST_FIT_DECREASING_HEIGHT = 'First Fit Decreasing Height',
-  BEST_FIT_DECREASING_HEIGHT = 'Best Fit Decreasing Height',
+  NEXT_FIT_DECREASING_HEIGHT = "Next Fit Decreasing Height",
+  FIRST_FIT_DECREASING_HEIGHT = "First Fit Decreasing Height",
+  BEST_FIT_DECREASING_HEIGHT = "Best Fit Decreasing Height",
+  SIZE_ALTERNATING_STACK = "Size Alternating Stack",
 }
 
 export const ALL_PACKING_ALGORITHMS = [
   PackingAlgorithms.FIRST_FIT_DECREASING_HEIGHT,
   PackingAlgorithms.NEXT_FIT_DECREASING_HEIGHT,
   PackingAlgorithms.BEST_FIT_DECREASING_HEIGHT,
+  PackingAlgorithms.SIZE_ALTERNATING_STACK,
 ];

@@ -62,7 +62,7 @@ const Actions: React.FC<Props> = ({
 
       <div className="w-full flex items-center justify-around ">
         <button
-          onClick={() => setDimensionsStorage(genData(20))}
+          onClick={() => setDimensionsStorage(genData(200))}
           className={`px-2 py-1 font-medium text-white rounded shadow ${
             isStarted ? "bg-blue-300" : "bg-blue-500"
           }`}
@@ -126,7 +126,7 @@ const Actions: React.FC<Props> = ({
 export const genData = (amount = 10): Dimensions[] => {
   return Array.from({ length: amount }, (_, _i) => {
     return {
-      width: Math.round(Math.random() * 200),
+      width: Math.round(Math.random() * 100),
       height: Math.round(Math.random() * 100),
     };
   });

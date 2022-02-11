@@ -13,11 +13,11 @@ const SIDEBAR_WIDTH = 480;
 
 function App() {
   const [size, setSize] = useState<Dimensions>({
-    height: 800,
+    height: 600,
     width: 400,
   });
   const [selectedAlgorithm, setSelectedAlgorithm] = useState<PackingAlgorithms>(
-    PackingAlgorithms.NEXT_FIT_DECREASING_HEIGHT
+    PackingAlgorithms.SIZE_ALTERNATING_STACK
   );
   const {
     start,

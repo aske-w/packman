@@ -126,7 +126,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           <SideBarItem
             element={
               <button
-                onClick={() => setDimensionsStorage(genData(40))}
+                onClick={() => setDimensionsStorage(genData(20))}
                 className={`px-2 py-1 font-medium text-white rounded shadow bg-blue-700 ${
                   isStarted ? "opacity-60" : "hover:bg-blue-800"
                 }`}
