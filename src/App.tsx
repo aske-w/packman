@@ -14,7 +14,7 @@ const SIDEBAR_WIDTH = 480;
 function App() {
   const [size, setSize] = useState<Dimensions>({
     height: 600,
-    width: 400,
+    width: 500,
   });
   const [selectedAlgorithm, setSelectedAlgorithm] = useState<PackingAlgorithms>(
     PackingAlgorithms.SIZE_ALTERNATING_STACK

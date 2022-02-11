@@ -84,14 +84,14 @@ const BoxInput: React.FC<BoxInputProps> = ({
         >
           <RectInput
             value={width}
-            onChangeHandler={(e) => setWidth(e.target.value)}
+            onChange={(e) => setWidth(e.target.value)}
             reference={inputRef}
             disabled={disabled}
             sec="w"
           ></RectInput>
           <RectInput
             value={height}
-            onChangeHandler={(e) => setHeight(e.target.value)}
+            onChange={(e) => setHeight(e.target.value)}
             disabled={disabled}
             sec="h"
           ></RectInput>

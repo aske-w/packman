@@ -5,7 +5,7 @@ interface RectInputProps {
   className?: string;
   reference?: RefObject<HTMLInputElement>;
   readonly?: boolean;
-  onChangeHandler?: ChangeEventHandler<HTMLInputElement>;
+  onChange?: ChangeEventHandler<HTMLInputElement>;
   disabled?: boolean;
   sec?: string;
 }
@@ -15,7 +15,7 @@ const RectInput: React.FC<RectInputProps> = ({
   className,
   reference,
   readonly = false,
-  onChangeHandler,
+  onChange: onChangeHandler,
   disabled = false,
   sec,
 }) => {

@@ -1,5 +1,4 @@
 import React from "react";
-import { useRangeSlider } from "../hooks/useRangeSlider";
 import { useToggle } from "../hooks/useToggle";
 import RangeSlider from "./RangeSlider";
 import Switch from "react-switch";

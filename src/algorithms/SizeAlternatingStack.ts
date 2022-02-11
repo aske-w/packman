@@ -75,8 +75,6 @@ export class SizeAlternatingStack implements PackingAlgorithm {
     wide.sort((a, b) => b.width - a.width);
     this.narrowRectangles = tall;
     this.wideRectangles = wide;
-    console.log("narrow", [...this.L1]);
-    console.log("wide", [...this.L2]);
   }
 
   private wideOrNarrow() {
@@ -97,7 +95,6 @@ export class SizeAlternatingStack implements PackingAlgorithm {
   }
 
   place(): Rectangle {
-    console.log(this.rects);
     if (this.rects.length === 0) throw new Error("no more rects");
 
     return this.rects.shift()!;
@@ -118,11 +115,8 @@ export class SizeAlternatingStack implements PackingAlgorithm {
 
   private exec() {
     while (!this.isFinishedExecutingAlgo()) {
-      console.log("finished", this.isFinishedExecutingAlgo());
-
       const variant = this.wideOrNarrow();
       const tallest = this[`${variant}Rectangles`].shift()!;
-      console.log({ variant, tallest, rectList: this[`${variant}Rectangles`] });
 
       // create new shelf
       this.shelves.push({
@@ -130,12 +124,6 @@ export class SizeAlternatingStack implements PackingAlgorithm {
         height: tallest.height,
         remainingWidth: this.gameSize.width - tallest.width,
       });
-      console.log(
-        "exec y",
-        this.lastShelf.bottomY - tallest.height,
-        this.lastShelf.bottomY,
-        tallest.height
-      );
 
       this.rects.push({
         ...tallest,
@@ -164,7 +152,6 @@ export class SizeAlternatingStack implements PackingAlgorithm {
     x: number,
     bottomY: number
   ) {
-    console.log("-----packNarrow frame");
     // pack first rectangle that fits width and height wise
     const firstFitsIdx = this.L1.findIndex(
       (r) => r !== null && r.width <= width && r.height <= verticalSpace
@@ -172,7 +159,7 @@ export class SizeAlternatingStack implements PackingAlgorithm {
     if (firstFitsIdx === -1) return; // no rectangles that fit
 
     const rect = this.L1[firstFitsIdx];
-    console.log("found narrow rect", rect);
+
     //@ts-ignore
     this.L1[firstFitsIdx] = null;
     // this.L1.splice(firstFitsIdx, 1); // remove from list
@@ -194,8 +181,6 @@ export class SizeAlternatingStack implements PackingAlgorithm {
         const narrowRect = this.L1[idx];
         //@ts-ignore
         this.L1[idx] = null;
-        // this.L1.splice(idx, 1); // remove from list
-        console.log({ sliceY });
 
         this.rects.push({
           ...narrowRect,
@@ -213,7 +198,6 @@ export class SizeAlternatingStack implements PackingAlgorithm {
   }
 
   private packWide(width: number, verticalSpace: number) {
-    console.log("-----packWide frame");
     let j = 0;
     let x = last(this.rects).width;
     let bottomY = this.lastShelf.bottomY;
@@ -222,27 +206,16 @@ export class SizeAlternatingStack implements PackingAlgorithm {
     let length = this.N2;
 
     // is zero at the beginning
-    console.log(
-      "------------- last(this.rects)----------------",
-      last(this.rects)
-    );
-    console.log("-------------verticalSpace----------------", verticalSpace);
-    console.log("-------------length----------------", length);
-    console.log("-------------j----------------", j);
+
     while (verticalSpace > 0 && j <= length) {
       const rect = this.L2[j];
       if (rect && rect.height <= verticalSpace && rect.width <= width) {
         // new vSpace
         verticalSpace -= rect.height;
 
-        console.log("bottom y: " + bottomY);
-        console.log("shelfHeight: " + shelfHeight);
-        console.log("x: " + x);
         const rectX = x + rect.width;
-        console.log("rectX: " + rectX);
-        console.log("rect.width: " + rect.width);
+
         const rectY = bottomY - rect.height;
-        console.log({ rectY });
 
         // Place
         this.rects.push({
