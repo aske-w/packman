@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useAutoPlace } from "../../hooks/useAutoPlace";
 import { AlgoStates } from "../../hooks/usePackingAlgorithms";
 import { useToggle } from "../../hooks/useToggle";
@@ -48,7 +48,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const { checked, updateChecked } = useToggle();
   const { speed, updateSpeed } = useAutoPlace(checked, placeNext, algoState);
   const isStarted = algoState === "RUNNING" || algoState === "PAUSED";
-
+  const [genNum, setGenNum] = useState(30);
   console.log("algostate:", algoState);
 
   return (
@@ -125,22 +125,30 @@ const Sidebar: React.FC<SidebarProps> = ({
         <SideBarSection title="Automatic data set">
           <SideBarItem
             element={
-              <button
-                onClick={() => setDimensionsStorage(genData(40))}
-                className={`px-2 py-1 font-medium text-white rounded shadow bg-blue-700 ${
-                  isStarted ? "opacity-60" : "hover:bg-blue-800"
-                }`}
-                disabled={isStarted}
-              >
-                Generate data
-              </button>
+              <div className="flex items-center justify-right space-x-5">
+                <RectInput
+                  value={genNum}
+                  onChange={(e) => setGenNum(Number.parseInt(e.target.value))}
+                  className="w-4/12 px-3 select-none"
+                  sec=""
+                />
+                <button
+                  onClick={() => setDimensionsStorage(genData(genNum))}
+                  className={`px-2 py-1 font-medium text-white rounded shadow bg-blue-700 ${
+                    isStarted ? "opacity-60" : "hover:bg-blue-800"
+                  }`}
+                  disabled={isStarted}
+                >
+                  Generate data
+                </button>
+              </div>
             }
             text="Generate data"
           />
         </SideBarSection>
 
         <SideBarSection
-          title="Manuel data set"
+          title={"Manuel data set (" + dimensionsStorage.length + ")"}
           className="max-h-full overflow-y-scroll custom-scrollbar"
         >
           <BoxInput

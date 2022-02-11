@@ -8,11 +8,13 @@ import {
 import { useStats } from "./useStats";
 import { FirstFitDecreasingHeight } from "../algorithms/FirstFitDecreasingHeight";
 import { BestFitDecreasingHeight } from "../algorithms/BestFitDecreasingHeight";
+import { SizeAlternatingStack } from "../algorithms/SizeAlternatingStack";
 
 const {
   BEST_FIT_DECREASING_HEIGHT,
   NEXT_FIT_DECREASING_HEIGHT,
   FIRST_FIT_DECREASING_HEIGHT,
+  SIZE_ALTERNATING_STACK,
 } = PackingAlgorithms;
 
 export type AlgoStates = "RUNNING" | "STOPPED" | "PAUSED";
@@ -66,6 +68,10 @@ export const usePackingAlgorithms = (
 
         case BEST_FIT_DECREASING_HEIGHT:
           algorithm.current = new BestFitDecreasingHeight(size).load(data);
+          break;
+
+        case SIZE_ALTERNATING_STACK:
+          algorithm.current = new SizeAlternatingStack(size).load(data);
           break;
 
         default:

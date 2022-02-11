@@ -7,17 +7,18 @@ import { Rectangle } from "./types/Rectangle.interface";
 import Konva from "konva";
 import Nav from "./components/Nav";
 import Sidebar from "./components/Sidebar/Sidebar";
+import { TestData } from "./algorithms/SizeAlternatingStack.fixture";
 
 const NAV_HEIGHT = 64;
 const SIDEBAR_WIDTH = 480;
 
 function App() {
   const [size, setSize] = useState<Dimensions>({
-    height: 800,
-    width: 400,
+    height: 700,
+    width: 500,
   });
   const [selectedAlgorithm, setSelectedAlgorithm] = useState<PackingAlgorithms>(
-    PackingAlgorithms.NEXT_FIT_DECREASING_HEIGHT
+    PackingAlgorithms.SIZE_ALTERNATING_STACK
   );
   const {
     start,
@@ -38,7 +39,9 @@ function App() {
     }
   };
 
-  const [dimensionsStorage, setDimensionsStorage] = useState<Dimensions[]>([]);
+  const [dimensionsStorage, setDimensionsStorage] = useState<Dimensions[]>([
+  
+  ]);
   const [rects, setRects] = useState<WithColor<Rectangle>[]>([]);
 
   const reset = () => {
@@ -48,7 +51,7 @@ function App() {
   };
 
   return (
-    <div className=" bg-canvas h-screen w-screen flex flex-col">
+    <div className="flex flex-col w-screen h-screen bg-canvas">
       <Nav height={NAV_HEIGHT}>
         <Sidebar
           width={SIDEBAR_WIDTH}
@@ -65,7 +68,7 @@ function App() {
             pause,
           }}
         >
-          <div className="p-4 h-full w-full flex items-center justify-center">
+          <div className="flex items-center justify-center w-full h-full p-4">
             <Canvas rects={rects} size={size} />
           </div>
         </Sidebar>
