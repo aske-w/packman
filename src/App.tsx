@@ -7,13 +7,14 @@ import { Rectangle } from "./types/Rectangle.interface";
 import Konva from "konva";
 import Nav from "./components/Nav";
 import Sidebar from "./components/Sidebar/Sidebar";
+import { TestData } from "./algorithms/SizeAlternatingStack.fixture";
 
 const NAV_HEIGHT = 64;
 const SIDEBAR_WIDTH = 480;
 
 function App() {
   const [size, setSize] = useState<Dimensions>({
-    height: 600,
+    height: 700,
     width: 500,
   });
   const [selectedAlgorithm, setSelectedAlgorithm] = useState<PackingAlgorithms>(
@@ -39,40 +40,18 @@ function App() {
   };
 
   const [dimensionsStorage, setDimensionsStorage] = useState<Dimensions[]>([
-    { width: 100, height: 400 }, // 1
-    { width: 10, height: 350 }, // 6
-    { width: 60, height: 300 }, // 10
-    { width: 15, height: 200 }, //9
-    { width: 20, height: 100 }, // 4
-
-    { width: 300, height: 250 }, // 2
-    { width: 250, height: 50 }, // 3
-    { width: 150, height: 100 }, // 5
-    { width: 100, height: 30 }, // 7
-    { width: 80, height: 20 }, // 8
+  
   ]);
   const [rects, setRects] = useState<WithColor<Rectangle>[]>([]);
 
   const reset = () => {
     setRects([]);
-    setDimensionsStorage([
-      { width: 100, height: 400 }, // 1
-      { width: 10, height: 350 }, // 6
-      { width: 60, height: 300 }, // 10
-      { width: 15, height: 200 }, //9
-      { width: 20, height: 100 }, // 4
-
-      { width: 300, height: 250 }, // 2
-      { width: 250, height: 50 }, // 3
-      { width: 150, height: 100 }, // 5
-      { width: 100, height: 30 }, // 7
-      { width: 80, height: 20 }, // 8
-    ]);
+    setDimensionsStorage([]);
     resetAlgo();
   };
 
   return (
-    <div className=" bg-canvas h-screen w-screen flex flex-col">
+    <div className="flex flex-col w-screen h-screen bg-canvas">
       <Nav height={NAV_HEIGHT}>
         <Sidebar
           width={SIDEBAR_WIDTH}
@@ -89,7 +68,7 @@ function App() {
             pause,
           }}
         >
-          <div className="p-4 h-full w-full flex items-center justify-center">
+          <div className="flex items-center justify-center w-full h-full p-4">
             <Canvas rects={rects} size={size} />
           </div>
         </Sidebar>

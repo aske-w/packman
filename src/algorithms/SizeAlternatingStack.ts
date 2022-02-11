@@ -1,6 +1,3 @@
-// import { Dimensions } from '../types/Dimensions.interface';
-// import { PackingAlgorithm } from '../types/PackingAlgorithm.interface';
-// import { Rectangle } from '../types/Rectangle.interface';
 import { Dimensions } from "../types/Dimensions.interface";
 import { PackingAlgorithm } from "../types/PackingAlgorithm.interface";
 import { Rectangle } from "../types/Rectangle.interface";
@@ -26,7 +23,7 @@ export class SizeAlternatingStack implements PackingAlgorithm {
    */
   narrowRectangles: Dimensions[] = [];
   level: Level | null = null;
-  private result: Rectangle[] = [];
+
   constructor(readonly gameSize: Dimensions) {}
 
   /**
@@ -160,9 +157,12 @@ export class SizeAlternatingStack implements PackingAlgorithm {
 
     const rect = this.L1[firstFitsIdx];
 
+
+
     //@ts-ignore
     this.L1[firstFitsIdx] = null;
-    // this.L1.splice(firstFitsIdx, 1); // remove from list
+
+    
     this.rects.push({ ...rect, x, y: bottomY - rect.height });
 
     let sliceY = bottomY - rect.height;
@@ -181,6 +181,7 @@ export class SizeAlternatingStack implements PackingAlgorithm {
         const narrowRect = this.L1[idx];
         //@ts-ignore
         this.L1[idx] = null;
+
 
         this.rects.push({
           ...narrowRect,
@@ -203,6 +204,7 @@ export class SizeAlternatingStack implements PackingAlgorithm {
     let bottomY = this.lastShelf.bottomY;
     let shelfHeight = this.lastShelf.height;
     let lastPlacedWidth = -1;
+    let lastPlacedHeight = 0;
     let length = this.N2;
 
     // is zero at the beginning
@@ -223,26 +225,29 @@ export class SizeAlternatingStack implements PackingAlgorithm {
           x,
           y: rectY,
         });
+        bottomY -= rect.height;
+        const isUneven = lastPlacedWidth !== rect.width 
+        const isFirst = lastPlacedWidth === -1
 
         // remove from l2, after stacking
-        // this.L2.splice(j, 1);
         //@ts-ignore
         this.L2[j] = null;
 
-        // bottomY updated
-        bottomY -= rect.height;
-
+    
+      
         // If rectangles has uneven widths
-        if (lastPlacedWidth !== rect.width && lastPlacedWidth !== -1) {
+        if (isUneven && !isFirst) {
+          
           this.packNarrow(
             lastPlacedWidth - rect.width,
-            shelfHeight - bottomY * -1,
-            rectX + rect.width,
+            shelfHeight - lastPlacedHeight,
+            rectX,
             rectY + rect.height
           );
-        } else {
-          lastPlacedWidth = rect.width;
-        }
+        } 
+        lastPlacedHeight += rect.height
+
+        lastPlacedWidth = rect.width;
       }
       j++;
     }
@@ -254,7 +259,7 @@ export class SizeAlternatingStack implements PackingAlgorithm {
   }
 
   isFinishedExecutingAlgo(): boolean {
-    // return this.L1.some((s) => s !== null) && this.L2.some((s) => s !== null);
+
     return this.N1 === 0 && this.N2 === 0;
   }
   isFinished(): boolean {

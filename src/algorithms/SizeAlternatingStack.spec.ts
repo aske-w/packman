@@ -20,7 +20,7 @@ describe("SizeAlternatingStack test suite", () => {
     let i = 0;
     while (!sas.isFinished()) {
       const next = sas.place();
-      console.log(next);
+
 
       expect(next).toEqual(ExpectedData[i++]);
     }

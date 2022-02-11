@@ -59,7 +59,7 @@ export const ExpectedData: Rectangle[] = [
     width: 150,
     height: 100,
     x: 100, // 250 + 100
-    y: 400, // -300 - 150
+    y: -400, // -300 - 150
   },
 
   //  6 New shelf -
@@ -74,21 +74,21 @@ export const ExpectedData: Rectangle[] = [
     width: 100,
     height: 30,
     x: 10, // 0 + 10
-    y: -780, // -750 - 30
+    y: -430, // -750 - 30
   },
   // 8
   {
     width: 80,
     height: 20,
     x: 10, // 0 + 10
-    y: -800, // -780 - 20
+    y: -450, // -780 - 20
   },
   // 9 - h-320 and w-20
   {
     width: 15,
     height: 200,
     x: 90, // 0 + 10
-    y: -1000, // -800 - 200
+    y: -630, // -800 - 200
   },
   // 10 -  New shelf
   {
