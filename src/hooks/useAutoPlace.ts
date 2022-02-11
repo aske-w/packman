@@ -23,7 +23,7 @@ export const useAutoPlace = (
         }
         place();
         go();
-      }, scaledSpeed);
+      }, SCALE_FACTOR * 100 - scaledSpeed);
     };
     go();
 
