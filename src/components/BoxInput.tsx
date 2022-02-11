@@ -87,13 +87,13 @@ const BoxInput: React.FC<BoxInputProps> = ({
             onChangeHandler={(e) => setWidth(e.target.value)}
             reference={inputRef}
             disabled={disabled}
-            dimension="w"
+            sec="w"
           ></RectInput>
           <RectInput
             value={height}
             onChangeHandler={(e) => setHeight(e.target.value)}
             disabled={disabled}
-            dimension="h"
+            sec="h"
           ></RectInput>
           {/* <TrashIcon className="w-14 text-gray-200" /> */}
           <button type="submit" className="hidden" disabled={disabled}></button>
@@ -104,16 +104,8 @@ const BoxInput: React.FC<BoxInputProps> = ({
             key={index}
             className="w-full flex flex-row items-center space-x-6"
           >
-            <RectInput
-              readonly={true}
-              value={r.width}
-              dimension="w"
-            ></RectInput>
-            <RectInput
-              readonly={true}
-              value={r.height}
-              dimension="h"
-            ></RectInput>
+            <RectInput readonly={true} value={r.width} sec="w"></RectInput>
+            <RectInput readonly={true} value={r.height} sec="h"></RectInput>
             <TrashIcon
               className={`w-14 ${
                 disabled

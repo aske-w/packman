@@ -15,6 +15,7 @@ import Switch from "react-switch";
 import ActionBtnSelector from "./ActionBtnSelector";
 import RangeSlider from "../RangeSlider";
 import BoxInput from "../BoxInput";
+import RectInput from "../RectInput";
 
 interface SidebarProps {
   width: number;
@@ -104,11 +105,20 @@ const Sidebar: React.FC<SidebarProps> = ({
           />
 
           {checked && (
-            <RangeSlider
-              progress={speed}
-              onChange={updateSpeed}
-              className="mt-6"
-            />
+            <div className="flex flex-row space-x-20">
+              <RangeSlider
+                progress={speed}
+                onChange={updateSpeed}
+                className="mt-6"
+                hideTooltip
+              />
+              <RectInput
+                value={speed}
+                className="w-4/12 px-3 select-none"
+                sec="%"
+                readonly
+              />
+            </div>
           )}
         </SideBarSection>
 

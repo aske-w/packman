@@ -5,9 +5,15 @@ interface Props {
   progress: number;
   onChange: (progress: number) => void;
   className?: string;
+  hideTooltip?: boolean;
 }
 
-const RangeSlider: React.FC<Props> = ({ progress, onChange, className }) => {
+const RangeSlider: React.FC<Props> = ({
+  progress,
+  hideTooltip,
+  onChange,
+  className,
+}) => {
   const trackClass = "rounded-full";
 
   return (
@@ -30,9 +36,12 @@ const RangeSlider: React.FC<Props> = ({ progress, onChange, className }) => {
             className={" focus:outline-none flex items-center justify-center"}
           >
             <div className="bg-white p-2 border border-gray-200 rounded-full cursor-pointer"></div>
-            <span className="bg-black px-3 py-2 text-xs absolute rounded-md -top-9">
-              {state.valueNow}
-            </span>
+
+            {!hideTooltip && (
+              <span className="bg-black px-3 py-2 text-xs absolute rounded-md -top-9">
+                {state.valueNow}
+              </span>
+            )}
           </div>
         )}
       />
