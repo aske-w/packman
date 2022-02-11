@@ -38,12 +38,36 @@ function App() {
     }
   };
 
-  const [dimensionsStorage, setDimensionsStorage] = useState<Dimensions[]>([]);
+  const [dimensionsStorage, setDimensionsStorage] = useState<Dimensions[]>([
+    { width: 100, height: 400 }, // 1
+    { width: 10, height: 350 }, // 6
+    { width: 60, height: 300 }, // 10
+    { width: 15, height: 200 }, //9
+    { width: 20, height: 100 }, // 4
+
+    { width: 300, height: 250 }, // 2
+    { width: 250, height: 50 }, // 3
+    { width: 150, height: 100 }, // 5
+    { width: 100, height: 30 }, // 7
+    { width: 80, height: 20 }, // 8
+  ]);
   const [rects, setRects] = useState<WithColor<Rectangle>[]>([]);
 
   const reset = () => {
     setRects([]);
-    setDimensionsStorage([]);
+    setDimensionsStorage([
+      { width: 100, height: 400 }, // 1
+      { width: 10, height: 350 }, // 6
+      { width: 60, height: 300 }, // 10
+      { width: 15, height: 200 }, //9
+      { width: 20, height: 100 }, // 4
+
+      { width: 300, height: 250 }, // 2
+      { width: 250, height: 50 }, // 3
+      { width: 150, height: 100 }, // 5
+      { width: 100, height: 30 }, // 7
+      { width: 80, height: 20 }, // 8
+    ]);
     resetAlgo();
   };
 
