@@ -8,6 +8,7 @@ import Konva from "konva";
 import Nav from "./components/Nav";
 import Sidebar from "./components/Sidebar/Sidebar";
 import { TestData } from "./algorithms/SizeAlternatingStack.fixture";
+import { toast, ToastContainer } from "react-toastify";
 
 const NAV_HEIGHT = 64;
 const SIDEBAR_WIDTH = 480;
@@ -73,6 +74,18 @@ function App() {
           </div>
         </Sidebar>
       </Nav>
+      <ToastContainer
+        theme="dark"
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={true}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </div>
   );
 }
