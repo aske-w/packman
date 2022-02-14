@@ -49,6 +49,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const { speed, updateSpeed } = useAutoPlace(checked, placeNext, algoState);
   const isStarted = algoState === "RUNNING" || algoState === "PAUSED";
   const [genNum, setGenNum] = useState(30);
+  const [previousData, setPreviousData] = useState<Dimensions[]>([]);
   console.log("algostate:", algoState);
 
   return (
@@ -100,7 +101,10 @@ const Sidebar: React.FC<SidebarProps> = ({
               pause,
               placeNext,
               disabled: isStarted,
-              start: () => start(dimensionsStorage),
+              start: () => {
+                setPreviousData(r => dimensionsStorage);
+                start(dimensionsStorage);
+              },
             }}
           />
 
@@ -144,6 +148,20 @@ const Sidebar: React.FC<SidebarProps> = ({
               </div>
             }
             text="Generate data"
+          />
+          <SideBarItem
+            text="Reuse previous data"
+            element={
+              <div className="flex items-center justify-right space-x-5">
+                <button className={`px-2 py-1 font-medium text-white rounded shadow bg-blue-700 ${
+                    isStarted ? "opacity-60" : "hover:bg-blue-800"
+                  }`}
+                  onClick={() => setDimensionsStorage((r) => previousData)}
+                  >
+                    Reuse previous data
+                  </button>
+              </div>
+            }
           />
         </SideBarSection>
 
