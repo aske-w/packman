@@ -14,6 +14,7 @@ import {
 } from "react-konva";
 import { Dimensions } from "../types/Dimensions.interface";
 import { Rectangle } from "../types/Rectangle.interface";
+import { haveIntersection, resolveCollision } from "../utils/konva";
 import Card from "./Card";
 interface CanvasProps {
   size: Dimensions;
@@ -25,20 +26,6 @@ export type WithColor<T> = T & { color: string };
 
 const Canvas = forwardRef<CanvasHandle, CanvasProps>(
   ({ size, rects }, handle) => {
-    // useImperativeHandle(
-    //   handle,
-    //   () => ({
-    //     place: (rect) => {
-    //       setRects((old) => [
-    //         ...old,
-    //         { ...rect, color: Konva.Util.getRandomColor() },
-    //       ]);
-    //     },
-    //     reset: () => setRects([]),
-    //   }),
-    //   []
-    // );
-
     const stageRef = useRef<KonvaStage>(null);
     const [tooltip, setTooltip] = useState<Partial<TextConfig>>({
       text: "",
@@ -81,7 +68,27 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(
         }}
       >
         <Stage ref={stageRef} width={size.width} height={size.height}>
-          <Layer>
+          <Layer
+            onDragMove={function (this: Konva.Layer, e) {
+              const target = e.target;
+              const targetRect = e.target.getClientRect();
+
+              const layer = this;
+
+              layer.children?.forEach(function (group) {
+                // do not check intersection with itself
+                if (group === target) {
+                  return;
+                }
+                const rect = group.getClientRect();
+
+                if (haveIntersection(targetRect, rect)) {
+                  const { x, y } = resolveCollision(targetRect, rect);
+                  target.setPosition({ x, y });
+                }
+              });
+            }}
+          >
             {rects.map((rect, i) => {
               return (
                 <MyRect
@@ -98,8 +105,8 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(
           <Layer>
             <Label
               {...{
-                x: tooltip.x,
-                y: tooltip.y,
+                x: (tooltip.x || 0) + 10,
+                y: (tooltip.y || 0) + 10,
                 visible: tooltip.visible,
               }}
             >
@@ -167,6 +174,7 @@ const MyRect: React.FC<RectConfig & KonvaNodeEvents> = ({
       scaleX={3}
       scaleY={3}
       rotation={45}
+      draggable
       {...props}
     ></Rect>
   );
