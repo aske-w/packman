@@ -1,5 +1,6 @@
 import Konva from "konva";
 import { Layer as KonvaLayer } from "konva/lib/Layer";
+import { Stage as KonvaStage } from "konva/lib/Stage";
 import { KonvaEventObject } from "konva/lib/Node";
 import { RectConfig } from "konva/lib/shapes/Rect";
 import React, { useRef, useState } from "react";
@@ -129,12 +130,12 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
     }
   };
 
-  const stripLayer = useRef<KonvaLayer>(null);
+  const inventoryLayer = useRef<KonvaLayer>(null);
   const handleDragMove = (e: KonvaEventObject<DragEvent>) => {
     const target = e.target;
     const targetRect = e.target.getClientRect();
 
-    stripLayer.current?.children?.forEach(function (group) {
+    inventoryLayer.current?.children?.forEach(function (group) {
       // do not check intersection with itself
       if (group === target) {
         return;
@@ -159,6 +160,30 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
     }
   };
 
+  const handleWheel = (e: KonvaEventObject<WheelEvent>) => {
+    if (e.evt.x > inventorySize.width) return;
+    e.evt.preventDefault();
+    const stage = e.currentTarget as any as KonvaStage;
+    const layer = stage.findOne<KonvaLayer>(".INVENTORY_LAYER");
+    console.log(e);
+
+    const dx = e.evt.deltaX;
+    const dy = e.evt.deltaY;
+    const oldY = layer.y();
+    layer.y(dy + oldY);
+
+    // const minX = -(WIDTH - stage.width());
+    // const maxX = 0;
+
+    // const x = Math.max(minX, Math.min(layer.x() - dx, maxX));
+
+    // const minY = -(HEIGHT - stage.height());
+    // const maxY = 0;
+
+    // const y = Math.max(minY, Math.min(layer.y() - dy, maxY));
+    // layer.position({ x, y });
+  };
+
   return (
     <div className="h-full p-10">
       <div className="w-1/2">
@@ -166,7 +191,11 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
           <span>Total height: 0</span>
           <span>Rectangles left: {rectangles.length}</span>
         </div>
-        <Stage {...stageSize} onDragMove={handleStageDragMove}>
+        <Stage
+          onWheel={handleWheel}
+          {...stageSize}
+          //   onDragMove={handleStageDragMove}
+        >
           <Layer>
             <Rect fill="#ffffff" {...stripSize} />
             <Rect fill="#eee000" {...inventorySize} />
@@ -187,7 +216,13 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
                   );
                 })}
             </Layer> */}
-          <Layer ref={stripLayer}>
+          <Layer
+            {...inventorySize}
+            height={inventorySize.height}
+            x={0}
+            ref={inventoryLayer}
+            name="INVENTORY_LAYER"
+          >
             {rectangles.map((r, i) => {
               const inStripArea = r.x + r.width >= inventorySize.width;
               return (
