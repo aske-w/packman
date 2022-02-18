@@ -1,7 +1,8 @@
 import Konva from "konva";
+import { Layer as KonvaLayer } from "konva/lib/Layer";
 import { KonvaEventObject } from "konva/lib/Node";
 import { RectConfig } from "konva/lib/shapes/Rect";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Layer, Rect, Stage } from "react-konva";
 import { genData } from "../../components/Actions";
 import { Dimensions } from "../../types/Dimensions.interface";
@@ -37,7 +38,7 @@ const genId = () => Math.floor(1000 + 9000000 * Math.random()).toString();
 
 const StripPacking: React.FC<StripPackingProps> = ({}) => {
   const [stripRects, setStripRects] = useState<ColorRect[]>([]);
-  const [inventory, setInventory] = useState(
+  const [rectangles, setRectangles] = useState(
     genData(10).reduce<ColorRect[]>((acc, { width, height }, i) => {
       if (i === 0) {
         acc.push({
@@ -63,22 +64,58 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
       return acc;
     }, [])
   );
-  console.log(inventory);
+  console.log(rectangles);
   console.log(stripRects);
 
-  const handleStageDragEnd = (evt: KonvaEventObject<DragEvent>) => {
+  const intersectsBoundary = (x: number, width: number) => {
+    if (x > inventorySize.width) {
+      return false;
+    } else {
+      return x + width > inventorySize.width;
+    }
+  };
+
+  const handleDragEnd = (evt: KonvaEventObject<DragEvent>) => {
     const rect = evt.target;
-    console.log(rect);
-    // const box = rect.getClientRect();
+
     const { fill, name, x, y, width, height } = rect.getAttrs();
+
+    console.log("intersects boundary: " + intersectsBoundary(x, width));
 
     const inStripArea = x + width >= inventorySize.width;
 
-    if (inStripArea) {
-      console.log({ name });
-      setInventory((old) => old.filter((r) => r.name !== name));
+    console.log({ name });
 
-      setStripRects((prev) => [
+    setRectangles((old) => {
+      const cpy = [...old];
+      const idx = cpy.findIndex((n) => n.name === name);
+      cpy.splice(idx, 1, {
+        fill,
+        name,
+        height,
+        width,
+        y: y - stripSize.height,
+        x: x,
+      });
+      return cpy;
+    });
+  };
+
+  const handleStripDragEnd = (evt: KonvaEventObject<DragEvent>) => {
+    const rect = evt.target;
+    console.log(rect);
+
+    const { fill, name, x, y, width, height } = rect.getAttrs();
+
+    console.log({ fill, name, x, y, width, height });
+    console.log("intersects boundary: " + intersectsBoundary(x, width));
+
+    const inInventoryArea = x < 0;
+
+    if (inInventoryArea) {
+      setStripRects((old) => old.filter((r) => r.name !== name));
+
+      setRectangles((prev) => [
         ...prev,
         {
           fill,
@@ -86,57 +123,83 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
           height,
           width,
           y: y - stripSize.height,
-          x: x - inventorySize.width,
+          x: x,
         },
       ]);
+    }
+  };
+
+  const stripLayer = useRef<KonvaLayer>(null);
+  const handleDragMove = (e: KonvaEventObject<DragEvent>) => {
+    const target = e.target;
+    const targetRect = e.target.getClientRect();
+
+    stripLayer.current?.children?.forEach(function (group) {
+      // do not check intersection with itself
+      if (group === target) {
+        return;
+      }
+      const rect = group.getClientRect();
+
+      if (Konva.Util.haveIntersection(targetRect, rect)) {
+        const { x, y } = resolveCollision(targetRect, rect);
+        target.setAbsolutePosition({ x, y });
+      }
+    });
+  };
+
+  const handleStageDragMove = (e: KonvaEventObject<DragEvent>) => {
+    const target = e.target;
+    const canvasRect = e.currentTarget.getClientRect();
+    const targetRect = e.target.getClientRect();
+
+    if (Konva.Util.haveIntersection(canvasRect, targetRect)) {
+      const { x, y } = resolveCollision(canvasRect, targetRect);
+      target.setAbsolutePosition({ x, y });
     }
   };
 
   return (
     <div className="h-full p-10">
       <div className="w-1/2">
-        <div className="flex flex-col w-1/2 mb-4 font-bold bg-white">
+        <div className="flex flex-col w-1/2 px-2 mb-4 font-bold bg-white pmb-4">
           <span>Total height: 0</span>
-          <span>Rectangles left: 0</span>
+          <span>Rectangles left: {rectangles.length}</span>
         </div>
-        <Stage {...stageSize}>
+        <Stage {...stageSize} onDragMove={handleStageDragMove}>
+          <Layer>
+            <Rect fill="#ffffff" {...stripSize} />
+            <Rect fill="#eee000" {...inventorySize} />
+          </Layer>
           {/* Rect input layer */}
-          <Layer
-            {...stripSize}
-            onDragStart={function (this: Konva.Layer, e) {
-              const childs = this.children ? this.children.length - 1 : 0;
-
-              console.log("Call place for algorithm");
-            }}
-          >
-            <Rect fill="#ffffff" {...stripSize} x={0} />
-
+          {/* <Layer {...stripSize} onDragEnd={handleStripDragEnd}>
             {stripRects.map((r, i) => {
               return (
                 <Rect
                   key={r.name}
                   {...r}
                   draggable
-                  strokeWidth={2}
-                  stroke="black"
+                  strokeWidth={1}
+                  stroke="#00205050"
                   y={stripSize.height + r.y}
                   //   onDragEnd={handleStageDragEnd}
-                />
-              );
-            })}
-          </Layer>
-          <Layer {...inventorySize}>
-            <Rect fill="#eee000" {...inventorySize} />
-            {inventory.map((r, i) => {
+                  />
+                  );
+                })}
+            </Layer> */}
+          <Layer ref={stripLayer}>
+            {rectangles.map((r, i) => {
+              const inStripArea = r.x + r.width >= inventorySize.width;
               return (
                 <Rect
                   key={r.name}
                   {...r}
+                  onDragMove={handleDragMove}
                   draggable
                   strokeWidth={2}
-                  stroke="black"
+                  stroke={inStripArea ? "#002050FF" : "red"}
                   y={inventorySize.height + r.y}
-                  onDragEnd={handleStageDragEnd}
+                  onDragEnd={handleDragEnd}
                 />
               );
             })}
