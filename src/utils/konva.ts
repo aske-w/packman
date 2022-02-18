@@ -19,20 +19,20 @@ export function resolveCollision(target: IRect, src: IRect) {
     if (oX >= oY) {
       // Top
       if (vY > 0) {
-        target.y += oY;
+        target.y += oY - 0.5;
       }
       // Bottom
       else {
-        target.y -= oY - 2;
+        target.y -= oY - 2.5;
       }
     } else {
       // Left
       if (vX > 0) {
-        target.x += oX;
+        target.x += oX - 0.5;
       }
       // Right
       else {
-        target.x -= oX - 2;
+        target.x -= oX - 2.5;
       }
     }
   }

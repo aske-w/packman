@@ -14,7 +14,7 @@ import {
 } from "react-konva";
 import { Dimensions } from "../types/Dimensions.interface";
 import { Rectangle } from "../types/Rectangle.interface";
-import { haveIntersection, resolveCollision } from "../utils/konva";
+import { resolveCollision } from "../utils/konva";
 import Card from "./Card";
 interface CanvasProps {
   size: Dimensions;
@@ -82,7 +82,7 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(
                 }
                 const rect = group.getClientRect();
 
-                if (haveIntersection(targetRect, rect)) {
+                if (Konva.Util.haveIntersection(targetRect, rect)) {
                   const { x, y } = resolveCollision(targetRect, rect);
                   target.setPosition({ x, y });
                 }
