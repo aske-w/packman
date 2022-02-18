@@ -44,11 +44,11 @@ const SCROLLBAR_WIDTH = 10;
 const PADDING = 5;
 const SCROLLABLE_HEIGHT = GAME_HEIGHT * 1.5;
 const GAME_WIDTH = stageSize.width;
-
+const NUM_RECTS = 50;
 const StripPacking: React.FC<StripPackingProps> = ({}) => {
   const [stripRects, setStripRects] = useState<ColorRect[]>([]);
   const [inventoryRects, setInventoryRects] = useState(
-    genData(30).reduce<ColorRect[]>((acc, { width, height }, i) => {
+    genData(NUM_RECTS).reduce<ColorRect[]>((acc, { width, height }, i) => {
       if (i === 0) {
         acc.push({
           width,
@@ -60,12 +60,13 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
         });
       } else {
         const prev = acc[i - 1];
-
+        const lastHalf = i > NUM_RECTS / 2;
+        const resetter = i === NUM_RECTS / 2 
         acc.push({
           width,
           height,
-          x: PADDING,
-          y: prev.y - height - PADDING,
+          x: PADDING + (lastHalf ? inventorySize.width / 2 + PADDING : 0),
+          y: (resetter ? 0 :prev.y) - height - PADDING,
           fill: Konva.Util.getRandomColor(),
           name: genId(),
         });
@@ -149,31 +150,17 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
 
       if (Konva.Util.haveIntersection(targetRect, rect)) {
         let { x, y } = resolveCollision(targetRect, rect);
-        // x = clamp(x, 0, GAME_WIDTH - target.width());
-        // y = clamp(y, 0, GAME_HEIGHT - target.height());
         target.setAbsolutePosition({ x, y });
       }
     };
 
     inventoryLayer.current?.children?.forEach(checkIntersection);
     stripLayer.current?.children?.forEach(checkIntersection);
-    console.log({
-      x: target.x(),
-      y: target.y(),
-      absX: target.getAbsolutePosition().x,
-      id: target.id(),
-    });
 
-    const isInStrip = target.id() === "STRIP_RECT";
     const { x, y } = target.getAbsolutePosition();
-    const stripW = stripSize.width;
+
     target.setAbsolutePosition({
-      x: clamp(
-        x,
-        // -(isInStrip ? stripW : 0),
-        0,
-        GAME_WIDTH - target.width()
-      ),
+      x: clamp(x, 0, GAME_WIDTH - target.width()),
       y: clamp(y, 0, GAME_HEIGHT - target.height()),
     });
   };
