@@ -44,7 +44,7 @@ const HEIGHT = gameHeight * 1.5;
 
 const StripPacking: React.FC<StripPackingProps> = ({}) => {
   const [stripRects, setStripRects] = useState<ColorRect[]>([]);
-  const [rectangles, setRectangles] = useState(
+  const [inventoryRects, setInventoryRects] = useState(
     genData(10).reduce<ColorRect[]>((acc, { width, height }, i) => {
       if (i === 0) {
         acc.push({
@@ -70,7 +70,7 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
       return acc;
     }, [])
   );
-  console.log(rectangles);
+  console.log(inventoryRects);
   console.log(stripRects);
 
   const intersectsBoundary = (x: number, width: number) => {
@@ -81,7 +81,7 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
     }
   };
 
-  const handleDragEnd = (evt: KonvaEventObject<DragEvent>) => {
+  const handleInventoryDragEnd = (evt: KonvaEventObject<DragEvent>) => {
     const rect = evt.target;
 
     const { fill, name, x, y, width, height } = rect.getAttrs();
@@ -90,21 +90,21 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
 
     const inStripArea = x + width >= inventorySize.width;
 
-    console.log({ name });
-
-    setRectangles((old) => {
-      const cpy = [...old];
-      const idx = cpy.findIndex((n) => n.name === name);
-      cpy.splice(idx, 1, {
-        fill,
-        name,
-        height,
-        width,
-        y: y - stripSize.height,
-        x: x,
-      });
-      return cpy;
-    });
+    if (inStripArea) {
+      setInventoryRects((old) => old.filter((r) => r.name !== name));
+      const scrollOffset = inventoryLayer.current?.y()!;
+      setStripRects((prev) => [
+        ...prev,
+        {
+          fill,
+          name,
+          height,
+          width,
+          y: y - stripSize.height + scrollOffset,
+          x: x - inventorySize.width,
+        },
+      ]);
+    }
   };
 
   const handleStripDragEnd = (evt: KonvaEventObject<DragEvent>) => {
@@ -113,34 +113,44 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
 
     const { fill, name, x, y, width, height } = rect.getAttrs();
 
-    console.log({ fill, name, x, y, width, height });
-    console.log("intersects boundary: " + intersectsBoundary(x, width));
-
     const inInventoryArea = x < 0;
 
     if (inInventoryArea) {
       setStripRects((old) => old.filter((r) => r.name !== name));
-
-      setRectangles((prev) => [
+      const scrollOffset = inventoryLayer.current?.y()!;
+      setInventoryRects((prev) => [
         ...prev,
         {
           fill,
           name,
           height,
           width,
-          y: y - stripSize.height,
-          x: x,
+          y: y - stripSize.height - scrollOffset,
+          x: x + inventorySize.width,
         },
       ]);
     }
   };
 
   const inventoryLayer = useRef<KonvaLayer>(null);
+  const stripLayer = useRef<KonvaLayer>(null);
   const handleDragMove = (e: KonvaEventObject<DragEvent>) => {
     const target = e.target;
     const targetRect = e.target.getClientRect();
 
     inventoryLayer.current?.children?.forEach(function (group) {
+      // do not check intersection with itself
+      if (group === target) {
+        return;
+      }
+      const rect = group.getClientRect();
+
+      if (Konva.Util.haveIntersection(targetRect, rect)) {
+        const { x, y } = resolveCollision(targetRect, rect);
+        target.setAbsolutePosition({ x, y });
+      }
+    });
+    stripLayer.current?.children?.forEach(function (group) {
       // do not check intersection with itself
       if (group === target) {
         return;
@@ -167,7 +177,8 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
 
   const verticalBar = useRef<KonvaRect>(null);
   const handleWheel = (e: KonvaEventObject<WheelEvent>) => {
-    if (e.evt.x > inventorySize.width) return;
+    const isOutsideInventory = e.evt.x > inventorySize.width;
+    if (isOutsideInventory) return;
     e.evt.preventDefault();
 
     const layer = inventoryLayer.current!;
@@ -195,7 +206,7 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
       <div className="w-1/2">
         <div className="flex flex-col w-1/2 px-2 mb-4 font-bold bg-white">
           <span>Total height: 0</span>
-          <span>Rectangles left: {rectangles.length}</span>
+          <span>Rectangles left: {inventoryRects.length}</span>
         </div>
         <Stage
           onWheel={handleWheel}
@@ -214,6 +225,7 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
               x={inventorySize.width - PADDING - SCROLLBAR_WIDTH}
               y={5}
               draggable
+              cornerRadius={5}
               dragBoundFunc={function (pos) {
                 pos.x = inventorySize.width - PADDING - SCROLLBAR_WIDTH;
                 pos.y = Math.max(
@@ -239,21 +251,26 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
             />
           </Layer>
           {/* Rect input layer */}
-          {/* <Layer {...stripSize} onDragEnd={handleStripDragEnd}>
+          <Layer
+            {...stripSize}
+            ref={stripLayer}
+            /*onDragEnd={handleStripDragEnd}*/
+          >
             {stripRects.map((r, i) => {
               return (
                 <Rect
                   key={r.name}
                   {...r}
                   draggable
-                  strokeWidth={1}
-                  stroke="#00205050"
+                  strokeWidth={2}
+                  stroke="red"
                   y={stripSize.height + r.y}
-                  //   onDragEnd={handleStageDragEnd}
-                  />
-                  );
-                })}
-            </Layer> */}
+                  onDragEnd={handleStripDragEnd}
+                  onDragMove={handleDragMove}
+                />
+              );
+            })}
+          </Layer>
           <Layer
             {...inventorySize}
             height={inventorySize.height}
@@ -261,7 +278,7 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
             ref={inventoryLayer}
             name="INVENTORY_LAYER"
           >
-            {rectangles.map((r, i) => {
+            {inventoryRects.map((r, i) => {
               const inStripArea = r.x + r.width >= inventorySize.width;
               return (
                 <Rect
@@ -270,9 +287,9 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
                   onDragMove={handleDragMove}
                   draggable
                   strokeWidth={2}
-                  stroke={inStripArea ? "#002050FF" : "red"}
+                  stroke={"#002050FF"}
                   y={inventorySize.height + r.y}
-                  onDragEnd={handleDragEnd}
+                  onDragEnd={handleInventoryDragEnd}
                 />
               );
             })}
