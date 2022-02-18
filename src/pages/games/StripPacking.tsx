@@ -9,22 +9,24 @@ import { Layer, Rect, Stage } from "react-konva";
 import { genData } from "../../components/Actions";
 import { Dimensions } from "../../types/Dimensions.interface";
 import { Rectangle } from "../../types/Rectangle.interface";
-import { resolveCollision } from "../../utils/konva";
+import { clamp, resolveCollision } from "../../utils/konva";
+import { Shape, ShapeConfig } from "konva/lib/Shape";
+import { Group } from "konva/lib/Group";
 
 interface StripPackingProps {}
 
 const windowHeight = window.innerHeight;
-const gameHeight = windowHeight * 0.8;
-console.log({ gameHeight });
+const GAME_HEIGHT = windowHeight * 0.8;
+console.log({ gameHeight: GAME_HEIGHT });
 
 const inventorySize: Rectangle = {
-  height: gameHeight,
+  height: GAME_HEIGHT,
   width: 200,
   x: 0,
   y: 0,
 };
 const stripSize: Rectangle = {
-  height: gameHeight,
+  height: GAME_HEIGHT,
   width: 500,
   x: inventorySize.width,
   y: 0,
@@ -40,18 +42,19 @@ const genId = () => Math.floor(1000 + 9000000 * Math.random()).toString();
 const SCROLLBAR_HEIGHT = 100;
 const SCROLLBAR_WIDTH = 10;
 const PADDING = 5;
-const HEIGHT = gameHeight * 1.5;
+const SCROLLABLE_HEIGHT = GAME_HEIGHT * 1.5;
+const GAME_WIDTH = stageSize.width;
 
 const StripPacking: React.FC<StripPackingProps> = ({}) => {
   const [stripRects, setStripRects] = useState<ColorRect[]>([]);
   const [inventoryRects, setInventoryRects] = useState(
-    genData(10).reduce<ColorRect[]>((acc, { width, height }, i) => {
+    genData(30).reduce<ColorRect[]>((acc, { width, height }, i) => {
       if (i === 0) {
         acc.push({
           width,
           height,
-          x: 0,
-          y: -height,
+          x: PADDING,
+          y: -height - PADDING,
           fill: Konva.Util.getRandomColor(),
           name: genId(),
         });
@@ -61,8 +64,8 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
         acc.push({
           width,
           height,
-          x: 0,
-          y: prev.y - height,
+          x: PADDING,
+          y: prev.y - height - PADDING,
           fill: Konva.Util.getRandomColor(),
           name: genId(),
         });
@@ -109,11 +112,10 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
 
   const handleStripDragEnd = (evt: KonvaEventObject<DragEvent>) => {
     const rect = evt.target;
-    console.log(rect);
+    const { fill, name, width, height, y } = rect.getAttrs();
+    const { x } = rect.getAbsolutePosition();
 
-    const { fill, name, x, y, width, height } = rect.getAttrs();
-
-    const inInventoryArea = x < 0;
+    const inInventoryArea = x < inventorySize.width;
 
     if (inInventoryArea) {
       setStripRects((old) => old.filter((r) => r.name !== name));
@@ -125,8 +127,8 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
           name,
           height,
           width,
-          y: y - stripSize.height - scrollOffset,
-          x: x + inventorySize.width,
+          y: y - SCROLLABLE_HEIGHT - scrollOffset,
+          x: x,
         },
       ]);
     }
@@ -138,7 +140,7 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
     const target = e.target;
     const targetRect = e.target.getClientRect();
 
-    inventoryLayer.current?.children?.forEach(function (group) {
+    const checkIntersection = function (group: Group | Shape<ShapeConfig>) {
       // do not check intersection with itself
       if (group === target) {
         return;
@@ -146,21 +148,33 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
       const rect = group.getClientRect();
 
       if (Konva.Util.haveIntersection(targetRect, rect)) {
-        const { x, y } = resolveCollision(targetRect, rect);
+        let { x, y } = resolveCollision(targetRect, rect);
+        // x = clamp(x, 0, GAME_WIDTH - target.width());
+        // y = clamp(y, 0, GAME_HEIGHT - target.height());
         target.setAbsolutePosition({ x, y });
       }
+    };
+
+    inventoryLayer.current?.children?.forEach(checkIntersection);
+    stripLayer.current?.children?.forEach(checkIntersection);
+    console.log({
+      x: target.x(),
+      y: target.y(),
+      absX: target.getAbsolutePosition().x,
+      id: target.id(),
     });
-    stripLayer.current?.children?.forEach(function (group) {
-      // do not check intersection with itself
-      if (group === target) {
-        return;
-      }
-      const rect = group.getClientRect();
 
-      if (Konva.Util.haveIntersection(targetRect, rect)) {
-        const { x, y } = resolveCollision(targetRect, rect);
-        target.setAbsolutePosition({ x, y });
-      }
+    const isInStrip = target.id() === "STRIP_RECT";
+    const { x, y } = target.getAbsolutePosition();
+    const stripW = stripSize.width;
+    target.setAbsolutePosition({
+      x: clamp(
+        x,
+        // -(isInStrip ? stripW : 0),
+        0,
+        GAME_WIDTH - target.width()
+      ),
+      y: clamp(y, 0, GAME_HEIGHT - target.height()),
     });
   };
 
@@ -168,11 +182,6 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
     const target = e.target;
     const canvasRect = e.currentTarget.getClientRect();
     const targetRect = e.target.getClientRect();
-
-    if (Konva.Util.haveIntersection(canvasRect, targetRect)) {
-      const { x, y } = resolveCollision(canvasRect, targetRect);
-      target.setAbsolutePosition({ x, y });
-    }
   };
 
   const verticalBar = useRef<KonvaRect>(null);
@@ -186,17 +195,18 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
     const dy = e.evt.deltaY;
     const oldY = layer.y();
 
-    const minY = -(HEIGHT - gameHeight);
+    const minY = -(SCROLLABLE_HEIGHT - GAME_HEIGHT);
     const maxY = 0;
 
     const y = Math.max(minY, Math.min(oldY - dy, maxY));
 
     layer.y(y);
 
-    const stageHeight = gameHeight;
+    const stageHeight = GAME_HEIGHT;
     const availableHeight = stageHeight - PADDING * 2 - SCROLLBAR_HEIGHT;
 
-    const vy = (y / (-HEIGHT + stageHeight)) * availableHeight + PADDING;
+    const vy =
+      (y / (-SCROLLABLE_HEIGHT + stageHeight)) * availableHeight + PADDING;
 
     verticalBar.current?.y(vy);
   };
@@ -211,7 +221,7 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
         <Stage
           onWheel={handleWheel}
           {...stageSize}
-          //   onDragMove={handleStageDragMove}
+          onDragMove={handleStageDragMove}
         >
           <Layer>
             <Rect fill="#ffffff" {...stripSize} />
@@ -244,7 +254,8 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
                   inventorySize.height - PADDING * 2 - verticalBar.height();
                 var delta = (verticalBar.y() - PADDING) / availableHeight;
 
-                const newY = -(HEIGHT - inventorySize.height) * delta;
+                const newY =
+                  -(SCROLLABLE_HEIGHT - inventorySize.height) * delta;
                 console.log({ newY, delta });
                 inventoryLayer.current?.y(newY);
               }}
@@ -267,6 +278,7 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
                   y={stripSize.height + r.y}
                   onDragEnd={handleStripDragEnd}
                   onDragMove={handleDragMove}
+                  id={`STRIP_RECT`}
                 />
               );
             })}
@@ -288,8 +300,9 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
                   draggable
                   strokeWidth={2}
                   stroke={"#002050FF"}
-                  y={inventorySize.height + r.y}
+                  y={SCROLLABLE_HEIGHT + r.y}
                   onDragEnd={handleInventoryDragEnd}
+                  id={`INVENTORY_RECT`}
                 />
               );
             })}
