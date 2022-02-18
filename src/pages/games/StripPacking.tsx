@@ -1,8 +1,9 @@
 import Konva from "konva";
 import { Layer as KonvaLayer } from "konva/lib/Layer";
 import { Stage as KonvaStage } from "konva/lib/Stage";
+
 import { KonvaEventObject } from "konva/lib/Node";
-import { RectConfig } from "konva/lib/shapes/Rect";
+import { RectConfig, Rect as KonvaRect } from "konva/lib/shapes/Rect";
 import React, { useRef, useState } from "react";
 import { Layer, Rect, Stage } from "react-konva";
 import { genData } from "../../components/Actions";
@@ -36,6 +37,10 @@ const stageSize: Dimensions = {
 type ColorRect = Rectangle & { fill: string; name: string };
 
 const genId = () => Math.floor(1000 + 9000000 * Math.random()).toString();
+const SCROLLBAR_HEIGHT = 100;
+const SCROLLBAR_WIDTH = 10;
+const PADDING = 5;
+const HEIGHT = gameHeight * 1.5;
 
 const StripPacking: React.FC<StripPackingProps> = ({}) => {
   const [stripRects, setStripRects] = useState<ColorRect[]>([]);
@@ -160,34 +165,35 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
     }
   };
 
+  const verticalBar = useRef<KonvaRect>(null);
   const handleWheel = (e: KonvaEventObject<WheelEvent>) => {
     if (e.evt.x > inventorySize.width) return;
     e.evt.preventDefault();
-    const stage = e.currentTarget as any as KonvaStage;
-    const layer = stage.findOne<KonvaLayer>(".INVENTORY_LAYER");
-    console.log(e);
 
-    const dx = e.evt.deltaX;
+    const layer = inventoryLayer.current!;
+
     const dy = e.evt.deltaY;
     const oldY = layer.y();
-    layer.y(dy + oldY);
 
-    // const minX = -(WIDTH - stage.width());
-    // const maxX = 0;
+    const minY = -(HEIGHT - gameHeight);
+    const maxY = 0;
 
-    // const x = Math.max(minX, Math.min(layer.x() - dx, maxX));
+    const y = Math.max(minY, Math.min(oldY - dy, maxY));
 
-    // const minY = -(HEIGHT - stage.height());
-    // const maxY = 0;
+    layer.y(y);
 
-    // const y = Math.max(minY, Math.min(layer.y() - dy, maxY));
-    // layer.position({ x, y });
+    const stageHeight = gameHeight;
+    const availableHeight = stageHeight - PADDING * 2 - SCROLLBAR_HEIGHT;
+
+    const vy = (y / (-HEIGHT + stageHeight)) * availableHeight + PADDING;
+
+    verticalBar.current?.y(vy);
   };
 
   return (
     <div className="h-full p-10">
       <div className="w-1/2">
-        <div className="flex flex-col w-1/2 px-2 mb-4 font-bold bg-white pmb-4">
+        <div className="flex flex-col w-1/2 px-2 mb-4 font-bold bg-white">
           <span>Total height: 0</span>
           <span>Rectangles left: {rectangles.length}</span>
         </div>
@@ -199,6 +205,38 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
           <Layer>
             <Rect fill="#ffffff" {...stripSize} />
             <Rect fill="#eee000" {...inventorySize} />
+            <Rect
+              ref={verticalBar}
+              width={SCROLLBAR_WIDTH}
+              height={SCROLLBAR_HEIGHT}
+              fill="grey"
+              opacity={0.8}
+              x={inventorySize.width - PADDING - SCROLLBAR_WIDTH}
+              y={5}
+              draggable
+              dragBoundFunc={function (pos) {
+                pos.x = inventorySize.width - PADDING - SCROLLBAR_WIDTH;
+                pos.y = Math.max(
+                  Math.min(
+                    pos.y,
+                    inventorySize.height - this.height() - PADDING
+                  ),
+                  PADDING
+                );
+                return pos;
+              }}
+              onDragMove={function (this: Konva.Layer, e) {
+                const verticalBar = e.target;
+                // delta in %
+                const availableHeight =
+                  inventorySize.height - PADDING * 2 - verticalBar.height();
+                var delta = (verticalBar.y() - PADDING) / availableHeight;
+
+                const newY = -(HEIGHT - inventorySize.height) * delta;
+                console.log({ newY, delta });
+                inventoryLayer.current?.y(newY);
+              }}
+            />
           </Layer>
           {/* Rect input layer */}
           {/* <Layer {...stripSize} onDragEnd={handleStripDragEnd}>
