@@ -22,6 +22,7 @@ import { DimensionsWithConfig } from "../../../types/DimensionsWithConfig.type";
 import { RectangleConfig } from "../../../types/RectangleConfig.interface";
 import Konva from "konva";
 import { Rect as KonvaRect, RectConfig } from "konva/lib/shapes/Rect";
+import { Layer as KonvaLayer } from "konva/lib/Layer";
 
 const {
   BEST_FIT_DECREASING_HEIGHT,
@@ -40,6 +41,8 @@ export interface StripAlgoCanvasHandle {
 
 type PrevPos = { prevX: number; prevY: number };
 
+const ENTER_ANIMATION_DURATION_SECONDS = 1.4;
+
 const StripAlgoCanvas = React.forwardRef<
   StripAlgoCanvasHandle,
   StripAlgoCanvasProps
@@ -54,6 +57,8 @@ const StripAlgoCanvas = React.forwardRef<
   const [algo, setAlgo] = useState<PackingAlgorithm<RectangleConfig> | null>(
     null
   );
+
+  const inventoryTranslateY = useRef(0);
 
   const calcInitialPositions = (
     rects: DimensionsWithConfig<RectangleConfig>[]
@@ -114,13 +119,32 @@ const StripAlgoCanvas = React.forwardRef<
     place: () => {
       const rect = algo?.place();
       if (rect) {
-        const { x: prevX, y: prevY } = inventoryRects.find(
-          (r) => r.name === rect.name
-        )!;
-        setStripRects((prev) => [...prev, { ...rect, prevX, prevY }]);
+        const curIdx = inventoryRects.findIndex((r) => r.name === rect.name)!;
+        const { x: prevX, y: prevY, height } = inventoryRects[curIdx];
+        setStripRects((prev) => [
+          ...prev,
+          {
+            ...rect,
+            prevX,
+            prevY: prevY + inventoryTranslateY.current - height - PADDING,
+          },
+        ]);
+        inventoryTranslateY.current =
+          inventoryTranslateY.current + height + PADDING;
+        setTimeout(() => {
+          new Konva.Tween({
+            node: inventoryLayer.current!,
+            y: inventoryTranslateY.current,
+            easing: Konva.Easings.EaseInOut,
+            duration: 0.3,
+          }).play();
+        }, ENTER_ANIMATION_DURATION_SECONDS * 1000);
+        setInventoryRects(inventoryRects.filter((_, i) => i !== curIdx));
       }
     },
   }));
+
+  const inventoryLayer = useRef<KonvaLayer>(null);
 
   return (
     <div className="h-full p-10">
@@ -133,18 +157,7 @@ const StripAlgoCanvas = React.forwardRef<
           <Layer>
             <Rect fill="#ffffff" {...STRIP_SIZE} />
             <Rect fill="#eee000" {...INVENTORY_SIZE} />
-            {inventoryRects.map((r) => {
-              return (
-                <Rect
-                  key={r.name}
-                  {...r}
-                  strokeWidth={2}
-                  stroke={"#002050FF"}
-                  y={GAME_HEIGHT + r.y}
-                  id={`INVENTORY_RECT`}
-                />
-              );
-            })}
+
             {stripRects.map((r) => {
               return (
                 <MyRect
@@ -155,6 +168,20 @@ const StripAlgoCanvas = React.forwardRef<
                   stroke={"#002050FF"}
                   y={GAME_HEIGHT + r.y}
                   id={`STRIP_RECT`}
+                />
+              );
+            })}
+          </Layer>
+          <Layer ref={inventoryLayer}>
+            {inventoryRects.map((r) => {
+              return (
+                <Rect
+                  key={r.name}
+                  {...r}
+                  strokeWidth={2}
+                  stroke={"#002050FF"}
+                  y={GAME_HEIGHT + r.y}
+                  id={`INVENTORY_RECT`}
                 />
               );
             })}
@@ -178,11 +205,11 @@ const MyRect: React.FC<PrevPos & RectConfig & KonvaNodeEvents> = ({
   useEffect(() => {
     new Konva.Tween({
       node: ref.current!,
-      duration: 1.4,
+      duration: ENTER_ANIMATION_DURATION_SECONDS,
       x,
       y,
       easing: Konva.Easings.StrongEaseInOut,
-      rotation: 360,
+      // rotation: 360,
     }).play();
   }, [x, y]);
 
