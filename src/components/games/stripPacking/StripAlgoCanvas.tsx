@@ -28,6 +28,7 @@ import { RectangleConfig } from "../../../types/RectangleConfig.interface";
 import Konva from "konva";
 import { Rect as KonvaRect, RectConfig } from "konva/lib/shapes/Rect";
 import { Layer as KonvaLayer } from "konva/lib/Layer";
+import { SizeAlternatingStack } from "../../../algorithms/SizeAlternatingStack";
 
 const {
   BEST_FIT_DECREASING_HEIGHT,
@@ -59,9 +60,10 @@ const StripAlgoCanvas = React.forwardRef<
     ColorRect<RectangleConfig>[]
   >([]);
 
-  const [algo, setAlgo] = useState<PackingAlgorithm<RectangleConfig> | null>(
-    null
-  );
+  const [algo, setAlgo] = useState<PackingAlgorithm<
+    RectangleConfig,
+    any
+  > | null>(null);
 
   const inventoryTranslateY = useRef(0);
 
@@ -94,14 +96,29 @@ const StripAlgoCanvas = React.forwardRef<
     const getAlgo = (algorithm: PackingAlgorithms) => {
       const size = { ...STRIP_SIZE };
       switch (algorithm) {
-        case NEXT_FIT_DECREASING_HEIGHT:
-          return new NextFitDecreasingHeight(size).load(input);
+        case NEXT_FIT_DECREASING_HEIGHT: {
+          const a = new NextFitDecreasingHeight(size).load(input);
+          setInventoryRects(calcInitialPositions(a.getSortedData()));
+          return a;
+        }
+        case FIRST_FIT_DECREASING_HEIGHT: {
+          const a = new FirstFitDecreasingHeight(size).load(input);
+          setInventoryRects(calcInitialPositions(a.getSortedData()));
+          return a;
+        }
+        case BEST_FIT_DECREASING_HEIGHT: {
+          const a = new BestFitDecreasingHeight(size).load(input);
+          setInventoryRects(calcInitialPositions(a.getSortedData()));
+          return a;
+        }
 
-        case FIRST_FIT_DECREASING_HEIGHT:
-          return new FirstFitDecreasingHeight(size).load(input);
+        case SIZE_ALTERNATING_STACK: {
+          const a = new SizeAlternatingStack(size).load(input);
+          const [wide, narrow] = a.getSortedData();
 
-        case BEST_FIT_DECREASING_HEIGHT:
-          return new BestFitDecreasingHeight(size).load(input);
+          setInventoryRects(calcInitialPositions(wide.concat(narrow)));
+          return a;
+        }
 
         default:
           throw Error("unkown algorithm: " + algorithm);
@@ -110,7 +127,6 @@ const StripAlgoCanvas = React.forwardRef<
 
     const algo = getAlgo(algorithm);
     setAlgo(algo);
-    setInventoryRects(calcInitialPositions(algo.getSortedData()));
   }, [algorithm]);
 
   useImperativeHandle(ref, () => ({

@@ -60,15 +60,21 @@ export class SizeAlternatingStack<T = RectangleConfig>
     return this.L2.length;
   }
 
+  private sortedData: [
+    narrow: DimensionsWithConfig<T>[],
+    wide: DimensionsWithConfig<T>[]
+  ] = [[], []];
+
   getSortedData(): [
     narrow: DimensionsWithConfig<T>[],
     wide: DimensionsWithConfig<T>[]
   ] {
-    return [this.L1, this.L2];
+    return this.sortedData;
   }
 
   load(data: DimensionsWithConfig<T>[]): this {
     this.prepareData(data);
+    this.sortedData = [[...this.L1], [...this.L2]];
     this.exec();
     return this;
   }

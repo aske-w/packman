@@ -24,7 +24,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
         <StripAlgoCanvas
           ref={ref}
           input={input}
-          algorithm={PackingAlgorithms.FIRST_FIT_DECREASING_HEIGHT}
+          algorithm={PackingAlgorithms.SIZE_ALTERNATING_STACK}
         ></StripAlgoCanvas>
       </div>
     </div>
