@@ -4,7 +4,7 @@ import { Stage as KonvaStage } from "konva/lib/Stage";
 
 import { KonvaEventObject } from "konva/lib/Node";
 import { RectConfig, Rect as KonvaRect } from "konva/lib/shapes/Rect";
-import React, { useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { Layer, Rect, Stage } from "react-konva";
 import { genData } from "../../Actions";
 import { Dimensions } from "../../../types/Dimensions.interface";
@@ -12,8 +12,17 @@ import { Rectangle } from "../../../types/Rectangle.interface";
 import { clamp, resolveCollision } from "../../../utils/konva";
 import { Shape, ShapeConfig } from "konva/lib/Shape";
 import { Group } from "konva/lib/Group";
+import {
+  CanvasProps,
+  GAME_HEIGHT,
+  GAME_WIDTH,
+  INVENTORY_SIZE,
+  NUM_RECTS,
+  STRIP_SIZE,
+} from "../../../config/canvasConfig";
+import { ColorRect } from "../../../types/ColorRect.interface";
 
-interface StripPackingProps {}
+interface StripPackingProps extends CanvasProps {}
 
 type KonvaWheelEvent = {
   evt: {
@@ -22,75 +31,37 @@ type KonvaWheelEvent = {
   };
 };
 
-const windowHeight = window.innerHeight;
-const GAME_HEIGHT = windowHeight * 0.8;
 console.log({ gameHeight: GAME_HEIGHT });
 
-const inventorySize: Rectangle = {
-  height: GAME_HEIGHT,
-  width: 200,
-  x: 0,
-  y: 0,
-};
-const stripSize: Rectangle = {
-  height: GAME_HEIGHT,
-  width: 500,
-  x: inventorySize.width,
-  y: 0,
-};
-
 const stageSize: Dimensions = {
-  width: stripSize.width + inventorySize.width,
-  height: Math.max(stripSize.height, inventorySize.height),
+  width: STRIP_SIZE.width + INVENTORY_SIZE.width,
+  height: Math.max(STRIP_SIZE.height, INVENTORY_SIZE.height),
 };
-type ColorRect = Rectangle & { fill: string; name: string };
 
 const genId = () => Math.floor(1000 + 9000000 * Math.random()).toString();
 const SCROLLBAR_HEIGHT = 100;
 const SCROLLBAR_WIDTH = 10;
 const PADDING = 5;
 const SCROLLABLE_HEIGHT = GAME_HEIGHT * 1.5;
-const GAME_WIDTH = stageSize.width;
-const NUM_RECTS = 50;
-const StripPacking: React.FC<StripPackingProps> = ({}) => {
+
+const StripPacking: React.FC<StripPackingProps> = ({ input }) => {
   const [stripRects, setStripRects] = useState<ColorRect[]>([]);
-  const [inventoryRects, setInventoryRects] = useState(
-    genData(NUM_RECTS).reduce<ColorRect[]>((acc, { width, height }, i) => {
-      if (i === 0) {
-        acc.push({
-          width,
-          height,
-          x: PADDING,
-          y: -height - PADDING,
-          fill: Konva.Util.getRandomColor(),
-          name: genId(),
-        });
-      } else {
-        const prev = acc[i - 1];
-        const lastHalf = i > NUM_RECTS / 2;
-        const resetter = i === NUM_RECTS / 2;
-        acc.push({
-          width,
-          height,
-          x: PADDING + (lastHalf ? inventorySize.width / 2 + PADDING : 0),
-          y: (resetter ? 0 : prev.y) - height - PADDING,
-          fill: Konva.Util.getRandomColor(),
-          name: genId(),
-        });
-      }
-      return acc;
-    }, [])
-  );
+  const [inventoryRects, setInventoryRects] = useState(input);
   console.log(inventoryRects);
   console.log(stripRects);
 
   const intersectsBoundary = (x: number, width: number) => {
-    if (x > inventorySize.width) {
+    if (x > INVENTORY_SIZE.width) {
       return false;
     } else {
-      return x + width > inventorySize.width;
+      return x + width > INVENTORY_SIZE.width;
     }
   };
+
+  const totalHeight = useMemo(() => {
+    return stripRects.reduce((maxY, r) => Math.max(maxY, -1 * r.y), 0);
+  }, [stripRects]);
+  // const [totalHeight, setTotalHeight] = useState(0);
 
   const handleInventoryDragEnd = (evt: KonvaEventObject<DragEvent>) => {
     const rect = evt.target;
@@ -99,7 +70,7 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
 
     console.log("intersects boundary: " + intersectsBoundary(x, width));
 
-    const inStripArea = x + width >= inventorySize.width;
+    const inStripArea = x + width >= INVENTORY_SIZE.width;
 
     if (inStripArea) {
       setInventoryRects((old) => old.filter((r) => r.name !== name));
@@ -111,23 +82,28 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
           name,
           height,
           width,
-          y: y - stripSize.height + scrollOffset,
-          x: x - inventorySize.width,
+          y: y - STRIP_SIZE.height + scrollOffset,
+          x: x - INVENTORY_SIZE.width,
         },
       ]);
+      // // timeout to flush the state before we update height
+      // setTimeout(() => {
+      //   setTotalHeight(calcTotalHeight(stripRects));
+      // }, 0);
     }
   };
 
   const handleStripDragEnd = (evt: KonvaEventObject<DragEvent>) => {
     const rect = evt.target;
     const { fill, name, width, height, y } = rect.getAttrs();
-    const { x } = rect.getAbsolutePosition();
+    const { x, y: absY } = rect.getAbsolutePosition();
 
-    const inInventoryArea = x < inventorySize.width;
+    const inInventoryArea = x < INVENTORY_SIZE.width;
 
+    const scrollOffset = inventoryLayer.current?.y()!;
     if (inInventoryArea) {
+      // move to other list of rectangles
       setStripRects((old) => old.filter((r) => r.name !== name));
-      const scrollOffset = inventoryLayer.current?.y()!;
       setInventoryRects((prev) => [
         ...prev,
         {
@@ -139,13 +115,26 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
           x: x,
         },
       ]);
+    } else {
+      setStripRects((old) => {
+        const tmp = [...old];
+        const idx = tmp.findIndex((r) => r.name === name);
+        if (idx === -1) return old;
+        tmp[idx].x = x - INVENTORY_SIZE.width;
+        tmp[idx].y = absY - GAME_HEIGHT;
+        return tmp;
+      });
     }
+    // // timeout to flush the state before we update height
+    // setTimeout(() => {
+    //   setTotalHeight(calcTotalHeight(stripRects));
+    // }, 0);
   };
 
   const inventoryLayer = useRef<KonvaLayer>(null);
   const stripLayer = useRef<KonvaLayer>(null);
   const handleDragMove = (e: KonvaEventObject<DragEvent>) => {
-    const target = e.target;
+    const target = e.target as Shape;
     const targetRect = e.target.getClientRect();
 
     const checkIntersection = function (group: Group | Shape<ShapeConfig>) {
@@ -180,7 +169,7 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
 
   const verticalBar = useRef<KonvaRect>(null);
   const handleWheel = (e: KonvaEventObject<WheelEvent> & KonvaWheelEvent) => {
-    const isOutsideInventory = e.evt.layerX > inventorySize.width;
+    const isOutsideInventory = e.evt.layerX > INVENTORY_SIZE.width;
     if (isOutsideInventory) return;
     e.evt.preventDefault();
 
@@ -209,7 +198,7 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
     <div className="h-full w-[700px] p-10">
       {/* <div className="w-1/2"> */}
       <div className="flex flex-col w-1/2 px-2 mb-4 font-bold bg-white">
-        <span>Total height: 0</span>
+        <span>Total height: {totalHeight}</span>
         <span>Rectangles left: {inventoryRects.length}</span>
       </div>
       <Stage
@@ -218,22 +207,25 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
         onDragMove={handleStageDragMove}
       >
         <Layer>
-          <Rect fill="#ffffff" {...stripSize} />
-          <Rect fill="#eee000" {...inventorySize} />
+          <Rect fill="#ffffff" {...STRIP_SIZE} />
+          <Rect fill="#eee000" {...INVENTORY_SIZE} />
           <Rect
             ref={verticalBar}
             width={SCROLLBAR_WIDTH}
             height={SCROLLBAR_HEIGHT}
             fill="grey"
             opacity={0.8}
-            x={inventorySize.width - PADDING - SCROLLBAR_WIDTH}
+            x={INVENTORY_SIZE.width - PADDING - SCROLLBAR_WIDTH}
             y={5}
             draggable
             cornerRadius={5}
             dragBoundFunc={function (pos) {
-              pos.x = inventorySize.width - PADDING - SCROLLBAR_WIDTH;
+              pos.x = INVENTORY_SIZE.width - PADDING - SCROLLBAR_WIDTH;
               pos.y = Math.max(
-                Math.min(pos.y, inventorySize.height - this.height() - PADDING),
+                Math.min(
+                  pos.y,
+                  INVENTORY_SIZE.height - this.height() - PADDING
+                ),
                 PADDING
               );
               return pos;
@@ -242,10 +234,10 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
               const verticalBar = e.target;
               // delta in %
               const availableHeight =
-                inventorySize.height - PADDING * 2 - verticalBar.height();
+                INVENTORY_SIZE.height - PADDING * 2 - verticalBar.height();
               var delta = (verticalBar.y() - PADDING) / availableHeight;
 
-              const newY = -(SCROLLABLE_HEIGHT - inventorySize.height) * delta;
+              const newY = -(SCROLLABLE_HEIGHT - INVENTORY_SIZE.height) * delta;
               console.log({ newY, delta });
               inventoryLayer.current?.y(newY);
             }}
@@ -253,7 +245,7 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
         </Layer>
         {/* Rect input layer */}
         <Layer
-          {...stripSize}
+          {...STRIP_SIZE}
           ref={stripLayer}
           /*onDragEnd={handleStripDragEnd}*/
         >
@@ -265,7 +257,7 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
                 draggable
                 strokeWidth={2}
                 stroke="red"
-                y={stripSize.height + r.y}
+                y={STRIP_SIZE.height + r.y}
                 onDragEnd={handleStripDragEnd}
                 onDragMove={handleDragMove}
                 id={`STRIP_RECT`}
@@ -274,14 +266,14 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
           })}
         </Layer>
         <Layer
-          {...inventorySize}
-          height={inventorySize.height}
+          {...INVENTORY_SIZE}
+          height={INVENTORY_SIZE.height}
           x={0}
           ref={inventoryLayer}
           name="INVENTORY_LAYER"
         >
           {inventoryRects.map((r, i) => {
-            const inStripArea = r.x + r.width >= inventorySize.width;
+            const inStripArea = r.x + r.width >= INVENTORY_SIZE.width;
             return (
               <Rect
                 key={r.name}
