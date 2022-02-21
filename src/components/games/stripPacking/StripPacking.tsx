@@ -45,10 +45,13 @@ const SCROLLBAR_WIDTH = 10;
 const PADDING = 5;
 
 const StripPacking: React.FC<StripPackingProps> = ({ input, onDragDrop }) => {
-  const SCROLLABLE_HEIGHT = useMemo(
+  const scrollableInventoryHeight = useMemo(
     () => input.reduce((height, r) => height + r.height + PADDING, 0),
     [input]
   );
+
+  const scrollableStripHeight = 10000;
+
   const [stripRects, setStripRects] = useState<ColorRect[]>([]);
   const [inventoryRects, setInventoryRects] = useState(() => {
     return input.reduce<ColorRect[]>((acc, attrs, i) => {
@@ -138,7 +141,7 @@ const StripPacking: React.FC<StripPackingProps> = ({ input, onDragDrop }) => {
           name,
           height,
           width,
-          y: y - SCROLLABLE_HEIGHT - scrollOffset,
+          y: y - scrollableInventoryHeight - scrollOffset,
           x: x,
         },
       ]);
@@ -160,6 +163,7 @@ const StripPacking: React.FC<StripPackingProps> = ({ input, onDragDrop }) => {
 
   const inventoryLayer = useRef<KonvaLayer>(null);
   const stripLayer = useRef<KonvaLayer>(null);
+
   const handleDragMove = (e: KonvaEventObject<DragEvent>) => {
     const target = e.target as Shape;
     const targetRect = e.target.getClientRect();
@@ -188,24 +192,42 @@ const StripPacking: React.FC<StripPackingProps> = ({ input, onDragDrop }) => {
     });
   };
 
-  const handleStageDragMove = (e: KonvaEventObject<DragEvent>) => {
-    const target = e.target;
-    const canvasRect = e.currentTarget.getClientRect();
-    const targetRect = e.target.getClientRect();
-  };
-
-  const verticalBar = useRef<KonvaRect>(null);
+  const inventoryVerticalBar = useRef<KonvaRect>(null);
+  const stripVerticalBar = useRef<KonvaRect>(null);
   const handleWheel = (e: KonvaEventObject<WheelEvent> & KonvaWheelEvent) => {
-    const isOutsideInventory = e.evt.layerX > INVENTORY_SIZE.width;
-    if (isOutsideInventory) return;
     e.evt.preventDefault();
+    const isOutsideInventory = e.evt.layerX > INVENTORY_SIZE.width;
+
+    if (isOutsideInventory) {
+      const layer = stripLayer.current!;
+      const dy = e.evt.deltaY;
+      const oldY = layer.y();
+
+      const minY = -(scrollableStripHeight - GAME_HEIGHT);
+      const maxY = 0;
+
+      const y = Math.max(minY, Math.min(oldY - dy, maxY));
+
+      layer.y(y);
+
+      const stageHeight = GAME_HEIGHT;
+      const availableHeight = stageHeight - PADDING * 2 - SCROLLBAR_HEIGHT;
+
+      const vy =
+        (y / (-scrollableStripHeight + stageHeight)) * availableHeight +
+        PADDING;
+
+      stripVerticalBar.current?.y(vy);
+
+      return;
+    }
 
     const layer = inventoryLayer.current!;
 
     const dy = e.evt.deltaY;
     const oldY = layer.y();
 
-    const minY = -(SCROLLABLE_HEIGHT - GAME_HEIGHT);
+    const minY = -(scrollableInventoryHeight - GAME_HEIGHT);
     const maxY = 0;
 
     const y = Math.max(minY, Math.min(oldY - dy, maxY));
@@ -216,9 +238,10 @@ const StripPacking: React.FC<StripPackingProps> = ({ input, onDragDrop }) => {
     const availableHeight = stageHeight - PADDING * 2 - SCROLLBAR_HEIGHT;
 
     const vy =
-      (y / (-SCROLLABLE_HEIGHT + stageHeight)) * availableHeight + PADDING;
+      (y / (-scrollableInventoryHeight + stageHeight)) * availableHeight +
+      PADDING;
 
-    verticalBar.current?.y(vy);
+    inventoryVerticalBar.current?.y(vy);
   };
 
   return (
@@ -228,22 +251,18 @@ const StripPacking: React.FC<StripPackingProps> = ({ input, onDragDrop }) => {
         <span>Total height: {totalHeight}</span>
         <span>Rectangles left: {inventoryRects.length}</span>
       </div>
-      <Stage
-        onWheel={handleWheel}
-        {...stageSize}
-        onDragMove={handleStageDragMove}
-      >
+      <Stage onWheel={handleWheel} {...stageSize}>
         <Layer>
           <Rect fill="#ffffff" {...STRIP_SIZE} />
           <Rect fill="#eee000" {...INVENTORY_SIZE} />
           <Rect
-            ref={verticalBar}
+            ref={inventoryVerticalBar}
             width={SCROLLBAR_WIDTH}
             height={SCROLLBAR_HEIGHT}
             fill="grey"
             opacity={0.8}
             x={INVENTORY_SIZE.width - PADDING - SCROLLBAR_WIDTH}
-            y={5}
+            y={INVENTORY_SIZE.height - PADDING - SCROLLBAR_HEIGHT}
             draggable
             cornerRadius={5}
             dragBoundFunc={function (pos) {
@@ -264,15 +283,48 @@ const StripPacking: React.FC<StripPackingProps> = ({ input, onDragDrop }) => {
                 INVENTORY_SIZE.height - PADDING * 2 - verticalBar.height();
               var delta = (verticalBar.y() - PADDING) / availableHeight;
 
-              const newY = -(SCROLLABLE_HEIGHT - INVENTORY_SIZE.height) * delta;
+              const newY =
+                -(scrollableInventoryHeight - INVENTORY_SIZE.height) * delta;
               console.log({ newY, delta });
+
               inventoryLayer.current?.y(newY);
+            }}
+          />
+          <Rect
+            ref={stripVerticalBar}
+            width={SCROLLBAR_WIDTH}
+            height={SCROLLBAR_HEIGHT}
+            fill="grey"
+            opacity={0.8}
+            x={GAME_WIDTH - PADDING - SCROLLBAR_WIDTH}
+            y={GAME_HEIGHT}
+            draggable
+            cornerRadius={5}
+            dragBoundFunc={function (pos) {
+              pos.x = GAME_WIDTH - PADDING - SCROLLBAR_WIDTH;
+              pos.y = Math.max(
+                Math.min(pos.y, GAME_HEIGHT - this.height() - PADDING),
+                PADDING
+              );
+              return pos;
+            }}
+            onDragMove={function (this: Konva.Layer, e) {
+              const verticalBar = e.target;
+              // delta in %
+              const availableHeight =
+                GAME_HEIGHT - PADDING * 2 - verticalBar.height();
+              var delta = (verticalBar.y() - PADDING) / availableHeight;
+
+              const newY = -(scrollableStripHeight - GAME_HEIGHT) * delta;
+              console.log({ newY, delta });
+              stripLayer.current?.y(newY);
             }}
           />
         </Layer>
         {/* Rect input layer */}
         <Layer
           {...STRIP_SIZE}
+          y={-(scrollableStripHeight - STRIP_SIZE.height)}
           ref={stripLayer}
           /*onDragEnd={handleStripDragEnd}*/
         >
@@ -296,6 +348,7 @@ const StripPacking: React.FC<StripPackingProps> = ({ input, onDragDrop }) => {
           {...INVENTORY_SIZE}
           height={INVENTORY_SIZE.height}
           x={0}
+          y={-(scrollableInventoryHeight - INVENTORY_SIZE.height)}
           ref={inventoryLayer}
           name="INVENTORY_LAYER"
         >
@@ -309,7 +362,7 @@ const StripPacking: React.FC<StripPackingProps> = ({ input, onDragDrop }) => {
                 draggable
                 strokeWidth={2}
                 stroke={"#002050FF"}
-                y={SCROLLABLE_HEIGHT + r.y}
+                y={scrollableInventoryHeight + r.y}
                 onDragEnd={handleInventoryDragEnd}
                 id={`INVENTORY_RECT`}
               />

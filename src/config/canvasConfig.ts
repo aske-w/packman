@@ -11,7 +11,7 @@ export interface CanvasProps {
 }
 
 export const WINDOW_HEIGHT = window.innerHeight;
-export const GAME_HEIGHT = WINDOW_HEIGHT * 0.6;
+export const GAME_HEIGHT = WINDOW_HEIGHT * 0.8;
 export const PADDING = 5;
 export const NUM_RECTS = 50;
 export const SCROLLABLE_HEIGHT = GAME_HEIGHT * 1.5;
