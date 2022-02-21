@@ -1,6 +1,9 @@
+import { ColorRect } from "../types/ColorRect.interface";
 import { Dimensions } from "../types/Dimensions.interface";
+import { DimensionsWithConfig } from "../types/DimensionsWithConfig.type";
 import { PackingAlgorithm } from "../types/PackingAlgorithm.interface";
 import { Rectangle } from "../types/Rectangle.interface";
+import { RectangleConfig } from "../types/RectangleConfig.interface";
 import { Shelf } from "../types/Shelf.interface";
 
 const zeroDim = {
@@ -13,15 +16,21 @@ interface Level extends Dimensions {
   first: RectCategory;
 }
 type RectCategory = "wide" | "narrow";
-export class SizeAlternatingStack implements PackingAlgorithm {
+export class SizeAlternatingStack<T = RectangleConfig>
+  implements
+    PackingAlgorithm<
+      T,
+      [narrow: DimensionsWithConfig<T>[], wide: DimensionsWithConfig<T>[]]
+    >
+{
   /**
    * L2 rectangles, length is n2
    */
-  wideRectangles: Dimensions[] = [];
+  wideRectangles: DimensionsWithConfig<T>[] = [];
   /**
    * L1 rectangles, length is n1
    */
-  narrowRectangles: Dimensions[] = [];
+  narrowRectangles: DimensionsWithConfig<T>[] = [];
   level: Level | null = null;
 
   constructor(readonly gameSize: Dimensions) {}
@@ -51,15 +60,22 @@ export class SizeAlternatingStack implements PackingAlgorithm {
     return this.L2.length;
   }
 
-  load(data: Dimensions[]): this {
+  getSortedData(): [
+    narrow: DimensionsWithConfig<T>[],
+    wide: DimensionsWithConfig<T>[]
+  ] {
+    return [this.L1, this.L2];
+  }
+
+  load(data: DimensionsWithConfig<T>[]): this {
     this.prepareData(data);
     this.exec();
     return this;
   }
 
-  private prepareData(data: Dimensions[]) {
-    const tall: Dimensions[] = [];
-    const wide: Dimensions[] = [];
+  private prepareData(data: DimensionsWithConfig<T>[]) {
+    const wide: DimensionsWithConfig<T>[] = [];
+    const tall: DimensionsWithConfig<T>[] = [];
     for (const r of data) {
       if (r.height > r.width) {
         tall.push(r);
@@ -86,18 +102,18 @@ export class SizeAlternatingStack implements PackingAlgorithm {
     }
   }
 
-  next(): Dimensions {
+  next(): DimensionsWithConfig<T> {
     // always use the tallest rectangle
     return this[`${this.wideOrNarrow()}Rectangles`][0];
   }
 
-  place(): Rectangle {
+  place(): ColorRect<T> {
     if (this.rects.length === 0) throw new Error("no more rects");
 
     return this.rects.shift()!;
   }
 
-  rects: Rectangle[] = [];
+  rects: ColorRect<T>[] = [];
   shelves: Shelf[] = [];
   get lastShelf(): Shelf {
     if (this.shelves.length) {
@@ -157,12 +173,9 @@ export class SizeAlternatingStack implements PackingAlgorithm {
 
     const rect = this.L1[firstFitsIdx];
 
-
-
     //@ts-ignore
     this.L1[firstFitsIdx] = null;
 
-    
     this.rects.push({ ...rect, x, y: bottomY - rect.height });
 
     let sliceY = bottomY - rect.height;
@@ -181,7 +194,6 @@ export class SizeAlternatingStack implements PackingAlgorithm {
         const narrowRect = this.L1[idx];
         //@ts-ignore
         this.L1[idx] = null;
-
 
         this.rects.push({
           ...narrowRect,
@@ -226,26 +238,23 @@ export class SizeAlternatingStack implements PackingAlgorithm {
           y: rectY,
         });
         bottomY -= rect.height;
-        const isUneven = lastPlacedWidth !== rect.width 
-        const isFirst = lastPlacedWidth === -1
+        const isUneven = lastPlacedWidth !== rect.width;
+        const isFirst = lastPlacedWidth === -1;
 
         // remove from l2, after stacking
         //@ts-ignore
         this.L2[j] = null;
 
-    
-      
         // If rectangles has uneven widths
         if (isUneven && !isFirst) {
-          
           this.packNarrow(
             lastPlacedWidth - rect.width,
             shelfHeight - lastPlacedHeight,
             rectX,
             rectY + rect.height
           );
-        } 
-        lastPlacedHeight += rect.height
+        }
+        lastPlacedHeight += rect.height;
 
         lastPlacedWidth = rect.width;
       }
@@ -259,7 +268,6 @@ export class SizeAlternatingStack implements PackingAlgorithm {
   }
 
   isFinishedExecutingAlgo(): boolean {
-
     return this.N1 === 0 && this.N2 === 0;
   }
   isFinished(): boolean {

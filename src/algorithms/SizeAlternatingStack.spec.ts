@@ -6,7 +6,7 @@ import {
 } from "./SizeAlternatingStack.fixture";
 
 describe("SizeAlternatingStack test suite", () => {
-  let sas = new SizeAlternatingStack(GameSize);
+  let sas = new SizeAlternatingStack<{}>(GameSize);
 
   beforeEach(() => {
     sas = new SizeAlternatingStack(GameSize);
@@ -20,7 +20,6 @@ describe("SizeAlternatingStack test suite", () => {
     let i = 0;
     while (!sas.isFinished()) {
       const next = sas.place();
-
 
       expect(next).toEqual(ExpectedData[i++]);
     }

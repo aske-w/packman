@@ -1,10 +1,14 @@
+import { ColorRect } from "../types/ColorRect.interface";
 import { Dimensions } from "../types/Dimensions.interface";
 import { PackingAlgorithm } from "../types/PackingAlgorithm.interface";
-import { Rectangle } from "../types/Rectangle.interface";
+import { DimensionsWithConfig } from "../types/DimensionsWithConfig.type";
 import { Shelf } from "../types/Shelf.interface";
+import { RectangleConfig } from "../types/RectangleConfig.interface";
 
-export class NextFitDecreasingHeight implements PackingAlgorithm {
-  data: Dimensions[] = [];
+export class NextFitDecreasingHeight<T = RectangleConfig>
+  implements PackingAlgorithm<T>
+{
+  data: DimensionsWithConfig<T>[] = [];
   shelf: Shelf;
   constructor(readonly gameSize: Dimensions) {
     this.shelf = {
@@ -13,21 +17,25 @@ export class NextFitDecreasingHeight implements PackingAlgorithm {
       height: 0,
     };
   }
-  load(data: Dimensions[]): this {
+  load(data: DimensionsWithConfig<T>[]): this {
     this.data = data;
     this.prepareData();
     return this;
+  }
+
+  getSortedData(): DimensionsWithConfig<T>[] {
+    return [...this.data];
   }
 
   private prepareData() {
     this.data.sort((a, b) => b.height - a.height);
   }
 
-  next(): Dimensions {
+  next(): DimensionsWithConfig<T> {
     return this.data[0];
   }
 
-  place(): Rectangle {
+  place(): ColorRect<T> {
     if (this.isFinished()) throw new Error("isFinished");
     const nextRect = this.data.shift()!;
 

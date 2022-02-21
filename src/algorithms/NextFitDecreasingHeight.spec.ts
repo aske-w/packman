@@ -2,17 +2,17 @@ import {
   ExpectedData,
   GameSize,
   TestData,
-} from './NextFitDecreasingHeight.fixture';
-import { Dimensions } from '../types/Dimensions.interface';
-import { NextFitDecreasingHeight } from './NextFitDecreasingHeight';
+} from "./NextFitDecreasingHeight.fixture";
+import { Dimensions } from "../types/Dimensions.interface";
+import { NextFitDecreasingHeight } from "./NextFitDecreasingHeight";
 
-describe('Next fit decreasing height test', () => {
-  let nfdh = new NextFitDecreasingHeight(GameSize);
+describe("Next fit decreasing height test", () => {
+  let nfdh = new NextFitDecreasingHeight<{}>(GameSize);
 
   beforeEach(() => {
-    nfdh = new NextFitDecreasingHeight(GameSize);
+    nfdh = new NextFitDecreasingHeight<{}>(GameSize);
   });
-  it('should return is finished with no data', () => {
+  it("should return is finished with no data", () => {
     expect(nfdh.isFinished()).toBe(true);
   });
 
@@ -52,13 +52,13 @@ describe('Next fit decreasing height test', () => {
       width: 10,
     },
   ];
-  it('should sort data by non increasing height', () => {
+  it("should sort data by non increasing height", () => {
     nfdh.load(rawData);
 
     expect(nfdh.data).toEqual(sortedData);
   });
 
-  it('should place rectangles correctly', () => {
+  it("should place rectangles correctly", () => {
     nfdh.load(rawData);
     nfdh.place();
     expect(nfdh.shelf.height).toBe(sortedData[0].height);
@@ -67,17 +67,17 @@ describe('Next fit decreasing height test', () => {
     );
   });
 
-  it('should create a new shelf when width overflows current shelf width', () => {
+  it("should create a new shelf when width overflows current shelf width", () => {
     nfdh.load(TestData);
 
-    ExpectedData.forEach(expected => {
+    ExpectedData.forEach((expected) => {
       const actual = nfdh.place();
       expect(expected).toEqual(actual);
     });
 
     expect(nfdh.isFinished()).toBe(true);
 
-    const lastShelf: NextFitDecreasingHeight['shelf'] = {
+    const lastShelf: NextFitDecreasingHeight["shelf"] = {
       remainingWidth: GameSize.width - 120,
       bottomY: -200,
       height: 160,
