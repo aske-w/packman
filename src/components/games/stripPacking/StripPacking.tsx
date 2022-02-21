@@ -22,7 +22,9 @@ import {
 } from "../../../config/canvasConfig";
 import { ColorRect } from "../../../types/ColorRect.interface";
 
-interface StripPackingProps extends CanvasProps {}
+interface StripPackingProps extends CanvasProps {
+  onDragDrop(): void;
+}
 
 type KonvaWheelEvent = {
   evt: {
@@ -44,7 +46,7 @@ const SCROLLBAR_WIDTH = 10;
 const PADDING = 5;
 const SCROLLABLE_HEIGHT = GAME_HEIGHT * 1.5;
 
-const StripPacking: React.FC<StripPackingProps> = ({ input }) => {
+const StripPacking: React.FC<StripPackingProps> = ({ input, onDragDrop }) => {
   const [stripRects, setStripRects] = useState<ColorRect[]>([]);
   const [inventoryRects, setInventoryRects] = useState(input);
   console.log(inventoryRects);
@@ -90,6 +92,8 @@ const StripPacking: React.FC<StripPackingProps> = ({ input }) => {
       // setTimeout(() => {
       //   setTotalHeight(calcTotalHeight(stripRects));
       // }, 0);
+
+      onDragDrop();
     }
   };
 

@@ -41,7 +41,7 @@ export interface StripAlgoCanvasHandle {
 
 type PrevPos = { prevX: number; prevY: number };
 
-const ENTER_ANIMATION_DURATION_SECONDS = 1.4;
+const ENTER_ANIMATION_DURATION_SECONDS = 0.5;
 
 const StripAlgoCanvas = React.forwardRef<
   StripAlgoCanvasHandle,
@@ -90,20 +90,13 @@ const StripAlgoCanvas = React.forwardRef<
       const size = { ...STRIP_SIZE };
       switch (algorithm) {
         case NEXT_FIT_DECREASING_HEIGHT:
-          const a = new NextFitDecreasingHeight(size).load(input);
-          // .getSortedData();
-          return a;
-          break;
+          return new NextFitDecreasingHeight(size).load(input);
 
-        // case FIRST_FIT_DECREASING_HEIGHT:
-        //   return new FirstFitDecreasingHeight(size).load(inventoryRects);
+        case FIRST_FIT_DECREASING_HEIGHT:
+          return new FirstFitDecreasingHeight(size).load(input);
 
-        //   break;
-
-        // case BEST_FIT_DECREASING_HEIGHT:
-        //   return new BestFitDecreasingHeight(size).load(inventoryRects);
-
-        //   break;
+        case BEST_FIT_DECREASING_HEIGHT:
+          return new BestFitDecreasingHeight(size).load(input);
 
         default:
           throw Error("unkown algorithm: " + algorithm);
@@ -117,20 +110,27 @@ const StripAlgoCanvas = React.forwardRef<
 
   useImperativeHandle(ref, () => ({
     place: () => {
+      if (algo?.isFinished()) return;
       const rect = algo?.place();
       if (rect) {
         const curIdx = inventoryRects.findIndex((r) => r.name === rect.name)!;
         const { x: prevX, y: prevY, height } = inventoryRects[curIdx];
+        // add to strip
         setStripRects((prev) => [
           ...prev,
           {
             ...rect,
             prevX,
-            prevY: prevY + inventoryTranslateY.current - height - PADDING,
+            prevY: prevY + inventoryTranslateY.current,
           },
         ]);
+        // add to remove from inventory
+        setInventoryRects(inventoryRects.filter((_, i) => i !== curIdx));
+        // update the inventory y translation
         inventoryTranslateY.current =
           inventoryTranslateY.current + height + PADDING;
+
+        // animate to position
         setTimeout(() => {
           new Konva.Tween({
             node: inventoryLayer.current!,
@@ -139,7 +139,6 @@ const StripAlgoCanvas = React.forwardRef<
             duration: 0.3,
           }).play();
         }, ENTER_ANIMATION_DURATION_SECONDS * 1000);
-        setInventoryRects(inventoryRects.filter((_, i) => i !== curIdx));
       }
     },
   }));
@@ -156,7 +155,7 @@ const StripAlgoCanvas = React.forwardRef<
         <Stage {...STAGE_SIZE}>
           <Layer>
             <Rect fill="#ffffff" {...STRIP_SIZE} />
-            <Rect fill="#eee000" {...INVENTORY_SIZE} />
+            <Rect fill="gold" {...INVENTORY_SIZE} />
 
             {stripRects.map((r) => {
               return (
@@ -209,7 +208,6 @@ const MyRect: React.FC<PrevPos & RectConfig & KonvaNodeEvents> = ({
       x,
       y,
       easing: Konva.Easings.StrongEaseInOut,
-      // rotation: 360,
     }).play();
   }, [x, y]);
 
@@ -220,45 +218,7 @@ const MyRect: React.FC<PrevPos & RectConfig & KonvaNodeEvents> = ({
       y={prevY + GAME_HEIGHT}
       stroke={"rgba(0,0,0,0.2)"}
       strokeWidth={1}
-      draggable
       {...props}
     ></Rect>
   );
 };
-
-/*
-          <Layer {...STRIP_SIZE}>
-            {stripRects.map((r, i) => {
-              return (
-                <Rect
-                  key={r.name}
-                  {...r}
-                  draggable
-                  strokeWidth={2}
-                  stroke="red"
-                  y={STRIP_SIZE.height + r.y}
-                  id={`STRIP_RECT`}
-                />
-              );
-            })}
-          </Layer>
-          <Layer
-            {...INVENTORY_SIZE}
-            height={INVENTORY_SIZE.height}
-            x={0}
-            name="INVENTORY_LAYER"
-          >
-            {inventoryRects.map((r, i) => {
-              return (
-                <Rect
-                  key={r.name}
-                  {...r}
-                  strokeWidth={2}
-                  stroke={"#002050FF"}
-                  y={SCROLLABLE_HEIGHT + r.y}
-                  id={`INVENTORY_RECT`}
-                />
-              );
-            })}
-          </Layer>
- */
