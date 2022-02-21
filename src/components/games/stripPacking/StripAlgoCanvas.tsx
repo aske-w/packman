@@ -6,14 +6,14 @@ import { KonvaEventObject } from "konva/lib/Node";
 import { RectConfig, Rect as KonvaRect } from "konva/lib/shapes/Rect";
 import React, { useRef, useState } from "react";
 import { Layer, Rect, Stage } from "react-konva";
-import { genData } from "../../components/Actions";
-import { Dimensions } from "../../types/Dimensions.interface";
-import { Rectangle } from "../../types/Rectangle.interface";
-import { clamp, resolveCollision } from "../../utils/konva";
 import { Shape, ShapeConfig } from "konva/lib/Shape";
 import { Group } from "konva/lib/Group";
+import { Rectangle } from "../../../types/Rectangle.interface";
+import { Dimensions } from "../../../types/Dimensions.interface";
+import { genData } from "../../Actions";
+import { clamp, resolveCollision } from "../../../utils/konva";
 
-interface StripPackingProps {}
+interface StripAlgoCanvasProps {}
 
 const windowHeight = window.innerHeight;
 const GAME_HEIGHT = windowHeight * 0.8;
@@ -45,7 +45,8 @@ const PADDING = 5;
 const SCROLLABLE_HEIGHT = GAME_HEIGHT * 1.5;
 const GAME_WIDTH = stageSize.width;
 const NUM_RECTS = 50;
-const StripPacking: React.FC<StripPackingProps> = ({}) => {
+
+const StripAlgoCanvas: React.FC<StripAlgoCanvasProps> = ({}) => {
   const [stripRects, setStripRects] = useState<ColorRect[]>([]);
   const [inventoryRects, setInventoryRects] = useState(
     genData(NUM_RECTS).reduce<ColorRect[]>((acc, { width, height }, i) => {
@@ -61,12 +62,12 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
       } else {
         const prev = acc[i - 1];
         const lastHalf = i > NUM_RECTS / 2;
-        const resetter = i === NUM_RECTS / 2 
+        const resetter = i === NUM_RECTS / 2;
         acc.push({
           width,
           height,
           x: PADDING + (lastHalf ? inventorySize.width / 2 + PADDING : 0),
-          y: (resetter ? 0 :prev.y) - height - PADDING,
+          y: (resetter ? 0 : prev.y) - height - PADDING,
           fill: Konva.Util.getRandomColor(),
           name: genId(),
         });
@@ -300,24 +301,4 @@ const StripPacking: React.FC<StripPackingProps> = ({}) => {
   );
 };
 
-export default StripPacking;
-
-const onDragMove = function (this: Konva.Layer, e: any) {
-  const target = e.target;
-  const targetRect = e.target.getClientRect();
-
-  const layer = this;
-
-  layer.children?.forEach(function (group) {
-    // do not check intersection with itself
-    if (group === target) {
-      return;
-    }
-    const rect = group.getClientRect();
-
-    if (Konva.Util.haveIntersection(targetRect, rect)) {
-      const { x, y } = resolveCollision(targetRect, rect);
-      target.setPosition({ x, y });
-    }
-  });
-};
+export default StripAlgoCanvas;
