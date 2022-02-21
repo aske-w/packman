@@ -1,11 +1,13 @@
+import { DimensionsWithConfig } from "./../types/DimensionsWithConfig.type";
 import Konva from "konva";
 import { genData } from "../components/Actions";
 import { ColorRect } from "../types/ColorRect.interface";
 import { Dimensions } from "../types/Dimensions.interface";
 import { Rectangle } from "../types/Rectangle.interface";
+import { RectangleConfig } from "../types/RectangleConfig.interface";
 
 export interface CanvasProps {
-  input: ColorRect[];
+  input: DimensionsWithConfig[];
 }
 
 export const WINDOW_HEIGHT = window.innerHeight;
@@ -38,28 +40,11 @@ export const genId = () =>
   Math.floor(1000 + 9000000 * Math.random()).toString();
 
 export const genInventory = () =>
-  genData(NUM_RECTS).reduce<ColorRect[]>((acc, { width, height }, i) => {
-    if (i === 0) {
-      acc.push({
-        width,
-        height,
-        x: PADDING,
-        y: -height - PADDING,
-        fill: Konva.Util.getRandomColor(),
-        name: genId(),
-      });
-    } else {
-      const prev = acc[i - 1];
-      const lastHalf = i > NUM_RECTS / 2;
-      const resetter = i === NUM_RECTS / 2;
-      acc.push({
-        width,
-        height,
-        x: PADDING + (lastHalf ? INVENTORY_SIZE.width / 2 + PADDING : 0),
-        y: (resetter ? 0 : prev.y) - height - PADDING,
-        fill: Konva.Util.getRandomColor(),
-        name: genId(),
-      });
-    }
-    return acc;
-  }, []);
+  genData(NUM_RECTS).map<DimensionsWithConfig>(({ width, height }) => {
+    return {
+      width,
+      height,
+      fill: Konva.Util.getRandomColor(),
+      name: genId(),
+    };
+  });

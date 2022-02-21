@@ -4,7 +4,6 @@ import StripAlgoCanvas, {
 } from "../../components/games/stripPacking/StripAlgoCanvas";
 import StripPacking from "../../components/games/stripPacking/StripPacking";
 import { genInventory } from "../../config/canvasConfig";
-import { ColorRect } from "../../types/ColorRect.interface";
 import { PackingAlgorithms } from "../../types/PackingAlgorithm.interface";
 
 interface StripPackingGameProps {}

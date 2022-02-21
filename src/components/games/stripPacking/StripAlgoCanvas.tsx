@@ -1,4 +1,10 @@
-import React, { useEffect, useImperativeHandle, useRef, useState } from "react";
+import React, {
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { KonvaNodeEvents, Layer, Rect, Stage } from "react-konva";
 import { BestFitDecreasingHeight } from "../../../algorithms/BestFitDecreasingHeight";
 import { FirstFitDecreasingHeight } from "../../../algorithms/FirstFitDecreasingHeight";
@@ -8,7 +14,6 @@ import {
   GAME_HEIGHT,
   INVENTORY_SIZE,
   PADDING,
-  SCROLLABLE_HEIGHT,
   STAGE_SIZE,
   STRIP_SIZE,
 } from "../../../config/canvasConfig";
@@ -145,11 +150,15 @@ const StripAlgoCanvas = React.forwardRef<
 
   const inventoryLayer = useRef<KonvaLayer>(null);
 
+  const totalHeight = useMemo(() => {
+    return stripRects.reduce((maxY, { y }) => Math.max(maxY, -1 * y), 0);
+  }, [stripRects]);
+
   return (
     <div className="h-full p-10">
       <div className="w-1/2">
         <div className="flex flex-col w-1/2 px-2 mb-4 font-bold bg-white">
-          <span>Total height: 0</span>
+          <span>Total height: {totalHeight}</span>
           <span>Rectangles left: {inventoryRects.length}</span>
         </div>
         <Stage {...STAGE_SIZE}>

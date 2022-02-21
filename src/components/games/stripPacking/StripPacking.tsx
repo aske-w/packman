@@ -40,15 +40,38 @@ const stageSize: Dimensions = {
   height: Math.max(STRIP_SIZE.height, INVENTORY_SIZE.height),
 };
 
-const genId = () => Math.floor(1000 + 9000000 * Math.random()).toString();
 const SCROLLBAR_HEIGHT = 100;
 const SCROLLBAR_WIDTH = 10;
 const PADDING = 5;
-const SCROLLABLE_HEIGHT = GAME_HEIGHT * 1.5;
 
 const StripPacking: React.FC<StripPackingProps> = ({ input, onDragDrop }) => {
+  const SCROLLABLE_HEIGHT = useMemo(
+    () => input.reduce((height, r) => height + r.height + PADDING, 0),
+    [input]
+  );
   const [stripRects, setStripRects] = useState<ColorRect[]>([]);
-  const [inventoryRects, setInventoryRects] = useState(input);
+  const [inventoryRects, setInventoryRects] = useState(() => {
+    return input.reduce<ColorRect[]>((acc, attrs, i) => {
+      const { height, width } = attrs;
+      const x = INVENTORY_SIZE.width / 2 - width / 2;
+      if (i === 0) {
+        acc.push({
+          ...attrs,
+          x,
+          y: -height - PADDING,
+        });
+      } else {
+        const prev = acc[i - 1];
+        acc.push({
+          ...attrs,
+          x,
+          y: prev.y - height - PADDING,
+        });
+      }
+      return acc;
+    }, []);
+  });
+
   console.log(inventoryRects);
   console.log(stripRects);
 
