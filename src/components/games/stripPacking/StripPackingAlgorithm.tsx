@@ -43,7 +43,7 @@ interface StripPackingAlgorithmProps {
 }
 
 export interface StripPackingAlgorithHandle {
-  place: (inventoryRect: ColorRect<RectangleConfig>) => string | undefined;
+  place: (inventoryRect: ColorRect<RectangleConfig>) => void;
 }
 
 const StripPackingAlgorithm = React.forwardRef<
@@ -55,7 +55,7 @@ const StripPackingAlgorithm = React.forwardRef<
     any
   > | null>(null);
 
-  const inventory = useMemo(() => input, []);
+  const inventory = useMemo(() => [...input], []);
 
   const [stripRects, setStripRects] = useState<
     ColorRect<RectangleConfig & PrevPos>[]
@@ -123,8 +123,6 @@ const StripPackingAlgorithm = React.forwardRef<
         prevX: inventoryRect.x - inventoryWidth,
         prevY: inventoryRect.y,
       });
-
-      return rect.name;
     },
   }));
 
@@ -135,10 +133,9 @@ const StripPackingAlgorithm = React.forwardRef<
           <MyRect
             key={r.name}
             {...r}
-            x={0}
             strokeWidth={2}
             stroke={"#002050FF"}
-            y={height}
+            y={r.y + height}
             id={`STRIP_RECT`}
           />
         );

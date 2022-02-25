@@ -37,6 +37,7 @@ const Inventory = React.forwardRef<KonvaLayer, InventoryProps>(
     const handleDragEnd = (evt: KonvaEventObject<DragEvent>) => {
       const rect = evt.target;
       const { name, width } = rect.getAttrs();
+      console.log({ name });
       const { x: x, y: y } = inventory.find((r) => r.name === name)!;
       const { x: absX } = rect.getAbsolutePosition();
 
