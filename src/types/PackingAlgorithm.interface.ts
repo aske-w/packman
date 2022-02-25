@@ -1,12 +1,19 @@
+import { ColorRect } from "./ColorRect.interface";
 import { Dimensions } from "./Dimensions.interface";
-import { Rectangle } from "./Rectangle.interface";
+import { DimensionsWithConfig } from "./DimensionsWithConfig.type";
 
-export interface PackingAlgorithm {
+export interface PackingAlgorithm<
+  Config extends Record<string, any> = {},
+  SortedData = DimensionsWithConfig<Config>[]
+> {
   gameSize: Dimensions;
-  load(data: Dimensions[]): PackingAlgorithm;
-  next(): Dimensions;
-  place(): Rectangle;
+  load(
+    data: DimensionsWithConfig<Config>[]
+  ): PackingAlgorithm<Config, SortedData>;
+  next(): DimensionsWithConfig<Config>;
+  place(): ColorRect<Config>;
   isFinished(): boolean;
+  getSortedData(): SortedData;
 }
 
 export enum PackingAlgorithms {

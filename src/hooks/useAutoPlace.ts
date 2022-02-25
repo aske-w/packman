@@ -7,12 +7,12 @@ export const useAutoPlace = (
   place: () => void,
   algoState: AlgoStates
 ) => {
-  const SCALE_FACTOR = 20;
+  const SCALE_FACTOR = 10;
   const {
     progress: speed,
     updateProgress: updateSpeed,
     scaledProgress: scaledSpeed,
-  } = useRangeSlider(10, SCALE_FACTOR);
+  } = useRangeSlider(50, SCALE_FACTOR);
 
   useEffect(() => {
     let tid: NodeJS.Timeout | null = null;

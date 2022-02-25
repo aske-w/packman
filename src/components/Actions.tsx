@@ -125,8 +125,8 @@ const Actions: React.FC<Props> = ({
 export const genData = (amount = 10): Dimensions[] => {
   return Array.from({ length: amount }, (_, _i) => {
     return {
-      width: Math.round(Math.random() * 100),
-      height: Math.round(Math.random() * 100),
+      width: Math.round(Math.max(Math.random() * 100, 50)),
+      height: Math.round(Math.max(Math.random() * 100, 50)),
     };
   });
 };

@@ -9,6 +9,7 @@ import { useStats } from "./useStats";
 import { FirstFitDecreasingHeight } from "../algorithms/FirstFitDecreasingHeight";
 import { BestFitDecreasingHeight } from "../algorithms/BestFitDecreasingHeight";
 import { SizeAlternatingStack } from "../algorithms/SizeAlternatingStack";
+import { DimensionsWithConfig } from "../types/DimensionsWithConfig.type";
 
 const {
   BEST_FIT_DECREASING_HEIGHT,
@@ -26,7 +27,10 @@ export const usePackingAlgorithms = (
   const { addArea, getStats } = useStats(size.width);
   const [algoState, setAlgoState] = useState<AlgoStates>("STOPPED");
   const [isFinished, setIsFinished] = useState(true);
-  const algorithm = useRef<PackingAlgorithm>(new NextFitDecreasingHeight(size));
+  // TODO better typings than any :)
+  const algorithm = useRef<PackingAlgorithm<{}, any>>(
+    new NextFitDecreasingHeight(size)
+  );
 
   const reset = useCallback(() => {
     setIsFinished(true);
@@ -54,24 +58,24 @@ export const usePackingAlgorithms = (
   }, [addArea, algorithm, reset]);
 
   const start = useCallback(
-    (data: Dimensions[]) => {
+    (data: DimensionsWithConfig<{}>[]) => {
       intializeOnStart();
 
       switch (selectedAlgorithm) {
         case NEXT_FIT_DECREASING_HEIGHT:
-          algorithm.current = new NextFitDecreasingHeight(size).load(data);
+          algorithm.current = new NextFitDecreasingHeight<{}>(size).load(data);
           break;
 
         case FIRST_FIT_DECREASING_HEIGHT:
-          algorithm.current = new FirstFitDecreasingHeight(size).load(data);
+          algorithm.current = new FirstFitDecreasingHeight<{}>(size).load(data);
           break;
 
         case BEST_FIT_DECREASING_HEIGHT:
-          algorithm.current = new BestFitDecreasingHeight(size).load(data);
+          algorithm.current = new BestFitDecreasingHeight<{}>(size).load(data);
           break;
 
         case SIZE_ALTERNATING_STACK:
-          algorithm.current = new SizeAlternatingStack(size).load(data);
+          algorithm.current = new SizeAlternatingStack<{}>(size).load(data);
           break;
 
         default:
