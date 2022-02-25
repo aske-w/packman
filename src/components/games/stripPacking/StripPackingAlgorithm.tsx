@@ -66,15 +66,22 @@ const StripPackingAlgorithm = React.forwardRef<
     ColorRect<RectangleConfig>[]
   >([]);
 
+  // layer for displaying the rectangles that are already packed
   const stripLayer = useRef<KonvaLayer>(null);
+  // layer for displaying the rectangles that are yet to be packed
   const inventoryLayer = useRef<KonvaLayer>(null);
+  // layer for animating rectangles in the inventory
+  const animationLayer = useRef<KonvaLayer>(null);
 
   const [algo, setAlgo] = useState<PackingAlgorithm<
     RectangleConfig,
     any
   > | null>(null);
 
-  const inventoryTranslateY = useRef(0);
+  /**
+   * Used to keep track of how much the animationLayer should move down
+   */
+  const removedRectHeightAndPadding = useRef(0);
 
   const calcInitialPositions = (
     rects: DimensionsWithConfig<RectangleConfig>[]
@@ -138,6 +145,13 @@ const StripPackingAlgorithm = React.forwardRef<
     setAlgo(algo);
   }, [algorithm]);
 
+  /**
+   * Rectangles under animation, after place have been called. Otherwise it's empty
+   */
+  const [rectsUnderAnimation, setRectsUnderAnimation] = useState<ColorRect[]>(
+    []
+  );
+
   useImperativeHandle(ref, () => ({
     place: () => {
       if (algo?.isFinished()) return;
@@ -148,57 +162,63 @@ const StripPackingAlgorithm = React.forwardRef<
 
         const stripScrollOffset = stripLayer.current?.y()!;
 
+        // we need to set the prev values, so we can perform the enter animation
         setStripRects((prev) => [
           ...prev,
           {
             ...rect,
             x: rect.x - INVENTORY_SIZE.width,
-            y: rect.y - stripScrollOffset,
+            y: rect.y + scrollableStripHeight - GAME_HEIGHT,
             prevX: prevX - INVENTORY_SIZE.width,
-            prevY: prevY + inventoryTranslateY.current - stripScrollOffset,
+            prevY: prevY - stripScrollOffset,
           },
         ]);
-
+        // get the rectangles above the one we removed, these have to be animated
         const aboveRemoved = inventoryRects.slice(curIdx + 1);
-
-        const updatedRects = aboveRemoved.map((r) => ({
-          ...r,
-          y: r.y + height + PADDING,
-        }));
-        updatedRects
-          .map((r, i) => {
-            const node = inventoryLayer.current?.findOne("." + r.name);
-            if (!node) return;
-
-            const last = i === updatedRects.length - 1;
-
-            return new Konva.Tween({
-              node,
-              y: GAME_HEIGHT + r.y,
-              easing: Konva.Easings.EaseInOut,
-              duration: 0.3,
-            });
-          })
-          .forEach((t) => t?.play());
-
+        removedRectHeightAndPadding.current = height + PADDING;
+        // get the rectangles below the one we removed, these can be static
         const underRemoved = inventoryRects.slice(0, curIdx);
-        setInventoryRects(underRemoved.concat(updatedRects));
-        // update the inventory y translation
-        // inventoryTranslateY.current =
-        //   inventoryTranslateY.current + height + PADDING;
-
-        // animate to position
-        // setTimeout(() => {
-        //   new Konva.Tween({
-        //     node: inventoryLayer.current!,
-        //     y: inventoryTranslateY.current,
-        //     easing: Konva.Easings.EaseInOut,
-        //     duration: 0.3,
-        //   }).play();
-        // }, ENTER_ANIMATION_DURATION_SECONDS * 1000);
+        setInventoryRects(underRemoved);
+        setRectsUnderAnimation(aboveRemoved);
       }
     },
   }));
+
+  /**
+   * Keeps track of the accumalated translation amount for the animation layer
+   */
+  const animationLayerTranslateY = useRef(0);
+
+  useEffect(() => {
+    // if this is empty, we just finished an animation (or initial load)
+    if (rectsUnderAnimation.length === 0) return;
+    const handleFinish = () => {
+      setInventoryRects((old) =>
+        old.concat(
+          rectsUnderAnimation.map((r) => ({
+            ...r,
+            // update the y values, so they stay in the same position as where they ended up after their animation
+            y: r.y + removedRectHeightAndPadding.current,
+          }))
+        )
+      );
+      // clear the animation layer
+      setRectsUnderAnimation([]);
+    };
+
+    // animate to position
+    setTimeout(() => {
+      // add to the accumalative animationLayer translation
+      animationLayerTranslateY.current += removedRectHeightAndPadding.current;
+      new Konva.Tween({
+        node: animationLayer.current!,
+        y: animationLayerTranslateY.current,
+        easing: Konva.Easings.EaseInOut,
+        duration: ENTER_ANIMATION_DURATION_SECONDS,
+        onFinish: handleFinish,
+      }).play();
+    }, ENTER_ANIMATION_DURATION_SECONDS * 1000);
+  }, [rectsUnderAnimation]);
 
   const stripVerticalBar = useRef<KonvaRect>(null);
   const handleWheel = (e: KonvaEventObject<WheelEvent> & KonvaWheelEvent) => {
@@ -257,20 +277,6 @@ const StripPackingAlgorithm = React.forwardRef<
               x={GAME_WIDTH - PADDING - SCROLLBAR_WIDTH}
               onYChanged={(newY) => stripLayer.current?.y(newY)}
             />
-
-            {/* {stripRects.map((r) => {
-              return (
-                <MyRect
-                  key={r.name}
-                  {...r}
-                  x={r.x + INVENTORY_SIZE.width}
-                  strokeWidth={2}
-                  stroke={"#002050FF"}
-                  y={GAME_HEIGHT + r.y}
-                  id={`STRIP_RECT`}
-                />
-              );
-            })} */}
           </Layer>
 
           {/* Strip layer */}
@@ -295,6 +301,18 @@ const StripPackingAlgorithm = React.forwardRef<
           </Layer>
           {/* Inventory layer */}
 
+          <Layer ref={animationLayer}>
+            {rectsUnderAnimation.map((r) => (
+              <Rect
+                key={r.name}
+                {...r}
+                strokeWidth={2}
+                stroke={"#002050FF"}
+                y={GAME_HEIGHT + r.y - animationLayerTranslateY.current}
+                id={`UNDER_ANIMATION_RECT`}
+              />
+            ))}
+          </Layer>
           <Layer ref={inventoryLayer}>
             {inventoryRects.map((r) => {
               return (

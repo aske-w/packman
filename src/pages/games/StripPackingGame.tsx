@@ -30,7 +30,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
             input,
             scrollableStripHeight,
             ref,
-            algorithm: PackingAlgorithms.NEXT_FIT_DECREASING_HEIGHT,
+            algorithm: PackingAlgorithms.SIZE_ALTERNATING_STACK,
           }}
         ></StripPackingAlgorithm>
       </div>
