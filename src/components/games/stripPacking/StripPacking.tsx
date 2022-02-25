@@ -17,7 +17,6 @@ import {
   GAME_HEIGHT,
   GAME_WIDTH,
   INVENTORY_SIZE,
-  NUM_RECTS,
   STRIP_SIZE,
 } from "../../../config/canvasConfig";
 import { ColorRect } from "../../../types/ColorRect.interface";
@@ -87,7 +86,10 @@ const StripPacking: React.FC<StripPackingProps> = ({ input, onDragDrop }) => {
   };
 
   const totalHeight = useMemo(() => {
-    return stripRects.reduce((maxY, r) => Math.max(maxY, -1 * r.y), 0);
+    return stripRects.reduce(
+      (maxY, r) => Math.max(maxY, Math.round(scrollableStripHeight - r.y)),
+      0
+    );
   }, [stripRects]);
   // const [totalHeight, setTotalHeight] = useState(0);
 
@@ -102,7 +104,8 @@ const StripPacking: React.FC<StripPackingProps> = ({ input, onDragDrop }) => {
 
     if (inStripArea) {
       setInventoryRects((old) => old.filter((r) => r.name !== name));
-      const scrollOffset = inventoryLayer.current?.y()!;
+      const inventoryScrollOffset = inventoryLayer.current?.y()!;
+      const stripScrollOffset = stripLayer.current?.y()!;
       setStripRects((prev) => [
         ...prev,
         {
@@ -110,7 +113,7 @@ const StripPacking: React.FC<StripPackingProps> = ({ input, onDragDrop }) => {
           name,
           height,
           width,
-          y: y - STRIP_SIZE.height + scrollOffset,
+          y: y - STRIP_SIZE.height + inventoryScrollOffset - stripScrollOffset,
           x: x - INVENTORY_SIZE.width,
         },
       ]);
@@ -130,8 +133,9 @@ const StripPacking: React.FC<StripPackingProps> = ({ input, onDragDrop }) => {
 
     const inInventoryArea = x < INVENTORY_SIZE.width;
 
-    const scrollOffset = inventoryLayer.current?.y()!;
+    const stripScrollOffset = stripLayer.current?.y()!;
     if (inInventoryArea) {
+      const scrollOffset = inventoryLayer.current?.y()!;
       // move to other list of rectangles
       setStripRects((old) => old.filter((r) => r.name !== name));
       setInventoryRects((prev) => [
@@ -141,7 +145,7 @@ const StripPacking: React.FC<StripPackingProps> = ({ input, onDragDrop }) => {
           name,
           height,
           width,
-          y: y - scrollableInventoryHeight - scrollOffset,
+          y: y - scrollableInventoryHeight - scrollOffset + stripScrollOffset,
           x: x,
         },
       ]);
@@ -151,7 +155,7 @@ const StripPacking: React.FC<StripPackingProps> = ({ input, onDragDrop }) => {
         const idx = tmp.findIndex((r) => r.name === name);
         if (idx === -1) return old;
         tmp[idx].x = x - INVENTORY_SIZE.width;
-        tmp[idx].y = absY - GAME_HEIGHT;
+        tmp[idx].y = absY - GAME_HEIGHT - stripScrollOffset;
         return tmp;
       });
     }

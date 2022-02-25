@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import StripAlgoCanvas, {
   StripAlgoCanvasHandle,
 } from "../../components/games/stripPacking/StripAlgoCanvas";
