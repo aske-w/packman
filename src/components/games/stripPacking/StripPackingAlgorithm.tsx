@@ -145,18 +145,8 @@ const StripPackingAlgorithm = React.forwardRef<
       if (rect) {
         const curIdx = inventoryRects.findIndex((r) => r.name === rect.name)!;
         const { x: prevX, y: prevY, height } = inventoryRects[curIdx];
-        const inventoryScrollOffset = inventoryLayer.current?.y()!;
-        const stripScrollOffset = stripLayer.current?.y()!;
-        console.log({ stripScrollOffset });
 
-        // add to strip
-        // y - STRIP_SIZE.height + inventoryScrollOffset - stripScrollOffset
-        console.log({
-          inventoryLayerTranslate: inventoryTranslateY.current,
-          prev: prevY + inventoryTranslateY.current - stripScrollOffset,
-          new: rect.y - stripScrollOffset,
-          prevY,
-        });
+        const stripScrollOffset = stripLayer.current?.y()!;
 
         setStripRects((prev) => [
           ...prev,
@@ -168,21 +158,44 @@ const StripPackingAlgorithm = React.forwardRef<
             prevY: prevY + inventoryTranslateY.current - stripScrollOffset,
           },
         ]);
-        // add to remove from inventory
-        setInventoryRects(inventoryRects.filter((_, i) => i !== curIdx));
+
+        const aboveRemoved = inventoryRects.slice(curIdx + 1);
+
+        const updatedRects = aboveRemoved.map((r) => ({
+          ...r,
+          y: r.y + height + PADDING,
+        }));
+        updatedRects
+          .map((r, i) => {
+            const node = inventoryLayer.current?.findOne("." + r.name);
+            if (!node) return;
+
+            const last = i === updatedRects.length - 1;
+
+            return new Konva.Tween({
+              node,
+              y: GAME_HEIGHT + r.y,
+              easing: Konva.Easings.EaseInOut,
+              duration: 0.3,
+            });
+          })
+          .forEach((t) => t?.play());
+
+        const underRemoved = inventoryRects.slice(0, curIdx);
+        setInventoryRects(underRemoved.concat(updatedRects));
         // update the inventory y translation
-        inventoryTranslateY.current =
-          inventoryTranslateY.current + height + PADDING;
+        // inventoryTranslateY.current =
+        //   inventoryTranslateY.current + height + PADDING;
 
         // animate to position
-        setTimeout(() => {
-          new Konva.Tween({
-            node: inventoryLayer.current!,
-            y: inventoryTranslateY.current,
-            easing: Konva.Easings.EaseInOut,
-            duration: 0.3,
-          }).play();
-        }, ENTER_ANIMATION_DURATION_SECONDS * 1000);
+        // setTimeout(() => {
+        //   new Konva.Tween({
+        //     node: inventoryLayer.current!,
+        //     y: inventoryTranslateY.current,
+        //     easing: Konva.Easings.EaseInOut,
+        //     duration: 0.3,
+        //   }).play();
+        // }, ENTER_ANIMATION_DURATION_SECONDS * 1000);
       }
     },
   }));
