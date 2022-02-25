@@ -16,8 +16,8 @@ export const generateData = (
   });
 };
 
-export const generateInventory = (inventorySize: number) => {
-  return generateData(40).reduce<{
+export const generateInventory = (inventorySize: number, numItems = 50) => {
+  return generateData(numItems, 200, 25).reduce<{
     rects: ColorRect[];
     row: {
       y: number;

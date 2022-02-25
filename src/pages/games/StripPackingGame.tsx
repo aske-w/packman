@@ -1,80 +1,111 @@
-import Konva from "konva";
 import React, { useRef, useState } from "react";
 import { Layer, Rect, Stage } from "react-konva";
 import Inventory from "../../components/games/stripPacking/Inventory";
 import StripPackingAlgorithm, {
-  StripPackingAlgorithmCanvasHandle,
+  StripPackingAlgorithHandle,
 } from "../../components/games/stripPacking/StripPackingAlgorithm";
-import StripPackingInteractive from "../../components/games/stripPacking/StripPackingInteractive";
-import {
-  GAME_HEIGHT,
-  genId,
-  genInventory,
-  INVENTORY_SIZE,
-  NAV_HEIGHT,
-  PADDING,
-  STAGE_SIZE,
-} from "../../config/canvasConfig";
+import { NAV_HEIGHT } from "../../config/canvasConfig";
 import { useWindowSize } from "../../hooks/useWindowSize";
+import { useKonvaWheelHandler } from "../../hooks/useKonvaWheelHandler";
 import { ColorRect } from "../../types/ColorRect.interface";
 import { PackingAlgorithms } from "../../types/PackingAlgorithm.interface";
 import { generateInventory } from "../../utils/generateData";
+import { Rect as KonvaRect } from "konva/lib/shapes/Rect";
+import ScrollBar from "../../components/canvas/ScrollBar";
+import { SCROLLBAR_WIDTH, PADDING } from "../../config/canvasConfig";
+import { Layer as KonvaLayer } from "konva/lib/Layer";
+import { RectangleConfig } from "../../types/RectangleConfig.interface";
 
 interface StripPackingGameProps {}
 
 const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   const { width: wWidth, height: wHeight } = useWindowSize();
-  const stripSize = wWidth * 0.2;
-  const inventorySize = wWidth * 0.6;
+  const stripWidth = wWidth * 0.2;
+  const inventoryWidth = wWidth * 0.6;
   const gameHeight = wHeight - NAV_HEIGHT;
+
   const [inventory, setInventory] = useState(() =>
-    generateInventory(inventorySize)
+    generateInventory(inventoryWidth)
   );
 
-  const place = (name: string) => {};
+  const algoRef = useRef<StripPackingAlgorithHandle>(null);
+
+  const onDraggedToStrip = (rectName: string) => {
+    const rect = inventory.find((r) => r.name === rectName);
+    console.log({ rect });
+    // Place in algorithm canvas
+    if (rect) algoRef.current?.place(rect);
+
+    // place in interactive canvas (update its state)
+  };
+  const scrollBarRef = useRef<KonvaRect>(null);
+  const inventoryLayer = useRef<KonvaLayer>(null);
+  const scrollableHeight = gameHeight * 2;
+  const handleWheel = useKonvaWheelHandler({
+    area: {
+      minX: stripWidth,
+      maxX: stripWidth + inventoryWidth,
+    },
+    gameHeight,
+    layerRef: inventoryLayer,
+    scrollBarRef: scrollBarRef,
+    scrollableHeight,
+  });
 
   return (
     <div className="w-full">
       <div className="flex items-center justify-between w-full">
-        <Stage width={window.innerWidth} height={gameHeight}>
+        <Stage
+          onWheel={handleWheel}
+          width={window.innerWidth}
+          height={gameHeight}
+        >
           <Layer>
             {/* Strip canvas */}
-            <Rect fill="#555" x={0} width={stripSize} height={gameHeight} />
+            <Rect fill="#555" x={0} width={stripWidth} height={gameHeight} />
             {/* Inventory */}
             <Rect
               fill="#333"
-              x={stripSize}
-              width={inventorySize}
+              x={stripWidth}
+              width={inventoryWidth}
               height={gameHeight}
             />
             {/* Algorithm canvas */}
             <Rect
               fill="#555"
-              x={inventorySize + stripSize}
-              width={stripSize}
+              x={inventoryWidth + stripWidth}
+              width={stripWidth}
               height={gameHeight}
+            />
+            <ScrollBar
+              ref={scrollBarRef}
+              scrollableHeight={scrollableHeight}
+              x={stripWidth + inventoryWidth - PADDING - SCROLLBAR_WIDTH}
+              gameHeight={gameHeight}
+              onYChanged={(newY) => inventoryLayer.current?.y(newY)}
             />
           </Layer>
           <Inventory
+            ref={inventoryLayer}
             {...{
-              x: stripSize,
+              onDraggedToStrip,
+              stripWidth: stripWidth,
+              inventoryWidth: inventoryWidth,
               inventory,
               gameHeight,
             }}
           />
+
+          <StripPackingAlgorithm
+            ref={algoRef}
+            inventoryWidth={inventoryWidth}
+            x={inventoryWidth + stripWidth}
+            width={stripWidth}
+            height={gameHeight}
+            inventory={inventory}
+            algorithm={PackingAlgorithms.NEXT_FIT_DECREASING_HEIGHT}
+          />
         </Stage>
-        {/* <StripPackingInteractive
-          {...{ input, scrollableStripHeight }}
-          onDragDrop={onStripDrop}
-        ></StripPackingInteractive>
-        <StripPackingAlgorithm
-          {...{
-            input,
-            scrollableStripHeight,
-            ref,
-            algorithm: PackingAlgorithms.SIZE_ALTERNATING_STACK,
-          }}
-        ></StripPackingAlgorithm> */}
       </div>
     </div>
   );
