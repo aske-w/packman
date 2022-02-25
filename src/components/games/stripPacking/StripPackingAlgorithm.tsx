@@ -12,8 +12,12 @@ import { NextFitDecreasingHeight } from "../../../algorithms/NextFitDecreasingHe
 import {
   CanvasProps,
   GAME_HEIGHT,
+  GAME_WIDTH,
   INVENTORY_SIZE,
+  KonvaWheelEvent,
   PADDING,
+  SCROLLBAR_HEIGHT,
+  SCROLLBAR_WIDTH,
   STAGE_SIZE,
   STRIP_SIZE,
 } from "../../../config/canvasConfig";
@@ -29,6 +33,8 @@ import Konva from "konva";
 import { Rect as KonvaRect, RectConfig } from "konva/lib/shapes/Rect";
 import { Layer as KonvaLayer } from "konva/lib/Layer";
 import { SizeAlternatingStack } from "../../../algorithms/SizeAlternatingStack";
+import { KonvaEventObject } from "konva/lib/Node";
+import ScrollBar from "../../canvas/ScrollBar";
 
 const {
   BEST_FIT_DECREASING_HEIGHT,
@@ -52,13 +58,16 @@ const ENTER_ANIMATION_DURATION_SECONDS = 0.5;
 const StripPackingAlgorithm = React.forwardRef<
   StripPackingAlgorithmCanvasHandle,
   StripPackingAlgorithmCanvasProps
->(({ input, algorithm }, ref) => {
+>(({ input, algorithm, scrollableStripHeight }, ref) => {
   const [stripRects, setStripRects] = useState<
     ColorRect<RectangleConfig & PrevPos>[]
   >([]);
   const [inventoryRects, setInventoryRects] = useState<
     ColorRect<RectangleConfig>[]
   >([]);
+
+  const stripLayer = useRef<KonvaLayer>(null);
+  const inventoryLayer = useRef<KonvaLayer>(null);
 
   const [algo, setAlgo] = useState<PackingAlgorithm<
     RectangleConfig,
@@ -136,13 +145,27 @@ const StripPackingAlgorithm = React.forwardRef<
       if (rect) {
         const curIdx = inventoryRects.findIndex((r) => r.name === rect.name)!;
         const { x: prevX, y: prevY, height } = inventoryRects[curIdx];
+        const inventoryScrollOffset = inventoryLayer.current?.y()!;
+        const stripScrollOffset = stripLayer.current?.y()!;
+        console.log({ stripScrollOffset });
+
         // add to strip
+        // y - STRIP_SIZE.height + inventoryScrollOffset - stripScrollOffset
+        console.log({
+          inventoryLayerTranslate: inventoryTranslateY.current,
+          prev: prevY + inventoryTranslateY.current - stripScrollOffset,
+          new: rect.y - stripScrollOffset,
+          prevY,
+        });
+
         setStripRects((prev) => [
           ...prev,
           {
             ...rect,
-            prevX,
-            prevY: prevY + inventoryTranslateY.current,
+            x: rect.x - INVENTORY_SIZE.width,
+            y: rect.y - stripScrollOffset,
+            prevX: prevX - INVENTORY_SIZE.width,
+            prevY: prevY + inventoryTranslateY.current - stripScrollOffset,
           },
         ]);
         // add to remove from inventory
@@ -164,10 +187,42 @@ const StripPackingAlgorithm = React.forwardRef<
     },
   }));
 
-  const inventoryLayer = useRef<KonvaLayer>(null);
+  const stripVerticalBar = useRef<KonvaRect>(null);
+  const handleWheel = (e: KonvaEventObject<WheelEvent> & KonvaWheelEvent) => {
+    e.evt.preventDefault();
+    const isOutsideInventory = e.evt.layerX > INVENTORY_SIZE.width;
+
+    if (isOutsideInventory) {
+      const layer = stripLayer.current!;
+      const dy = e.evt.deltaY;
+      const oldY = layer.y();
+
+      const minY = -(scrollableStripHeight - GAME_HEIGHT);
+      const maxY = 0;
+
+      const y = Math.max(minY, Math.min(oldY - dy, maxY));
+
+      layer.y(y);
+
+      const stageHeight = GAME_HEIGHT;
+      const availableHeight = stageHeight - PADDING * 2 - SCROLLBAR_HEIGHT;
+
+      const vy =
+        (y / (-scrollableStripHeight + stageHeight)) * availableHeight +
+        PADDING;
+
+      stripVerticalBar.current?.y(vy);
+
+      return;
+    }
+  };
 
   const totalHeight = useMemo(() => {
-    return stripRects.reduce((maxY, { y }) => Math.max(maxY, -1 * y), 0);
+    return stripRects.reduce(
+      (maxY, { y }) =>
+        Math.max(maxY, Math.round(scrollableStripHeight - y - GAME_HEIGHT)),
+      0
+    );
   }, [stripRects]);
 
   return (
@@ -177,12 +232,41 @@ const StripPackingAlgorithm = React.forwardRef<
           <span>Total height: {totalHeight}</span>
           <span>Rectangles left: {inventoryRects.length}</span>
         </div>
-        <Stage {...STAGE_SIZE}>
+        <Stage onWheel={handleWheel} {...STAGE_SIZE}>
+          {/* Background layer */}
+
           <Layer>
             <Rect fill="#ffffff" {...STRIP_SIZE} />
             <Rect fill="gold" {...INVENTORY_SIZE} />
+            <ScrollBar
+              ref={stripVerticalBar}
+              scrollableHeight={scrollableStripHeight}
+              x={GAME_WIDTH - PADDING - SCROLLBAR_WIDTH}
+              onYChanged={(newY) => stripLayer.current?.y(newY)}
+            />
 
-            {stripRects.map((r) => {
+            {/* {stripRects.map((r) => {
+              return (
+                <MyRect
+                  key={r.name}
+                  {...r}
+                  x={r.x + INVENTORY_SIZE.width}
+                  strokeWidth={2}
+                  stroke={"#002050FF"}
+                  y={GAME_HEIGHT + r.y}
+                  id={`STRIP_RECT`}
+                />
+              );
+            })} */}
+          </Layer>
+
+          {/* Strip layer */}
+          <Layer
+            {...STRIP_SIZE}
+            y={-(scrollableStripHeight - STRIP_SIZE.height)}
+            ref={stripLayer}
+          >
+            {stripRects.map((r, i) => {
               return (
                 <MyRect
                   key={r.name}
@@ -196,6 +280,8 @@ const StripPackingAlgorithm = React.forwardRef<
               );
             })}
           </Layer>
+          {/* Inventory layer */}
+
           <Layer ref={inventoryLayer}>
             {inventoryRects.map((r) => {
               return (

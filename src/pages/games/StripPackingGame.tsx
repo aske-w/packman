@@ -11,6 +11,7 @@ interface StripPackingGameProps {}
 const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   const [input, setInput] = useState(genInventory);
   const ref = useRef<StripPackingAlgorithmCanvasHandle>(null);
+  const scrollableStripHeight = 10000;
   //   state gen data
 
   const onStripDrop = () => {
@@ -21,13 +22,16 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
     <div className="w-full">
       <div className="flex items-center justify-between w-full">
         <StripPackingInteractive
-          input={input}
+          {...{ input, scrollableStripHeight }}
           onDragDrop={onStripDrop}
         ></StripPackingInteractive>
         <StripPackingAlgorithm
-          ref={ref}
-          input={input}
-          algorithm={PackingAlgorithms.SIZE_ALTERNATING_STACK}
+          {...{
+            input,
+            scrollableStripHeight,
+            ref,
+            algorithm: PackingAlgorithms.SIZE_ALTERNATING_STACK,
+          }}
         ></StripPackingAlgorithm>
       </div>
     </div>

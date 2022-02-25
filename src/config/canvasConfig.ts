@@ -1,14 +1,23 @@
 import { DimensionsWithConfig } from "./../types/DimensionsWithConfig.type";
 import Konva from "konva";
 import { genData } from "../components/Actions";
-import { ColorRect } from "../types/ColorRect.interface";
 import { Dimensions } from "../types/Dimensions.interface";
 import { Rectangle } from "../types/Rectangle.interface";
-import { RectangleConfig } from "../types/RectangleConfig.interface";
 
 export interface CanvasProps {
+  scrollableStripHeight: number;
   input: DimensionsWithConfig[];
 }
+
+export type KonvaWheelEvent = {
+  evt: {
+    layerX: number;
+    layerY: number;
+  };
+};
+
+export const SCROLLBAR_HEIGHT = 100;
+export const SCROLLBAR_WIDTH = 10;
 
 export const WINDOW_HEIGHT = window.innerHeight;
 export const GAME_HEIGHT = WINDOW_HEIGHT * 0.6;

@@ -17,42 +17,31 @@ import {
   GAME_HEIGHT,
   GAME_WIDTH,
   INVENTORY_SIZE,
+  KonvaWheelEvent,
+  PADDING,
+  SCROLLBAR_HEIGHT,
+  SCROLLBAR_WIDTH,
+  STAGE_SIZE,
   STRIP_SIZE,
 } from "../../../config/canvasConfig";
 import { ColorRect } from "../../../types/ColorRect.interface";
+import ScrollBar from "../../canvas/ScrollBar";
 
 interface StripPackingInteractiveProps extends CanvasProps {
   onDragDrop(): void;
 }
 
-type KonvaWheelEvent = {
-  evt: {
-    layerX: number;
-    layerY: number;
-  };
-};
-
 console.log({ gameHeight: GAME_HEIGHT });
-
-const stageSize: Dimensions = {
-  width: STRIP_SIZE.width + INVENTORY_SIZE.width,
-  height: Math.max(STRIP_SIZE.height, INVENTORY_SIZE.height),
-};
-
-const SCROLLBAR_HEIGHT = 100;
-const SCROLLBAR_WIDTH = 10;
-const PADDING = 5;
 
 const StripPackingInteractive: React.FC<StripPackingInteractiveProps> = ({
   input,
   onDragDrop,
+  scrollableStripHeight,
 }) => {
   const scrollableInventoryHeight = useMemo(
     () => input.reduce((height, r) => height + r.height + PADDING, 0),
     [input]
   );
-
-  const scrollableStripHeight = 10000;
 
   const [stripRects, setStripRects] = useState<ColorRect[]>([]);
   const [inventoryRects, setInventoryRects] = useState(() => {
@@ -121,10 +110,6 @@ const StripPackingInteractive: React.FC<StripPackingInteractiveProps> = ({
           x: x - INVENTORY_SIZE.width,
         },
       ]);
-      // // timeout to flush the state before we update height
-      // setTimeout(() => {
-      //   setTotalHeight(calcTotalHeight(stripRects));
-      // }, 0);
 
       onDragDrop();
     }
@@ -163,10 +148,6 @@ const StripPackingInteractive: React.FC<StripPackingInteractiveProps> = ({
         return tmp;
       });
     }
-    // // timeout to flush the state before we update height
-    // setTimeout(() => {
-    //   setTotalHeight(calcTotalHeight(stripRects));
-    // }, 0);
   };
 
   const inventoryLayer = useRef<KonvaLayer>(null);
@@ -206,6 +187,7 @@ const StripPackingInteractive: React.FC<StripPackingInteractiveProps> = ({
     e.evt.preventDefault();
     const isOutsideInventory = e.evt.layerX > INVENTORY_SIZE.width;
 
+    // If we're in the strip part of the canvas
     if (isOutsideInventory) {
       const layer = stripLayer.current!;
       const dy = e.evt.deltaY;
@@ -229,6 +211,8 @@ const StripPackingInteractive: React.FC<StripPackingInteractiveProps> = ({
 
       return;
     }
+
+    // If we're in the inventory part of the canvas
 
     const layer = inventoryLayer.current!;
 
@@ -259,11 +243,12 @@ const StripPackingInteractive: React.FC<StripPackingInteractiveProps> = ({
         <span>Total height: {totalHeight}</span>
         <span>Rectangles left: {inventoryRects.length}</span>
       </div>
-      <Stage onWheel={handleWheel} {...stageSize}>
+      <Stage onWheel={handleWheel} {...STAGE_SIZE}>
+        {/* Background layer */}
         <Layer>
           <Rect fill="#ffffff" {...STRIP_SIZE} />
           <Rect fill="#eee000" {...INVENTORY_SIZE} />
-          <Rect
+          {/* <Rect
             ref={inventoryVerticalBar}
             width={SCROLLBAR_WIDTH}
             height={SCROLLBAR_HEIGHT}
@@ -297,8 +282,21 @@ const StripPackingInteractive: React.FC<StripPackingInteractiveProps> = ({
 
               inventoryLayer.current?.y(newY);
             }}
+          /> */}
+
+          <ScrollBar
+            ref={inventoryVerticalBar}
+            scrollableHeight={scrollableInventoryHeight}
+            onYChanged={(newY) => inventoryLayer.current?.y(newY)}
+            x={INVENTORY_SIZE.width - PADDING - SCROLLBAR_WIDTH}
           />
-          <Rect
+          <ScrollBar
+            ref={stripVerticalBar}
+            scrollableHeight={scrollableStripHeight}
+            onYChanged={(newY) => stripLayer.current?.y(newY)}
+            x={GAME_WIDTH - PADDING - SCROLLBAR_WIDTH}
+          />
+          {/* <Rect
             ref={stripVerticalBar}
             width={SCROLLBAR_WIDTH}
             height={SCROLLBAR_HEIGHT}
@@ -327,14 +325,13 @@ const StripPackingInteractive: React.FC<StripPackingInteractiveProps> = ({
               console.log({ newY, delta });
               stripLayer.current?.y(newY);
             }}
-          />
+          /> */}
         </Layer>
-        {/* Rect input layer */}
+        {/* Strip layer */}
         <Layer
           {...STRIP_SIZE}
           y={-(scrollableStripHeight - STRIP_SIZE.height)}
           ref={stripLayer}
-          /*onDragEnd={handleStripDragEnd}*/
         >
           {stripRects.map((r, i) => {
             return (
@@ -352,6 +349,8 @@ const StripPackingInteractive: React.FC<StripPackingInteractiveProps> = ({
             );
           })}
         </Layer>
+        {/* Inventory layer */}
+
         <Layer
           {...INVENTORY_SIZE}
           height={INVENTORY_SIZE.height}
