@@ -6,7 +6,7 @@ import { KonvaEventObject } from "konva/lib/Node";
 import { RectConfig, Rect as KonvaRect } from "konva/lib/shapes/Rect";
 import React, { useMemo, useRef, useState } from "react";
 import { Layer, Rect, Stage } from "react-konva";
-import { clamp, resolveCollision } from "../../../utils/konva";
+import { resolveCollision } from "../../../utils/konva";
 import { Shape, ShapeConfig } from "konva/lib/Shape";
 import { Group } from "konva/lib/Group";
 import {
@@ -23,6 +23,7 @@ import {
 } from "../../../config/canvasConfig";
 import { ColorRect } from "../../../types/ColorRect.interface";
 import ScrollBar from "../../canvas/ScrollBar";
+import { clamp } from "../../../utils/clamp";
 
 interface StripPackingInteractiveProps extends CanvasProps {
   onDragDrop(): void;

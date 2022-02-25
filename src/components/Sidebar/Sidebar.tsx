@@ -7,7 +7,6 @@ import {
   ALL_PACKING_ALGORITHMS,
   PackingAlgorithms,
 } from "../../types/PackingAlgorithm.interface";
-import { genData } from "../Actions";
 import AlgoSelect from "../AlgoSelect";
 import SideBarItem from "./SidebarItem";
 import SideBarSection from "./SideBarSection";
@@ -16,6 +15,7 @@ import ActionBtnSelector from "./ActionBtnSelector";
 import RangeSlider from "../RangeSlider";
 import BoxInput from "../BoxInput";
 import RectInput from "../RectInput";
+import { generateData } from "../../utils/generateData";
 
 interface SidebarProps {
   width: number;
@@ -102,7 +102,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               placeNext,
               disabled: isStarted,
               start: () => {
-                setPreviousData(r => dimensionsStorage);
+                setPreviousData((r) => dimensionsStorage);
                 start(dimensionsStorage);
               },
             }}
@@ -137,7 +137,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                   sec=""
                 />
                 <button
-                  onClick={() => setDimensionsStorage(genData(genNum))}
+                  onClick={() => setDimensionsStorage(generateData(genNum))}
                   className={`px-2 py-1 font-medium text-white rounded shadow bg-blue-700 ${
                     isStarted ? "opacity-60" : "hover:bg-blue-800"
                   }`}
@@ -153,13 +153,14 @@ const Sidebar: React.FC<SidebarProps> = ({
             text="Reuse previous data"
             element={
               <div className="flex items-center justify-right space-x-5">
-                <button className={`px-2 py-1 font-medium text-white rounded shadow bg-blue-700 ${
+                <button
+                  className={`px-2 py-1 font-medium text-white rounded shadow bg-blue-700 ${
                     isStarted ? "opacity-60" : "hover:bg-blue-800"
                   }`}
                   onClick={() => setDimensionsStorage((r) => previousData)}
-                  >
-                    Reuse previous data
-                  </button>
+                >
+                  Reuse previous data
+                </button>
               </div>
             }
           />

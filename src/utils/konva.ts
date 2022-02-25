@@ -1,4 +1,5 @@
 import { IRect } from "konva/lib/types";
+import { Dimensions } from "../types/Dimensions.interface";
 
 /**
  * https://greensock.com/forums/topic/18403-prevent-draggables-from-overlapping-with-a-recursive-function/
@@ -55,7 +56,3 @@ export function haveIntersection(r1: IRect, r2: IRect): boolean {
 }
 
 // Math.max(minY, Math.min(oldY - dy, maxY));
-
-export const clamp = (x: number, min: number, max: number) => {
-  return Math.min(max, Math.max(x, min));
-};

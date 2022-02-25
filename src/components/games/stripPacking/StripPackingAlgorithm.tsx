@@ -153,7 +153,7 @@ const StripPackingAlgorithm = React.forwardRef<
   );
 
   useImperativeHandle(ref, () => ({
-    place: () => {
+    place: async () => {
       if (algo?.isFinished()) return;
       const rect = algo?.place();
       if (rect) {
@@ -161,6 +161,26 @@ const StripPackingAlgorithm = React.forwardRef<
         const { x: prevX, y: prevY, height } = inventoryRects[curIdx];
 
         const stripScrollOffset = stripLayer.current?.y()!;
+
+        console.log("before");
+        // Scroll into view
+        await new Promise<void>((resolve) => {
+          const layer = inventoryLayer.current!;
+          const newY = prevY * -1 - height - PADDING;
+          console.log({ layerY: layer.y(), prevY, newY });
+          new Konva.Tween({
+            node: layer,
+            onFinish: () => {
+              layer.y(newY);
+              resolve();
+            },
+            y: newY,
+            easing: Konva.Easings.EaseInOut,
+            duration: ENTER_ANIMATION_DURATION_SECONDS * 5,
+          }).play();
+        });
+
+        console.log("after");
 
         // we need to set the prev values, so we can perform the enter animation
         setStripRects((prev) => [
