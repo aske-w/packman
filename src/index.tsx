@@ -6,7 +6,7 @@ import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 import Playground from "./pages/Playground";
 import Home from "./pages/Home";
-import StripPacking from "./components/games/stripPacking/StripPacking";
+import StripPackingInteractive from "./components/games/stripPacking/StripPackingInteractive";
 import StripPackingGame from "./pages/games/StripPackingGame";
 
 ReactDOM.render(

@@ -21,7 +21,7 @@ import {
 } from "../../../config/canvasConfig";
 import { ColorRect } from "../../../types/ColorRect.interface";
 
-interface StripPackingProps extends CanvasProps {
+interface StripPackingInteractiveProps extends CanvasProps {
   onDragDrop(): void;
 }
 
@@ -43,7 +43,10 @@ const SCROLLBAR_HEIGHT = 100;
 const SCROLLBAR_WIDTH = 10;
 const PADDING = 5;
 
-const StripPacking: React.FC<StripPackingProps> = ({ input, onDragDrop }) => {
+const StripPackingInteractive: React.FC<StripPackingInteractiveProps> = ({
+  input,
+  onDragDrop,
+}) => {
   const scrollableInventoryHeight = useMemo(
     () => input.reduce((height, r) => height + r.height + PADDING, 0),
     [input]
@@ -87,7 +90,8 @@ const StripPacking: React.FC<StripPackingProps> = ({ input, onDragDrop }) => {
 
   const totalHeight = useMemo(() => {
     return stripRects.reduce(
-      (maxY, r) => Math.max(maxY, Math.round(scrollableStripHeight - r.y)),
+      (maxY, r) =>
+        Math.max(maxY, Math.round(scrollableStripHeight - r.y - GAME_HEIGHT)),
       0
     );
   }, [stripRects]);
@@ -379,4 +383,4 @@ const StripPacking: React.FC<StripPackingProps> = ({ input, onDragDrop }) => {
   );
 };
 
-export default StripPacking;
+export default StripPackingInteractive;

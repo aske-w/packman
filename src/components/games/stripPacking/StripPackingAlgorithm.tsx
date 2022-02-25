@@ -37,11 +37,11 @@ const {
   SIZE_ALTERNATING_STACK,
 } = PackingAlgorithms;
 
-interface StripAlgoCanvasProps extends CanvasProps {
+interface StripPackingAlgorithmCanvasProps extends CanvasProps {
   algorithm: PackingAlgorithms;
 }
 
-export interface StripAlgoCanvasHandle {
+export interface StripPackingAlgorithmCanvasHandle {
   place(): void;
 }
 
@@ -49,9 +49,9 @@ type PrevPos = { prevX: number; prevY: number };
 
 const ENTER_ANIMATION_DURATION_SECONDS = 0.5;
 
-const StripAlgoCanvas = React.forwardRef<
-  StripAlgoCanvasHandle,
-  StripAlgoCanvasProps
+const StripPackingAlgorithm = React.forwardRef<
+  StripPackingAlgorithmCanvasHandle,
+  StripPackingAlgorithmCanvasProps
 >(({ input, algorithm }, ref) => {
   const [stripRects, setStripRects] = useState<
     ColorRect<RectangleConfig & PrevPos>[]
@@ -216,7 +216,7 @@ const StripAlgoCanvas = React.forwardRef<
   );
 });
 
-export default StripAlgoCanvas;
+export default StripPackingAlgorithm;
 
 const MyRect: React.FC<PrevPos & RectConfig & KonvaNodeEvents> = ({
   x,
