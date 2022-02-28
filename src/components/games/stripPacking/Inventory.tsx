@@ -3,7 +3,7 @@ import { KonvaEventObject } from 'konva/lib/Node';
 import { Rect as KonvaRect } from 'konva/lib/shapes/Rect';
 import { Layer as KonvaLayer } from 'konva/lib/Layer';
 import React, { useRef } from 'react';
-import { Layer, Rect } from 'react-konva';
+import { Layer, Rect, Text } from 'react-konva';
 import {
   CanvasProps,
   INVENTORY_SIZE,
@@ -21,7 +21,7 @@ interface InventoryProps {
   inventoryWidth: number;
   gameHeight: number;
   dynamicInventory: ColorRect[];
-  staticInventory: ReadonlyArray<ColorRect>;
+  staticInventory: ReadonlyArray<ColorRect & { order?: number }>;
   onDraggedToStrip: (rectName: string, pos: Vector2d) => void;
 }
 
@@ -40,7 +40,7 @@ const Inventory = React.forwardRef<KonvaLayer, InventoryProps>(
     const handleDragEnd = (evt: KonvaEventObject<DragEvent>) => {
       const rect = evt.target;
       const { name, width } = rect.getAttrs();
-      console.log({ name });
+
       const { x: x, y: y } = dynamicInventory.find(r => r.name === name)!;
       const { x: dropX, y: dropY } = rect.getAbsolutePosition();
 
@@ -93,12 +93,7 @@ const Inventory = React.forwardRef<KonvaLayer, InventoryProps>(
 
     return (
       <>
-        <Layer
-          // height={gameHeight}
-          x={stripWidth}
-          y={0}
-          ref={ref}
-          name="INVENTORY_LAYER">
+        <Layer x={stripWidth} y={0} ref={ref} name="INVENTORY_LAYER">
           {staticInventory.map((r, i) => {
             return (
               <Rect
@@ -125,6 +120,24 @@ const Inventory = React.forwardRef<KonvaLayer, InventoryProps>(
                 id={`INVENTORY_RECT`}
               />
             );
+          })}
+          {staticInventory.map((r, i) => {
+            return typeof r.order === 'number' ? (
+              <Text
+                key={r.name + 'ghost_text'}
+                text={r.order.toString()}
+                fontSize={20}
+                fill="white"
+                fontVariant="700"
+                align="center"
+                verticalAlign="middle"
+                x={r.x}
+                y={r.y}
+                width={r.width}
+                height={r.height}
+                listening={false}
+              />
+            ) : null;
           })}
         </Layer>
       </>
