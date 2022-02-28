@@ -36,8 +36,8 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   /**
    * This is the immutable inventory, used for rendering the ghosts
    */
-  const [startingInventory] = useState<
-    ReadonlyArray<ColorRect<RectangleConfig>>
+  const [startingInventory, setStartingInventory] = useState<
+    ReadonlyArray<ColorRect<RectangleConfig & { order?: number }>>
   >(() => generateInventory(inventoryWidth, 25));
 
   /**
@@ -55,22 +55,34 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   const interactiveRef = useRef<StripPackingInteractiveHandle>(null);
 
   const onDraggedToStrip = (rectName: string, pos: Vector2d) => {
-    const idx = renderInventory.findIndex(r => r.name === rectName);
+    const rIdx = renderInventory.findIndex(r => r.name === rectName);
 
-    if (idx !== -1) {
-      const rect = renderInventory[idx];
+    if (rIdx !== -1) {
+      const rect = renderInventory[rIdx];
       // Place in algorithm canvas
-      algoRef.current?.place(rect);
+      const res = algoRef.current?.place(rect);
+
       // place in interactive canvas (update its state)
       interactiveRef.current?.place(rect, pos);
 
       setRenderInventory(old => {
         const tmp = [...old];
-        console.log('rect', JSON.stringify(rect, null, 1));
-        const deleted = tmp.splice(idx, 1);
-        console.log('deleted', JSON.stringify(deleted, null, 1));
+        tmp.splice(rIdx, 1);
         return tmp;
       });
+      if (res) {
+        const [placedName, order] = res;
+        console.log(res);
+
+        // give the order of placement to the starting state
+        // setStartingInventory(old => {
+        //   const tmp = [...old];
+        //   const idx = tmp.findIndex(r => r.name === placedName);
+        //   if (idx === -1) return old;
+        //   tmp[idx].order = order;
+        //   return tmp;
+        // });
+      }
     }
   };
   // inventory scroll

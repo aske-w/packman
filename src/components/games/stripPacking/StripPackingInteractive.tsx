@@ -41,13 +41,12 @@ const StripPackingInteractive = React.forwardRef<
 
     useImperativeHandle(ref, () => ({
       place: (r, { x, y }) => {
-        // console.log('inv', JSON.stringify(r, null, 1));
         const newRect = {
           ...r,
           x,
           y,
         };
-        // console.log('new', JSON.stringify(newRect, null, 1));
+
         setStripRects(old => [...old, newRect]);
       },
     }));

@@ -39,7 +39,9 @@ interface StripPackingAlgorithmProps {
 }
 
 export interface StripPackingAlgorithmHandle {
-  place: (inventoryRect: ColorRect<RectangleConfig>) => void;
+  place: (
+    inventoryRect: ColorRect<RectangleConfig>
+  ) => [string, number] | undefined;
 }
 
 const StripPackingAlgorithm = React.forwardRef<
@@ -66,6 +68,8 @@ const StripPackingAlgorithm = React.forwardRef<
     const [stripRects, setStripRects] = useState<
       ColorRect<RectangleConfig & PrevPos>[]
     >([]);
+
+    const [order, setOrder] = useState(0);
 
     useEffect(() => {
       console.log('running algo useEffect');
@@ -126,6 +130,9 @@ const StripPackingAlgorithm = React.forwardRef<
           prevY: inventoryRect.y - scrollOffset,
         };
         setStripRects(prev => [...prev, newRect]);
+        const rOrder = order;
+        setOrder(old => old + 1);
+        return [rect.name, rOrder];
       },
     }));
 
