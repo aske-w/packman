@@ -1,8 +1,8 @@
-import Konva from "konva";
-import { Rect as KonvaRect, RectConfig } from "konva/lib/shapes/Rect";
-import { TextConfig } from "konva/lib/shapes/Text";
-import { Stage as KonvaStage } from "konva/lib/Stage";
-import React, { forwardRef, useEffect, useRef, useState } from "react";
+import Konva from 'konva';
+import { Rect as KonvaRect, RectConfig } from 'konva/lib/shapes/Rect';
+import { TextConfig } from 'konva/lib/shapes/Text';
+import { Stage as KonvaStage } from 'konva/lib/Stage';
+import React, { forwardRef, useEffect, useRef, useState } from 'react';
 import {
   KonvaNodeEvents,
   Label,
@@ -11,11 +11,11 @@ import {
   Stage,
   Tag,
   Text,
-} from "react-konva";
-import { Dimensions } from "../types/Dimensions.interface";
-import { Rectangle } from "../types/Rectangle.interface";
-import { resolveCollision } from "../utils/konva";
-import Card from "./Card";
+} from 'react-konva';
+import { Dimensions } from '../types/Dimensions.interface';
+import { Rectangle } from '../types/Rectangle.interface';
+import { resolveCollision } from '../utils/konva';
+import Card from './Card';
 interface CanvasProps {
   size: Dimensions;
   rects: WithColor<Rectangle>[];
@@ -28,7 +28,7 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(
   ({ size, rects }, handle) => {
     const stageRef = useRef<KonvaStage>(null);
     const [tooltip, setTooltip] = useState<Partial<TextConfig>>({
-      text: "",
+      text: '',
       x: 0,
       y: 0,
       visible: false,
@@ -54,19 +54,18 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(
       const closeToLeft = x < threshold;
       const closeToRight = size.width - x < threshold;
       if (!closeToLeft && !closeToRight) {
-        return "down";
+        return 'down';
       }
-      if (closeToLeft) return "left";
-      if (closeToRight) return "right";
+      if (closeToLeft) return 'left';
+      if (closeToRight) return 'right';
     };
     return (
       <Card
         className="flex w-full h-full bg-white "
         style={{
-          width: size.width + "px",
-          height: size.height + "px",
-        }}
-      >
+          width: size.width + 'px',
+          height: size.height + 'px',
+        }}>
         <Stage ref={stageRef} width={size.width} height={size.height}>
           <Layer
             onDragMove={function (this: Konva.Layer, e) {
@@ -87,8 +86,7 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(
                   target.setPosition({ x, y });
                 }
               });
-            }}
-          >
+            }}>
             {rects.map((rect, i) => {
               return (
                 <MyRect
@@ -97,8 +95,7 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(
                   onMouseOut={() => disableTooltip()}
                   {...rect}
                   y={rect.y + size.height}
-                  fill={rect.color}
-                ></MyRect>
+                  fill={rect.color}></MyRect>
               );
             })}
           </Layer>
@@ -108,16 +105,15 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(
                 x: (tooltip.x || 0) + 10,
                 y: (tooltip.y || 0) + 10,
                 visible: tooltip.visible,
-              }}
-            >
+              }}>
               <Tag
                 {...{
-                  fill: "black",
+                  fill: 'black',
                   pointerDirection: getTooltipPos(tooltip.x!),
                   pointerWidth: 10,
                   pointerHeight: 10,
-                  lineJoin: "round",
-                  shadowColor: "black",
+                  lineJoin: 'round',
+                  shadowColor: 'black',
                   cornerRadius: 10,
                   shadowBlur: 10,
                   shadowOffsetX: 10,
@@ -127,13 +123,12 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(
               />
               <Text
                 {...{
-                  fontFamily: "Arial",
+                  fontFamily: 'Arial',
                   fontSize: 12,
                   padding: 5,
-                  fill: "white",
+                  fill: 'white',
                   text: tooltip.text,
-                }}
-              ></Text>
+                }}></Text>
             </Label>
           </Layer>
         </Stage>
@@ -169,14 +164,13 @@ const MyRect: React.FC<RectConfig & KonvaNodeEvents> = ({
       x={0}
       y={800}
       opacity={0}
-      stroke={"rgba(0,0,0,0.2)"}
+      stroke={'rgba(0,0,0,0.2)'}
       strokeWidth={1}
       scaleX={3}
       scaleY={3}
       rotation={45}
       draggable
-      {...props}
-    ></Rect>
+      {...props}></Rect>
   );
 };
 

@@ -1,20 +1,20 @@
-import React, { useRef, useState } from "react";
-import { Layer, Rect, Stage } from "react-konva";
-import Inventory from "../../components/games/stripPacking/Inventory";
+import React, { useRef, useState } from 'react';
+import { Layer, Rect, Stage } from 'react-konva';
+import Inventory from '../../components/games/stripPacking/Inventory';
 import StripPackingAlgorithm, {
   StripPackingAlgorithHandle,
-} from "../../components/games/stripPacking/StripPackingAlgorithm";
-import { NAV_HEIGHT } from "../../config/canvasConfig";
-import { useWindowSize } from "../../hooks/useWindowSize";
-import { useKonvaWheelHandler } from "../../hooks/useKonvaWheelHandler";
-import { ColorRect } from "../../types/ColorRect.interface";
-import { PackingAlgorithms } from "../../types/PackingAlgorithm.interface";
-import { generateInventory } from "../../utils/generateData";
-import { Rect as KonvaRect } from "konva/lib/shapes/Rect";
-import ScrollBar from "../../components/canvas/ScrollBar";
-import { SCROLLBAR_WIDTH, PADDING } from "../../config/canvasConfig";
-import { Layer as KonvaLayer } from "konva/lib/Layer";
-import { RectangleConfig } from "../../types/RectangleConfig.interface";
+} from '../../components/games/stripPacking/StripPackingAlgorithm';
+import { NAV_HEIGHT } from '../../config/canvasConfig';
+import { useWindowSize } from '../../hooks/useWindowSize';
+import { useKonvaWheelHandler } from '../../hooks/useKonvaWheelHandler';
+import { ColorRect } from '../../types/ColorRect.interface';
+import { PackingAlgorithms } from '../../types/PackingAlgorithm.interface';
+import { generateInventory } from '../../utils/generateData';
+import { Rect as KonvaRect } from 'konva/lib/shapes/Rect';
+import ScrollBar from '../../components/canvas/ScrollBar';
+import { SCROLLBAR_WIDTH, PADDING } from '../../config/canvasConfig';
+import { Layer as KonvaLayer } from 'konva/lib/Layer';
+import { RectangleConfig } from '../../types/RectangleConfig.interface';
 
 interface StripPackingGameProps {}
 
@@ -31,7 +31,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   const algoRef = useRef<StripPackingAlgorithHandle>(null);
 
   const onDraggedToStrip = (rectName: string) => {
-    const rect = inventory.find((r) => r.name === rectName);
+    const rect = inventory.find(r => r.name === rectName);
     console.log({ rect });
     // Place in algorithm canvas
     if (rect) algoRef.current?.place(rect);
@@ -40,6 +40,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   };
   const scrollBarRef = useRef<KonvaRect>(null);
   const inventoryLayer = useRef<KonvaLayer>(null);
+  const inventoryScrollOffset = useRef(0);
   const scrollableHeight = gameHeight * 2;
   const handleWheel = useKonvaWheelHandler({
     area: {
@@ -50,6 +51,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
     layerRef: inventoryLayer,
     scrollBarRef: scrollBarRef,
     scrollableHeight,
+    scrollOffset: inventoryScrollOffset,
   });
 
   return (
@@ -58,8 +60,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
         <Stage
           onWheel={handleWheel}
           width={window.innerWidth}
-          height={gameHeight}
-        >
+          height={gameHeight}>
           <Layer>
             {/* Strip canvas */}
             <Rect fill="#555" x={0} width={stripWidth} height={gameHeight} />
@@ -78,11 +79,12 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
               height={gameHeight}
             />
             <ScrollBar
+              startPosition="top"
               ref={scrollBarRef}
               scrollableHeight={scrollableHeight}
               x={stripWidth + inventoryWidth - PADDING - SCROLLBAR_WIDTH}
               gameHeight={gameHeight}
-              onYChanged={(newY) => inventoryLayer.current?.y(newY)}
+              onYChanged={newY => inventoryLayer.current?.y(newY)}
             />
           </Layer>
           <Inventory
@@ -97,6 +99,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
           />
 
           <StripPackingAlgorithm
+            inventoryScrollOffset={inventoryScrollOffset}
             ref={algoRef}
             inventoryWidth={inventoryWidth}
             x={inventoryWidth + stripWidth}

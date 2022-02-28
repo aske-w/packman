@@ -1,9 +1,9 @@
-import { DimensionsWithConfig } from "./../types/DimensionsWithConfig.type";
-import Konva from "konva";
-import { Dimensions } from "../types/Dimensions.interface";
-import { Rectangle } from "../types/Rectangle.interface";
-import { generateData } from "../utils/generateData";
-
+import { DimensionsWithConfig } from './../types/DimensionsWithConfig.type';
+import Konva from 'konva';
+import { Dimensions } from '../types/Dimensions.interface';
+import { Rectangle } from '../types/Rectangle.interface';
+import { generateData } from '../utils/generateData';
+import { nanoid } from 'nanoid';
 export interface CanvasProps {
   scrollableStripHeight: number;
   input: DimensionsWithConfig[];
@@ -47,8 +47,7 @@ export const STAGE_SIZE: Dimensions = {
 
 export const GAME_WIDTH = STAGE_SIZE.width;
 
-export const genId = () =>
-  Math.floor(1000 + 9000000 * Math.random()).toString();
+export const genId = () => nanoid(10);
 
 export const genInventory = () =>
   generateData(NUM_RECTS).map<DimensionsWithConfig>(({ width, height }) => {

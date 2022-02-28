@@ -1,14 +1,14 @@
-import { KonvaEventObject, Node } from "konva/lib/Node";
-import { Layer as KonvaLayer, Layer } from "konva/lib/Layer";
-import { Rect as KonvaRect } from "konva/lib/shapes/Rect";
+import { KonvaEventObject, Node } from 'konva/lib/Node';
+import { Layer as KonvaLayer, Layer } from 'konva/lib/Layer';
+import { Rect as KonvaRect } from 'konva/lib/shapes/Rect';
 import {
   GAME_HEIGHT,
   INVENTORY_SIZE,
   KonvaWheelEvent,
   PADDING,
   SCROLLBAR_HEIGHT,
-} from "../config/canvasConfig";
-import { useCallback, RefObject } from "react";
+} from '../config/canvasConfig';
+import { useCallback, RefObject, MutableRefObject } from 'react';
 
 interface UseKonvaWheelHandlerParams {
   layerRef: RefObject<KonvaLayer>;
@@ -16,6 +16,7 @@ interface UseKonvaWheelHandlerParams {
   scrollableHeight: number;
   gameHeight: number;
   area: { minX: number; maxX: number };
+  scrollOffset: MutableRefObject<number>;
 }
 
 export const useKonvaWheelHandler = ({
@@ -24,11 +25,12 @@ export const useKonvaWheelHandler = ({
   scrollBarRef,
   scrollableHeight,
   area,
+  scrollOffset,
 }: UseKonvaWheelHandlerParams) => {
   const handleWheel = useCallback(
     (e: KonvaEventObject<WheelEvent> & KonvaWheelEvent) => {
       e.evt.preventDefault();
-      const { layerX, deltaY, preventDefault } = e.evt;
+      const { layerX, deltaY } = e.evt;
 
       const isActive = layerX > area.minX && layerX < area.maxX;
 
@@ -50,7 +52,7 @@ export const useKonvaWheelHandler = ({
           (y / (-scrollableHeight + gameHeight)) * availableHeight + PADDING;
 
         scrollBarRef.current?.y(vy);
-
+        scrollOffset.current = vy;
         return;
       }
     },

@@ -1,28 +1,23 @@
-import { RectConfig } from "konva/lib/shapes/Rect";
+import Konva from 'konva';
+import { Rect as KonvaRect, RectConfig } from 'konva/lib/shapes/Rect';
 import React, {
+  RefObject,
   useEffect,
   useImperativeHandle,
-  useMemo,
   useRef,
   useState,
-} from "react";
-import { KonvaNodeEvents, Layer, Rect } from "react-konva";
-import { BestFitDecreasingHeight } from "../../../algorithms/BestFitDecreasingHeight";
-import { FirstFitDecreasingHeight } from "../../../algorithms/FirstFitDecreasingHeight";
-import { NextFitDecreasingHeight } from "../../../algorithms/NextFitDecreasingHeight";
-import { SizeAlternatingStack } from "../../../algorithms/SizeAlternatingStack";
-import { GAME_HEIGHT, STRIP_SIZE } from "../../../config/canvasConfig";
-import { ColorRect } from "../../../types/ColorRect.interface";
+} from 'react';
+import { KonvaNodeEvents, Layer, Rect } from 'react-konva';
+import { BestFitDecreasingHeight } from '../../../algorithms/BestFitDecreasingHeight';
+import { FirstFitDecreasingHeight } from '../../../algorithms/FirstFitDecreasingHeight';
+import { NextFitDecreasingHeight } from '../../../algorithms/NextFitDecreasingHeight';
+import { SizeAlternatingStack } from '../../../algorithms/SizeAlternatingStack';
+import { ColorRect } from '../../../types/ColorRect.interface';
 import {
   PackingAlgorithm,
   PackingAlgorithms,
-} from "../../../types/PackingAlgorithm.interface";
-import { RectangleConfig } from "../../../types/RectangleConfig.interface";
-import {
-  Rect as KonvaRect,
-  RectConfig as KonvaRectConfig,
-} from "konva/lib/shapes/Rect";
-import Konva from "konva";
+} from '../../../types/PackingAlgorithm.interface';
+import { RectangleConfig } from '../../../types/RectangleConfig.interface';
 
 const {
   BEST_FIT_DECREASING_HEIGHT,
@@ -40,6 +35,7 @@ interface StripPackingAlgorithmProps {
   algorithm: PackingAlgorithms;
   inventory: ColorRect<RectangleConfig>[];
   inventoryWidth: number;
+  inventoryScrollOffset: RefObject<number>;
 }
 
 export interface StripPackingAlgorithHandle {
@@ -49,100 +45,108 @@ export interface StripPackingAlgorithHandle {
 const StripPackingAlgorithm = React.forwardRef<
   StripPackingAlgorithHandle,
   StripPackingAlgorithmProps
->(({ x, height, width, inventory: input, algorithm, inventoryWidth }, ref) => {
-  const [algo, setAlgo] = useState<PackingAlgorithm<
-    RectangleConfig,
-    any
-  > | null>(null);
-
-  const inventory = useMemo(() => [...input], []);
-
-  const [stripRects, setStripRects] = useState<
-    ColorRect<RectangleConfig & PrevPos>[]
-  >([]);
-
-  useEffect(() => {
-    const getAlgo = (algorithm: PackingAlgorithms) => {
-      const size = { width, height };
-      switch (algorithm) {
-        case NEXT_FIT_DECREASING_HEIGHT: {
-          const a = new NextFitDecreasingHeight<ColorRect<RectangleConfig>>(
-            size
-          ).load(inventory);
-          return a;
-        }
-        case FIRST_FIT_DECREASING_HEIGHT: {
-          const a = new FirstFitDecreasingHeight<ColorRect<RectangleConfig>>(
-            size
-          ).load(inventory);
-          return a;
-        }
-        case BEST_FIT_DECREASING_HEIGHT: {
-          const a = new BestFitDecreasingHeight<ColorRect<RectangleConfig>>(
-            size
-          ).load(inventory);
-          return a;
-        }
-
-        case SIZE_ALTERNATING_STACK: {
-          const a = new SizeAlternatingStack<ColorRect<RectangleConfig>>(
-            size
-          ).load(inventory);
-          return a;
-        }
-
-        default:
-          throw Error("unkown algorithm: " + algorithm);
-      }
-    };
-
-    const algo = getAlgo(algorithm);
-    setAlgo(algo);
-  }, [algorithm, inventory]);
-
-  useImperativeHandle(ref, () => ({
-    place: (inventoryRect: ColorRect<RectangleConfig>) => {
-      console.log("called: ", inventoryRect);
-      if (algo?.isFinished()) return;
-
-      const rect = algo?.place();
-
-      if (!rect) return;
-
-      setStripRects((prev) => [
-        ...prev,
-        {
-          ...rect,
-          prevX: inventoryRect.x - inventoryWidth,
-          prevY: inventoryRect.y,
-        },
-      ]);
-
-      console.log("NEW RECGT: ", {
-        ...rect,
-        prevX: inventoryRect.x - inventoryWidth,
-        prevY: inventoryRect.y,
-      });
+>(
+  (
+    {
+      x,
+      height,
+      width,
+      inventory,
+      algorithm,
+      inventoryWidth,
+      inventoryScrollOffset,
     },
-  }));
+    ref
+  ) => {
+    const [algo, setAlgo] = useState<PackingAlgorithm<
+      RectangleConfig,
+      any
+    > | null>(null);
 
-  return (
-    <Layer {...{ x, height, width }}>
-      {stripRects.map((r, i) => {
-        return (
-          <MyRect
-            key={r.name}
-            {...r}
-            strokeWidth={2}
-            stroke={"#002050FF"}
-            y={r.y + height}
-            id={`STRIP_RECT`}
-          />
-        );
-      })}
-    </Layer>
-  );
-});
+    const [stripRects, setStripRects] = useState<
+      ColorRect<RectangleConfig & PrevPos>[]
+    >([]);
+
+    useEffect(() => {
+      console.log('running algo useEffect');
+      const getAlgo = (algorithm: PackingAlgorithms) => {
+        const size = { width, height };
+        // algorithms change the array, we cannot allow that
+        const invCopy = [...inventory];
+        switch (algorithm) {
+          case NEXT_FIT_DECREASING_HEIGHT: {
+            const a = new NextFitDecreasingHeight<ColorRect<RectangleConfig>>(
+              size
+            ).load(invCopy);
+            return a;
+          }
+          case FIRST_FIT_DECREASING_HEIGHT: {
+            const a = new FirstFitDecreasingHeight<ColorRect<RectangleConfig>>(
+              size
+            ).load(invCopy);
+            return a;
+          }
+          case BEST_FIT_DECREASING_HEIGHT: {
+            const a = new BestFitDecreasingHeight<ColorRect<RectangleConfig>>(
+              size
+            ).load(invCopy);
+            return a;
+          }
+
+          case SIZE_ALTERNATING_STACK: {
+            const a = new SizeAlternatingStack<ColorRect<RectangleConfig>>(
+              size
+            ).load(invCopy);
+            return a;
+          }
+
+          default:
+            throw Error('unkown algorithm: ' + algorithm);
+        }
+      };
+
+      const algo = getAlgo(algorithm);
+      setAlgo(algo);
+    }, [algorithm, inventory]);
+
+    useImperativeHandle(ref, () => ({
+      place: (_: ColorRect<RectangleConfig>) => {
+        if (algo?.isFinished()) return;
+
+        const rect = algo?.place();
+
+        if (!rect) return;
+        const inventoryRect = inventory.find(r => r.name === rect.name)!;
+
+        // add the scroll offet to y value
+        const scrollOffset = inventoryScrollOffset.current ?? 0;
+        const newRect = {
+          ...rect,
+          prevX: inventoryRect.x - inventoryWidth, // substract the inventory width (its relative to the strip)
+          prevY: inventoryRect.y - scrollOffset,
+        };
+        setStripRects(prev => [...prev, newRect]);
+      },
+    }));
+
+    return (
+      <Layer {...{ x, height, width }}>
+        {stripRects.map((r, i) => {
+          return (
+            <MyRect
+              key={r.name}
+              {...r}
+              strokeWidth={2}
+              stroke={'#002050FF'}
+              y={r.y + height}
+              id={`STRIP_RECT`}
+            />
+          );
+        })}
+      </Layer>
+    );
+  }
+);
 
 const ENTER_ANIMATION_DURATION_SECONDS = 0.5;
 
@@ -168,11 +172,10 @@ const MyRect: React.FC<PrevPos & RectConfig & KonvaNodeEvents> = ({
     <Rect
       ref={ref}
       x={prevX}
-      y={prevY + GAME_HEIGHT}
-      stroke={"rgba(0,0,0,0.2)"}
+      y={prevY}
+      stroke={'rgba(0,0,0,0.2)'}
       strokeWidth={1}
-      {...props}
-    ></Rect>
+      {...props}></Rect>
   );
 };
 

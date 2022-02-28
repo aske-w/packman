@@ -1,24 +1,38 @@
-import React, { forwardRef } from "react";
-import { Rect } from "react-konva";
+import React, { forwardRef } from 'react';
+import { Rect } from 'react-konva';
 import {
   GAME_HEIGHT,
   GAME_WIDTH,
   PADDING,
   SCROLLBAR_HEIGHT,
   SCROLLBAR_WIDTH,
-} from "../../config/canvasConfig";
-import { Rect as KonvaRect } from "konva/lib/shapes/Rect";
-import Konva from "konva";
+} from '../../config/canvasConfig';
+import { Rect as KonvaRect } from 'konva/lib/shapes/Rect';
+import Konva from 'konva';
 
 interface ScrollBarProps {
   scrollableHeight: number;
   onYChanged: (y: number) => void;
   x: number;
   gameHeight?: number;
+  startPosition?: 'top' | 'bottom';
 }
 
 const ScrollBar = forwardRef<KonvaRect, ScrollBarProps>(
-  ({ scrollableHeight, onYChanged, x, gameHeight = GAME_HEIGHT }, ref) => {
+  (
+    {
+      scrollableHeight,
+      onYChanged,
+      x,
+      gameHeight = GAME_HEIGHT,
+      startPosition = 'bottom',
+    },
+    ref
+  ) => {
+    const y =
+      startPosition === 'bottom'
+        ? gameHeight - PADDING - SCROLLBAR_HEIGHT
+        : PADDING;
     return (
       <Rect
         ref={ref}
@@ -27,7 +41,7 @@ const ScrollBar = forwardRef<KonvaRect, ScrollBarProps>(
         fill="grey"
         opacity={0.8}
         x={x}
-        y={gameHeight - PADDING - SCROLLBAR_HEIGHT}
+        y={y}
         draggable
         cornerRadius={5}
         dragBoundFunc={function (pos) {
