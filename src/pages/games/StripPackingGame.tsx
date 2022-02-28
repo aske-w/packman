@@ -24,6 +24,7 @@ import StripPackingInteractive, {
 } from "../../components/games/stripPacking/StripPackingInteractive";
 import { Vector2d } from "konva/lib/types";
 import useAlgorithmStore from "../../store/algorithm";
+import useScoreStore from "../../store/score";
 
 interface StripPackingGameProps {}
 
@@ -35,6 +36,9 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
 
   const algorithm = useAlgorithmStore(
     useCallback((state) => state.algorithm, [])
+  );
+  const setRectanglesLeft = useScoreStore(
+    useCallback((state) => state.setRectanglesLeft, [])
   );
 
   /**
@@ -74,6 +78,9 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
         tmp.splice(rIdx, 1);
         return tmp;
       });
+
+      setRectanglesLeft(renderInventory.length - 1);
+
       if (res) {
         const [placedName, order] = res;
         console.log(res);
