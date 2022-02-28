@@ -10,54 +10,108 @@ import {
 } from '../config/canvasConfig';
 import { useCallback, RefObject, MutableRefObject } from 'react';
 
-interface UseKonvaWheelHandlerParams {
+interface WheelHandlerParams {
   layerRef: RefObject<KonvaLayer>;
   scrollBarRef: RefObject<KonvaRect>;
   scrollableHeight: number;
   gameHeight: number;
   area: { minX: number; maxX: number };
-  scrollOffset: MutableRefObject<number>;
+  scrollOffsetRef: MutableRefObject<number>;
+}
+
+type InitializedScrollHandler = (
+  e: (KonvaEventObject<WheelEvent> & KonvaWheelEvent)['evt']
+) => void;
+type ScrollHandler = (params: WheelHandlerParams) => InitializedScrollHandler;
+interface UseKonvaWheelHandlerParams {
+  handlers: InitializedScrollHandler[];
 }
 
 export const useKonvaWheelHandler = ({
-  layerRef,
-  gameHeight,
-  scrollBarRef,
-  scrollableHeight,
-  area,
-  scrollOffset,
+  handlers,
 }: UseKonvaWheelHandlerParams) => {
   const handleWheel = useCallback(
     (e: KonvaEventObject<WheelEvent> & KonvaWheelEvent) => {
       e.evt.preventDefault();
-      const { layerX, deltaY } = e.evt;
-
-      const isActive = layerX > area.minX && layerX < area.maxX;
-
-      if (isActive) {
-        const layer = layerRef.current!;
-        const dy = deltaY;
-        const oldY = layer.y();
-
-        const minY = -(scrollableHeight - gameHeight);
-        const maxY = 0;
-
-        const y = Math.max(minY, Math.min(oldY - dy, maxY));
-
-        layer.y(y);
-
-        const availableHeight = gameHeight - PADDING * 2 - SCROLLBAR_HEIGHT;
-
-        const vy =
-          (y / (-scrollableHeight + gameHeight)) * availableHeight + PADDING;
-
-        scrollBarRef.current?.y(vy);
-        scrollOffset.current = vy;
-        return;
+      for (const handler of handlers) {
+        handler(e.evt);
       }
     },
-    [layerRef, gameHeight, scrollBarRef, scrollableHeight, area]
+    [handlers]
   );
 
   return handleWheel;
 };
+
+export const inventoryScrollHandler: ScrollHandler =
+  ({
+    layerRef,
+    gameHeight,
+    scrollBarRef,
+    scrollableHeight,
+    area,
+    scrollOffsetRef,
+  }) =>
+  e => {
+    const { layerX, deltaY } = e;
+
+    const isActive = layerX > area.minX && layerX < area.maxX;
+
+    if (isActive) {
+      const layer = layerRef.current!;
+      const dy = deltaY;
+      const oldY = layer.y();
+
+      const minY = -(scrollableHeight - gameHeight);
+      const maxY = 0;
+
+      const y = Math.max(minY, Math.min(oldY - dy, maxY));
+
+      layer.y(y);
+
+      const availableHeight = gameHeight - PADDING * 2 - SCROLLBAR_HEIGHT;
+
+      const vy =
+        (y / (-scrollableHeight + gameHeight)) * availableHeight + PADDING;
+
+      scrollBarRef.current?.y(vy);
+      scrollOffsetRef.current = vy;
+      return;
+    }
+  };
+export const interactiveScrollHandler: ScrollHandler =
+  ({
+    layerRef,
+    gameHeight,
+    scrollBarRef,
+    scrollableHeight,
+    area,
+    scrollOffsetRef,
+  }) =>
+  e => {
+    const { layerX, deltaY } = e;
+
+    const isActive = layerX > area.minX && layerX < area.maxX;
+
+    if (isActive) {
+      const layer = layerRef.current!;
+      const dy = deltaY;
+      const oldY = layer.y();
+
+      const minY = -(scrollableHeight - gameHeight);
+      const maxY = 0;
+
+      const y = Math.max(minY, Math.min(oldY - dy, maxY));
+
+      layer.y(y);
+
+      const availableHeight = gameHeight - PADDING * 2 - SCROLLBAR_HEIGHT;
+
+      const vy =
+        (y / (-scrollableHeight + gameHeight)) * availableHeight + PADDING;
+
+      scrollBarRef.current?.y(vy);
+      scrollOffsetRef.current = vy;
+      return;
+    }
+  };

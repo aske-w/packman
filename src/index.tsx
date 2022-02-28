@@ -1,13 +1,13 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import "./index.css";
-import App from "./App";
-import reportWebVitals from "./reportWebVitals";
-import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
-import Playground from "./pages/Playground";
-import Home from "./pages/Home";
-import StripPackingInteractive from "./components/games/stripPacking/StripPackingInteractive";
-import StripPackingGame from "./pages/games/StripPackingGame";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+import App from './App';
+import reportWebVitals from './reportWebVitals';
+import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom';
+import Playground from './pages/Playground';
+import Home from './pages/Home';
+import OldStripPackingInteractive from './components/games/stripPacking/OldStripPackingInteractive';
+import StripPackingGame from './pages/games/StripPackingGame';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -23,7 +23,7 @@ ReactDOM.render(
       </Routes>
     </BrowserRouter>
   </React.StrictMode>,
-  document.getElementById("root")
+  document.getElementById('root')
 );
 
 // If you want to start measuring performance in your app, pass a function

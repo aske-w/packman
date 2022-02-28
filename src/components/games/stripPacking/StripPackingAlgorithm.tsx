@@ -33,17 +33,17 @@ interface StripPackingAlgorithmProps {
   height: number;
   width: number;
   algorithm: PackingAlgorithms;
-  inventory: ColorRect<RectangleConfig>[];
+  inventory: ReadonlyArray<ColorRect<RectangleConfig>>;
   inventoryWidth: number;
   inventoryScrollOffset: RefObject<number>;
 }
 
-export interface StripPackingAlgorithHandle {
+export interface StripPackingAlgorithmHandle {
   place: (inventoryRect: ColorRect<RectangleConfig>) => void;
 }
 
 const StripPackingAlgorithm = React.forwardRef<
-  StripPackingAlgorithHandle,
+  StripPackingAlgorithmHandle,
   StripPackingAlgorithmProps
 >(
   (
@@ -130,7 +130,7 @@ const StripPackingAlgorithm = React.forwardRef<
     }));
 
     return (
-      <Layer {...{ x, height, width }}>
+      <Layer x={x}>
         {stripRects.map((r, i) => {
           return (
             <MyRect

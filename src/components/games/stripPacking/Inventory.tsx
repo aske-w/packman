@@ -14,19 +14,22 @@ import { DimensionsWithConfig } from '../../../types/DimensionsWithConfig.type';
 import { RectangleConfig } from '../../../types/RectangleConfig.interface';
 import ScrollBar from '../../canvas/ScrollBar';
 import { PADDING } from '../../../config/canvasConfig';
+import { Vector2d } from 'konva/lib/types';
 
 interface InventoryProps {
   stripWidth: number;
   inventoryWidth: number;
   gameHeight: number;
-  inventory: ColorRect[];
-  onDraggedToStrip: (rectName: string) => void;
+  dynamicInventory: ColorRect[];
+  staticInventory: ReadonlyArray<ColorRect>;
+  onDraggedToStrip: (rectName: string, pos: Vector2d) => void;
 }
 
 const Inventory = React.forwardRef<KonvaLayer, InventoryProps>(
   (
     {
-      inventory,
+      dynamicInventory,
+      staticInventory,
       stripWidth: stripWidth,
       inventoryWidth,
       gameHeight,
@@ -38,12 +41,12 @@ const Inventory = React.forwardRef<KonvaLayer, InventoryProps>(
       const rect = evt.target;
       const { name, width } = rect.getAttrs();
       console.log({ name });
-      const { x: x, y: y } = inventory.find(r => r.name === name)!;
-      const { x: absX } = rect.getAbsolutePosition();
+      const { x: x, y: y } = dynamicInventory.find(r => r.name === name)!;
+      const { x: dropX, y: dropY } = rect.getAbsolutePosition();
 
-      const inStripArea = absX + width < stripWidth;
+      const inStripArea = dropX + width < stripWidth;
       if (inStripArea) {
-        return onDraggedToStrip(name);
+        return onDraggedToStrip(name, { x: dropX, y: dropY });
       }
       // animate back to starting position
       new Konva.Tween({
@@ -96,18 +99,18 @@ const Inventory = React.forwardRef<KonvaLayer, InventoryProps>(
           y={0}
           ref={ref}
           name="INVENTORY_LAYER">
-          {inventory.map((r, i) => {
+          {staticInventory.map((r, i) => {
             return (
               <Rect
                 key={r.name + 'ghost'}
                 {...r}
                 opacity={0.2}
                 strokeWidth={1}
-                id={`INVENTORY_RECT`}
+                id={`INVENTORY_GHOST_RECT`}
               />
             );
           })}
-          {inventory.map((r, i) => {
+          {dynamicInventory.map((r, i) => {
             return (
               <Rect
                 key={r.name}
