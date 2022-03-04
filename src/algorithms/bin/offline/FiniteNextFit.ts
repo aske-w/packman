@@ -14,8 +14,6 @@ class FiniteNextFit<T = RectangleConfig> implements PackingAlgorithm<T> {
    * Sort all items by size then place the largest first
    */
   constructor(readonly binSize: Dimensions) {
-    this.binSize = binSize;
-
     this.shelf = {
       remainingWidth: binSize.width,
       bottomY: 0,
@@ -73,14 +71,6 @@ class FiniteNextFit<T = RectangleConfig> implements PackingAlgorithm<T> {
     const bottomY = shouldCreateNewBin
       ? 0
       : this.shelf.bottomY - this.shelf.height;
-
-    console.log({ shouldCreateNewBin });
-    console.log({
-      shelfBottom: this.shelf.bottomY,
-      binHeihgt: this.binSize.height,
-      nextRectHeight: nextRect.height,
-      bottomY,
-    });
 
     if (shouldCreateNewBin) {
       this.currBin++;
