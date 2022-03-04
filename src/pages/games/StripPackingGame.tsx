@@ -1,34 +1,32 @@
+import { Layer as KonvaLayer } from 'konva/lib/Layer';
+import { Rect as KonvaRect } from 'konva/lib/shapes/Rect';
+import { Vector2d } from 'konva/lib/types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Circle, Layer, Rect, Stage } from 'react-konva';
+import { Layer, Rect, Stage } from 'react-konva';
+import ScrollBar from '../../components/canvas/ScrollBar';
 import Inventory from '../../components/games/stripPacking/Inventory';
 import StripPackingAlgorithm, {
   StripPackingAlgorithmHandle,
 } from '../../components/games/stripPacking/StripPackingAlgorithm';
+import StripPackingInteractive, {
+  StripPackingInteractiveHandle,
+} from '../../components/games/stripPacking/StripPackingInteractive';
 import {
-  GAME_HEIGHT,
   NAV_HEIGHT,
-  SCROLLBAR_HEIGHT,
+  PADDING,
+  SCROLLBAR_WIDTH,
 } from '../../config/canvasConfig';
-import { useWindowSize } from '../../hooks/useWindowSize';
 import {
   interactiveScrollHandler,
   inventoryScrollHandler,
   useKonvaWheelHandler,
 } from '../../hooks/useKonvaWheelHandler';
-import { ColorRect } from '../../types/ColorRect.interface';
-import { generateInventory } from '../../utils/generateData';
-import { Rect as KonvaRect } from 'konva/lib/shapes/Rect';
-import ScrollBar from '../../components/canvas/ScrollBar';
-import { SCROLLBAR_WIDTH, PADDING } from '../../config/canvasConfig';
-import { Layer as KonvaLayer } from 'konva/lib/Layer';
-import { RectangleConfig } from '../../types/RectangleConfig.interface';
-
-import StripPackingInteractive, {
-  StripPackingInteractiveHandle,
-} from '../../components/games/stripPacking/StripPackingInteractive';
-import { Vector2d } from 'konva/lib/types';
+import { useWindowSize } from '../../hooks/useWindowSize';
 import useAlgorithmStore from '../../store/algorithm';
 import useScoreStore from '../../store/score';
+import { ColorRect } from '../../types/ColorRect.interface';
+import { RectangleConfig } from '../../types/RectangleConfig.interface';
+import { generateInventory } from '../../utils/generateData';
 
 interface StripPackingGameProps {}
 const NUM_ITEMS = 50;

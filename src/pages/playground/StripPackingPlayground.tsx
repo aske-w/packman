@@ -1,17 +1,17 @@
 import Konva from 'konva';
 import { useEffect, useState } from 'react';
-import { promptBadge } from '../components/Badges';
-import Canvas, { WithColor } from '../components/Canvas';
-import Sidebar from '../components/Sidebar/Sidebar';
-import { usePackingAlgorithms } from '../hooks/usePackingAlgorithms';
-import { Badges } from '../types/Badges.enum';
-import { Dimensions } from '../types/Dimensions.interface';
-import { PackingAlgorithms } from '../types/PackingAlgorithm.interface';
-import { Rectangle } from '../types/Rectangle.interface';
+import { promptBadge } from '../../components/Badges';
+import Canvas, { WithColor } from '../../components/Canvas';
+import StripPackingSidebar from '../../components/Sidebar/StripPackingSidebar';
+import { usePackingAlgorithms } from '../../hooks/usePackingAlgorithms';
+import { Badges } from '../../types/Badges.enum';
+import { Dimensions } from '../../types/Dimensions.interface';
+import { PackingAlgorithms } from '../../types/PackingAlgorithm.interface';
+import { Rectangle } from '../../types/Rectangle.interface';
 
 const SIDEBAR_WIDTH = 480;
 
-function Playground() {
+function StripPackingPlayground() {
   const [size, setSize] = useState<Dimensions>({
     height: 700,
     width: 500,
@@ -60,7 +60,7 @@ function Playground() {
   }, []);
 
   return (
-    <Sidebar
+    <StripPackingSidebar
       width={SIDEBAR_WIDTH}
       {...{
         selectedAlgorithm,
@@ -77,8 +77,8 @@ function Playground() {
       <div className="flex items-center justify-center w-full h-full p-4">
         <Canvas rects={rects} size={size} />
       </div>
-    </Sidebar>
+    </StripPackingSidebar>
   );
 }
 
-export default Playground;
+export default StripPackingPlayground;
