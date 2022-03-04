@@ -9,7 +9,7 @@ import { Dimensions } from '../../types/Dimensions.interface';
 import { PackingAlgorithms } from '../../types/PackingAlgorithm.interface';
 import { Rectangle } from '../../types/Rectangle.interface';
 
-const SIDEBAR_WIDTH = 480;
+const SIDEBAR_WIDTH = 330;
 
 function StripPackingPlayground() {
   const [size, setSize] = useState<Dimensions>({

@@ -28,7 +28,7 @@ export const usePackingAlgorithms = (
   const [algoState, setAlgoState] = useState<AlgoStates>('STOPPED');
   const [isFinished, setIsFinished] = useState(true);
   // TODO better typings than any :)
-  const algorithm = useRef<PackingAlgorithm<{}, any>>(
+  const algorithm = useRef<PackingAlgorithm<{}, {}, any>>(
     new NextFitDecreasingHeight(size)
   );
 

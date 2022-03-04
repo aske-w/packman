@@ -2,7 +2,6 @@ import { ColorRect } from '../../types/ColorRect.interface';
 import { Dimensions } from '../../types/Dimensions.interface';
 import { DimensionsWithConfig } from '../../types/DimensionsWithConfig.type';
 import { PackingAlgorithm } from '../../types/PackingAlgorithm.interface';
-import { Rectangle } from '../../types/Rectangle.interface';
 import { RectangleConfig } from '../../types/RectangleConfig.interface';
 import { Shelf } from '../../types/Shelf.interface';
 
@@ -19,6 +18,7 @@ type RectCategory = 'wide' | 'narrow';
 export class SizeAlternatingStack<T = RectangleConfig>
   implements
     PackingAlgorithm<
+      T,
       T,
       [narrow: DimensionsWithConfig<T>[], wide: DimensionsWithConfig<T>[]]
     >

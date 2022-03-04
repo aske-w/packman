@@ -64,6 +64,7 @@ const StripPackingAlgorithm = React.forwardRef<
   ) => {
     const [algo, setAlgo] = useState<PackingAlgorithm<
       RectangleConfig,
+      RectangleConfig,
       any
     > | null>(null);
 

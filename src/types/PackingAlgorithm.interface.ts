@@ -4,13 +4,14 @@ import { DimensionsWithConfig } from './DimensionsWithConfig.type';
 
 export interface PackingAlgorithm<
   Config extends Record<string, any> = {},
+  ReturnConfig extends Config = Config,
   SortedData = DimensionsWithConfig<Config>[]
 > {
   load(
     data: DimensionsWithConfig<Config>[]
-  ): PackingAlgorithm<Config, SortedData>;
+  ): PackingAlgorithm<Config, ReturnConfig, SortedData>;
   next(): DimensionsWithConfig<Config>;
-  place(): ColorRect<Config>;
+  place(): ColorRect<ReturnConfig>;
   isFinished(): boolean;
   getSortedData(): SortedData;
 }

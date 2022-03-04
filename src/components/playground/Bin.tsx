@@ -22,8 +22,6 @@ interface BinProps {
 }
 
 const Bin: React.FC<BinProps> = ({ height, items, width }) => {
-  console.log(items);
-
   const stageRef = useRef<KonvaStage>(null);
   const [tooltip, setTooltip] = useState<Partial<TextConfig>>({
     text: '',
@@ -67,7 +65,7 @@ const Bin: React.FC<BinProps> = ({ height, items, width }) => {
             onMouseMove={() => enableTooltip(rect)}
             onMouseOut={() => disableTooltip()}
             {...rect}
-            y={rect.y - height}
+            y={rect.y + height}
           />
         ))}
       </Layer>
