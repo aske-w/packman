@@ -1,23 +1,38 @@
-import React, { forwardRef } from "react";
-import { Rect } from "react-konva";
+import React, { forwardRef } from 'react';
+import { Rect } from 'react-konva';
 import {
   GAME_HEIGHT,
   GAME_WIDTH,
   PADDING,
   SCROLLBAR_HEIGHT,
   SCROLLBAR_WIDTH,
-} from "../../config/canvasConfig";
-import { Rect as KonvaRect } from "konva/lib/shapes/Rect";
-import Konva from "konva";
+} from '../../config/canvasConfig';
+import { Rect as KonvaRect } from 'konva/lib/shapes/Rect';
+import Konva from 'konva';
 
 interface ScrollBarProps {
   scrollableHeight: number;
   onYChanged: (y: number) => void;
   x: number;
+  gameHeight?: number;
+  startPosition?: 'top' | 'bottom';
 }
 
 const ScrollBar = forwardRef<KonvaRect, ScrollBarProps>(
-  ({ scrollableHeight, onYChanged, x }, ref) => {
+  (
+    {
+      scrollableHeight,
+      onYChanged,
+      x,
+      gameHeight = GAME_HEIGHT,
+      startPosition = 'bottom',
+    },
+    ref
+  ) => {
+    const y =
+      startPosition === 'bottom'
+        ? gameHeight - PADDING - SCROLLBAR_HEIGHT
+        : PADDING;
     return (
       <Rect
         ref={ref}
@@ -26,13 +41,13 @@ const ScrollBar = forwardRef<KonvaRect, ScrollBarProps>(
         fill="grey"
         opacity={0.8}
         x={x}
-        y={GAME_HEIGHT - PADDING - SCROLLBAR_HEIGHT}
+        y={y}
         draggable
         cornerRadius={5}
         dragBoundFunc={function (pos) {
           pos.x = x;
           pos.y = Math.max(
-            Math.min(pos.y, GAME_HEIGHT - this.height() - PADDING),
+            Math.min(pos.y, gameHeight - this.height() - PADDING),
             PADDING
           );
           return pos;
@@ -41,11 +56,10 @@ const ScrollBar = forwardRef<KonvaRect, ScrollBarProps>(
           const verticalBar = e.target;
           // delta in %
           const availableHeight =
-            GAME_HEIGHT - PADDING * 2 - verticalBar.height();
+            gameHeight - PADDING * 2 - verticalBar.height();
           var delta = (verticalBar.y() - PADDING) / availableHeight;
 
-          const newY = -(scrollableHeight - GAME_HEIGHT) * delta;
-          console.log({ newY, delta });
+          const newY = -(scrollableHeight - gameHeight) * delta;
           onYChanged(newY);
         }}
       />

@@ -11,6 +11,7 @@ import AlgoSelect from "./AlgoSelect";
 import { useAutoPlace } from "../hooks/useAutoPlace";
 import { AlgoStates } from "../hooks/usePackingAlgorithms";
 import Card from "./Card";
+import { generateData } from "../utils/generateData";
 
 interface Props {
   isFinished: boolean;
@@ -61,7 +62,7 @@ const Actions: React.FC<Props> = ({
 
       <div className="w-full flex items-center justify-around ">
         <button
-          onClick={() => setDimensionsStorage(genData(200))}
+          onClick={() => setDimensionsStorage(generateData(200))}
           className={`px-2 py-1 font-medium text-white rounded shadow ${
             isStarted ? "bg-blue-300" : "bg-blue-500"
           }`}
@@ -120,15 +121,6 @@ const Actions: React.FC<Props> = ({
       )}
     </Card>
   );
-};
-
-export const genData = (amount = 10): Dimensions[] => {
-  return Array.from({ length: amount }, (_, _i) => {
-    return {
-      width: Math.round(Math.max(Math.random() * 100, 50)),
-      height: Math.round(Math.max(Math.random() * 100, 50)),
-    };
-  });
 };
 
 export default Actions;

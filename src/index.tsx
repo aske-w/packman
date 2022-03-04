@@ -6,8 +6,9 @@ import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 import Playground from "./pages/Playground";
 import Home from "./pages/Home";
-import StripPackingInteractive from "./components/games/stripPacking/StripPackingInteractive";
+import OldStripPackingInteractive from "./components/games/stripPacking/OldStripPackingInteractive";
 import StripPackingGame from "./pages/games/StripPackingGame";
+import { pathKey } from "./pages/routes";
 
 ReactDOM.render(
   <React.StrictMode>
@@ -15,9 +16,9 @@ ReactDOM.render(
       <Routes>
         <Route path="/" element={<App />}>
           <Route index element={<Home />} />
-          <Route path="playground" element={<Playground />} />
-          <Route path="game" element={<Outlet />}>
-            <Route path="strip" element={<StripPackingGame />} />
+          <Route path={pathKey.PLAYGROUND} element={<Playground />} />
+          <Route path={pathKey.GAME} element={<Outlet />}>
+            <Route path={pathKey.STRIP} element={<StripPackingGame />} />
           </Route>
         </Route>
       </Routes>

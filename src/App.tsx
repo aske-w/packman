@@ -1,9 +1,10 @@
-import React from 'react';
-import { Outlet } from 'react-router-dom';
-import Nav from './components/Nav';
+import React from "react";
+import { Outlet } from "react-router-dom";
+import Nav from "./components/Nav";
+import { NAV_HEIGHT } from "./config/canvasConfig";
 
 interface AppProps {}
-const NAV_HEIGHT = 64;
+
 const App: React.FC<AppProps> = ({}) => {
   return (
     <div className="flex flex-col w-screen h-screen bg-canvas">
