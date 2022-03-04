@@ -1,15 +1,18 @@
 import React, {
   MutableRefObject,
   RefObject,
+  useCallback,
+  useEffect,
   useImperativeHandle,
   useRef,
   useState,
-} from 'react';
-import { Layer, Rect } from 'react-konva';
-import { ColorRect } from '../../../types/ColorRect.interface';
-import { Layer as KonvaLayer } from 'konva/lib/Layer';
-import { STRIP_SIZE } from '../../../config/canvasConfig';
-import { Vector2d } from 'konva/lib/types';
+} from "react";
+import { Layer, Rect } from "react-konva";
+import { ColorRect } from "../../../types/ColorRect.interface";
+import { Layer as KonvaLayer } from "konva/lib/Layer";
+import { STRIP_SIZE } from "../../../config/canvasConfig";
+import { Vector2d } from "konva/lib/types";
+import useScoreStore from "../../../store/score";
 interface StripPackingInteractiveProps {
   height: number;
   width: number;
@@ -38,6 +41,15 @@ const StripPackingInteractive = React.forwardRef<
     ref
   ) => {
     const [stripRects, setStripRects] = useState<ColorRect[]>([]);
+    const setScore = useScoreStore(useCallback((state) => state.setScore, []));
+
+    useEffect(() => {
+      const _height = stripRects.reduce(
+        (maxY, r) => Math.max(maxY, Math.round(height - r.y)),
+        0
+      );
+      setScore({ height: _height }, "user");
+    }, [stripRects, height]);
 
     useImperativeHandle(ref, () => ({
       place: (r, { x, y }) => {
@@ -47,9 +59,10 @@ const StripPackingInteractive = React.forwardRef<
           y,
         };
 
-        setStripRects(old => [...old, newRect]);
+        setStripRects((old) => [...old, newRect]);
       },
     }));
+
     return (
       <>
         <Layer y={-(scrollableHeight - height)} x={0} ref={layerRef}>
