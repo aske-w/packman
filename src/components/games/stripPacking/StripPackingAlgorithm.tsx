@@ -88,43 +88,49 @@ const StripPackingAlgorithm = React.forwardRef<
       );
     }, [stripRects, height]);
 
-    useEffect(() => {
-      console.log("running algo useEffect");
-      const getAlgo = (algorithm: PackingAlgorithms) => {
-        const size = { width, height };
-        // algorithms change the array, we cannot allow that
-        const invCopy = [...inventory];
-        switch (algorithm) {
-          case NEXT_FIT_DECREASING_HEIGHT: {
-            const a = new NextFitDecreasingHeight<ColorRect<RectangleConfig>>(
-              size
-            ).load(invCopy);
-            return a;
-          }
-          case FIRST_FIT_DECREASING_HEIGHT: {
-            const a = new FirstFitDecreasingHeight<ColorRect<RectangleConfig>>(
-              size
-            ).load(invCopy);
-            return a;
-          }
-          case BEST_FIT_DECREASING_HEIGHT: {
-            const a = new BestFitDecreasingHeight<ColorRect<RectangleConfig>>(
-              size
-            ).load(invCopy);
-            return a;
-          }
-
-          case SIZE_ALTERNATING_STACK: {
-            const a = new SizeAlternatingStack<ColorRect<RectangleConfig>>(
-              size
-            ).load(invCopy);
-            return a;
-          }
-
-          default:
-            throw Error("unkown algorithm: " + algorithm);
+    const getAlgo = (algorithm: PackingAlgorithms) => {
+      const size = { width, height };
+      // algorithms change the array, we cannot allow that
+      const invCopy = [...inventory];
+      switch (algorithm) {
+        case NEXT_FIT_DECREASING_HEIGHT: {
+          const a = new NextFitDecreasingHeight<ColorRect<RectangleConfig>>(
+            size
+          ).load(invCopy);
+          return a;
         }
-      };
+        case FIRST_FIT_DECREASING_HEIGHT: {
+          const a = new FirstFitDecreasingHeight<ColorRect<RectangleConfig>>(
+            size
+          ).load(invCopy);
+          return a;
+        }
+        case BEST_FIT_DECREASING_HEIGHT: {
+          const a = new BestFitDecreasingHeight<ColorRect<RectangleConfig>>(
+            size
+          ).load(invCopy);
+          return a;
+        }
+
+        case SIZE_ALTERNATING_STACK: {
+          const a = new SizeAlternatingStack<ColorRect<RectangleConfig>>(
+            size
+          ).load(invCopy);
+          return a;
+        }
+
+        default:
+          throw Error("unkown algorithm: " + algorithm);
+      }
+    };
+
+    const [prevInventory, setPrevInventory] = useState("");
+
+    useEffect(() => {
+      const newInv = JSON.stringify(inventory.map(({ name }) => name).sort());
+      // only reset if the names (ids) changes
+      if (prevInventory === newInv) return;
+      setPrevInventory(newInv);
 
       const algo = getAlgo(algorithm);
       setAlgo(algo);

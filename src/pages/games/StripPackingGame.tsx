@@ -46,7 +46,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
    */
   const [startingInventory, setStartingInventory] = useState<
     ReadonlyArray<ColorRect<RectangleConfig & { order?: number }>>
-  >(() => generateInventory(inventoryWidth, 25));
+  >(() => generateInventory(inventoryWidth, 50));
 
   /**
    * This is the inventory, used for rendering the draggable rects. Whenever an
@@ -57,7 +57,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   >([]);
   useEffect(() => {
     setRenderInventory([...startingInventory]);
-  }, [startingInventory]);
+  }, []);
 
   const algoRef = useRef<StripPackingAlgorithmHandle>(null);
   const interactiveRef = useRef<StripPackingInteractiveHandle>(null);
@@ -86,13 +86,13 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
         console.log(res);
 
         // give the order of placement to the starting state
-        // setStartingInventory(old => {
-        //   const tmp = [...old];
-        //   const idx = tmp.findIndex(r => r.name === placedName);
-        //   if (idx === -1) return old;
-        //   tmp[idx].order = order;
-        //   return tmp;
-        // });
+        setStartingInventory(old => {
+          const tmp = [...old];
+          const idx = tmp.findIndex(r => r.name === placedName);
+          if (idx === -1) return old;
+          tmp[idx] = { ...tmp[idx], order };
+          return tmp;
+        });
       }
     }
   };
