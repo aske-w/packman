@@ -31,7 +31,7 @@ import useAlgorithmStore from '../../store/algorithm';
 import useScoreStore from '../../store/score';
 
 interface StripPackingGameProps {}
-
+const NUM_ITEMS = 50;
 const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   const { width: wWidth, height: wHeight } = useWindowSize();
   const stripWidth = wWidth * 0.2;
@@ -50,8 +50,8 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
    */
   const [startingInventory, setStartingInventory] = useState<
     ReadonlyArray<ColorRect<RectangleConfig & { order?: number }>>
-  >(() => generateInventory(inventoryWidth, 50));
-
+  >(() => []);
+  const [inventoryChanged, setInventoryChanged] = useState(true);
   /**
    * This is the inventory, used for rendering the draggable rects. Whenever an
    * item is placed in the strip, it's removed from this array
@@ -60,8 +60,12 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
     ColorRect<RectangleConfig>[]
   >([]);
   useEffect(() => {
-    setRenderInventory([...startingInventory]);
-  }, []);
+    if (inventoryChanged) {
+      setRenderInventory([...startingInventory]);
+      setInventoryChanged(false);
+      setRectanglesLeft(0);
+    }
+  }, [startingInventory, inventoryChanged]);
 
   const scrollableHeight = gameHeight * 2;
   const algoRef = useRef<StripPackingAlgorithmHandle>(null);
@@ -73,6 +77,15 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   // interactive scroll
   const interactiveScrollBarRef = useRef<KonvaRect>(null);
   const interactiveLayerRef = useRef<KonvaLayer>(null);
+
+  useEffect(() => {
+    const reset = () => {
+      setStartingInventory(generateInventory(inventoryWidth, NUM_ITEMS));
+      setInventoryChanged(true);
+      interactiveRef.current?.reset();
+    };
+    reset();
+  }, [algorithm]);
 
   /**
    * Pos is absolute position in the canvas

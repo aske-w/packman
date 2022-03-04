@@ -22,6 +22,7 @@ interface StripPackingInteractiveProps {
 
 export interface StripPackingInteractiveHandle {
   place: (r: ColorRect, pos: Vector2d) => void;
+  reset: () => void;
 }
 
 const StripPackingInteractive = React.forwardRef<
@@ -48,6 +49,10 @@ const StripPackingInteractive = React.forwardRef<
       };
 
       setStripRects(old => [...old, newRect]);
+    },
+    reset: () => {
+      setStripRects([]);
+      setScore({ height: 0 }, 'user');
     },
   }));
 
