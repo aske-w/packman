@@ -1,5 +1,5 @@
 import Switch from 'react-switch';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useAutoPlace } from '../../hooks/useAutoPlace';
 import { AlgoStates } from '../../hooks/usePackingAlgorithms';
 import { useToggle } from '../../hooks/useToggle';
@@ -49,10 +49,13 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
   const { checked, updateChecked } = useToggle();
   const { speed, updateSpeed } = useAutoPlace(checked, placeNext, algoState);
   const isStarted = algoState === 'RUNNING' || algoState === 'PAUSED';
-  const [genNum, setGenNum] = useState(30);
+  const [genNum, setGenNum] = useState(150);
   const [previousData, setPreviousData] = useState<Dimensions[]>([]);
+
   return (
-    <Sidebar style={{ width: SIDEBAR_WIDTH }}>
+    <Sidebar
+      style={{ width: SIDEBAR_WIDTH, minWidth: SIDEBAR_WIDTH }}
+      className="overflow-hidden">
       <SideBarSection title="Algorithms">
         <AlgoSelect<BinPackingAlgorithms>
           className="w-72 text-white text-base font-thin"
@@ -119,7 +122,7 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
         )}
       </SideBarSection>
 
-      <SideBarSection title="Automatic data set">
+      <SideBarSection title="Automatic data set" className="h-2/12">
         <SideBarItem
           element={
             <div className="flex items-center justify-right space-x-5">
@@ -159,7 +162,7 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
 
       <SideBarSection
         title={'Manuel data set (' + dimensionsStorage.length + ')'}
-        className="max-h-full overflow-y-scroll custom-scrollbar">
+        className="max-h-full h-full overflow-hidden">
         <BoxInput
           dimensionsStorage={dimensionsStorage}
           setDimensionsStorage={setDimensionsStorage}

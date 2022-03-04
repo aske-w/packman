@@ -12,7 +12,7 @@ import { generateData, generateInventory } from '../../utils/generateData';
 
 interface BinPackingPlaygroundProps {}
 const width = window.innerWidth * 0.2;
-const height = window.innerHeight * 0.5;
+const height = window.innerHeight * 0.8;
 const BinPackingPlayground: React.FC<BinPackingPlaygroundProps> = ({}) => {
   const [dimensionsStorage, setDimensionsStorage] = useState<Dimensions[]>([]);
 

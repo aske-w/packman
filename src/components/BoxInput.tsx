@@ -1,9 +1,9 @@
-import { FormEvent, useRef, useState } from "react";
-import RectInput from "./RectInput";
-import React from "react";
-import { TrashIcon } from "@heroicons/react/outline";
-import { Dimensions } from "../types/Dimensions.interface";
-import Card from "./Card";
+import { FormEvent, useRef, useState } from 'react';
+import RectInput from './RectInput';
+import React from 'react';
+import { TrashIcon } from '@heroicons/react/outline';
+import { Dimensions } from '../types/Dimensions.interface';
+import Card from './Card';
 
 interface BoxInputProps {
   disabled?: boolean;
@@ -18,10 +18,15 @@ const BoxInput: React.FC<BoxInputProps> = ({
 }) => {
   const rectangles = dimensionsStorage;
   const setRectangles = setDimensionsStorage;
-  const [width, setWidth] = useState<string>("");
-  const [height, setHeight] = useState<string>("");
+  const [width, setWidth] = useState<string>('');
+  const [height, setHeight] = useState<string>('');
+  const ref = useRef<HTMLDivElement>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
+
+  console.log('offsetTop: ', ref.current?.offsetTop);
+  console.log('clientHeight: ', ref.current?.clientHeight);
+  console.log('clientTop: ', ref.current?.clientTop);
 
   const parseRectangleProperties = (
     width: string,
@@ -43,7 +48,7 @@ const BoxInput: React.FC<BoxInputProps> = ({
 
   const removeRectangle = (index: number) => {
     if (!disabled) {
-      setRectangles((r) => {
+      setRectangles(r => {
         const temp = [...r];
         temp.splice(index, 1);
         return temp;
@@ -63,38 +68,41 @@ const BoxInput: React.FC<BoxInputProps> = ({
         height
       );
       saveRectangle(parsedWidth, parsedHeight);
-      setWidth("");
-      setHeight("");
+      setWidth('');
+      setHeight('');
       inputRef.current?.focus();
     }
   };
 
   return (
-    <Card className="w-full grow">
+    <Card className="w-full h-full">
       {/* <div className="flex flex-row justify-around py-2">
         <Header title="Width" />
         <Header title="Height" />
       </div> */}
       {/* <div className="col-span-11 h-0 border-b-2 border-stone-400 w-full"></div> */}
-      <div className="w-full flex flex-col justify-center items-center space-y-4">
+      <div
+        ref={ref}
+        style={{
+          height: `calc(100% - ${ref.current?.offsetTop ?? 0 + 200}px)`,
+          maxHeight: `calc(100% - ${ref.current?.offsetTop ?? 0 + 200}px)`,
+        }}
+        className="w-full flex flex-col justify-start items-center space-y-4 overflow-y-scroll custom-scrollbar">
         <form
           action=""
           onSubmit={handleFormSubmit}
-          className="w-full flex flex-row items-center space-x-6"
-        >
+          className="w-full flex flex-row items-center space-x-6">
           <RectInput
             value={width}
-            onChange={(e) => setWidth(e.target.value)}
+            onChange={e => setWidth(e.target.value)}
             reference={inputRef}
             disabled={disabled}
-            sec="w"
-          ></RectInput>
+            sec="w"></RectInput>
           <RectInput
             value={height}
-            onChange={(e) => setHeight(e.target.value)}
+            onChange={e => setHeight(e.target.value)}
             disabled={disabled}
-            sec="h"
-          ></RectInput>
+            sec="h"></RectInput>
           {/* <TrashIcon className="w-14 text-gray-200" /> */}
           <button type="submit" className="hidden" disabled={disabled}></button>
         </form>
@@ -102,17 +110,16 @@ const BoxInput: React.FC<BoxInputProps> = ({
         {rectangles.map((r, index) => (
           <div
             key={index}
-            className="w-full flex flex-row items-center space-x-6"
-          >
+            className="w-full flex flex-row items-center space-x-6">
             <RectInput readonly={true} value={r.width} sec="w"></RectInput>
             <RectInput readonly={true} value={r.height} sec="h"></RectInput>
             <TrashIcon
               className={`w-14 ${
                 disabled
-                  ? "text-gray-500"
-                  : "hover:cursor-pointer hover:text-red-400 hover:scale-110 text-gray-200"
+                  ? 'text-gray-500'
+                  : 'hover:cursor-pointer hover:text-red-400 hover:scale-110 text-gray-200'
               }`}
-              onClick={(e) => removeRectangle(index)}
+              onClick={e => removeRectangle(index)}
             />
           </div>
         ))}
