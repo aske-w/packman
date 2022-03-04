@@ -58,7 +58,7 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
         style={{ width, backgroundColor: '#232323' }}
         className="h-full bg-main overflow-hidden">
         <SideBarSection title="Algorithms">
-          <AlgoSelect
+          <AlgoSelect<PackingAlgorithms>
             className="w-72 text-white text-base font-thin"
             options={ALL_PACKING_ALGORITHMS}
             onChange={setSelectedAlgorithm}

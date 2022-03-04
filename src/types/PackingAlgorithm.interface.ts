@@ -1,12 +1,11 @@
-import { ColorRect } from "./ColorRect.interface";
-import { Dimensions } from "./Dimensions.interface";
-import { DimensionsWithConfig } from "./DimensionsWithConfig.type";
+import { ColorRect } from './ColorRect.interface';
+import { Dimensions } from './Dimensions.interface';
+import { DimensionsWithConfig } from './DimensionsWithConfig.type';
 
 export interface PackingAlgorithm<
   Config extends Record<string, any> = {},
   SortedData = DimensionsWithConfig<Config>[]
 > {
-  gameSize: Dimensions;
   load(
     data: DimensionsWithConfig<Config>[]
   ): PackingAlgorithm<Config, SortedData>;
@@ -17,10 +16,10 @@ export interface PackingAlgorithm<
 }
 
 export enum PackingAlgorithms {
-  NEXT_FIT_DECREASING_HEIGHT = "Next Fit Decreasing Height",
-  FIRST_FIT_DECREASING_HEIGHT = "First Fit Decreasing Height",
-  BEST_FIT_DECREASING_HEIGHT = "Best Fit Decreasing Height",
-  SIZE_ALTERNATING_STACK = "Size Alternating Stack",
+  NEXT_FIT_DECREASING_HEIGHT = 'Next Fit Decreasing Height',
+  FIRST_FIT_DECREASING_HEIGHT = 'First Fit Decreasing Height',
+  BEST_FIT_DECREASING_HEIGHT = 'Best Fit Decreasing Height',
+  SIZE_ALTERNATING_STACK = 'Size Alternating Stack',
 }
 
 export const ALL_PACKING_ALGORITHMS = [
