@@ -3,17 +3,17 @@ import {
   GameSize,
   TestData,
   LastShelf,
-} from "./FirstFitDecreasingHeight.fixture";
-import { Dimensions } from "../types/Dimensions.interface";
-import { FirstFitDecreasingHeight } from "./FirstFitDecreasingHeight";
+} from './FirstFitDecreasingHeight.fixture';
+import { Dimensions } from '../../types/Dimensions.interface';
+import { FirstFitDecreasingHeight } from './FirstFitDecreasingHeight';
 
-describe("First fit decreasing height test", () => {
+describe('First fit decreasing height test', () => {
   let ffdh = new FirstFitDecreasingHeight<{}>(GameSize);
 
   beforeEach(() => {
     ffdh = new FirstFitDecreasingHeight(GameSize);
   });
-  it("should return is finished with no data", () => {
+  it('should return is finished with no data', () => {
     expect(ffdh.isFinished()).toBe(true);
   });
 
@@ -53,13 +53,13 @@ describe("First fit decreasing height test", () => {
       width: 10,
     },
   ];
-  it("should sort data by non increasing height", () => {
+  it('should sort data by non increasing height', () => {
     ffdh.load(rawData);
 
     expect(ffdh.data).toEqual(sortedData);
   });
 
-  it("should place first rectangle correctly", () => {
+  it('should place first rectangle correctly', () => {
     ffdh.load(rawData);
     ffdh.place();
     expect(ffdh.lastShelf.height).toBe(sortedData[0].height);
@@ -68,10 +68,10 @@ describe("First fit decreasing height test", () => {
     );
   });
 
-  it("should create a new shelf when width overflows current shelf width", () => {
+  it('should create a new shelf when width overflows current shelf width', () => {
     ffdh.load(TestData);
 
-    ExpectedData.forEach((expected) => {
+    ExpectedData.forEach(expected => {
       const actual = ffdh.place();
       expect(expected).toEqual(actual);
     });

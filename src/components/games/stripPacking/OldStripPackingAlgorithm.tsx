@@ -4,11 +4,11 @@ import React, {
   useMemo,
   useRef,
   useState,
-} from "react";
-import { KonvaNodeEvents, Layer, Rect, Stage } from "react-konva";
-import { BestFitDecreasingHeight } from "../../../algorithms/BestFitDecreasingHeight";
-import { FirstFitDecreasingHeight } from "../../../algorithms/FirstFitDecreasingHeight";
-import { NextFitDecreasingHeight } from "../../../algorithms/NextFitDecreasingHeight";
+} from 'react';
+import { KonvaNodeEvents, Layer, Rect, Stage } from 'react-konva';
+import { BestFitDecreasingHeight } from '../../../algorithms/strip/BestFitDecreasingHeight';
+import { FirstFitDecreasingHeight } from '../../../algorithms/strip/FirstFitDecreasingHeight';
+import { NextFitDecreasingHeight } from '../../../algorithms/strip/NextFitDecreasingHeight';
 import {
   CanvasProps,
   GAME_HEIGHT,
@@ -20,21 +20,21 @@ import {
   SCROLLBAR_WIDTH,
   STAGE_SIZE,
   STRIP_SIZE,
-} from "../../../config/canvasConfig";
-import { ColorRect } from "../../../types/ColorRect.interface";
-import { Dimensions } from "../../../types/Dimensions.interface";
+} from '../../../config/canvasConfig';
+import { ColorRect } from '../../../types/ColorRect.interface';
+import { Dimensions } from '../../../types/Dimensions.interface';
 import {
   PackingAlgorithms,
   PackingAlgorithm,
-} from "../../../types/PackingAlgorithm.interface";
-import { DimensionsWithConfig } from "../../../types/DimensionsWithConfig.type";
-import { RectangleConfig } from "../../../types/RectangleConfig.interface";
-import Konva from "konva";
-import { Rect as KonvaRect, RectConfig } from "konva/lib/shapes/Rect";
-import { Layer as KonvaLayer } from "konva/lib/Layer";
-import { SizeAlternatingStack } from "../../../algorithms/SizeAlternatingStack";
-import { KonvaEventObject } from "konva/lib/Node";
-import ScrollBar from "../../canvas/ScrollBar";
+} from '../../../types/PackingAlgorithm.interface';
+import { DimensionsWithConfig } from '../../../types/DimensionsWithConfig.type';
+import { RectangleConfig } from '../../../types/RectangleConfig.interface';
+import Konva from 'konva';
+import { Rect as KonvaRect, RectConfig } from 'konva/lib/shapes/Rect';
+import { Layer as KonvaLayer } from 'konva/lib/Layer';
+import { SizeAlternatingStack } from '../../../algorithms/strip/SizeAlternatingStack';
+import { KonvaEventObject } from 'konva/lib/Node';
+import ScrollBar from '../../canvas/ScrollBar';
 
 const {
   BEST_FIT_DECREASING_HEIGHT,
@@ -137,7 +137,7 @@ const OldStripPackingAlgorithm = React.forwardRef<
         }
 
         default:
-          throw Error("unkown algorithm: " + algorithm);
+          throw Error('unkown algorithm: ' + algorithm);
       }
     };
 
@@ -157,14 +157,14 @@ const OldStripPackingAlgorithm = React.forwardRef<
       if (algo?.isFinished()) return;
       const rect = algo?.place();
       if (rect) {
-        const curIdx = inventoryRects.findIndex((r) => r.name === rect.name)!;
+        const curIdx = inventoryRects.findIndex(r => r.name === rect.name)!;
         const { x: prevX, y: prevY, height } = inventoryRects[curIdx];
 
         const stripScrollOffset = stripLayer.current?.y()!;
 
-        console.log("before");
+        console.log('before');
         // Scroll into view
-        await new Promise<void>((resolve) => {
+        await new Promise<void>(resolve => {
           const layer = inventoryLayer.current!;
           const newY = prevY * -1 - height - PADDING;
           console.log({ layerY: layer.y(), prevY, newY });
@@ -180,10 +180,10 @@ const OldStripPackingAlgorithm = React.forwardRef<
           }).play();
         });
 
-        console.log("after");
+        console.log('after');
 
         // we need to set the prev values, so we can perform the enter animation
-        setStripRects((prev) => [
+        setStripRects(prev => [
           ...prev,
           {
             ...rect,
@@ -213,9 +213,9 @@ const OldStripPackingAlgorithm = React.forwardRef<
     // if this is empty, we just finished an animation (or initial load)
     if (rectsUnderAnimation.length === 0) return;
     const handleFinish = () => {
-      setInventoryRects((old) =>
+      setInventoryRects(old =>
         old.concat(
-          rectsUnderAnimation.map((r) => ({
+          rectsUnderAnimation.map(r => ({
             ...r,
             // update the y values, so they stay in the same position as where they ended up after their animation
             y: r.y + removedRectHeightAndPadding.current,
@@ -295,7 +295,7 @@ const OldStripPackingAlgorithm = React.forwardRef<
               ref={stripVerticalBar}
               scrollableHeight={scrollableStripHeight}
               x={GAME_WIDTH - PADDING - SCROLLBAR_WIDTH}
-              onYChanged={(newY) => stripLayer.current?.y(newY)}
+              onYChanged={newY => stripLayer.current?.y(newY)}
             />
           </Layer>
 
@@ -303,8 +303,7 @@ const OldStripPackingAlgorithm = React.forwardRef<
           <Layer
             {...STRIP_SIZE}
             y={-(scrollableStripHeight - STRIP_SIZE.height)}
-            ref={stripLayer}
-          >
+            ref={stripLayer}>
             {stripRects.map((r, i) => {
               return (
                 <MyRect
@@ -312,7 +311,7 @@ const OldStripPackingAlgorithm = React.forwardRef<
                   {...r}
                   x={r.x + INVENTORY_SIZE.width}
                   strokeWidth={2}
-                  stroke={"#002050FF"}
+                  stroke={'#002050FF'}
                   y={GAME_HEIGHT + r.y}
                   id={`STRIP_RECT`}
                 />
@@ -322,25 +321,25 @@ const OldStripPackingAlgorithm = React.forwardRef<
           {/* Inventory layer */}
 
           <Layer ref={animationLayer}>
-            {rectsUnderAnimation.map((r) => (
+            {rectsUnderAnimation.map(r => (
               <Rect
                 key={r.name}
                 {...r}
                 strokeWidth={2}
-                stroke={"#002050FF"}
+                stroke={'#002050FF'}
                 y={GAME_HEIGHT + r.y - animationLayerTranslateY.current}
                 id={`UNDER_ANIMATION_RECT`}
               />
             ))}
           </Layer>
           <Layer ref={inventoryLayer}>
-            {inventoryRects.map((r) => {
+            {inventoryRects.map(r => {
               return (
                 <Rect
                   key={r.name}
                   {...r}
                   strokeWidth={2}
-                  stroke={"#002050FF"}
+                  stroke={'#002050FF'}
                   y={GAME_HEIGHT + r.y}
                   id={`INVENTORY_RECT`}
                 />
@@ -378,9 +377,8 @@ const MyRect: React.FC<PrevPos & RectConfig & KonvaNodeEvents> = ({
       ref={ref}
       x={prevX}
       y={prevY + GAME_HEIGHT}
-      stroke={"rgba(0,0,0,0.2)"}
+      stroke={'rgba(0,0,0,0.2)'}
       strokeWidth={1}
-      {...props}
-    ></Rect>
+      {...props}></Rect>
   );
 };

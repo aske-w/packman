@@ -1,15 +1,15 @@
-import { useCallback, useRef, useState } from "react";
-import { Dimensions } from "../types/Dimensions.interface";
-import { NextFitDecreasingHeight } from "../algorithms/NextFitDecreasingHeight";
+import { useCallback, useRef, useState } from 'react';
+import { Dimensions } from '../types/Dimensions.interface';
+import { NextFitDecreasingHeight } from '../algorithms/strip/NextFitDecreasingHeight';
 import {
   PackingAlgorithm,
   PackingAlgorithms,
-} from "../types/PackingAlgorithm.interface";
-import { useStats } from "./useStats";
-import { FirstFitDecreasingHeight } from "../algorithms/FirstFitDecreasingHeight";
-import { BestFitDecreasingHeight } from "../algorithms/BestFitDecreasingHeight";
-import { SizeAlternatingStack } from "../algorithms/SizeAlternatingStack";
-import { DimensionsWithConfig } from "../types/DimensionsWithConfig.type";
+} from '../types/PackingAlgorithm.interface';
+import { useStats } from './useStats';
+import { FirstFitDecreasingHeight } from '../algorithms/strip/FirstFitDecreasingHeight';
+import { BestFitDecreasingHeight } from '../algorithms/strip/BestFitDecreasingHeight';
+import { SizeAlternatingStack } from '../algorithms/strip/SizeAlternatingStack';
+import { DimensionsWithConfig } from '../types/DimensionsWithConfig.type';
 
 const {
   BEST_FIT_DECREASING_HEIGHT,
@@ -18,14 +18,14 @@ const {
   SIZE_ALTERNATING_STACK,
 } = PackingAlgorithms;
 
-export type AlgoStates = "RUNNING" | "STOPPED" | "PAUSED";
+export type AlgoStates = 'RUNNING' | 'STOPPED' | 'PAUSED';
 
 export const usePackingAlgorithms = (
   size: Dimensions,
   selectedAlgorithm: PackingAlgorithms
 ) => {
   const { addArea, getStats } = useStats(size.width);
-  const [algoState, setAlgoState] = useState<AlgoStates>("STOPPED");
+  const [algoState, setAlgoState] = useState<AlgoStates>('STOPPED');
   const [isFinished, setIsFinished] = useState(true);
   // TODO better typings than any :)
   const algorithm = useRef<PackingAlgorithm<{}, any>>(
@@ -34,16 +34,16 @@ export const usePackingAlgorithms = (
 
   const reset = useCallback(() => {
     setIsFinished(true);
-    setAlgoState("STOPPED");
+    setAlgoState('STOPPED');
   }, []);
 
   const intializeOnStart = useCallback(() => {
     setIsFinished(false);
-    setAlgoState("RUNNING");
+    setAlgoState('RUNNING');
   }, []);
 
   const pause = useCallback(() => {
-    setAlgoState((prev) => (prev === "PAUSED" ? "RUNNING" : "PAUSED"));
+    setAlgoState(prev => (prev === 'PAUSED' ? 'RUNNING' : 'PAUSED'));
   }, []);
 
   const place = useCallback(() => {
@@ -80,7 +80,7 @@ export const usePackingAlgorithms = (
 
         default:
           reset();
-          console.error("unkown algorithm: ", selectedAlgorithm);
+          console.error('unkown algorithm: ', selectedAlgorithm);
           break;
       }
     },
