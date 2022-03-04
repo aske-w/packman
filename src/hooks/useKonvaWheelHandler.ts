@@ -16,7 +16,7 @@ interface WheelHandlerParams {
   scrollableHeight: number;
   gameHeight: number;
   area: { minX: number; maxX: number };
-  scrollOffsetRef: MutableRefObject<number>;
+  scrollOffsetRef?: MutableRefObject<number>;
 }
 
 type InitializedScrollHandler = (
@@ -75,19 +75,14 @@ export const inventoryScrollHandler: ScrollHandler =
         (y / (-scrollableHeight + gameHeight)) * availableHeight + PADDING;
 
       scrollBarRef.current?.y(vy);
-      scrollOffsetRef.current = vy;
+      if (scrollOffsetRef) {
+        scrollOffsetRef.current = vy;
+      }
       return;
     }
   };
 export const interactiveScrollHandler: ScrollHandler =
-  ({
-    layerRef,
-    gameHeight,
-    scrollBarRef,
-    scrollableHeight,
-    area,
-    scrollOffsetRef,
-  }) =>
+  ({ layerRef, gameHeight, scrollBarRef, scrollableHeight, area }) =>
   e => {
     const { layerX, deltaY } = e;
 
@@ -111,7 +106,7 @@ export const interactiveScrollHandler: ScrollHandler =
         (y / (-scrollableHeight + gameHeight)) * availableHeight + PADDING;
 
       scrollBarRef.current?.y(vy);
-      scrollOffsetRef.current = vy;
+
       return;
     }
   };
