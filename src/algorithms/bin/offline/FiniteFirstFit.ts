@@ -1,13 +1,9 @@
-import { ColorRect } from '../../../types/ColorRect.interface';
-import { Dimensions } from '../../../types/Dimensions.interface';
-import { DimensionsWithConfig } from '../../../types/DimensionsWithConfig.type';
-import { PackingAlgorithm } from '../../../types/PackingAlgorithm.interface';
-import { RectangleConfig } from '../../../types/RectangleConfig.interface';
-import { Shelf } from '../../../types/Shelf.interface';
-
-interface BinShelf extends Shelf {
-  binId: number;
-}
+import { BinShelf } from "../../../types/BinShelf.interface";
+import { ColorRect } from "../../../types/ColorRect.interface";
+import { Dimensions } from "../../../types/Dimensions.interface";
+import { DimensionsWithConfig } from "../../../types/DimensionsWithConfig.type";
+import { PackingAlgorithm } from "../../../types/PackingAlgorithm.interface";
+import { RectangleConfig } from "../../../types/RectangleConfig.interface";
 
 class FiniteFirstFit<T = RectangleConfig> implements PackingAlgorithm<T> {
   shelves: BinShelf[];
@@ -50,7 +46,7 @@ class FiniteFirstFit<T = RectangleConfig> implements PackingAlgorithm<T> {
   }
 
   place(): ColorRect<T> & { binId: number } {
-    if (this.isFinished()) throw new Error('isFinished');
+    if (this.isFinished()) throw new Error("isFinished");
     const nextRect = this.data.shift()!;
 
     for (const shelf of this.shelves) {

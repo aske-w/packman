@@ -1,14 +1,12 @@
-import Konva from 'konva';
-import React, { useState } from 'react';
-import { Layer, Rect, Stage } from 'react-konva';
-import Bin from '../../components/playground/Bin';
-import BinPackingSidebar from '../../components/Sidebar/BinPackingSidebar';
-import { genId } from '../../config/canvasConfig';
-import { useBinPackingAlgorithm } from '../../hooks/useBinPackingAlgorithm';
-import { BinPackingAlgorithms } from '../../types/BinPackingAlgorithm.interface';
-import { ColorRect } from '../../types/ColorRect.interface';
-import { Dimensions } from '../../types/Dimensions.interface';
-import { generateData, generateInventory } from '../../utils/generateData';
+import Konva from "konva";
+import React, { useState } from "react";
+import Bin from "../../components/playground/Bin";
+import BinPackingSidebar from "../../components/Sidebar/BinPackingSidebar";
+import { genId } from "../../config/canvasConfig";
+import { useBinPackingAlgorithm } from "../../hooks/useBinPackingAlgorithm";
+import { BinPackingAlgorithms } from "../../types/BinPackingAlgorithm.interface";
+import { ColorRect } from "../../types/ColorRect.interface";
+import { Dimensions } from "../../types/Dimensions.interface";
 
 interface BinPackingPlaygroundProps {}
 const width = window.innerWidth * 0.2;
@@ -17,7 +15,7 @@ const BinPackingPlayground: React.FC<BinPackingPlaygroundProps> = ({}) => {
   const [dimensionsStorage, setDimensionsStorage] = useState<Dimensions[]>([]);
 
   const [algorithm, setAlgorithm] = useState(
-    BinPackingAlgorithms.FINITE_NEXT_FIT
+    BinPackingAlgorithms.HYBRID_FIRST_FIT
   );
   const { start, place, isFinished, algoState, pause, reset } =
     useBinPackingAlgorithm({ width, height }, algorithm);
@@ -26,8 +24,8 @@ const BinPackingPlayground: React.FC<BinPackingPlaygroundProps> = ({}) => {
     const rect = place();
     if (rect) {
       // console.log({ rect });
-      setBins(old => {
-        const tmp = [...old.map(o => [...o])];
+      setBins((old) => {
+        const tmp = [...old.map((o) => [...o])];
         if (tmp.length - 1 < rect.binId) {
           for (let i = tmp.length - 1; i < rect.binId; i++) {
             tmp.push([]);
