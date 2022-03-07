@@ -53,9 +53,7 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
   const [previousData, setPreviousData] = useState<Dimensions[]>([]);
 
   return (
-    <Sidebar
-      style={{ width: SIDEBAR_WIDTH, minWidth: SIDEBAR_WIDTH }}
-      className="overflow-hidden h-[calc(100vh-64px)] inline-flex flex-col">
+    <Sidebar className="inline-flex flex-col overflow-hidden">
       <SideBarSection title="Algorithms">
         <AlgoSelect<BinPackingAlgorithms>
           className="text-base font-thin text-white w-72"

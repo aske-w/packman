@@ -60,24 +60,25 @@ function StripPackingPlayground() {
   }, []);
 
   return (
-    <StripPackingSidebar
-      width={SIDEBAR_WIDTH}
-      {...{
-        selectedAlgorithm,
-        setSelectedAlgorithm,
-        isFinished,
-        placeNext,
-        start,
-        dimensionsStorage,
-        setDimensionsStorage,
-        algoState,
-        reset,
-        pause,
-      }}>
+    <div className="flex w-full h-full ">
+      <StripPackingSidebar
+        {...{
+          selectedAlgorithm,
+          setSelectedAlgorithm,
+          isFinished,
+          placeNext,
+          start,
+          dimensionsStorage,
+          setDimensionsStorage,
+          algoState,
+          reset,
+          pause,
+        }}
+      />
       <div className="flex items-center justify-center w-full h-full p-4">
         <Canvas rects={rects} size={size} />
       </div>
-    </StripPackingSidebar>
+    </div>
   );
 }
 

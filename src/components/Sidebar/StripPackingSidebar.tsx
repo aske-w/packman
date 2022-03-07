@@ -16,10 +16,9 @@ import RangeSlider from '../RangeSlider';
 import BoxInput from '../BoxInput';
 import RectInput from '../RectInput';
 import { generateData } from '../../utils/generateData';
+import Sidebar from './Sidebar';
 
 interface SidebarProps {
-  width: number;
-  isFinished: boolean;
   placeNext(): void;
   algoState: AlgoStates;
   start(data: Dimensions[]): void;
@@ -32,9 +31,6 @@ interface SidebarProps {
 }
 
 const StripPackingSidebar: React.FC<SidebarProps> = ({
-  width,
-  children,
-  isFinished,
   placeNext,
   start,
   setSelectedAlgorithm,
@@ -53,127 +49,122 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
   console.log('algostate:', algoState);
 
   return (
-    <div className="flex flex-row h-full">
-      <div
-        style={{ width, backgroundColor: '#232323' }}
-        className="h-full bg-main overflow-hidden">
-        <SideBarSection title="Algorithms">
-          <AlgoSelect<PackingAlgorithms>
-            className="w-72 text-white text-base font-thin"
-            options={ALL_PACKING_ALGORITHMS}
-            onChange={setSelectedAlgorithm}
-            value={selectedAlgorithm}
-            disabled={isStarted}
-          />
-        </SideBarSection>
+    <Sidebar className="inline-flex flex-col overflow-hidden">
+      <SideBarSection title="Algorithms">
+        <AlgoSelect<PackingAlgorithms>
+          className="text-base font-thin text-white w-72"
+          options={ALL_PACKING_ALGORITHMS}
+          onChange={setSelectedAlgorithm}
+          value={selectedAlgorithm}
+          disabled={isStarted}
+        />
+      </SideBarSection>
 
-        <SideBarSection title="Actions panel">
-          <SideBarItem
-            element={
-              <Switch
-                onColor="#34C659"
-                checked={checked}
-                onChange={updateChecked}
-                checkedIcon={false}
-                uncheckedIcon={false}
-              />
-            }
-            text="Auto place"
-          />
+      <SideBarSection title="Actions panel">
+        <SideBarItem
+          element={
+            <Switch
+              onColor="#34C659"
+              checked={checked}
+              onChange={updateChecked}
+              checkedIcon={false}
+              uncheckedIcon={false}
+            />
+          }
+          text="Auto place"
+        />
 
-          <SideBarItem
-            element={
-              <button
-                className="px-2 py-1 font-medium text-white rounded shadow bg-red-600 hover:bg-red-700"
-                onClick={reset}>
-                Reset
-              </button>
-            }
-            text="Reset"
-          />
+        <SideBarItem
+          element={
+            <button
+              className="px-2 py-1 font-medium text-white bg-red-600 rounded shadow hover:bg-red-700"
+              onClick={reset}>
+              Reset
+            </button>
+          }
+          text="Reset"
+        />
 
-          <ActionBtnSelector
-            {...{
-              algoState,
-              isAutoPlace: checked,
-              pause,
-              placeNext,
-              disabled: isStarted,
-              start: () => {
-                setPreviousData(r => dimensionsStorage);
-                start(dimensionsStorage);
-              },
-            }}
-          />
+        <ActionBtnSelector
+          {...{
+            algoState,
+            isAutoPlace: checked,
+            pause,
+            placeNext,
+            disabled: isStarted,
+            start: () => {
+              setPreviousData(r => dimensionsStorage);
+              start(dimensionsStorage);
+            },
+          }}
+        />
 
-          {checked && (
-            <div className="flex flex-row space-x-20">
-              <RangeSlider
-                progress={speed}
-                onChange={updateSpeed}
-                className="mt-6"
-                hideTooltip
-              />
+        {checked && (
+          <div className="flex flex-row space-x-20">
+            <RangeSlider
+              progress={speed}
+              onChange={updateSpeed}
+              className="mt-6"
+              hideTooltip
+            />
+            <RectInput
+              value={speed}
+              className="w-4/12 px-3 select-none"
+              sec="%"
+              readonly
+            />
+          </div>
+        )}
+      </SideBarSection>
+
+      <SideBarSection title="Automatic data set">
+        <SideBarItem
+          element={
+            <div className="flex items-center space-x-5 justify-right">
               <RectInput
-                value={speed}
+                value={genNum}
+                onChange={e => setGenNum(Number.parseInt(e.target.value))}
                 className="w-4/12 px-3 select-none"
-                sec="%"
-                readonly
+                sec=""
               />
+              <button
+                onClick={() => setDimensionsStorage(generateData(genNum))}
+                className={`px-2 py-1 font-medium text-white rounded shadow bg-blue-700 ${
+                  isStarted ? 'opacity-60' : 'hover:bg-blue-800'
+                }`}
+                disabled={isStarted}>
+                Generate data
+              </button>
             </div>
-          )}
-        </SideBarSection>
+          }
+          text="Generate data"
+        />
+        <SideBarItem
+          text="Reuse previous data"
+          element={
+            <div className="flex items-center space-x-5 justify-right">
+              <button
+                className={`px-2 py-1 font-medium text-white rounded shadow bg-blue-700 ${
+                  isStarted ? 'opacity-60' : 'hover:bg-blue-800'
+                }`}
+                onClick={() => setDimensionsStorage(r => previousData)}>
+                Reuse previous data
+              </button>
+            </div>
+          }
+        />
+      </SideBarSection>
 
-        <SideBarSection title="Automatic data set">
-          <SideBarItem
-            element={
-              <div className="flex items-center justify-right space-x-5">
-                <RectInput
-                  value={genNum}
-                  onChange={e => setGenNum(Number.parseInt(e.target.value))}
-                  className="w-4/12 px-3 select-none"
-                  sec=""
-                />
-                <button
-                  onClick={() => setDimensionsStorage(generateData(genNum))}
-                  className={`px-2 py-1 font-medium text-white rounded shadow bg-blue-700 ${
-                    isStarted ? 'opacity-60' : 'hover:bg-blue-800'
-                  }`}
-                  disabled={isStarted}>
-                  Generate data
-                </button>
-              </div>
-            }
-            text="Generate data"
-          />
-          <SideBarItem
-            text="Reuse previous data"
-            element={
-              <div className="flex items-center justify-right space-x-5">
-                <button
-                  className={`px-2 py-1 font-medium text-white rounded shadow bg-blue-700 ${
-                    isStarted ? 'opacity-60' : 'hover:bg-blue-800'
-                  }`}
-                  onClick={() => setDimensionsStorage(r => previousData)}>
-                  Reuse previous data
-                </button>
-              </div>
-            }
-          />
-        </SideBarSection>
-
-        <SideBarSection
-          title={'Manuel data set (' + dimensionsStorage.length + ')'}
-          className="max-h-full overflow-y-scroll custom-scrollbar">
-          <BoxInput
-            dimensionsStorage={dimensionsStorage}
-            setDimensionsStorage={setDimensionsStorage}
-            disabled={algoState === 'RUNNING'}></BoxInput>
-        </SideBarSection>
-        {/* <Actions {...props} /> */}
-      </div>
-      {children}
-    </div>
+      <SideBarSection
+        title={'Manuel data set (' + dimensionsStorage.length + ')'}
+        className="flex flex-col p-0 overflow-hidden">
+        <BoxInput
+          dimensionsStorage={dimensionsStorage}
+          setDimensionsStorage={setDimensionsStorage}
+          disabled={algoState === 'RUNNING'}></BoxInput>
+      </SideBarSection>
+      {/* <Actions {...props} /> */}
+    </Sidebar>
   );
 };
 
