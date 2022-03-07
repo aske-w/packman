@@ -1,18 +1,18 @@
-import Konva from 'konva';
-import { useEffect, useState } from 'react';
-import { promptBadge } from '../../components/Badges';
-import Canvas, { WithColor } from '../../components/Canvas';
-import StripPackingSidebar from '../../components/Sidebar/StripPackingSidebar';
-import { usePackingAlgorithms } from '../../hooks/usePackingAlgorithms';
-import { Badges } from '../../types/Badges.enum';
-import { Dimensions } from '../../types/Dimensions.interface';
-import { PackingAlgorithms } from '../../types/PackingAlgorithm.interface';
-import { Rectangle } from '../../types/Rectangle.interface';
+import Konva from "konva";
+import { useEffect, useState } from "react";
+import { promptBadge } from "../../components/Badges";
+import Canvas, { WithColor } from "../../components/Canvas";
+import StripPackingSidebar from "../../components/Sidebar/StripPackingSidebar";
+import { usePackingAlgorithms } from "../../hooks/usePackingAlgorithms";
+import { Badges } from "../../types/Badges.enum";
+import { Dimensions } from "../../types/Dimensions.interface";
+import { PackingAlgorithms } from "../../types/PackingAlgorithm.interface";
+import { Rectangle } from "../../types/Rectangle.interface";
 
 const SIDEBAR_WIDTH = 330;
 
 function StripPackingPlayground() {
-  const [size, setSize] = useState<Dimensions>({
+  const [stripDimensions, setStripDimensions] = useState<Dimensions>({
     height: 700,
     width: 500,
   });
@@ -26,12 +26,12 @@ function StripPackingPlayground() {
     algoState,
     isFinished,
     reset: resetAlgo,
-  } = usePackingAlgorithms(size, selectedAlgorithm);
+  } = usePackingAlgorithms(stripDimensions, selectedAlgorithm);
 
   const placeNext = () => {
     const rect = place();
     if (rect) {
-      setRects(old => [
+      setRects((old) => [
         ...old,
         { ...rect, color: Konva.Util.getRandomColor() },
       ]);
@@ -73,10 +73,12 @@ function StripPackingPlayground() {
           algoState,
           reset,
           pause,
+          setStripDimensions,
+          stripDimensions,
         }}
       />
       <div className="flex items-center justify-center w-full h-full p-4">
-        <Canvas rects={rects} size={size} />
+        <Canvas rects={rects} size={stripDimensions} />
       </div>
     </div>
   );

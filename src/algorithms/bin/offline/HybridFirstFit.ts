@@ -20,18 +20,12 @@ interface Bin {
 
 class HybridFirstFit<T = RectangleConfig> implements PackingAlgorithm<T> {
   private ffdh: FirstFitDecreasingHeight<DimensionsWithConfig<T>>;
-  private bins: Bin[];
+  private bins: Bin[] = [];
   private placedRectangles: (ColorRect<T> & { binId: number })[] = [];
   private ffdhShelves: FFDHShelves<T> = {};
 
   constructor(readonly binSize: Dimensions) {
     this.ffdh = new FirstFitDecreasingHeight(binSize);
-    this.bins = [
-      {
-        remainingHeight: binSize.height,
-        id: 0,
-      },
-    ];
   }
 
   load(data: DimensionsWithConfig<T>[]): this {
@@ -71,13 +65,10 @@ class HybridFirstFit<T = RectangleConfig> implements PackingAlgorithm<T> {
     const bins = Object.values(this.ffdhShelves).reduce<
       (ColorRect<T> & { binId: number })[]
     >((acc, shelf) => {
-      console.log({ binLenght: this.bins.length });
-
       const bin = this.bins.find((b) => b.remainingHeight >= shelf.shelfHeight);
 
       if (bin) {
         const bottomY = -1 * (this.binSize.height - bin.remainingHeight);
-        console.log({ bottomY });
 
         shelf.rects.forEach((r) =>
           acc.push({ ...r, y: bottomY - r.height, binId: bin.id })

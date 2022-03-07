@@ -1,22 +1,22 @@
-import React, { useState } from 'react';
-import { useAutoPlace } from '../../hooks/useAutoPlace';
-import { AlgoStates } from '../../hooks/usePackingAlgorithms';
-import { useToggle } from '../../hooks/useToggle';
-import { Dimensions } from '../../types/Dimensions.interface';
+import React, { useState } from "react";
+import { useAutoPlace } from "../../hooks/useAutoPlace";
+import { AlgoStates } from "../../hooks/usePackingAlgorithms";
+import { useToggle } from "../../hooks/useToggle";
+import { Dimensions } from "../../types/Dimensions.interface";
 import {
   ALL_PACKING_ALGORITHMS,
   PackingAlgorithms,
-} from '../../types/PackingAlgorithm.interface';
-import AlgoSelect from '../AlgoSelect';
-import SideBarItem from './SidebarItem';
-import SideBarSection from './SideBarSection';
-import Switch from 'react-switch';
-import ActionBtnSelector from './ActionBtnSelector';
-import RangeSlider from '../RangeSlider';
-import BoxInput from '../BoxInput';
-import RectInput from '../RectInput';
-import { generateData } from '../../utils/generateData';
-import Sidebar from './Sidebar';
+} from "../../types/PackingAlgorithm.interface";
+import AlgoSelect from "../AlgoSelect";
+import SideBarItem from "./SidebarItem";
+import SideBarSection from "./SideBarSection";
+import Switch from "react-switch";
+import ActionBtnSelector from "./ActionBtnSelector";
+import RangeSlider from "../RangeSlider";
+import BoxInput from "../BoxInput";
+import RectInput from "../RectInput";
+import { generateData } from "../../utils/generateData";
+import Sidebar from "./Sidebar";
 
 interface SidebarProps {
   placeNext(): void;
@@ -28,6 +28,8 @@ interface SidebarProps {
   setDimensionsStorage: React.Dispatch<React.SetStateAction<Dimensions[]>>;
   reset(): void;
   pause(): void;
+  setStripDimensions: React.Dispatch<React.SetStateAction<Dimensions>>;
+  stripDimensions: Dimensions;
 }
 
 const StripPackingSidebar: React.FC<SidebarProps> = ({
@@ -40,13 +42,15 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
   algoState,
   reset,
   pause,
+  setStripDimensions,
+  stripDimensions,
 }) => {
   const { checked, updateChecked } = useToggle();
   const { speed, updateSpeed } = useAutoPlace(checked, placeNext, algoState);
-  const isStarted = algoState === 'RUNNING' || algoState === 'PAUSED';
+  const isStarted = algoState === "RUNNING" || algoState === "PAUSED";
   const [genNum, setGenNum] = useState(30);
   const [previousData, setPreviousData] = useState<Dimensions[]>([]);
-  console.log('algostate:', algoState);
+  console.log("algostate:", algoState);
 
   return (
     <Sidebar className="inline-flex flex-col overflow-hidden">
@@ -78,7 +82,8 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
           element={
             <button
               className="px-2 py-1 font-medium text-white bg-red-600 rounded shadow hover:bg-red-700"
-              onClick={reset}>
+              onClick={reset}
+            >
               Reset
             </button>
           }
@@ -93,7 +98,7 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
             placeNext,
             disabled: isStarted,
             start: () => {
-              setPreviousData(r => dimensionsStorage);
+              setPreviousData((r) => dimensionsStorage);
               start(dimensionsStorage);
             },
           }}
@@ -117,22 +122,50 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
         )}
       </SideBarSection>
 
+      <SideBarSection title="Bin dimensions">
+        <div className="flex flex-row space-x-4">
+          <RectInput
+            value={stripDimensions.width}
+            onChange={({ target: { value } }) =>
+              setStripDimensions((old) => ({
+                ...old,
+                width: value ? Number.parseInt(value) : 0,
+              }))
+            }
+            className="w-4/12 px-3 select-none"
+            sec="w"
+          />
+          <RectInput
+            value={stripDimensions.height}
+            onChange={({ target: { value } }) =>
+              setStripDimensions((old) => ({
+                ...old,
+                height: value ? Number.parseInt(value) : 0,
+              }))
+            }
+            className="w-4/12 px-3 select-none"
+            sec="h"
+          />
+        </div>
+      </SideBarSection>
+
       <SideBarSection title="Automatic data set">
         <SideBarItem
           element={
             <div className="flex items-center space-x-5 justify-right">
               <RectInput
                 value={genNum}
-                onChange={e => setGenNum(Number.parseInt(e.target.value))}
+                onChange={(e) => setGenNum(Number.parseInt(e.target.value))}
                 className="w-4/12 px-3 select-none"
                 sec=""
               />
               <button
                 onClick={() => setDimensionsStorage(generateData(genNum))}
                 className={`px-2 py-1 font-medium text-white rounded shadow bg-blue-700 ${
-                  isStarted ? 'opacity-60' : 'hover:bg-blue-800'
+                  isStarted ? "opacity-60" : "hover:bg-blue-800"
                 }`}
-                disabled={isStarted}>
+                disabled={isStarted}
+              >
                 Generate data
               </button>
             </div>
@@ -145,9 +178,10 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
             <div className="flex items-center space-x-5 justify-right">
               <button
                 className={`px-2 py-1 font-medium text-white rounded shadow bg-blue-700 ${
-                  isStarted ? 'opacity-60' : 'hover:bg-blue-800'
+                  isStarted ? "opacity-60" : "hover:bg-blue-800"
                 }`}
-                onClick={() => setDimensionsStorage(r => previousData)}>
+                onClick={() => setDimensionsStorage((r) => previousData)}
+              >
                 Reuse previous data
               </button>
             </div>
@@ -156,12 +190,14 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
       </SideBarSection>
 
       <SideBarSection
-        title={'Manuel data set (' + dimensionsStorage.length + ')'}
-        className="flex flex-col p-0 overflow-hidden">
+        title={"Manuel data set (" + dimensionsStorage.length + ")"}
+        className="flex flex-col p-0 overflow-hidden"
+      >
         <BoxInput
           dimensionsStorage={dimensionsStorage}
           setDimensionsStorage={setDimensionsStorage}
-          disabled={algoState === 'RUNNING'}></BoxInput>
+          disabled={algoState === "RUNNING"}
+        ></BoxInput>
       </SideBarSection>
       {/* <Actions {...props} /> */}
     </Sidebar>

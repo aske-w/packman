@@ -30,9 +30,9 @@ interface BinPackingSidebarProps<T = BinPackingAlgorithms> {
   setDimensionsStorage: React.Dispatch<React.SetStateAction<Dimensions[]>>;
   reset(): void;
   pause(): void;
+  setBinDimensions: React.Dispatch<React.SetStateAction<Dimensions>>;
+  binDimensions: Dimensions;
 }
-
-const SIDEBAR_WIDTH = 360;
 
 const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
   setAlgorithm,
@@ -45,6 +45,8 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
   reset,
   setDimensionsStorage,
   start,
+  setBinDimensions,
+  binDimensions,
 }) => {
   const { checked, updateChecked } = useToggle();
   const { speed, updateSpeed } = useAutoPlace(checked, placeNext, algoState);
@@ -104,13 +106,8 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
         />
 
         {checked && (
-          <div className="flex flex-row space-x-20">
-            <RangeSlider
-              progress={speed}
-              onChange={updateSpeed}
-              className="mt-6"
-              hideTooltip
-            />
+          <div className="flex flex-row space-x-20 items-center">
+            <RangeSlider progress={speed} onChange={updateSpeed} hideTooltip />
             <RectInput
               value={speed}
               className="w-4/12 px-3 select-none"
@@ -119,6 +116,32 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
             />
           </div>
         )}
+      </SideBarSection>
+      <SideBarSection title="Bin dimensions">
+        <div className="flex flex-row space-x-4">
+          <RectInput
+            value={binDimensions.width}
+            onChange={({ target: { value } }) =>
+              setBinDimensions((old) => ({
+                ...old,
+                width: value ? Number.parseInt(value) : 0,
+              }))
+            }
+            className="w-4/12 px-3 select-none"
+            sec="w"
+          />
+          <RectInput
+            value={binDimensions.height}
+            onChange={({ target: { value } }) =>
+              setBinDimensions((old) => ({
+                ...old,
+                height: value ? Number.parseInt(value) : 0,
+              }))
+            }
+            className="w-4/12 px-3 select-none"
+            sec="h"
+          />
+        </div>
       </SideBarSection>
 
       <SideBarSection title="Automatic data set" className="h-2/12">
@@ -132,7 +155,9 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
                 sec=""
               />
               <button
-                onClick={() => setDimensionsStorage(generateData(genNum))}
+                onClick={() =>
+                  setDimensionsStorage(generateData(genNum, 100, 10))
+                }
                 className={`px-2 py-1 font-medium text-white rounded shadow bg-blue-700 ${
                   isStarted ? "opacity-60" : "hover:bg-blue-800"
                 }`}

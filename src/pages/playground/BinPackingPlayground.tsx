@@ -9,16 +9,21 @@ import { ColorRect } from "../../types/ColorRect.interface";
 import { Dimensions } from "../../types/Dimensions.interface";
 
 interface BinPackingPlaygroundProps {}
-const width = window.innerWidth * 0.2;
-const height = window.innerHeight * 0.8;
+const width = Math.floor(window.innerWidth * 0.2);
+const height = Math.floor(window.innerHeight * 0.1);
+
 const BinPackingPlayground: React.FC<BinPackingPlaygroundProps> = ({}) => {
   const [dimensionsStorage, setDimensionsStorage] = useState<Dimensions[]>([]);
+  const [binDimensions, setBinDimensions] = useState<Dimensions>({
+    width,
+    height,
+  });
 
   const [algorithm, setAlgorithm] = useState(
     BinPackingAlgorithms.HYBRID_FIRST_FIT
   );
   const { start, place, isFinished, algoState, pause, reset } =
-    useBinPackingAlgorithm({ width, height }, algorithm);
+    useBinPackingAlgorithm(binDimensions, algorithm);
 
   const placeNext = () => {
     const rect = place();
@@ -62,18 +67,25 @@ const BinPackingPlayground: React.FC<BinPackingPlaygroundProps> = ({}) => {
           start,
           pause,
           reset: () => {
-            setBins([]);
+            setBins([[]]);
             reset();
           },
           placeNext,
           setDimensionsStorage,
           dimensionsStorage,
+          setBinDimensions,
+          binDimensions,
         }}
       />
       <div className="inline-flex items-center justify-center overflow-auto ">
         <div className="grid h-full grid-cols-3 gap-10 p-10 ">
           {bins.map((bin, i) => (
-            <Bin key={i} height={height} width={width} items={bin} />
+            <Bin
+              key={i}
+              height={binDimensions.height}
+              width={binDimensions.width}
+              items={bin}
+            />
           ))}
         </div>
       </div>

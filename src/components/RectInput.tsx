@@ -27,8 +27,8 @@ const RectInput: React.FC<RectInputProps> = ({
       }
     >
       <input
-        className="bg-canvas focus:outline-none border-none text-white font-light text-sm w-10/12"
-        type="text"
+        className="bg-canvas focus:outline-none border-none text-white font-light text-sm w-10/12 appearance-arrow-none"
+        type={typeof value}
         value={value}
         onChange={onChangeHandler}
         readOnly={readonly}
