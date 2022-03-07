@@ -23,7 +23,10 @@ const BinPackingPlayground: React.FC<BinPackingPlaygroundProps> = ({}) => {
   const placeNext = () => {
     const rect = place();
     if (rect) {
-      // console.log({ rect });
+      // update ui in sidebar
+      setDimensionsStorage((d) =>
+        d.filter((d) => !(d.height === rect.height && d.width === rect.width))
+      );
       setBins((old) => {
         const tmp = [...old.map((o) => [...o])];
         if (tmp.length - 1 < rect.binId) {

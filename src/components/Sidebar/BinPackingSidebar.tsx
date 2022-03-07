@@ -132,7 +132,9 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
                 sec=""
               />
               <button
-                onClick={() => setDimensionsStorage(generateData(genNum))}
+                onClick={() =>
+                  setDimensionsStorage(generateData(genNum, 200, 100))
+                }
                 className={`px-2 py-1 font-medium text-white rounded shadow bg-blue-700 ${
                   isStarted ? "opacity-60" : "hover:bg-blue-800"
                 }`}
@@ -162,8 +164,9 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
       </SideBarSection>
 
       <SideBarSection
-        title={'Manuel data set (' + dimensionsStorage.length + ')'}
-        className="flex flex-col p-0 overflow-hidden">
+        title={"Manuel data set (" + dimensionsStorage.length + ")"}
+        className="flex flex-col p-0 overflow-hidden"
+      >
         <BoxInput
           dimensionsStorage={dimensionsStorage}
           setDimensionsStorage={setDimensionsStorage}

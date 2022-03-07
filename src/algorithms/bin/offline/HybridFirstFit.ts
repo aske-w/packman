@@ -25,7 +25,7 @@ class HybridFirstFit<T = RectangleConfig> implements PackingAlgorithm<T> {
     this.ffdh = new FirstFitDecreasingHeight(binSize);
     this.bins = [
       {
-        remainingHeight: binSize.width,
+        remainingHeight: binSize.height,
         id: 0,
       },
     ];
@@ -44,37 +44,43 @@ class HybridFirstFit<T = RectangleConfig> implements PackingAlgorithm<T> {
   }
 
   private buildShelves() {
-    let shelfId = 0;
-
     while (!this.ffdh.isFinished()) {
       const rect = this.ffdh.place();
-
       const currFfdhShelfIdx = this.ffdhShelves.length - 1;
 
       //
-      const isNewShelf = shelfId !== this.ffdh.shelves.length;
+      const isNewShelf = rect.x === 0;
       const currShelf = this.ffdh.lastShelf;
 
       //   Shelf does not exist and we create a new one
       if (isNewShelf || this.ffdh.shelves.length === 0) {
-        this.ffdhShelves.push({ shelfHeight: currShelf.height, rects: [rect] });
-        shelfId = this.ffdh.shelves.length;
+        this.ffdhShelves.push({
+          // identifier: currShelf.bottomY,
+          shelfHeight: currShelf.height,
+          rects: [rect],
+        });
       } else {
         //   We add rect to the current shelf
         this.ffdhShelves[currFfdhShelfIdx].rects.push(rect);
       }
     }
+
+    console.log({ shelves: this.ffdhShelves });
   }
 
   private buildBins(): void {
     const bins = this.ffdhShelves.reduce<(ColorRect<T> & { binId: number })[]>(
       (acc, shelf) => {
+        console.log({ binLenght: this.bins.length });
+
         const bin = this.bins.find(
-          (b) => b.remainingHeight <= shelf.shelfHeight
+          (b) => b.remainingHeight >= shelf.shelfHeight
         );
 
         if (bin) {
-          const bottomY = this.binSize.height - bin.remainingHeight;
+          const bottomY = -1 * (this.binSize.height - bin.remainingHeight);
+          console.log({ bottomY });
+
           shelf.rects.forEach((r) =>
             acc.push({ ...r, y: bottomY - r.height, binId: bin.id })
           );
@@ -85,7 +91,7 @@ class HybridFirstFit<T = RectangleConfig> implements PackingAlgorithm<T> {
 
         // Create new bin
         const newBin = {
-          id: this.bins.length + 1,
+          id: this.bins.length,
           remainingHeight: this.binSize.height - shelf.shelfHeight,
         };
 
@@ -100,6 +106,8 @@ class HybridFirstFit<T = RectangleConfig> implements PackingAlgorithm<T> {
       },
       []
     );
+
+    console.log({ bins });
 
     this.placedRectangles = bins;
   }
