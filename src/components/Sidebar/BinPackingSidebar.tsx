@@ -17,6 +17,7 @@ import ActionBtnSelector from "./ActionBtnSelector";
 import Sidebar from "./Sidebar";
 import SideBarItem from "./SidebarItem";
 import SideBarSection from "./SideBarSection";
+import classNames from "classnames";
 
 interface BinPackingSidebarProps<T = BinPackingAlgorithms> {
   setAlgorithm: React.Dispatch<React.SetStateAction<T>>;
@@ -117,9 +118,13 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
           </div>
         )}
       </SideBarSection>
-      <SideBarSection title="Bin dimensions">
+      <SideBarSection
+        className={classNames({ "opacity-50": algoState === "RUNNING" })}
+        title="Bin dimensions"
+      >
         <div className="flex flex-row space-x-4">
           <RectInput
+            disabled={isStarted}
             value={binDimensions.width}
             onChange={({ target: { value } }) =>
               setBinDimensions((old) => ({
@@ -140,6 +145,7 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
             }
             className="w-4/12 px-3 select-none"
             sec="h"
+            disabled={isStarted}
           />
         </div>
       </SideBarSection>
@@ -152,7 +158,7 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
                 value={genNum}
                 onChange={(e) => setGenNum(Number.parseInt(e.target.value))}
                 className="w-4/12 px-3 select-none"
-                sec=""
+                disabled={isStarted}
               />
               <button
                 onClick={() =>

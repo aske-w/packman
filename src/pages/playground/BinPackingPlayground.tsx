@@ -77,8 +77,8 @@ const BinPackingPlayground: React.FC<BinPackingPlaygroundProps> = ({}) => {
           binDimensions,
         }}
       />
-      <div className="inline-flex items-center justify-center overflow-y-auto ">
-        <div className="flex flex-wrap h-full flex-shrink-0 gap-5 p-5 w-[calc(100vw-360px)]">
+      <div className="inline-flex items-center justify-center overflow-y-auto custom-scrollbar">
+        <div className="flex justify-start items-start flex-wrap h-full flex-shrink-0 gap-5 p-5 w-[calc(100vw-360px)]">
           {bins.map((bin, i) => (
             <Bin
               key={i}

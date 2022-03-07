@@ -23,6 +23,7 @@ const RectInput: React.FC<RectInputProps> = ({
     <div
       className={
         className +
+        (disabled ? " opacity-40 " : "") +
         " flex flex-row items-center bg-canvas p-2 w-full focus:outline-none border-none rounded-lg"
       }
     >

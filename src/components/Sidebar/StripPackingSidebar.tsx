@@ -50,7 +50,6 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
   const isStarted = algoState === "RUNNING" || algoState === "PAUSED";
   const [genNum, setGenNum] = useState(30);
   const [previousData, setPreviousData] = useState<Dimensions[]>([]);
-  console.log("algostate:", algoState);
 
   return (
     <Sidebar className="inline-flex flex-col overflow-hidden">
@@ -120,6 +119,7 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
       <SideBarSection title="Bin dimensions">
         <div className="flex flex-row space-x-4">
           <RectInput
+            disabled={isStarted}
             value={stripWidth}
             onChange={({ target: { value } }) =>
               setStripWidth(value ? Number.parseInt(value) : 0)
@@ -135,6 +135,7 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
           element={
             <div className="flex items-center space-x-5 justify-right">
               <RectInput
+                disabled={isStarted}
                 value={genNum}
                 onChange={(e) => setGenNum(Number.parseInt(e.target.value))}
                 className="w-4/12 px-3 select-none"
