@@ -1,4 +1,5 @@
-import React from "react";
+import classNames from 'classnames';
+import React from 'react';
 
 interface ButtonProps {
   text: string;
@@ -11,14 +12,16 @@ const Button: React.FC<ButtonProps> = ({
   text,
   onClick,
   disabled,
-  className = "bg-blue-600 hover:bg-blue-700",
+  className = 'bg-blue-600 hover:bg-blue-700',
 }) => {
   return (
     <button
-      className={"px-2 py-1 font-medium text-white rounded shadow " + className}
+      className={classNames(
+        'px-2 py-1 font-medium text-white rounded shadow',
+        className
+      )}
       onClick={onClick}
-      disabled={disabled}
-    >
+      disabled={disabled}>
       {text}
     </button>
   );

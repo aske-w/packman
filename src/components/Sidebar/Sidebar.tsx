@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import React from 'react';
 
 interface SidebarProps {
@@ -7,7 +8,12 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ className, style, children }) => {
   return (
-    <div style={style} className={className + ' h-full bg-main'}>
+    <div
+      style={style}
+      className={classNames(
+        className,
+        'flex-shrink-0 h-full bg-main w-[360px]'
+      )}>
       {children}
     </div>
   );

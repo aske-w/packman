@@ -49,7 +49,7 @@ const BinPackingPlayground: React.FC<BinPackingPlaygroundProps> = ({}) => {
   // console.log(JSON.stringify(bins, null, 1));
 
   return (
-    <div className="h-full w-full flex ">
+    <div className="flex w-full h-full ">
       <BinPackingSidebar
         {...{
           algoState,
@@ -67,8 +67,8 @@ const BinPackingPlayground: React.FC<BinPackingPlaygroundProps> = ({}) => {
           dimensionsStorage,
         }}
       />
-      <div className="flex items-center justify-center p-10">
-        <div className="grid gap-10 grid-cols-3 ">
+      <div className="inline-flex items-center justify-center overflow-auto ">
+        <div className="grid h-full grid-cols-3 gap-10 p-10 ">
           {bins.map((bin, i) => (
             <Bin key={i} height={height} width={width} items={bin} />
           ))}
