@@ -1,5 +1,5 @@
 import Switch from "react-switch";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useAutoPlace } from "../../hooks/useAutoPlace";
 import { AlgoStates } from "../../hooks/usePackingAlgorithms";
 import { useToggle } from "../../hooks/useToggle";
@@ -18,6 +18,7 @@ import Sidebar from "./Sidebar";
 import SideBarItem from "./SidebarItem";
 import SideBarSection from "./SideBarSection";
 import classNames from "classnames";
+import LinkIcon from "@heroicons/react/solid/LinkIcon";
 
 interface BinPackingSidebarProps<T = BinPackingAlgorithms> {
   setAlgorithm: React.Dispatch<React.SetStateAction<T>>;
@@ -122,7 +123,7 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
         className={classNames({ "opacity-50": algoState === "RUNNING" })}
         title="Bin dimensions"
       >
-        <div className="flex flex-row space-x-4">
+        <div className="flex flex-row space-x-4 items-center">
           <RectInput
             disabled={isStarted}
             value={binDimensions.width}
@@ -146,6 +147,17 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
             className="w-4/12 px-3 select-none"
             sec="h"
             disabled={isStarted}
+          />
+
+          <LinkIcon
+            className="h-5 text-gray-200 hover:text-gray-400 cursor-pointer"
+            onClick={() => {
+              const dimensions = Math.max(
+                binDimensions.height,
+                binDimensions.width
+              );
+              setBinDimensions({ width: dimensions, height: dimensions });
+            }}
           />
         </div>
       </SideBarSection>
