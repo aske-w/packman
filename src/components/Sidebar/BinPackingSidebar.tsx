@@ -55,10 +55,10 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
   return (
     <Sidebar
       style={{ width: SIDEBAR_WIDTH, minWidth: SIDEBAR_WIDTH }}
-      className="overflow-hidden">
+      className="overflow-hidden h-[calc(100vh-64px)] inline-flex flex-col">
       <SideBarSection title="Algorithms">
         <AlgoSelect<BinPackingAlgorithms>
-          className="w-72 text-white text-base font-thin"
+          className="text-base font-thin text-white w-72"
           options={ALL_BIN_PACKING_ALGORITHMS}
           onChange={setAlgorithm}
           value={algorithm}
@@ -82,7 +82,7 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
         <SideBarItem
           element={
             <button
-              className="px-2 py-1 font-medium text-white rounded shadow bg-red-600 hover:bg-red-700"
+              className="px-2 py-1 font-medium text-white bg-red-600 rounded shadow hover:bg-red-700"
               onClick={reset}>
               Reset
             </button>
@@ -125,7 +125,7 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
       <SideBarSection title="Automatic data set" className="h-2/12">
         <SideBarItem
           element={
-            <div className="flex items-center justify-right space-x-5">
+            <div className="flex items-center space-x-5 justify-right">
               <RectInput
                 value={genNum}
                 onChange={e => setGenNum(Number.parseInt(e.target.value))}
@@ -147,7 +147,7 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
         <SideBarItem
           text="Reuse previous data"
           element={
-            <div className="flex items-center justify-right space-x-5">
+            <div className="flex items-center space-x-5 justify-right">
               <button
                 className={`px-2 py-1 font-medium text-white rounded shadow bg-blue-700 ${
                   isStarted ? 'opacity-60' : 'hover:bg-blue-800'
@@ -162,7 +162,7 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
 
       <SideBarSection
         title={'Manuel data set (' + dimensionsStorage.length + ')'}
-        className="max-h-full h-full overflow-hidden">
+        className="flex flex-col p-0 overflow-hidden">
         <BoxInput
           dimensionsStorage={dimensionsStorage}
           setDimensionsStorage={setDimensionsStorage}

@@ -20,13 +20,8 @@ const BoxInput: React.FC<BoxInputProps> = ({
   const setRectangles = setDimensionsStorage;
   const [width, setWidth] = useState<string>('');
   const [height, setHeight] = useState<string>('');
-  const ref = useRef<HTMLDivElement>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
-
-  console.log('offsetTop: ', ref.current?.offsetTop);
-  console.log('clientHeight: ', ref.current?.clientHeight);
-  console.log('clientTop: ', ref.current?.clientTop);
 
   const parseRectangleProperties = (
     width: string,
@@ -75,56 +70,51 @@ const BoxInput: React.FC<BoxInputProps> = ({
   };
 
   return (
-    <Card className="w-full h-full">
-      {/* <div className="flex flex-row justify-around py-2">
-        <Header title="Width" />
-        <Header title="Height" />
-      </div> */}
-      {/* <div className="col-span-11 h-0 border-b-2 border-stone-400 w-full"></div> */}
-      <div
-        ref={ref}
-        style={{
-          height: `calc(100% - ${ref.current?.offsetTop ?? 0 + 200}px)`,
-          maxHeight: `calc(100% - ${ref.current?.offsetTop ?? 0 + 200}px)`,
-        }}
-        className="w-full flex flex-col justify-start items-center space-y-4 overflow-y-scroll custom-scrollbar">
-        <form
-          action=""
-          onSubmit={handleFormSubmit}
-          className="w-full flex flex-row items-center space-x-6">
-          <RectInput
-            value={width}
-            onChange={e => setWidth(e.target.value)}
-            reference={inputRef}
-            disabled={disabled}
-            sec="w"></RectInput>
-          <RectInput
-            value={height}
-            onChange={e => setHeight(e.target.value)}
-            disabled={disabled}
-            sec="h"></RectInput>
-          {/* <TrashIcon className="w-14 text-gray-200" /> */}
-          <button type="submit" className="hidden" disabled={disabled}></button>
-        </form>
-
-        {rectangles.map((r, index) => (
-          <div
-            key={index}
-            className="w-full flex flex-row items-center space-x-6">
-            <RectInput readonly={true} value={r.width} sec="w"></RectInput>
-            <RectInput readonly={true} value={r.height} sec="h"></RectInput>
-            <TrashIcon
-              className={`w-14 ${
-                disabled
-                  ? 'text-gray-500'
-                  : 'hover:cursor-pointer hover:text-red-400 hover:scale-110 text-gray-200'
-              }`}
-              onClick={e => removeRectangle(index)}
-            />
-          </div>
-        ))}
+    // <div className="flex flex-col items-center justify-start w-full space-y-4 overflow-y-scroll rounded custom-scrollbar">
+    <div className="flex-1 min-h-0">
+      <div className="h-full p-4 overflow-y-scroll flex-grow-1 custom-scrollbar">
+        <div className="flex flex-col items-center justify-start w-full space-y-4 rounded ">
+          <form
+            action=""
+            onSubmit={handleFormSubmit}
+            className="flex flex-row items-center w-full space-x-6">
+            <RectInput
+              value={width}
+              onChange={e => setWidth(e.target.value)}
+              reference={inputRef}
+              disabled={disabled}
+              sec="w"></RectInput>
+            <RectInput
+              value={height}
+              onChange={e => setHeight(e.target.value)}
+              disabled={disabled}
+              sec="h"></RectInput>
+            <div className="w-12" />
+            {/* <TrashIcon className="text-gray-200 w-14" /> */}
+            <button
+              type="submit"
+              className="hidden"
+              disabled={disabled}></button>
+          </form>
+          {rectangles.map((r, index) => (
+            <div
+              key={index}
+              className="flex flex-row items-center w-full space-x-6">
+              <RectInput readonly={true} value={r.width} sec="w"></RectInput>
+              <RectInput readonly={true} value={r.height} sec="h"></RectInput>
+              <TrashIcon
+                className={`w-14 ${
+                  disabled
+                    ? 'text-gray-500'
+                    : 'hover:cursor-pointer hover:text-red-400 hover:scale-110 text-gray-200'
+                }`}
+                onClick={e => removeRectangle(index)}
+              />
+            </div>
+          ))}
+        </div>
       </div>
-    </Card>
+    </div>
   );
 };
 
