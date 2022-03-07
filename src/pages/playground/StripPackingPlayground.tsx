@@ -9,13 +9,8 @@ import { Dimensions } from "../../types/Dimensions.interface";
 import { PackingAlgorithms } from "../../types/PackingAlgorithm.interface";
 import { Rectangle } from "../../types/Rectangle.interface";
 
-const SIDEBAR_WIDTH = 330;
-
 function StripPackingPlayground() {
-  const [stripDimensions, setStripDimensions] = useState<Dimensions>({
-    height: 700,
-    width: 500,
-  });
+  const [stripWidth, setStripWidth] = useState(400);
   const [selectedAlgorithm, setSelectedAlgorithm] = useState<PackingAlgorithms>(
     PackingAlgorithms.SIZE_ALTERNATING_STACK
   );
@@ -26,7 +21,7 @@ function StripPackingPlayground() {
     algoState,
     isFinished,
     reset: resetAlgo,
-  } = usePackingAlgorithms(stripDimensions, selectedAlgorithm);
+  } = usePackingAlgorithms(stripWidth, selectedAlgorithm);
 
   const placeNext = () => {
     const rect = place();
@@ -73,12 +68,12 @@ function StripPackingPlayground() {
           algoState,
           reset,
           pause,
-          setStripDimensions,
-          stripDimensions,
+          setStripWidth: setStripWidth,
+          stripWidth: stripWidth,
         }}
       />
       <div className="flex items-center justify-center w-full h-full p-4">
-        <Canvas rects={rects} size={stripDimensions} />
+        <Canvas rects={rects} width={stripWidth} />
       </div>
     </div>
   );

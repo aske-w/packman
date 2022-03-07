@@ -28,8 +28,8 @@ interface SidebarProps {
   setDimensionsStorage: React.Dispatch<React.SetStateAction<Dimensions[]>>;
   reset(): void;
   pause(): void;
-  setStripDimensions: React.Dispatch<React.SetStateAction<Dimensions>>;
-  stripDimensions: Dimensions;
+  setStripWidth: React.Dispatch<React.SetStateAction<number>>;
+  stripWidth: number;
 }
 
 const StripPackingSidebar: React.FC<SidebarProps> = ({
@@ -42,8 +42,8 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
   algoState,
   reset,
   pause,
-  setStripDimensions,
-  stripDimensions,
+  setStripWidth,
+  stripWidth,
 }) => {
   const { checked, updateChecked } = useToggle();
   const { speed, updateSpeed } = useAutoPlace(checked, placeNext, algoState);
@@ -105,13 +105,8 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
         />
 
         {checked && (
-          <div className="flex flex-row space-x-20">
-            <RangeSlider
-              progress={speed}
-              onChange={updateSpeed}
-              className="mt-6"
-              hideTooltip
-            />
+          <div className="flex flex-row space-x-20 items-center">
+            <RangeSlider progress={speed} onChange={updateSpeed} hideTooltip />
             <RectInput
               value={speed}
               className="w-4/12 px-3 select-none"
@@ -125,26 +120,12 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
       <SideBarSection title="Bin dimensions">
         <div className="flex flex-row space-x-4">
           <RectInput
-            value={stripDimensions.width}
+            value={stripWidth}
             onChange={({ target: { value } }) =>
-              setStripDimensions((old) => ({
-                ...old,
-                width: value ? Number.parseInt(value) : 0,
-              }))
+              setStripWidth(value ? Number.parseInt(value) : 0)
             }
             className="w-4/12 px-3 select-none"
             sec="w"
-          />
-          <RectInput
-            value={stripDimensions.height}
-            onChange={({ target: { value } }) =>
-              setStripDimensions((old) => ({
-                ...old,
-                height: value ? Number.parseInt(value) : 0,
-              }))
-            }
-            className="w-4/12 px-3 select-none"
-            sec="h"
           />
         </div>
       </SideBarSection>
