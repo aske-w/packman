@@ -5,10 +5,13 @@ import { PackingAlgorithm } from "../../../types/PackingAlgorithm.interface";
 import { RectangleConfig } from "../../../types/RectangleConfig.interface";
 import { FirstFitDecreasingHeight } from "../../strip/FirstFitDecreasingHeight";
 
-type FFDHShelves<T> = {
-  shelfHeight: number;
-  rects: ColorRect<T>[];
-}[];
+type FFDHShelves<T> = Record<
+  number, // bottomY
+  {
+    shelfHeight: number;
+    rects: ColorRect<T>[];
+  }
+>;
 
 interface Bin {
   remainingHeight: number;
@@ -19,7 +22,7 @@ class HybridFirstFit<T = RectangleConfig> implements PackingAlgorithm<T> {
   private ffdh: FirstFitDecreasingHeight<DimensionsWithConfig<T>>;
   private bins: Bin[];
   private placedRectangles: (ColorRect<T> & { binId: number })[] = [];
-  private ffdhShelves: FFDHShelves<T> = [];
+  private ffdhShelves: FFDHShelves<T> = {};
 
   constructor(readonly binSize: Dimensions) {
     this.ffdh = new FirstFitDecreasingHeight(binSize);
@@ -46,66 +49,59 @@ class HybridFirstFit<T = RectangleConfig> implements PackingAlgorithm<T> {
   private buildShelves() {
     while (!this.ffdh.isFinished()) {
       const rect = this.ffdh.place();
-      const currFfdhShelfIdx = this.ffdhShelves.length - 1;
-
-      //
-      const isNewShelf = rect.x === 0;
       const currShelf = this.ffdh.lastShelf;
+      const shelfBottomY = -1 * (-rect.y - rect.height); // calc the shelf bottom y of the rectangle
+
+      const shelfExists = this.ffdhShelves[shelfBottomY] !== undefined; // see if a shelf already exists
 
       //   Shelf does not exist and we create a new one
-      if (isNewShelf || this.ffdh.shelves.length === 0) {
-        this.ffdhShelves.push({
-          // identifier: currShelf.bottomY,
+      if (!shelfExists) {
+        this.ffdhShelves[shelfBottomY] = {
           shelfHeight: currShelf.height,
           rects: [rect],
-        });
+        };
       } else {
         //   We add rect to the current shelf
-        this.ffdhShelves[currFfdhShelfIdx].rects.push(rect);
+        this.ffdhShelves[shelfBottomY].rects.push(rect);
       }
     }
-
-    console.log({ shelves: this.ffdhShelves });
   }
 
   private buildBins(): void {
-    const bins = this.ffdhShelves.reduce<(ColorRect<T> & { binId: number })[]>(
-      (acc, shelf) => {
-        console.log({ binLenght: this.bins.length });
+    const bins = Object.values(this.ffdhShelves).reduce<
+      (ColorRect<T> & { binId: number })[]
+    >((acc, shelf) => {
+      console.log({ binLenght: this.bins.length });
 
-        const bin = this.bins.find(
-          (b) => b.remainingHeight >= shelf.shelfHeight
-        );
+      const bin = this.bins.find((b) => b.remainingHeight >= shelf.shelfHeight);
 
-        if (bin) {
-          const bottomY = -1 * (this.binSize.height - bin.remainingHeight);
-          console.log({ bottomY });
+      if (bin) {
+        const bottomY = -1 * (this.binSize.height - bin.remainingHeight);
+        console.log({ bottomY });
 
-          shelf.rects.forEach((r) =>
-            acc.push({ ...r, y: bottomY - r.height, binId: bin.id })
-          );
-
-          bin.remainingHeight -= shelf.shelfHeight;
-          return acc;
-        }
-
-        // Create new bin
-        const newBin = {
-          id: this.bins.length,
-          remainingHeight: this.binSize.height - shelf.shelfHeight,
-        };
-
-        // Place in new bin
         shelf.rects.forEach((r) =>
-          acc.push({ ...r, y: -r.height, binId: newBin.id })
+          acc.push({ ...r, y: bottomY - r.height, binId: bin.id })
         );
 
-        this.bins.push(newBin);
-
+        bin.remainingHeight -= shelf.shelfHeight;
         return acc;
-      },
-      []
-    );
+      }
+
+      // Create new bin
+      const newBin = {
+        id: this.bins.length,
+        remainingHeight: this.binSize.height - shelf.shelfHeight,
+      };
+
+      // Place in new bin
+      shelf.rects.forEach((r) =>
+        acc.push({ ...r, y: -r.height, binId: newBin.id })
+      );
+
+      this.bins.push(newBin);
+
+      return acc;
+    }, []);
 
     console.log({ bins });
 

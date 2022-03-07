@@ -49,7 +49,7 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
   const { checked, updateChecked } = useToggle();
   const { speed, updateSpeed } = useAutoPlace(checked, placeNext, algoState);
   const isStarted = algoState === "RUNNING" || algoState === "PAUSED";
-  const [genNum, setGenNum] = useState(10);
+  const [genNum, setGenNum] = useState(100);
   const [previousData, setPreviousData] = useState<Dimensions[]>([]);
 
   return (
@@ -132,9 +132,7 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
                 sec=""
               />
               <button
-                onClick={() =>
-                  setDimensionsStorage(generateData(genNum, 200, 100))
-                }
+                onClick={() => setDimensionsStorage(generateData(genNum))}
                 className={`px-2 py-1 font-medium text-white rounded shadow bg-blue-700 ${
                   isStarted ? "opacity-60" : "hover:bg-blue-800"
                 }`}
