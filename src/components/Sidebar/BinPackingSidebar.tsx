@@ -1,22 +1,22 @@
-import Switch from 'react-switch';
-import React, { useRef, useState } from 'react';
-import { useAutoPlace } from '../../hooks/useAutoPlace';
-import { AlgoStates } from '../../hooks/usePackingAlgorithms';
-import { useToggle } from '../../hooks/useToggle';
+import Switch from "react-switch";
+import React, { useRef, useState } from "react";
+import { useAutoPlace } from "../../hooks/useAutoPlace";
+import { AlgoStates } from "../../hooks/usePackingAlgorithms";
+import { useToggle } from "../../hooks/useToggle";
 import {
   ALL_BIN_PACKING_ALGORITHMS,
   BinPackingAlgorithms,
-} from '../../types/BinPackingAlgorithm.interface';
-import { Dimensions } from '../../types/Dimensions.interface';
-import { generateData } from '../../utils/generateData';
-import AlgoSelect from '../AlgoSelect';
-import BoxInput from '../BoxInput';
-import RangeSlider from '../RangeSlider';
-import RectInput from '../RectInput';
-import ActionBtnSelector from './ActionBtnSelector';
-import Sidebar from './Sidebar';
-import SideBarItem from './SidebarItem';
-import SideBarSection from './SideBarSection';
+} from "../../types/BinPackingAlgorithm.interface";
+import { Dimensions } from "../../types/Dimensions.interface";
+import { generateData } from "../../utils/generateData";
+import AlgoSelect from "../AlgoSelect";
+import BoxInput from "../BoxInput";
+import RangeSlider from "../RangeSlider";
+import RectInput from "../RectInput";
+import ActionBtnSelector from "./ActionBtnSelector";
+import Sidebar from "./Sidebar";
+import SideBarItem from "./SidebarItem";
+import SideBarSection from "./SideBarSection";
 
 interface BinPackingSidebarProps<T = BinPackingAlgorithms> {
   setAlgorithm: React.Dispatch<React.SetStateAction<T>>;
@@ -48,14 +48,15 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
 }) => {
   const { checked, updateChecked } = useToggle();
   const { speed, updateSpeed } = useAutoPlace(checked, placeNext, algoState);
-  const isStarted = algoState === 'RUNNING' || algoState === 'PAUSED';
-  const [genNum, setGenNum] = useState(150);
+  const isStarted = algoState === "RUNNING" || algoState === "PAUSED";
+  const [genNum, setGenNum] = useState(10);
   const [previousData, setPreviousData] = useState<Dimensions[]>([]);
 
   return (
     <Sidebar
       style={{ width: SIDEBAR_WIDTH, minWidth: SIDEBAR_WIDTH }}
-      className="overflow-hidden">
+      className="overflow-hidden"
+    >
       <SideBarSection title="Algorithms">
         <AlgoSelect<BinPackingAlgorithms>
           className="w-72 text-white text-base font-thin"
@@ -83,7 +84,8 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
           element={
             <button
               className="px-2 py-1 font-medium text-white rounded shadow bg-red-600 hover:bg-red-700"
-              onClick={reset}>
+              onClick={reset}
+            >
               Reset
             </button>
           }
@@ -98,7 +100,7 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
             placeNext,
             disabled: isStarted,
             start: () => {
-              setPreviousData(r => dimensionsStorage);
+              setPreviousData((r) => dimensionsStorage);
               start(dimensionsStorage);
             },
           }}
@@ -128,16 +130,17 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
             <div className="flex items-center justify-right space-x-5">
               <RectInput
                 value={genNum}
-                onChange={e => setGenNum(Number.parseInt(e.target.value))}
+                onChange={(e) => setGenNum(Number.parseInt(e.target.value))}
                 className="w-4/12 px-3 select-none"
                 sec=""
               />
               <button
                 onClick={() => setDimensionsStorage(generateData(genNum))}
                 className={`px-2 py-1 font-medium text-white rounded shadow bg-blue-700 ${
-                  isStarted ? 'opacity-60' : 'hover:bg-blue-800'
+                  isStarted ? "opacity-60" : "hover:bg-blue-800"
                 }`}
-                disabled={isStarted}>
+                disabled={isStarted}
+              >
                 Generate data
               </button>
             </div>
@@ -150,9 +153,10 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
             <div className="flex items-center justify-right space-x-5">
               <button
                 className={`px-2 py-1 font-medium text-white rounded shadow bg-blue-700 ${
-                  isStarted ? 'opacity-60' : 'hover:bg-blue-800'
+                  isStarted ? "opacity-60" : "hover:bg-blue-800"
                 }`}
-                onClick={() => setDimensionsStorage(r => previousData)}>
+                onClick={() => setDimensionsStorage((r) => previousData)}
+              >
                 Reuse previous data
               </button>
             </div>
@@ -161,12 +165,14 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
       </SideBarSection>
 
       <SideBarSection
-        title={'Manuel data set (' + dimensionsStorage.length + ')'}
-        className="max-h-full h-full overflow-hidden">
+        title={"Manuel data set (" + dimensionsStorage.length + ")"}
+        className="max-h-full h-full overflow-hidden"
+      >
         <BoxInput
           dimensionsStorage={dimensionsStorage}
           setDimensionsStorage={setDimensionsStorage}
-          disabled={algoState === 'RUNNING'}></BoxInput>
+          disabled={algoState === "RUNNING"}
+        ></BoxInput>
       </SideBarSection>
       {/* <Actions {...props} /> */}
     </Sidebar>
