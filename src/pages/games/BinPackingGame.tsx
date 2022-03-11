@@ -17,6 +17,8 @@ import {
   useKonvaWheelHandler,
 } from '../../hooks/useKonvaWheelHandler';
 import BinInteractive from '../../components/games/bin-packing/BinInteractive';
+import { IRect, Vector2d } from 'konva/lib/types';
+import Konva from 'konva';
 
 interface BinPackingGameProps {}
 const NUM_ITEMS = 10;
@@ -40,9 +42,38 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
   const [inventoryChanged, setInventoryChanged] = useState(true);
   /**
    * This is the inventory, used for rendering the draggable rects. Whenever an
-   * item is placed in the strip, it's removed from this array
+   * item is placed in a bin, it's removed from this array
    */
   const [renderInventory, setRenderInventory] = useState<ColorRect[]>([]);
+  const [bins, setBins] = useState<Record<number, ColorRect[]>>({
+    // 0: [],
+    // 1: [],
+    // 2: [],
+    // 3: [],
+  });
+  const [binLayout, setBinLayout] = useState<IRect[]>([]);
+
+  const findBin = (pos: Vector2d) => {
+    return binLayout.findIndex(({ height, width, x, y }, i) => {
+      const rectX = pos.x - inventoryWidth;
+      const fitsX = rectX > x && rectX < x + width;
+      const fitsY = pos.y > y && pos.y < y + height;
+      return fitsX && fitsY;
+    });
+  };
+
+  const handleDraggedToBin = (name: string, pos: Vector2d) => {
+    const bin = findBin(pos);
+    const { x, y } = pos;
+    const rect = renderInventory.find(r => r.name === name);
+    if (!rect) return;
+    setBins(old => ({
+      ...old,
+      [bin]: (old[bin] ?? []).concat({ ...rect, x, y }),
+    }));
+    setRenderInventory(old => old.filter(r => r.name !== name));
+    console.log(bin);
+  };
 
   useEffect(() => {
     if (inventoryChanged) {
@@ -94,25 +125,6 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
             width={binAreaWidth}
             height={binAreaHeight}
           />
-        </Layer>
-
-        <BinInventory
-          ref={inventoryLayer}
-          gameHeight={gameHeight}
-          inventoryWidth={inventoryWidth}
-          onDraggedToBin={(a, b) => console.log(a, b)}
-          renderInventory={renderInventory}
-          staticInventory={staticInventory}
-        />
-        <BinInteractive
-          ref={interactiveLayer}
-          dimensions={{
-            width: binAreaWidth,
-            height: binAreaHeight,
-          }}
-          offset={{ x: inventoryWidth, y: 0 }}
-        />
-        <Layer>
           {/* Algorithm BG */}
           <Rect
             fill="#444"
@@ -121,6 +133,36 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
             width={binAreaWidth}
             height={binAreaHeight}
           />
+        </Layer>
+        <BinInteractive
+          onBinLayout={setBinLayout}
+          bins={bins}
+          ref={interactiveLayer}
+          dimensions={{
+            width: binAreaWidth,
+            height: binAreaHeight,
+          }}
+          offset={{ x: inventoryWidth, y: 0 }}
+        />
+        <Layer>
+          <Rect
+            fill="#444"
+            x={inventoryWidth}
+            y={binAreaHeight}
+            width={binAreaWidth}
+            height={binAreaHeight}
+          />
+        </Layer>
+        <BinInventory
+          ref={inventoryLayer}
+          gameHeight={gameHeight}
+          inventoryWidth={inventoryWidth}
+          onDraggedToBin={handleDraggedToBin}
+          renderInventory={renderInventory}
+          staticInventory={staticInventory}
+        />
+
+        <Layer>
           <ScrollBar
             key="inventory scroll bar"
             startPosition="top"
