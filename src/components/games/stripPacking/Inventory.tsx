@@ -7,6 +7,7 @@ import { Layer, Rect, Text } from 'react-konva';
 import {
   CanvasProps,
   INVENTORY_SIZE,
+  RECT_OVERLAP_COLOR,
   SCROLLBAR_WIDTH,
 } from '../../../config/canvasConfig';
 import { ColorRect } from '../../../types/ColorRect.interface';
@@ -15,6 +16,8 @@ import { RectangleConfig } from '../../../types/RectangleConfig.interface';
 import ScrollBar from '../../canvas/ScrollBar';
 import { PADDING } from '../../../config/canvasConfig';
 import { Vector2d } from 'konva/lib/types';
+import { Group } from 'konva/lib/Group';
+import { Shape } from 'konva/lib/Shape';
 
 interface InventoryProps {
   stripWidth: number;
@@ -22,7 +25,11 @@ interface InventoryProps {
   gameHeight: number;
   dynamicInventory: ColorRect[];
   staticInventory: ReadonlyArray<ColorRect & { order?: number }>;
-  onDraggedToStrip: (rectName: string, pos: Vector2d) => void;
+  stripRects: ColorRect<RectangleConfig>[];
+  // snap: (source: ColorRect<RectangleConfig>[], target: Shape, destination?: ColorRect<RectangleConfig>[]) => void;
+  snap: (source: ColorRect<RectangleConfig>[], target: Shape) => void;
+  onDraggedToStrip: (rectName: string, pos: Vector2d) => boolean;
+  shouldRecolor: (rectName: string, pos: Vector2d) => boolean;
 }
 
 const Inventory = React.forwardRef<KonvaLayer, InventoryProps>(
@@ -34,6 +41,9 @@ const Inventory = React.forwardRef<KonvaLayer, InventoryProps>(
       inventoryWidth,
       gameHeight,
       onDraggedToStrip,
+      stripRects,
+      snap,
+      shouldRecolor
     },
     ref
   ) => {
@@ -46,8 +56,11 @@ const Inventory = React.forwardRef<KonvaLayer, InventoryProps>(
 
       const inStripArea = dropX + width < stripWidth;
       if (inStripArea) {
-        return onDraggedToStrip(name, { x: dropX, y: dropY });
+        const success = onDraggedToStrip(name, { x: dropX, y: dropY })
+        if(success)
+          return;
       }
+      rect.setAttr("fill", staticInventory.find(r => r.name == rect.name())!.fill);
       // animate back to starting position
       new Konva.Tween({
         x,
@@ -56,6 +69,18 @@ const Inventory = React.forwardRef<KonvaLayer, InventoryProps>(
         duration: 0.4,
         easing: Konva.Easings.EaseOut,
       }).play();
+    };
+
+    const handleDragMove = (e: KonvaEventObject<DragEvent>) => {
+      const rect = e.target as Shape
+      const {x, y} = rect.getAttrs();
+
+      snap(dynamicInventory, rect);
+
+      // console.log(`x: ${x}, y: ${y}`);
+      // console.log({stripRects});
+      // snap(dynamicInventory, rect, stripRects)
+
     };
 
     // const [tooltip, setTooltip] = useState<Partial<TextConfig>>({
@@ -117,6 +142,7 @@ const Inventory = React.forwardRef<KonvaLayer, InventoryProps>(
                 stroke={'orange'}
                 // y={scrollableInventoryHeight + r.y}
                 onDragEnd={handleDragEnd}
+                onDragMove={handleDragMove}
                 id={`INVENTORY_RECT`}
               />
             );

@@ -7,7 +7,9 @@ import StripPackingAlgorithm, {
 import {
   GAME_HEIGHT,
   NAV_HEIGHT,
+  RECT_OVERLAP_COLOR,
   SCROLLBAR_HEIGHT,
+  SNAPPING_THRESHOLD,
 } from '../../config/canvasConfig';
 import { useWindowSize } from '../../hooks/useWindowSize';
 import {
@@ -29,6 +31,11 @@ import StripPackingInteractive, {
 import { Vector2d } from 'konva/lib/types';
 import useAlgorithmStore from '../../store/algorithm';
 import useScoreStore from '../../store/score';
+import { Group } from 'konva/lib/Group';
+import { intersects } from '../../utils/intersects';
+import { Rectangle } from '../../types/Rectangle.interface';
+import { Shape, ShapeConfig } from 'konva/lib/Shape';
+import { Coordinate } from '../../types/Coordinate.interface';
 
 interface StripPackingGameProps {}
 const NUM_ITEMS = 50;
@@ -45,6 +52,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
     useCallback(state => state.setRectanglesLeft, [])
   );
 
+  const [stripRects, setStripRects] = useState<ColorRect[]>([]);
   /**
    * This is the immutable inventory, used for rendering the ghosts
    */
@@ -90,16 +98,29 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   /**
    * Pos is absolute position in the canvas
    */
-  const onDraggedToStrip = (rectName: string, pos: Vector2d) => {
+  const onDraggedToStrip = (rectName: string, pos: Vector2d): boolean => {
     const rIdx = renderInventory.findIndex(r => r.name === rectName);
 
     if (rIdx !== -1) {
       const rect = renderInventory[rIdx];
+      const interactiveScrollOffset = interactiveLayerRef.current?.y()!;
+      const interactiveRects = interactiveLayerRef.current?.children;
+      
+      let intersectAny = false;
+      
+      const rectToPlace: Rectangle = {x: pos.x, y: -interactiveScrollOffset + pos.y, width: rect.width, height: rect.height};
+      
+      interactiveRects?.forEach(ir => {
+        if(intersects(ir.getAttrs(), rectToPlace))
+          intersectAny = true;
+      });
+      
+      if(intersectAny) 
+        return false;
+      
       // Place in algorithm canvas
       const res = algoRef.current?.place(rect);
-
-      const interactiveScrollOffset = interactiveLayerRef.current?.y()!;
-
+      
       const placement = {
         x: pos.x,
         y: pos.y - gameHeight - interactiveScrollOffset,
@@ -127,6 +148,101 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
           return tmp;
         });
       }
+    }
+    return true;
+  };
+
+  const shouldRecolor = (rectName: string, pos: Vector2d): boolean => {
+    const interactiveRects = interactiveLayerRef.current?.children!;
+    if(pos.x > 0 || interactiveRects.length == 0)
+      return false;
+      
+    const interactiveScrollOffset = interactiveLayerRef.current?.y()!;
+    const stripPos = {x: pos.x + stripWidth, y: -interactiveScrollOffset + pos.y}
+    const draggedRect = renderInventory.find(rect => rect.name == rectName)!;
+    const {width, height} = draggedRect;
+      
+    for (let index = 0; index < interactiveRects.length; index++) {
+      const element = interactiveRects[index];
+      if(element.name() == rectName)
+        continue;
+      
+      if(intersects(element.getAttrs(), {width, height, ...stripPos})){
+        return true;
+      }
+    }
+    return false;
+  }
+  const snapInteractive = (source: Group[], target: Shape, destination?: Group[]) => {
+    const newSource = source.map(g => {
+      const rect: ColorRect<RectangleConfig> = g.getAttrs();
+      return rect;
+    })
+    const newDestination = destination?.map(g => {
+      const rect: ColorRect<RectangleConfig> = g.getAttrs();
+      return rect;
+    })
+    snap(newSource, target, newDestination);
+  }
+
+  const snapInventory = (source: ColorRect<RectangleConfig>[], target: Shape, destination: Group[]) => {
+    const newDestination = destination.map(g => {
+      const rect: ColorRect<RectangleConfig> = g.getAttrs();
+      return rect;
+    })
+    const stripScrollOffset = interactiveLayerRef.current?.y()!;
+    const {x, y} = target.getAttrs();
+    const adjustedY = (y + inventoryLayer.current?.y()!) - stripScrollOffset;
+    const adjustedX = x + stripWidth;
+    snap(source, target, newDestination, {x: adjustedX, y: adjustedY});
+  }
+
+  
+  const snap = (source: ColorRect<RectangleConfig>[], target: Shape, destination?: ColorRect<RectangleConfig>[], overrideXY?: Coordinate) => {
+    let intersectsAny = false;
+  
+    if(destination == undefined)
+      destination = source;
+    
+    destination.forEach(f => {
+      const { name, x, y, height, width } = f;
+      let { x: targetX, y: targetY, height: targetHeight, width: targetWidth, name: targetName } = target.getAttrs();
+      const stripScrollOffset = interactiveLayerRef.current?.y()!;
+
+      if(overrideXY != undefined) {
+        targetX = overrideXY.x;
+        targetY = overrideXY.y;
+      }
+
+      if (name == targetName) return;
+
+      if ((x - SNAPPING_THRESHOLD < targetX + targetWidth && targetX + targetWidth < x + SNAPPING_THRESHOLD && y < targetY + targetHeight && y + height > targetY)) {
+        // Snap target's right side to f's left side 
+        target.setAbsolutePosition({ x: x - targetWidth, y: targetY + stripScrollOffset });
+
+      } else if (((x + width) - SNAPPING_THRESHOLD < targetX && (x + width) + SNAPPING_THRESHOLD > targetX) && y < targetY + targetHeight && y + height > targetY) {
+        // Snap target's left side to f's right side
+        target.setAbsolutePosition({ x: x + width, y: targetY + stripScrollOffset });
+
+      } else if (((y + height) - SNAPPING_THRESHOLD < targetY && (y + height) + SNAPPING_THRESHOLD > targetY) && x < targetX + targetWidth && x + width > targetX) {
+        // Snap target's top side to f's bottom side
+        target.setAbsolutePosition({ x: targetX, y: y + height + stripScrollOffset });
+
+      } else if (((y + SNAPPING_THRESHOLD) > targetY + targetHeight && (y - SNAPPING_THRESHOLD) < targetY + targetHeight) && x < targetX + targetWidth && x + width > targetX) {
+        // Snap target's bottom side to f's top side
+        target.setAbsolutePosition({ x: targetX, y: y - targetHeight + stripScrollOffset });
+
+      } else if (intersects(f, {x: targetX, y: targetY, height: targetHeight, width: targetWidth})) {
+        intersectsAny = true;
+      }
+    });
+    if (intersectsAny) {
+      //overlap while dragging
+      target.setAttr("fill", RECT_OVERLAP_COLOR);
+    } else {
+      //no overlap while dragging
+      let color = source.find(r => r.name == target.name())?.fill ?? destination!.find(r => r.name == target.name())!.fill;
+      target.setAttr("fill", color!.substring(0, 7) + "80");
     }
   };
 
@@ -205,11 +321,18 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
             layerRef={interactiveLayerRef}
             width={stripWidth}
             height={gameHeight}
+            stripRects={stripRects}
+            setStripRects={setStripRects}
+            snap={snapInteractive}
           />
           <Inventory
             ref={inventoryLayer}
             staticInventory={startingInventory}
             dynamicInventory={renderInventory}
+            // onDragging={(target: Shape) => trySnapOrColission(, target, interactiveLayerRef.current?.y()!)}
+            snap={(source: ColorRect<RectangleConfig>[], target: Shape) => snapInventory(source, target, interactiveLayerRef.current?.children as Group[])}
+            stripRects={stripRects}
+            shouldRecolor={shouldRecolor}
             {...{
               onDraggedToStrip,
               stripWidth: stripWidth,
