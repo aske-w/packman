@@ -1,28 +1,27 @@
+import { Layer as KonvaLayer } from 'konva/lib/Layer';
+import { Rect as KonvaRect } from 'konva/lib/shapes/Rect';
+import { IRect, Vector2d } from 'konva/lib/types';
 import React, { useEffect, useRef, useState } from 'react';
 import { Layer, Rect, Stage } from 'react-konva';
+import ScrollBar from '../../components/canvas/ScrollBar';
+import BinAlgorithm, {
+  BinAlgorithmHandle,
+} from '../../components/games/bin-packing/BinAlgorithm';
+import BinInteractive from '../../components/games/bin-packing/BinInteractive';
 import BinInventory from '../../components/games/bin-packing/BinInventory';
 import {
   NAV_HEIGHT,
   PADDING,
   SCROLLBAR_WIDTH,
 } from '../../config/canvasConfig';
-import { useWindowSize } from '../../hooks/useWindowSize';
-import { ColorRect } from '../../types/ColorRect.interface';
-import { generateInventory } from '../../utils/generateData';
-import { Layer as KonvaLayer } from 'konva/lib/Layer';
-import { Rect as KonvaRect } from 'konva/lib/shapes/Rect';
-import ScrollBar from '../../components/canvas/ScrollBar';
 import {
   defaultScrollHandler,
   useKonvaWheelHandler,
 } from '../../hooks/useKonvaWheelHandler';
-import BinInteractive from '../../components/games/bin-packing/BinInteractive';
-import { IRect, Vector2d } from 'konva/lib/types';
-import Konva from 'konva';
-import BinAlgorithm, {
-  BinAlgorithmHandle,
-} from '../../components/games/bin-packing/BinAlgorithm';
+import { useWindowSize } from '../../hooks/useWindowSize';
 import { BinPackingAlgorithms } from '../../types/BinPackingAlgorithm.interface';
+import { ColorRect } from '../../types/ColorRect.interface';
+import { generateInventory } from '../../utils/generateData';
 
 interface BinPackingGameProps {}
 const NUM_ITEMS = 10;
@@ -166,6 +165,8 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
           />
         </Layer>
         <BinAlgorithm
+          getInventoryScrollOffset={() => -inventoryLayer.current?.y()!}
+          staticInventory={staticInventory}
           binLayout={binLayout}
           data={staticInventory}
           selectedAlgorithm={BinPackingAlgorithms.HYBRID_FIRST_FIT}

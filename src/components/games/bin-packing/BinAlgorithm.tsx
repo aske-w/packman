@@ -1,4 +1,6 @@
+import Konva from 'konva';
 import { Layer as KonvaLayer } from 'konva/lib/Layer';
+
 import { IRect, Vector2d } from 'konva/lib/types';
 import {
   forwardRef,
@@ -10,7 +12,9 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Group, Layer, Rect, Text } from 'react-konva';
+import { Rect as KonvaRect, RectConfig } from 'konva/lib/shapes/Rect';
+
+import { Group, KonvaNodeEvents, Layer, Rect, Text } from 'react-konva';
 import FiniteFirstFit from '../../../algorithms/bin/offline/FiniteFirstFit';
 import FiniteNextFit from '../../../algorithms/bin/offline/FiniteNextFit';
 import HybridFirstFit from '../../../algorithms/bin/offline/HybridFirstFit';
@@ -28,7 +32,12 @@ interface BinAlgorithmProps {
   selectedAlgorithm: BinPackingAlgorithms;
   data: DimensionsWithConfig[];
   binLayout: IRect[];
+  staticInventory: ColorRect[];
+  getInventoryScrollOffset: () => number;
 }
+
+type PrevPos = { prevX: number; prevY: number };
+
 export interface BinAlgorithmHandle {
   place: () => void;
 }
@@ -38,23 +47,42 @@ const { FINITE_FIRST_FIT, FINITE_NEXT_FIT, HYBRID_FIRST_FIT } =
   BinPackingAlgorithms;
 const BinAlgorithm = forwardRef<BinAlgorithmHandle, BinAlgorithmProps>(
   (
-    { offset, dimensions, data, selectedAlgorithm, binSize, binLayout },
+    {
+      offset,
+      dimensions,
+      data,
+      selectedAlgorithm,
+      binSize,
+      binLayout,
+      staticInventory: inventory,
+      getInventoryScrollOffset,
+    },
     ref
   ) => {
     const [placed, setPlaced] = useState<
       ColorRect<
         RectangleConfig & {
           binId: number;
-        }
+        } & PrevPos
       >[]
     >([]);
 
     useImperativeHandle(ref, () => ({
       place: () => {
         if (algorithm.current?.isFinished()) return;
-        const r = algorithm.current?.place();
-        if (!r) return;
-        setPlaced(p => p.concat(r));
+        const rect = algorithm.current?.place();
+        if (!rect) return;
+        const inventoryRect = inventory.find(r => r.name === rect.name)!;
+
+        // remove the scroll offset from y value
+        const scrollOffset = getInventoryScrollOffset();
+
+        const newRect = {
+          ...rect,
+          prevX: inventoryRect.x - offset.x, // substract the inventory width (its relative to the strip)
+          prevY: inventoryRect.y - scrollOffset - offset.y,
+        };
+        setPlaced(p => p.concat(newRect));
       },
     }));
 
@@ -94,7 +122,7 @@ const BinAlgorithm = forwardRef<BinAlgorithmHandle, BinAlgorithmProps>(
               <Rect {...b} fill={'#eee'} opacity={0.5} />
               <Text text={i.toString()} x={b.x} y={b.y} fontSize={24} />
               {binRects?.map(r => (
-                <Rect
+                <MyRect
                   {...r}
                   x={r.x + b.x}
                   y={r.y + b.y + b.height}
@@ -110,3 +138,34 @@ const BinAlgorithm = forwardRef<BinAlgorithmHandle, BinAlgorithmProps>(
 );
 
 export default BinAlgorithm;
+
+const ENTER_ANIMATION_DURATION_SECONDS = 0.5;
+
+const MyRect: React.FC<PrevPos & RectConfig & KonvaNodeEvents> = ({
+  x,
+  y,
+  prevX,
+  prevY,
+  ...props
+}) => {
+  const ref = useRef<KonvaRect>(null);
+  useEffect(() => {
+    new Konva.Tween({
+      node: ref.current!,
+      duration: ENTER_ANIMATION_DURATION_SECONDS,
+      x,
+      y,
+      easing: Konva.Easings.StrongEaseInOut,
+    }).play();
+  }, [x, y]);
+
+  return (
+    <Rect
+      ref={ref}
+      x={prevX}
+      y={prevY}
+      stroke={'rgba(0,0,0,0.2)'}
+      strokeWidth={1}
+      {...props}></Rect>
+  );
+};
