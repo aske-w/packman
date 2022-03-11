@@ -97,10 +97,7 @@ const StripPackingInteractive = React.forwardRef<
   const handleDragMove = (e: KonvaEventObject<DragEvent>) => {
     const target = e.target as Shape;
     target.moveToTop();
-    // console.log(layerRef.current?.children);
     snap(layerRef.current?.children as Group[], target);
-    var x = clamp(target.getAttr("x"), 0, GAME_WIDTH);
-    target.setAttr("x", x);
   };
 
   return (
