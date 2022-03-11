@@ -16,6 +16,7 @@ import {
   defaultScrollHandler,
   useKonvaWheelHandler,
 } from '../../hooks/useKonvaWheelHandler';
+import BinInteractive from '../../components/games/bin-packing/BinInteractive';
 
 interface BinPackingGameProps {}
 const NUM_ITEMS = 10;
@@ -24,11 +25,15 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
   const gameHeight = wHeight - NAV_HEIGHT;
   const inventoryWidth = wWidth * 0.4;
   const binAreaWidth = wWidth - inventoryWidth;
+  const binAreaHeight = gameHeight / 2;
   // inventory scroll
   const inventoryScrollBarRef = useRef<KonvaRect>(null);
   const inventoryLayer = useRef<KonvaLayer>(null);
   const inventoryScrollableHeight = gameHeight * 1.5;
-
+  // interactive scroll
+  const interactiveScrollBarRef = useRef<KonvaRect>(null);
+  const interactiveLayer = useRef<KonvaLayer>(null);
+  const interactiveScrollableHeight = binAreaHeight * 2;
   const [staticInventory, setStaticInventory] = useState(
     generateInventory(inventoryWidth, NUM_ITEMS)
   );
@@ -60,6 +65,19 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
         scrollBarRef: inventoryScrollBarRef,
         scrollableHeight: inventoryScrollableHeight,
       }),
+      // interactive
+      defaultScrollHandler({
+        area: {
+          minX: inventoryWidth,
+          maxX: wWidth,
+          minY: 0,
+          maxY: binAreaHeight,
+        },
+        gameHeight: binAreaHeight,
+        layerRef: interactiveLayer,
+        scrollBarRef: interactiveScrollBarRef,
+        scrollableHeight: interactiveScrollableHeight,
+      }),
     ],
   });
 
@@ -74,23 +92,15 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
             fill="#666"
             x={inventoryWidth}
             width={binAreaWidth}
-            height={gameHeight / 2}
+            height={binAreaHeight}
           />
           {/* Algorithm BG */}
           <Rect
             fill="#444"
             x={inventoryWidth}
-            y={gameHeight / 2}
+            y={binAreaHeight}
             width={binAreaWidth}
-            height={gameHeight / 2}
-          />
-          <ScrollBar
-            startPosition="top"
-            ref={inventoryScrollBarRef}
-            scrollableHeight={inventoryScrollableHeight}
-            x={inventoryWidth - PADDING - SCROLLBAR_WIDTH}
-            gameHeight={gameHeight}
-            onYChanged={newY => inventoryLayer.current?.y(newY)}
+            height={binAreaHeight}
           />
         </Layer>
 
@@ -102,6 +112,34 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
           renderInventory={renderInventory}
           staticInventory={staticInventory}
         />
+        <BinInteractive
+          ref={interactiveLayer}
+          dimensions={{
+            width: binAreaWidth,
+            height: binAreaHeight,
+          }}
+          offset={{ x: inventoryWidth, y: 0 }}
+        />
+        <Layer>
+          <ScrollBar
+            key="inventory scroll bar"
+            startPosition="top"
+            ref={inventoryScrollBarRef}
+            scrollableHeight={inventoryScrollableHeight}
+            x={inventoryWidth - PADDING - SCROLLBAR_WIDTH}
+            gameHeight={gameHeight}
+            onYChanged={newY => inventoryLayer.current?.y(newY)}
+          />
+          <ScrollBar
+            key="interactive scroll bar"
+            startPosition="top"
+            ref={interactiveScrollBarRef}
+            scrollableHeight={interactiveScrollableHeight}
+            x={inventoryWidth + binAreaWidth - PADDING - SCROLLBAR_WIDTH}
+            gameHeight={binAreaHeight}
+            onYChanged={newY => interactiveLayer.current?.y(newY)}
+          />
+        </Layer>
       </Stage>
     </div>
   );

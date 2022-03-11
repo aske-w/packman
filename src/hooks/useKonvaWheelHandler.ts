@@ -17,7 +17,6 @@ interface WheelHandlerParams {
   scrollableHeight: number;
   gameHeight: number;
   area: { minX: number; maxX: number; minY?: number; maxY?: number };
-  scrollOffsetRef?: MutableRefObject<number>;
 }
 
 type InitializedScrollHandler = (
@@ -72,6 +71,7 @@ export const defaultScrollHandler: ScrollHandler =
 
       const vy =
         (y / (-scrollableHeight + gameHeight)) * availableHeight + PADDING;
+      console.log(vy);
 
       scrollBarRef.current?.y(vy);
 
