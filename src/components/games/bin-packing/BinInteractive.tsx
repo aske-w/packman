@@ -8,17 +8,14 @@ interface BinInteractiveProps {
   offset: Vector2d;
   dimensions: Dimensions;
   bins: Record<number, ColorRect[]>;
+  binSize: Dimensions;
   onBinLayout: (bins: IRect[]) => void;
 }
-// bin dimensions
-const binDim = {
-  height: 300,
-  width: 400,
-};
+
 const PADDING = 30;
 
 const BinInteractive = forwardRef<KonvaLayer, BinInteractiveProps>(
-  ({ offset, dimensions, bins, onBinLayout }, ref) => {
+  ({ offset, dimensions, bins, onBinLayout, binSize: binDim }, ref) => {
     const rowHeight = binDim.height + PADDING;
     const binsPrRow = Math.floor(dimensions.width / (binDim.width + PADDING));
     const numBins = Object.values(bins).length;
@@ -33,7 +30,7 @@ const BinInteractive = forwardRef<KonvaLayer, BinInteractiveProps>(
         b.push({
           ...binDim,
           x,
-          y: rowNum * (rowHeight + PADDING) + PADDING,
+          y: rowNum * rowHeight + PADDING,
         });
       }
       onBinLayout(b);

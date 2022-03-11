@@ -19,9 +19,18 @@ import {
 import BinInteractive from '../../components/games/bin-packing/BinInteractive';
 import { IRect, Vector2d } from 'konva/lib/types';
 import Konva from 'konva';
+import BinAlgorithm, {
+  BinAlgorithmHandle,
+} from '../../components/games/bin-packing/BinAlgorithm';
+import { BinPackingAlgorithms } from '../../types/BinPackingAlgorithm.interface';
 
 interface BinPackingGameProps {}
 const NUM_ITEMS = 10;
+// bin dimensions
+const binSize = {
+  height: 300,
+  width: 400,
+};
 const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
   const { width: wWidth, height: wHeight } = useWindowSize();
   const gameHeight = wHeight - NAV_HEIGHT;
@@ -36,6 +45,8 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
   const interactiveScrollBarRef = useRef<KonvaRect>(null);
   const interactiveLayer = useRef<KonvaLayer>(null);
   const interactiveScrollableHeight = binAreaHeight * 2;
+  // algorithm handle
+  const algorithm = useRef<BinAlgorithmHandle>(null);
   const [staticInventory, setStaticInventory] = useState(
     generateInventory(inventoryWidth, NUM_ITEMS)
   );
@@ -45,12 +56,7 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
    * item is placed in a bin, it's removed from this array
    */
   const [renderInventory, setRenderInventory] = useState<ColorRect[]>([]);
-  const [bins, setBins] = useState<Record<number, ColorRect[]>>({
-    // 0: [],
-    // 1: [],
-    // 2: [],
-    // 3: [],
-  });
+  const [bins, setBins] = useState<Record<number, ColorRect[]>>({});
   const [binLayout, setBinLayout] = useState<IRect[]>([]);
 
   const findBin = (pos: Vector2d) => {
@@ -76,6 +82,7 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
       [bin]: (old[bin] ?? []).concat({ ...rect, x, y }),
     }));
     setRenderInventory(old => old.filter(r => r.name !== name));
+    algorithm.current?.place();
   };
 
   useEffect(() => {
@@ -138,6 +145,7 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
           />
         </Layer>
         <BinInteractive
+          binSize={binSize}
           onBinLayout={setBinLayout}
           bins={bins}
           ref={interactiveLayer}
@@ -147,6 +155,7 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
           }}
           offset={{ x: inventoryWidth, y: 0 }}
         />
+
         <Layer>
           <Rect
             fill="#444"
@@ -156,6 +165,18 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
             height={binAreaHeight}
           />
         </Layer>
+        <BinAlgorithm
+          binLayout={binLayout}
+          data={staticInventory}
+          selectedAlgorithm={BinPackingAlgorithms.HYBRID_FIRST_FIT}
+          binSize={binSize}
+          ref={algorithm}
+          dimensions={{
+            width: binAreaWidth,
+            height: binAreaHeight,
+          }}
+          offset={{ x: inventoryWidth, y: binAreaHeight }}
+        />
         <BinInventory
           ref={inventoryLayer}
           gameHeight={gameHeight}
