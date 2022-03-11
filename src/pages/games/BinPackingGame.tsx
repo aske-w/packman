@@ -54,7 +54,7 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
   const [binLayout, setBinLayout] = useState<IRect[]>([]);
 
   const findBin = (pos: Vector2d) => {
-    return binLayout.findIndex(({ height, width, x, y }, i) => {
+    return binLayout.findIndex(({ height, width, x, y }) => {
       const rectX = pos.x - inventoryWidth;
       const fitsX = rectX > x && rectX < x + width;
       const fitsY = pos.y > y && pos.y < y + height;
@@ -63,6 +63,10 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
   };
 
   const handleDraggedToBin = (name: string, pos: Vector2d) => {
+    const offset = interactiveLayer.current!.y();
+    // take the offset into account
+    pos.y -= offset;
+
     const bin = findBin(pos);
     const { x, y } = pos;
     const rect = renderInventory.find(r => r.name === name);
@@ -72,7 +76,6 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
       [bin]: (old[bin] ?? []).concat({ ...rect, x, y }),
     }));
     setRenderInventory(old => old.filter(r => r.name !== name));
-    console.log(bin);
   };
 
   useEffect(() => {

@@ -32,10 +32,8 @@ const BinInventory = forwardRef<KonvaLayer, BinInventoryProps>(
       const { x: x, y: y } = renderInventory.find(r => r.name === name)!;
 
       const { x: dropX, y: dropY } = rect.getAbsolutePosition();
-      console.log(dropX, width, inventoryWidth);
 
       const inBinArea = dropX + width > inventoryWidth;
-      console.log(inBinArea);
 
       if (inBinArea) {
         return onDraggedToBin(name, { x: dropX, y: dropY });

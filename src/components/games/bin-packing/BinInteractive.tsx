@@ -43,7 +43,6 @@ const BinInteractive = forwardRef<KonvaLayer, BinInteractiveProps>(
     useEffect(() => {
       setRenderedBins(calcBinLayout);
     }, [numBins]);
-    console.log(bins);
 
     return (
       <Layer ref={ref} x={offset.x} y={0}>
@@ -53,7 +52,7 @@ const BinInteractive = forwardRef<KonvaLayer, BinInteractiveProps>(
               <Rect {...b} fill={'#eee'} opacity={0.5} />
               <Text text={i.toString()} x={b.x} y={b.y} fontSize={24} />
               {bins[i]?.map(r => (
-                <Rect {...r} draggable x={r.x - offset.x} />
+                <Rect {...r} key={r.name} draggable x={r.x - offset.x} />
               ))}
             </Fragment>
           );
