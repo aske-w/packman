@@ -130,22 +130,22 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
     handlers: [
       // inventory part
       defaultScrollHandler({
-        area: {
+        activeArea: {
           minX: stripWidth,
           maxX: stripWidth + inventoryWidth,
         },
-        gameHeight,
+        visibleHeight: gameHeight,
         layerRef: inventoryLayer,
         scrollBarRef: inventoryScrollBarRef,
         scrollableHeight,
       }),
       // interactive part
       defaultScrollHandler({
-        area: {
+        activeArea: {
           minX: 0,
           maxX: stripWidth,
         },
-        gameHeight,
+        visibleHeight: gameHeight,
         layerRef: interactiveLayerRef,
         scrollBarRef: interactiveScrollBarRef,
         scrollableHeight,

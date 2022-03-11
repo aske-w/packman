@@ -15,8 +15,8 @@ interface WheelHandlerParams {
   layerRef: RefObject<KonvaLayer>;
   scrollBarRef: RefObject<KonvaRect>;
   scrollableHeight: number;
-  gameHeight: number;
-  area: { minX: number; maxX: number; minY?: number; maxY?: number };
+  visibleHeight: number;
+  activeArea: { minX: number; maxX: number; minY?: number; maxY?: number };
 }
 
 type InitializedScrollHandler = (
@@ -44,15 +44,15 @@ export const useKonvaWheelHandler = ({
 };
 
 export const defaultScrollHandler: ScrollHandler =
-  ({ layerRef, gameHeight, scrollBarRef, scrollableHeight, area }) =>
+  ({ layerRef, visibleHeight, scrollBarRef, scrollableHeight, activeArea }) =>
   e => {
     const { layerX, layerY, deltaY } = e;
 
-    const isActiveX = layerX > area.minX && layerX < area.maxX;
+    const isActiveX = layerX > activeArea.minX && layerX < activeArea.maxX;
     let isActiveY = true;
 
-    if (isNumber(area.minY) && isNumber(area.maxY)) {
-      isActiveY = layerY > area.minY && layerY < area.maxY;
+    if (isNumber(activeArea.minY) && isNumber(activeArea.maxY)) {
+      isActiveY = layerY > activeArea.minY && layerY < activeArea.maxY;
     }
 
     if (isActiveX && isActiveY) {
@@ -60,17 +60,17 @@ export const defaultScrollHandler: ScrollHandler =
       const dy = deltaY;
       const oldY = layer.y();
 
-      const minY = -(scrollableHeight - gameHeight);
+      const minY = -(scrollableHeight - visibleHeight);
       const maxY = 0;
 
       const y = Math.max(minY, Math.min(oldY - dy, maxY));
 
       layer.y(y);
 
-      const availableHeight = gameHeight - PADDING * 2 - SCROLLBAR_HEIGHT;
+      const availableHeight = visibleHeight - PADDING * 2 - SCROLLBAR_HEIGHT;
 
       const vy =
-        (y / (-scrollableHeight + gameHeight)) * availableHeight + PADDING;
+        (y / (-scrollableHeight + visibleHeight)) * availableHeight + PADDING;
       console.log(vy);
 
       scrollBarRef.current?.y(vy);

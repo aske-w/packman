@@ -56,24 +56,24 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
     handlers: [
       // inventory
       defaultScrollHandler({
-        area: {
+        activeArea: {
           minX: 0,
           maxX: inventoryWidth,
         },
-        gameHeight,
+        visibleHeight: gameHeight,
         layerRef: inventoryLayer,
         scrollBarRef: inventoryScrollBarRef,
         scrollableHeight: inventoryScrollableHeight,
       }),
       // interactive
       defaultScrollHandler({
-        area: {
+        activeArea: {
           minX: inventoryWidth,
           maxX: wWidth,
           minY: 0,
           maxY: binAreaHeight,
         },
-        gameHeight: binAreaHeight,
+        visibleHeight: binAreaHeight,
         layerRef: interactiveLayer,
         scrollBarRef: interactiveScrollBarRef,
         scrollableHeight: interactiveScrollableHeight,
