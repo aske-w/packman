@@ -1,9 +1,7 @@
-import React, { forwardRef, useState } from 'react';
 import { Layer as KonvaLayer } from 'konva/lib/Layer';
-import { Layer, Rect } from 'react-konva';
 import { IRect, Vector2d } from 'konva/lib/types';
-import { generateData } from '../../../utils/generateData';
-import Konva from 'konva';
+import { forwardRef, useState } from 'react';
+import { Layer, Rect } from 'react-konva';
 import { Dimensions } from '../../../types/Dimensions.interface';
 interface BinInteractiveProps {
   offset: Vector2d;
@@ -11,18 +9,28 @@ interface BinInteractiveProps {
 }
 // bin dimensions
 const binDim = {
-  height: 200,
-  width: 300,
+  height: 300,
+  width: 400,
 };
-
+const PADDING = 30;
+const NUM_ROWS = 2;
 const BinInteractive = forwardRef<KonvaLayer, BinInteractiveProps>(
   ({ offset, dimensions }, ref) => {
-    const padding = 40;
     const [bins] = useState<IRect[]>(() => {
       const b: IRect[] = [];
+      const rowHeight = binDim.height + PADDING;
+      const binsPrRow = Math.floor(dimensions.width / (binDim.width + PADDING));
+      for (let row = 0; row < NUM_ROWS; row++) {
+        for (let col = 0; col < binsPrRow; col++) {
+          console.log(col, row);
+          const x = col * (binDim.width + PADDING) + PADDING;
 
-      for (let i = 0; i < 5; i++) {
-        b.push({ ...binDim, x: i * (binDim.width + padding), y: 0 });
+          b.push({
+            ...binDim,
+            x,
+            y: row * rowHeight + PADDING,
+          });
+        }
       }
 
       return b;

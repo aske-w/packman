@@ -94,14 +94,6 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
             width={binAreaWidth}
             height={binAreaHeight}
           />
-          {/* Algorithm BG */}
-          <Rect
-            fill="#444"
-            x={inventoryWidth}
-            y={binAreaHeight}
-            width={binAreaWidth}
-            height={binAreaHeight}
-          />
         </Layer>
 
         <BinInventory
@@ -121,6 +113,14 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
           offset={{ x: inventoryWidth, y: 0 }}
         />
         <Layer>
+          {/* Algorithm BG */}
+          <Rect
+            fill="#444"
+            x={inventoryWidth}
+            y={binAreaHeight}
+            width={binAreaWidth}
+            height={binAreaHeight}
+          />
           <ScrollBar
             key="inventory scroll bar"
             startPosition="top"

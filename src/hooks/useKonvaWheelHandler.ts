@@ -71,7 +71,6 @@ export const defaultScrollHandler: ScrollHandler =
 
       const vy =
         (y / (-scrollableHeight + visibleHeight)) * availableHeight + PADDING;
-      console.log(vy);
 
       scrollBarRef.current?.y(vy);
 
