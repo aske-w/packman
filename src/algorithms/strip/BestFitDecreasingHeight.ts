@@ -1,10 +1,10 @@
-import { PackingAlgorithm } from "../types/PackingAlgorithm.interface";
-import { Rectangle } from "../types/Rectangle.interface";
-import { Shelf } from "../types/Shelf.interface";
-import { RectangleConfig } from "../types/RectangleConfig.interface";
-import { DimensionsWithConfig } from "../types/DimensionsWithConfig.type";
-import { Dimensions } from "../types/Dimensions.interface";
-import { ColorRect } from "../types/ColorRect.interface";
+import { PackingAlgorithm } from '../../types/PackingAlgorithm.interface';
+import { Rectangle } from '../../types/Rectangle.interface';
+import { Shelf } from '../../types/Shelf.interface';
+import { RectangleConfig } from '../../types/RectangleConfig.interface';
+import { DimensionsWithConfig } from '../../types/DimensionsWithConfig.type';
+import { Dimensions } from '../../types/Dimensions.interface';
+import { ColorRect } from '../../types/ColorRect.interface';
 
 export class BestFitDecreasingHeight<T = RectangleConfig>
   implements PackingAlgorithm<T>
@@ -44,7 +44,7 @@ export class BestFitDecreasingHeight<T = RectangleConfig>
   }
 
   place(): ColorRect<T> {
-    if (this.isFinished()) throw new Error("isFinished");
+    if (this.isFinished()) throw new Error('isFinished');
     const nextRect = this.data.shift()!;
     let bestShelf: Shelf | null = null;
 

@@ -1,8 +1,7 @@
-import Konva from 'konva';
-import { ColorRect } from './../types/ColorRect.interface';
-import { genId, PADDING } from '../config/canvasConfig';
-import { Dimensions } from '../types/Dimensions.interface';
-import { RectangleConfig } from '../types/RectangleConfig.interface';
+import Konva from "konva";
+import { ColorRect } from "./../types/ColorRect.interface";
+import { genId, PADDING } from "../config/canvasConfig";
+import { Dimensions } from "../types/Dimensions.interface";
 
 export const generateData = (
   amount = 10,

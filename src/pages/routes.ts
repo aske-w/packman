@@ -1,11 +1,13 @@
 export const pathKey = {
-  PLAYGROUND: "playground",
-  GAME: "game",
-  STRIP: "strip",
+  PLAYGROUND: 'playground',
+  GAME: 'game',
+  STRIP: 'strip',
+  BIN: 'bin',
 };
 
 export const pathName = {
-  PLAYGROUND: "playground",
-  GAME: "/game",
-  STRIP: "/game/strip",
+  STRIP_PLAYGROUND: '/playground/strip',
+  BIN_PLAYGROUND: '/playground/bin',
+  GAME: '/game',
+  STRIP_GAME: '/game/strip',
 };
