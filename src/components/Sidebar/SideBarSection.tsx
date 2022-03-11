@@ -1,4 +1,5 @@
-import React from "react";
+import classNames from 'classnames';
+import React from 'react';
 
 interface SideBarSectionProps {
   title: string;
@@ -12,10 +13,10 @@ const SideBarSection: React.FC<SideBarSectionProps> = ({
 }) => {
   return (
     <>
-      <div className={"bg-lightMain text-white px-3 py-2 "}>
-        <label className="text-xs uppercase font-normal">{title}</label>
+      <div className={'bg-lightMain text-white px-3 py-2 '}>
+        <label className="text-xs font-normal uppercase">{title}</label>
       </div>
-      <div className={"p-3 space-y-4 " + className}>{children}</div>
+      <div className={classNames('p-3 space-y-4', className)}>{children}</div>
     </>
   );
 };

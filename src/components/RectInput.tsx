@@ -23,12 +23,13 @@ const RectInput: React.FC<RectInputProps> = ({
     <div
       className={
         className +
+        (disabled ? " opacity-40 " : "") +
         " flex flex-row items-center bg-canvas p-2 w-full focus:outline-none border-none rounded-lg"
       }
     >
       <input
-        className="bg-canvas focus:outline-none border-none text-white font-light text-sm w-10/12"
-        type="text"
+        className="bg-canvas focus:outline-none border-none text-white font-light text-sm w-10/12 appearance-arrow-none"
+        type={typeof value}
         value={value}
         onChange={onChangeHandler}
         readOnly={readonly}

@@ -9,10 +9,10 @@ import React, {
   useState,
 } from 'react';
 import { KonvaNodeEvents, Layer, Rect } from 'react-konva';
-import { BestFitDecreasingHeight } from '../../../algorithms/BestFitDecreasingHeight';
-import { FirstFitDecreasingHeight } from '../../../algorithms/FirstFitDecreasingHeight';
-import { NextFitDecreasingHeight } from '../../../algorithms/NextFitDecreasingHeight';
-import { SizeAlternatingStack } from '../../../algorithms/SizeAlternatingStack';
+import { BestFitDecreasingHeight } from '../../../algorithms/strip/BestFitDecreasingHeight';
+import { FirstFitDecreasingHeight } from '../../../algorithms/strip/FirstFitDecreasingHeight';
+import { NextFitDecreasingHeight } from '../../../algorithms/strip/NextFitDecreasingHeight';
+import { SizeAlternatingStack } from '../../../algorithms/strip/SizeAlternatingStack';
 import useScoreStore from '../../../store/score';
 import { ColorRect } from '../../../types/ColorRect.interface';
 import {
@@ -63,6 +63,7 @@ const StripPackingAlgorithm = React.forwardRef<
     ref
   ) => {
     const [algo, setAlgo] = useState<PackingAlgorithm<
+      RectangleConfig,
       RectangleConfig,
       any
     > | null>(null);

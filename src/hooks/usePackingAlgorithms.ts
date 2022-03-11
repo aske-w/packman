@@ -1,14 +1,14 @@
 import { useCallback, useRef, useState } from "react";
 import { Dimensions } from "../types/Dimensions.interface";
-import { NextFitDecreasingHeight } from "../algorithms/NextFitDecreasingHeight";
+import { NextFitDecreasingHeight } from "../algorithms/strip/NextFitDecreasingHeight";
 import {
   PackingAlgorithm,
   PackingAlgorithms,
 } from "../types/PackingAlgorithm.interface";
 import { useStats } from "./useStats";
-import { FirstFitDecreasingHeight } from "../algorithms/FirstFitDecreasingHeight";
-import { BestFitDecreasingHeight } from "../algorithms/BestFitDecreasingHeight";
-import { SizeAlternatingStack } from "../algorithms/SizeAlternatingStack";
+import { FirstFitDecreasingHeight } from "../algorithms/strip/FirstFitDecreasingHeight";
+import { BestFitDecreasingHeight } from "../algorithms/strip/BestFitDecreasingHeight";
+import { SizeAlternatingStack } from "../algorithms/strip/SizeAlternatingStack";
 import { DimensionsWithConfig } from "../types/DimensionsWithConfig.type";
 
 const {
@@ -21,15 +21,15 @@ const {
 export type AlgoStates = "RUNNING" | "STOPPED" | "PAUSED";
 
 export const usePackingAlgorithms = (
-  size: Dimensions,
+  width: number,
   selectedAlgorithm: PackingAlgorithms
 ) => {
-  const { addArea, getStats } = useStats(size.width);
+  const { addArea, getStats } = useStats(width);
   const [algoState, setAlgoState] = useState<AlgoStates>("STOPPED");
   const [isFinished, setIsFinished] = useState(true);
   // TODO better typings than any :)
-  const algorithm = useRef<PackingAlgorithm<{}, any>>(
-    new NextFitDecreasingHeight(size)
+  const algorithm = useRef<PackingAlgorithm<{}, {}, any>>(
+    new NextFitDecreasingHeight({ width, height: 0 })
   );
 
   const reset = useCallback(() => {
@@ -60,6 +60,7 @@ export const usePackingAlgorithms = (
   const start = useCallback(
     (data: DimensionsWithConfig<{}>[]) => {
       intializeOnStart();
+      const size = { width, height: 0 };
 
       switch (selectedAlgorithm) {
         case NEXT_FIT_DECREASING_HEIGHT:
@@ -84,7 +85,7 @@ export const usePackingAlgorithms = (
           break;
       }
     },
-    [intializeOnStart, selectedAlgorithm, reset, size]
+    [intializeOnStart, selectedAlgorithm, reset, width]
   );
 
   return { start, getStats, place, isFinished, algoState, pause, reset };
