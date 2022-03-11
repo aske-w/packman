@@ -151,41 +151,16 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
     }
     return true;
   };
-
-  const shouldRecolor = (rectName: string, pos: Vector2d): boolean => {
-    const interactiveRects = interactiveLayerRef.current?.children!;
-    if(pos.x > 0 || interactiveRects.length == 0)
-      return false;
-      
-    const interactiveScrollOffset = interactiveLayerRef.current?.y()!;
-    const stripPos = {x: pos.x + stripWidth, y: -interactiveScrollOffset + pos.y}
-    const draggedRect = renderInventory.find(rect => rect.name == rectName)!;
-    const {width, height} = draggedRect;
-      
-    for (let index = 0; index < interactiveRects.length; index++) {
-      const element = interactiveRects[index];
-      if(element.name() == rectName)
-        continue;
-      
-      if(intersects(element.getAttrs(), {width, height, ...stripPos})){
-        return true;
-      }
-    }
-    return false;
-  }
-  const snapInteractive = (source: Group[], target: Shape, destination?: Group[]) => {
-    const newSource = source.map(g => {
+  
+  const snapInteractive = (destination: Group[], target: Shape) => {
+    const newDestination = destination.map(g => {
       const rect: ColorRect<RectangleConfig> = g.getAttrs();
       return rect;
     })
-    const newDestination = destination?.map(g => {
-      const rect: ColorRect<RectangleConfig> = g.getAttrs();
-      return rect;
-    })
-    snap(newSource, target, newDestination);
+    snap(newDestination, target);
   }
 
-  const snapInventory = (source: ColorRect<RectangleConfig>[], target: Shape, destination: Group[]) => {
+  const snapInventory = (destination: Group[], target: Shape) => {
     const newDestination = destination.map(g => {
       const rect: ColorRect<RectangleConfig> = g.getAttrs();
       return rect;
@@ -194,15 +169,12 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
     const {x, y} = target.getAttrs();
     const adjustedY = (y + inventoryLayer.current?.y()!) - stripScrollOffset;
     const adjustedX = x + stripWidth;
-    snap(source, target, newDestination, {x: adjustedX, y: adjustedY});
+    snap(newDestination, target, {x: adjustedX, y: adjustedY});
   }
 
   
-  const snap = (source: ColorRect<RectangleConfig>[], target: Shape, destination?: ColorRect<RectangleConfig>[], overrideXY?: Coordinate) => {
+  const snap = (destination: ColorRect<RectangleConfig>[], target: Shape, overrideXY?: Coordinate) => {
     let intersectsAny = false;
-  
-    if(destination == undefined)
-      destination = source;
     
     destination.forEach(f => {
       const { name, x, y, height, width } = f;
@@ -241,7 +213,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
       target.setAttr("fill", RECT_OVERLAP_COLOR);
     } else {
       //no overlap while dragging
-      let color = source.find(r => r.name == target.name())?.fill ?? destination!.find(r => r.name == target.name())!.fill;
+      let color = startingInventory.find(r => r.name == target.name())!.fill
       target.setAttr("fill", color!.substring(0, 7) + "80");
     }
   };
@@ -330,9 +302,8 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
             staticInventory={startingInventory}
             dynamicInventory={renderInventory}
             // onDragging={(target: Shape) => trySnapOrColission(, target, interactiveLayerRef.current?.y()!)}
-            snap={(source: ColorRect<RectangleConfig>[], target: Shape) => snapInventory(source, target, interactiveLayerRef.current?.children as Group[])}
+            snap={(target: Shape) => snapInventory(interactiveLayerRef.current?.children as Group[], target)}
             stripRects={stripRects}
-            shouldRecolor={shouldRecolor}
             {...{
               onDraggedToStrip,
               stripWidth: stripWidth,

@@ -27,7 +27,7 @@ interface StripPackingInteractiveProps {
   scrollableHeight: number;
   stripRects: ColorRect<RectangleConfig>[];
   setStripRects: React.Dispatch<React.SetStateAction<ColorRect<RectangleConfig>[]>>;
-  snap: (source: Group[], target: Shape, destination?: Group[])=> void;
+  snap: (destination: Group[], target: Shape)=> void;
 }
 
 export interface StripPackingInteractiveHandle {
@@ -96,7 +96,7 @@ const StripPackingInteractive = React.forwardRef<
   const handleDragMove = (e: KonvaEventObject<DragEvent>) => {
     const target = e.target as Shape;
     target.moveToTop();
-    console.log(layerRef.current?.children);
+    // console.log(layerRef.current?.children);
     snap(layerRef.current?.children as Group[], target);
   };
 

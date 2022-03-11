@@ -27,9 +27,8 @@ interface InventoryProps {
   staticInventory: ReadonlyArray<ColorRect & { order?: number }>;
   stripRects: ColorRect<RectangleConfig>[];
   // snap: (source: ColorRect<RectangleConfig>[], target: Shape, destination?: ColorRect<RectangleConfig>[]) => void;
-  snap: (source: ColorRect<RectangleConfig>[], target: Shape) => void;
+  snap: (target: Shape) => void;
   onDraggedToStrip: (rectName: string, pos: Vector2d) => boolean;
-  shouldRecolor: (rectName: string, pos: Vector2d) => boolean;
 }
 
 const Inventory = React.forwardRef<KonvaLayer, InventoryProps>(
@@ -42,8 +41,7 @@ const Inventory = React.forwardRef<KonvaLayer, InventoryProps>(
       gameHeight,
       onDraggedToStrip,
       stripRects,
-      snap,
-      shouldRecolor
+      snap
     },
     ref
   ) => {
@@ -75,7 +73,7 @@ const Inventory = React.forwardRef<KonvaLayer, InventoryProps>(
       const rect = e.target as Shape
       const {x, y} = rect.getAttrs();
 
-      snap(dynamicInventory, rect);
+      snap(rect);
 
       // console.log(`x: ${x}, y: ${y}`);
       // console.log({stripRects});
