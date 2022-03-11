@@ -10,7 +10,7 @@ import React, {
 import { Layer, Rect } from 'react-konva';
 import { ColorRect } from '../../../types/ColorRect.interface';
 import { Layer as KonvaLayer } from 'konva/lib/Layer';
-import { RECT_OVERLAP_COLOR, SNAPPING_THRESHOLD, STRIP_SIZE, STROKE_WIDTH } from '../../../config/canvasConfig';
+import { GAME_WIDTH, RECT_OVERLAP_COLOR, SNAPPING_THRESHOLD, STRIP_SIZE, STROKE_WIDTH } from '../../../config/canvasConfig';
 import { IRect, Vector2d } from 'konva/lib/types';
 import useScoreStore from '../../../store/score';
 import { Group } from 'konva/lib/Group';
@@ -20,6 +20,7 @@ import { Shape, ShapeConfig } from 'konva/lib/Shape';
 import { Rectangle } from '../../../types/Rectangle.interface';
 import { intersects } from '../../../utils/intersects';
 import { RectangleConfig } from '../../../types/RectangleConfig.interface';
+import { clamp } from '../../../utils/clamp';
 interface StripPackingInteractiveProps {
   height: number;
   width: number;
@@ -87,8 +88,8 @@ const StripPackingInteractive = React.forwardRef<
       if(intersects(target.getAttrs(), _r.getAttrs()))
         target.setAbsolutePosition({x: lastPos.x, y: lastPos.y + scrollOffset});
       
-      target.fill(stripRects.find(r => r.name == target.getAttr("name"))!.fill.substring(0, 7) + "ff")
-    });
+      });
+    target.fill(stripRects.find(r => r.name == target.getAttr("name"))!.fill.substring(0, 7) + "ff")
   }
 
 
@@ -98,6 +99,8 @@ const StripPackingInteractive = React.forwardRef<
     target.moveToTop();
     // console.log(layerRef.current?.children);
     snap(layerRef.current?.children as Group[], target);
+    var x = clamp(target.getAttr("x"), 0, GAME_WIDTH);
+    target.setAttr("x", x);
   };
 
   return (

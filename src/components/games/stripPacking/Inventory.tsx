@@ -71,14 +71,9 @@ const Inventory = React.forwardRef<KonvaLayer, InventoryProps>(
 
     const handleDragMove = (e: KonvaEventObject<DragEvent>) => {
       const rect = e.target as Shape
-      const {x, y} = rect.getAttrs();
-
+      rect.moveToTop();
+      rect.setAttr("fill", rect.getAttr("fill").substring(0,7) + "80");
       snap(rect);
-
-      // console.log(`x: ${x}, y: ${y}`);
-      // console.log({stripRects});
-      // snap(dynamicInventory, rect, stripRects)
-
     };
 
     // const [tooltip, setTooltip] = useState<Partial<TextConfig>>({

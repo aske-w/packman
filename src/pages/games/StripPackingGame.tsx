@@ -10,6 +10,7 @@ import {
   RECT_OVERLAP_COLOR,
   SCROLLBAR_HEIGHT,
   SNAPPING_THRESHOLD,
+  STROKE_WIDTH,
 } from '../../config/canvasConfig';
 import { useWindowSize } from '../../hooks/useWindowSize';
 import {
@@ -36,6 +37,7 @@ import { intersects } from '../../utils/intersects';
 import { Rectangle } from '../../types/Rectangle.interface';
 import { Shape, ShapeConfig } from 'konva/lib/Shape';
 import { Coordinate } from '../../types/Coordinate.interface';
+import { clamp } from '../../utils/clamp';
 
 interface StripPackingGameProps {}
 const NUM_ITEMS = 50;
@@ -156,58 +158,136 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
     const newDestination = destination.map(g => {
       const rect: ColorRect<RectangleConfig> = g.getAttrs();
       return rect;
-    })
+    });
+    
+    target.setAttr("x", clamp(target.getAttr("x"), 0, stripWidth - target.getAttr("width")));
+    target.setAttr("y", clamp(target.getAttr("y"), 0, scrollableHeight - target.getAttr("height")));
     snap(newDestination, target);
   }
 
   const snapInventory = (destination: Group[], target: Shape) => {
+    const {x, y} = target.getAttrs();
+    const stripScrollOffset = interactiveLayerRef.current?.y()!;
+    
+    if (x > SNAPPING_THRESHOLD) {
+      return;
+    }
+
     const newDestination = destination.map(g => {
       const rect: ColorRect<RectangleConfig> = g.getAttrs();
       return rect;
     })
-    const stripScrollOffset = interactiveLayerRef.current?.y()!;
-    const {x, y} = target.getAttrs();
     const adjustedY = (y + inventoryLayer.current?.y()!) - stripScrollOffset;
     const adjustedX = x + stripWidth;
     snap(newDestination, target, {x: adjustedX, y: adjustedY});
   }
 
-  
   const snap = (destination: ColorRect<RectangleConfig>[], target: Shape, overrideXY?: Coordinate) => {
     let intersectsAny = false;
+    let { x: targetX, y: targetY, height: targetHeight, width: targetWidth, name: targetName } = target.getAttrs();
+    target.moveToTop();
+    const stripScrollOffset = interactiveLayerRef.current?.y()!;
+    const clampToStripX = (x: number) => clamp(x, 0, stripWidth);
+    const clampToStripY = (y: number) => clamp(y, 0, gameHeight);
+
+    if(overrideXY != undefined) {
+      targetX = overrideXY.x;
+      targetY = overrideXY.y;
+    }
+
+    let cx = targetX;
+    let cy = targetY;
+    let xDist: number | undefined;
+    let yDist: number | undefined;
+
+    if(stripWidth - SNAPPING_THRESHOLD < targetX + targetWidth && stripWidth + SNAPPING_THRESHOLD > targetX + targetWidth) {
+      // Snap target's right side to strip's right side
+      console.debug("1");
+      // target.setAbsolutePosition({ x: stripWidth - targetWidth - (STROKE_WIDTH / 2), y: clampToStripY(targetY + stripScrollOffset) });
+      cx = stripWidth - targetWidth - (STROKE_WIDTH / 2);
+    } else if(0 + SNAPPING_THRESHOLD > targetX) {
+      // Snap target's left side to strip's left side
+      console.debug("2");
+      // target.setAbsolutePosition({x: 0, y: (targetY + stripScrollOffset)})
+      cx = 0;
+    } 
+    
+    
+    if(0 + SNAPPING_THRESHOLD > targetY) {
+      // Snap target's top to the top of the strip
+      if(stripWidth - SNAPPING_THRESHOLD < targetX + targetWidth && stripWidth + SNAPPING_THRESHOLD > targetX + targetWidth) {
+        //this is necessary to properly snap in the bottom right corner of the strip when dragging from inventory
+        // target.setAbsolutePosition({x: stripWidth - targetWidth - (STROKE_WIDTH / 2), y: 0 + stripScrollOffset});
+        cy = 0;
+        cx = stripWidth - targetWidth - (STROKE_WIDTH / 2);
+        console.debug("3,1");
+      } else {
+        // target.setAbsolutePosition({x: clampToStripX(targetX), y: 0 + stripScrollOffset});
+        cy = 0;
+        console.debug("3,2");
+      }
+    } else if(scrollableHeight < targetY + targetHeight + STROKE_WIDTH / 2) {
+      // Snap target's bottom to the bottom of the strip
+      if(stripWidth - SNAPPING_THRESHOLD < targetX + targetWidth && stripWidth + SNAPPING_THRESHOLD > targetX + targetWidth) {
+        //this is necessary to properly snap in the bottom right corner of the strip when dragging from inventory
+        // target.setAbsolutePosition({x: stripWidth - targetWidth - (STROKE_WIDTH / 2), y: (gameHeight - targetHeight) + (scrollableHeight - (gameHeight + (-stripScrollOffset)))});
+        cx = stripWidth - targetWidth - (STROKE_WIDTH / 2);
+        cy = (gameHeight + (-stripScrollOffset)) - targetHeight;
+        console.debug("4,1");
+      } else {
+        // target.setAbsolutePosition({x: clampToStripX(targetX), y: (gameHeight - targetHeight) + (scrollableHeight - (gameHeight + (-stripScrollOffset)))});
+        // console.log();
+        // console.log(targetHeight);
+        // console.log(scrollableHeight);
+        // console.log(gameHeight);
+        // console.log(stripScrollOffset)
+        cy = (gameHeight + (-stripScrollOffset)) - targetHeight;
+        // cy = 
+        console.debug("4,2");
+      }
+    }
     
     destination.forEach(f => {
+      // console.log(f);
       const { name, x, y, height, width } = f;
-      let { x: targetX, y: targetY, height: targetHeight, width: targetWidth, name: targetName } = target.getAttrs();
-      const stripScrollOffset = interactiveLayerRef.current?.y()!;
-
-      if(overrideXY != undefined) {
-        targetX = overrideXY.x;
-        targetY = overrideXY.y;
-      }
-
+      // console.log(cx + " - " + cy)
+      
       if (name == targetName) return;
-
-      if ((x - SNAPPING_THRESHOLD < targetX + targetWidth && targetX + targetWidth < x + SNAPPING_THRESHOLD && y < targetY + targetHeight && y + height > targetY)) {
-        // Snap target's right side to f's left side 
-        target.setAbsolutePosition({ x: x - targetWidth, y: targetY + stripScrollOffset });
-
-      } else if (((x + width) - SNAPPING_THRESHOLD < targetX && (x + width) + SNAPPING_THRESHOLD > targetX) && y < targetY + targetHeight && y + height > targetY) {
-        // Snap target's left side to f's right side
-        target.setAbsolutePosition({ x: x + width, y: targetY + stripScrollOffset });
-
-      } else if (((y + height) - SNAPPING_THRESHOLD < targetY && (y + height) + SNAPPING_THRESHOLD > targetY) && x < targetX + targetWidth && x + width > targetX) {
-        // Snap target's top side to f's bottom side
-        target.setAbsolutePosition({ x: targetX, y: y + height + stripScrollOffset });
-
-      } else if (((y + SNAPPING_THRESHOLD) > targetY + targetHeight && (y - SNAPPING_THRESHOLD) < targetY + targetHeight) && x < targetX + targetWidth && x + width > targetX) {
-        // Snap target's bottom side to f's top side
-        target.setAbsolutePosition({ x: targetX, y: y - targetHeight + stripScrollOffset });
-
-      } else if (intersects(f, {x: targetX, y: targetY, height: targetHeight, width: targetWidth})) {
+      
+      if (intersects(f, {x: targetX, y: targetY, height: targetHeight, width: targetWidth})) {
+        console.log("intersection");
         intersectsAny = true;
+      } else {
+        if ((x - SNAPPING_THRESHOLD < targetX + targetWidth && targetX + targetWidth < x + SNAPPING_THRESHOLD && y < targetY + targetHeight && y + height > targetY)) {
+          // Snap target's right side to f's left side 
+          // target.setAbsolutePosition({ x: clampToStripX(x - targetWidth), y: clampToStripY(targetY + stripScrollOffset) });
+          // target.x(x - targetWidth)
+          console.log("a");
+          if(xDist == undefined || xDist > x - targetX + targetWidth)
+            cx = x - targetWidth;
+        } else if (((x + width) - SNAPPING_THRESHOLD < targetX && (x + width) + SNAPPING_THRESHOLD > targetX) && y < targetY + targetHeight && y + height > targetY) {
+          // Snap target's left side to f's right side
+          // target.setAbsolutePosition({ x: clampToStripX(x + width), y: clampToStripY(targetY + stripScrollOffset) });
+          console.log("b");
+          if(xDist == undefined || xDist > targetX - (x + width))
+            cx = x + width;
+        }
+        if (((y + height) - SNAPPING_THRESHOLD < targetY && (y + height) + SNAPPING_THRESHOLD > targetY) && x < targetX + targetWidth && x + width > targetX) {
+          // Snap target's top side to f's bottom side
+          // target.setAbsolutePosition({ x: clampToStripX(targetX), y: clampToStripY(y + height + stripScrollOffset) });
+          console.log("c");
+          if(yDist == undefined || yDist > targetY - (y + height))
+            cy = y + height;
+        } else if (((y + SNAPPING_THRESHOLD) > targetY + targetHeight && (y - SNAPPING_THRESHOLD) < targetY + targetHeight) && x < targetX + targetWidth && x + width > targetX) {
+          // Snap target's bottom side to f's top side
+          // target.setAbsolutePosition({ x: clampToStripX(targetX), y: clampToStripY(y - targetHeight + stripScrollOffset) });
+          console.log("d");
+          if(yDist == undefined || yDist > y - (targetY + targetHeight))
+            cy = y - targetHeight;
+        } 
       }
     });
+    target.setAbsolutePosition({x: cx, y: cy + stripScrollOffset});
     if (intersectsAny) {
       //overlap while dragging
       target.setAttr("fill", RECT_OVERLAP_COLOR);
