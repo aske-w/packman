@@ -9,13 +9,14 @@ import {
   SCROLLBAR_HEIGHT,
 } from '../config/canvasConfig';
 import { useCallback, RefObject, MutableRefObject } from 'react';
+import { isNumber } from 'lodash';
 
 interface WheelHandlerParams {
   layerRef: RefObject<KonvaLayer>;
   scrollBarRef: RefObject<KonvaRect>;
   scrollableHeight: number;
   gameHeight: number;
-  area: { minX: number; maxX: number };
+  area: { minX: number; maxX: number; minY?: number; maxY?: number };
   scrollOffsetRef?: MutableRefObject<number>;
 }
 
@@ -43,52 +44,19 @@ export const useKonvaWheelHandler = ({
   return handleWheel;
 };
 
-export const inventoryScrollHandler: ScrollHandler =
-  ({
-    layerRef,
-    gameHeight,
-    scrollBarRef,
-    scrollableHeight,
-    area,
-    scrollOffsetRef,
-  }) =>
-  e => {
-    const { layerX, deltaY } = e;
-
-    const isActive = layerX > area.minX && layerX < area.maxX;
-
-    if (isActive) {
-      const layer = layerRef.current!;
-      const dy = deltaY;
-      const oldY = layer.y();
-
-      const minY = -(scrollableHeight - gameHeight);
-      const maxY = 0;
-
-      const y = Math.max(minY, Math.min(oldY - dy, maxY));
-
-      layer.y(y);
-
-      const availableHeight = gameHeight - PADDING * 2 - SCROLLBAR_HEIGHT;
-
-      const vy =
-        (y / (-scrollableHeight + gameHeight)) * availableHeight + PADDING;
-
-      scrollBarRef.current?.y(vy);
-      if (scrollOffsetRef) {
-        scrollOffsetRef.current = vy;
-      }
-      return;
-    }
-  };
-export const interactiveScrollHandler: ScrollHandler =
+export const defaultScrollHandler: ScrollHandler =
   ({ layerRef, gameHeight, scrollBarRef, scrollableHeight, area }) =>
   e => {
-    const { layerX, deltaY } = e;
+    const { layerX, layerY, deltaY } = e;
 
-    const isActive = layerX > area.minX && layerX < area.maxX;
+    const isActiveX = layerX > area.minX && layerX < area.maxX;
+    let isActiveY = true;
 
-    if (isActive) {
+    if (isNumber(area.minY) && isNumber(area.maxY)) {
+      isActiveY = layerY > area.minY && layerY < area.maxY;
+    }
+
+    if (isActiveX && isActiveY) {
       const layer = layerRef.current!;
       const dy = deltaY;
       const oldY = layer.y();
