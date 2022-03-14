@@ -27,6 +27,10 @@ export const PADDING = 5 * 2;
 export const NUM_RECTS = 100;
 export const SCROLLABLE_HEIGHT = GAME_HEIGHT * 1.5;
 
+export const SNAPPING_THRESHOLD = 10;
+export const RECT_OVERLAP_COLOR = "#ff000080"; //transparent red color
+export const STROKE_WIDTH = 2;
+
 export const INVENTORY_SIZE: Rectangle = {
   height: GAME_HEIGHT,
   width: 200,
