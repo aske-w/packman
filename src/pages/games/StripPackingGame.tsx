@@ -13,7 +13,6 @@ import StripPackingInteractive, {
 import {
   NAV_HEIGHT,
   RECT_OVERLAP_COLOR,
-  SCROLLBAR_HEIGHT,
   SNAPPING_THRESHOLD,
   STROKE_WIDTH,
   SCROLLBAR_WIDTH,
@@ -27,7 +26,7 @@ import ScrollBar from '../../components/canvas/ScrollBar';
 import { Group } from 'konva/lib/Group';
 import { intersects } from '../../utils/intersects';
 import { Rectangle } from '../../types/Rectangle.interface';
-import { Shape, ShapeConfig } from 'konva/lib/Shape';
+import { Shape } from 'konva/lib/Shape';
 import { Coordinate } from '../../types/Coordinate.interface';
 import { clamp } from '../../utils/clamp';
 import { useWindowSize } from '../../hooks/useWindowSize';
@@ -37,7 +36,6 @@ import { ColorRect } from '../../types/ColorRect.interface';
 import { RectangleConfig } from '../../types/RectangleConfig.interface';
 import { generateInventory } from '../../utils/generateData';
 import IntroModal from '../../components/games/stripPacking/IntroModal';
-import ReactJoyride from 'react-joyride';
 
 interface StripPackingGameProps {}
 const NUM_ITEMS = 50;
@@ -87,6 +85,10 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   const interactiveScrollBarRef = useRef<KonvaRect>(null);
   const interactiveLayerRef = useRef<KonvaLayer>(null);
 
+  // Algo layer scroll
+  const algorithmScrollbarRef = useRef<KonvaRect>(null);
+  const algorithmLayerRef = useRef<KonvaLayer>(null);
+
   useEffect(() => {
     const reset = () => {
       setStartingInventory(generateInventory(inventoryWidth, NUM_ITEMS));
@@ -129,13 +131,13 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
       )
         return false;
 
-      // Place in algorithm canvas
-      const res = algoRef.current?.place(rect);
-
       const placement = {
         x: pos.x,
         y: pos.y - gameHeight - interactiveScrollOffset,
       };
+
+      // Place in algorithm canvas
+      const res = algoRef.current?.place(rect);
 
       interactiveRef.current?.place(rect, placement);
 
@@ -361,6 +363,16 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
         scrollBarRef: interactiveScrollBarRef,
         scrollableHeight,
       }),
+      defaultScrollHandler({
+        activeArea: {
+          minX: stripWidth + inventoryWidth,
+          maxX: stripWidth * 2 + inventoryWidth,
+        },
+        visibleHeight: gameHeight,
+        layerRef: algorithmLayerRef,
+        scrollBarRef: algorithmScrollbarRef,
+        scrollableHeight,
+      }),
     ],
   });
 
@@ -408,6 +420,16 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
                 interactiveLayerRef.current?.y(newY);
               }}
             />
+            <ScrollBar
+              startPosition="bottom"
+              ref={algorithmScrollbarRef}
+              scrollableHeight={scrollableHeight}
+              x={inventoryWidth + stripWidth * 2 - PADDING - SCROLLBAR_WIDTH}
+              gameHeight={gameHeight}
+              onYChanged={newY => {
+                algorithmLayerRef.current?.y(newY);
+              }}
+            />
           </Layer>
           <StripPackingInteractive
             scrollableHeight={scrollableHeight}
@@ -448,6 +470,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
             height={gameHeight}
             inventory={startingInventory}
             algorithm={algorithm}
+            layerRef={algorithmLayerRef}
           />
         </Stage>
       </div>
