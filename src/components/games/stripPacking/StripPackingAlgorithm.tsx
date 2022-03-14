@@ -82,7 +82,7 @@ const StripPackingAlgorithm = React.forwardRef<
 
     useEffect(() => {
       const _height = stripRects.reduce(
-        (maxY, r) => Math.max(maxY, Math.round(r.y * -1)),
+        (maxY, r) => Math.max(maxY, Math.round(height - r.y)),
         0
       );
       setScore(
