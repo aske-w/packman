@@ -46,7 +46,7 @@ interface StripPackingAlgorithmProps {
 export interface StripPackingAlgorithmHandle {
   place: (
     inventoryRect: ColorRect<RectangleConfig>
-  ) => [string, number] | undefined;
+  ) => [string, number, number] | undefined;
 }
 
 const StripPackingAlgorithm = React.forwardRef<
@@ -152,7 +152,8 @@ const StripPackingAlgorithm = React.forwardRef<
 
         rect.y = rect.y + height;
 
-        const inventoryRect = inventory.find((r) => r.name === rect.name)!;
+        const idx = inventory.findIndex((r) => r.name === rect.name)!;
+        const inventoryRect = inventory[idx]!;
 
         // remove the scroll offset from y value
         const scrollOffset = getInventoryScrollOffset();
@@ -166,7 +167,7 @@ const StripPackingAlgorithm = React.forwardRef<
         setStripRects((prev) => [...prev, newRect]);
         const rOrder = order;
         setOrder((old) => old + 1);
-        return [rect.name, rOrder];
+        return [rect.name, rOrder, idx];
       },
     }));
 

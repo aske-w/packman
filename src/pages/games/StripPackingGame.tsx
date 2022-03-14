@@ -36,6 +36,7 @@ import { ColorRect } from "../../types/ColorRect.interface";
 import { RectangleConfig } from "../../types/RectangleConfig.interface";
 import { compressInventory, generateInventory } from "../../utils/generateData";
 import IntroModal from "../../components/games/stripPacking/IntroModal";
+import { pushItemToBack } from "../../utils/array";
 
 interface StripPackingGameProps {}
 const NUM_ITEMS = 50;
@@ -57,7 +58,9 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
    * This is the immutable inventory, used for rendering the ghosts
    */
   const [startingInventory, setStartingInventory] = useState<
-    ReadonlyArray<ColorRect<RectangleConfig & { order?: number }>>
+    ReadonlyArray<
+      ColorRect<RectangleConfig & { order?: number; removed?: boolean }>
+    >
   >(() => []);
   const [inventoryChanged, setInventoryChanged] = useState(true);
   /**
@@ -142,25 +145,25 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
 
       interactiveRef.current?.place(rect, placement);
 
-      setRenderInventory((old) => {
-        const tmp = [...old];
-        tmp.splice(rIdx, 1);
-        return [...compressInventory(tmp, inventoryWidth)];
-      });
-
-      setRectanglesLeft(renderInventory.length - 1);
-
       if (res) {
-        const [placedName, order] = res;
+        const [placedName, order, recIdx] = res;
+        const inv = [...startingInventory];
+        const interactiveIdx = inv.findIndex((r) => r.name === rectName);
+
+        inv[interactiveIdx].removed = true;
+        inv[recIdx].order = order;
+
+        // Pushes currently placed block at the back of the inventory lust
+        pushItemToBack(inv, interactiveIdx);
+
+        const compressedInv = compressInventory(inv, inventoryWidth);
+
+        const interactiveInventory = compressedInv.filter((r) => !r.removed);
+        setRenderInventory(interactiveInventory);
+        setRectanglesLeft(renderInventory.length - 1);
 
         // give the order of placement to the starting state
-        setStartingInventory((old) => {
-          const tmp = [...old];
-          const idx = tmp.findIndex((r) => r.name === placedName);
-          if (idx === -1) return old;
-          tmp[idx] = { ...tmp[idx], order };
-          return compressInventory(tmp, inventoryWidth);
-        });
+        setStartingInventory(compressedInv);
       }
     }
     return true;
