@@ -130,13 +130,13 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
       )
         return false;
 
-      // Place in algorithm canvas
-      const res = algoRef.current?.place(rect);
-
       const placement = {
         x: pos.x,
         y: pos.y - gameHeight - interactiveScrollOffset,
       };
+
+      // Place in algorithm canvas
+      const res = algoRef.current?.place(rect);
 
       interactiveRef.current?.place(rect, placement);
 

@@ -149,6 +149,9 @@ const StripPackingAlgorithm = React.forwardRef<
         const rect = algo?.place();
 
         if (!rect) return;
+
+        rect.y = rect.y + height;
+
         const inventoryRect = inventory.find((r) => r.name === rect.name)!;
 
         // remove the scroll offset from y value
