@@ -14,7 +14,7 @@ import { Rectangle } from '../../types/Rectangle.interface';
 function StripPackingPlayground() {
   const [stripWidth, setStripWidth] = useState(400);
   const [selectedAlgorithm, setSelectedAlgorithm] = useState<PackingAlgorithms>(
-    PackingAlgorithms.SIZE_ALTERNATING_STACK
+    PackingAlgorithms.FIRST_FIT_DECREASING_HEIGHT
   );
   const {
     start,

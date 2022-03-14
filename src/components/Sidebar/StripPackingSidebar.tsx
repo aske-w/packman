@@ -17,6 +17,8 @@ import BoxInput from '../BoxInput';
 import RectInput from '../RectInput';
 import { generateData } from '../../utils/generateData';
 import Sidebar from './Sidebar';
+import { AcademicCapIcon } from '@heroicons/react/solid';
+import TeachAlgoModal from '../playground/strip/TeachAlgoModal';
 
 interface SidebarProps {
   placeNext(): void;
@@ -50,17 +52,27 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
   const isStarted = algoState === 'RUNNING' || algoState === 'PAUSED';
   const [genNum, setGenNum] = useState(30);
   const [previousData, setPreviousData] = useState<Dimensions[]>([]);
-
+  const [teachingOpen, setTeachingOpen] = useState(false);
   return (
     <Sidebar className="inline-flex flex-col overflow-hidden">
+      <TeachAlgoModal
+        algorithm={selectedAlgorithm}
+        visible={teachingOpen}
+        onClose={() => setTeachingOpen(false)}
+      />
       <SideBarSection title="Algorithms">
-        <AlgoSelect<PackingAlgorithms>
-          className="text-base font-thin text-white w-72 strip-playground-algo-select"
-          options={ALL_PACKING_ALGORITHMS}
-          onChange={setSelectedAlgorithm}
-          value={selectedAlgorithm}
-          disabled={isStarted}
-        />
+        <div className="flex flex-row items-center justify-between">
+          <AlgoSelect<PackingAlgorithms>
+            className="text-base font-thin text-white w-72 strip-playground-algo-select"
+            options={ALL_PACKING_ALGORITHMS}
+            onChange={setSelectedAlgorithm}
+            value={selectedAlgorithm}
+            disabled={isStarted}
+          />
+          <button onClick={() => setTeachingOpen(true)}>
+            <AcademicCapIcon className="w-8 h-8 text-white" />
+          </button>
+        </div>
       </SideBarSection>
 
       <SideBarSection title="Actions panel">
