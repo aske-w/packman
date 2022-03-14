@@ -162,6 +162,7 @@ const StripPackingAlgorithm = React.forwardRef<
           prevX: inventoryRect.x - inventoryWidth, // substract the inventory width (its relative to the strip)
           prevY: inventoryRect.y - scrollOffset,
         };
+
         setStripRects((prev) => [...prev, newRect]);
         const rOrder = order;
         setOrder((old) => old + 1);
@@ -174,6 +175,7 @@ const StripPackingAlgorithm = React.forwardRef<
         {stripRects.map((r, i) => {
           return (
             <MyRect
+              gameHeight={height}
               key={r.name}
               {...r}
               strokeWidth={2}
@@ -190,13 +192,9 @@ const StripPackingAlgorithm = React.forwardRef<
 
 const ENTER_ANIMATION_DURATION_SECONDS = 0.5;
 
-const MyRect: React.FC<PrevPos & RectConfig & KonvaNodeEvents> = ({
-  x,
-  y,
-  prevX,
-  prevY,
-  ...props
-}) => {
+const MyRect: React.FC<
+  PrevPos & RectConfig & KonvaNodeEvents & { gameHeight: number }
+> = ({ x, y, prevX, prevY, gameHeight, ...props }) => {
   const ref = useRef<KonvaRect>(null);
   useEffect(() => {
     new Konva.Tween({
@@ -212,7 +210,7 @@ const MyRect: React.FC<PrevPos & RectConfig & KonvaNodeEvents> = ({
     <Rect
       ref={ref}
       x={prevX}
-      y={prevY}
+      y={prevY + gameHeight}
       stroke={"rgba(0,0,0,0.2)"}
       strokeWidth={1}
       {...props}
