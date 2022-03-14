@@ -35,7 +35,7 @@ import useScoreStore from '../../store/score';
 import { ColorRect } from '../../types/ColorRect.interface';
 import { RectangleConfig } from '../../types/RectangleConfig.interface';
 import { generateInventory } from '../../utils/generateData';
-import IntroModal from '../../components/games/stripPacking/IntroModal';
+import StripPackingGameIntroModal from '../../components/games/stripPacking/StripPackingGameIntroModal';
 
 interface StripPackingGameProps {}
 const NUM_ITEMS = 50;
@@ -378,7 +378,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
 
   return (
     <div className="w-full">
-      <IntroModal />
+      <StripPackingGameIntroModal />
 
       <div className="flex items-center justify-between w-full">
         <Stage

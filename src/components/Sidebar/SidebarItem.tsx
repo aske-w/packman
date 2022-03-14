@@ -1,14 +1,24 @@
-import React from "react";
+import classNames from 'classnames';
+import React from 'react';
 
 interface SideBarItemProps {
   text: string;
   element: JSX.Element;
+  className?: string;
 }
 
-const SideBarItem: React.FC<SideBarItemProps> = ({ text, element }) => {
+const SideBarItem: React.FC<SideBarItemProps> = ({
+  text,
+  element,
+  className,
+}) => {
   return (
-    <div className="w-full flex items-center justify-between">
-      <label className="text-white tracking-wide font-normal text-base">
+    <div
+      className={classNames(
+        'w-full flex items-center justify-between',
+        className
+      )}>
+      <label className="text-base font-normal tracking-wide text-white">
         {text}
       </label>
       {element}
