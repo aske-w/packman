@@ -170,7 +170,7 @@ const StripPackingAlgorithm = React.forwardRef<
     }));
 
     return (
-      <Layer x={x} ref={layerRef}>
+      <Layer x={x} y={-height} ref={layerRef}>
         {stripRects.map((r, i) => {
           return (
             <MyRect
