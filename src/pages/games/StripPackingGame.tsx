@@ -39,7 +39,7 @@ import IntroModal from "../../components/games/stripPacking/IntroModal";
 import { pushItemToBack } from "../../utils/array";
 
 interface StripPackingGameProps {}
-const NUM_ITEMS = 50;
+const NUM_ITEMS = 5;
 const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   const { width: wWidth, height: wHeight } = useWindowSize();
   const stripWidth = wWidth * 0.2;
@@ -382,7 +382,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
 
   return (
     <div className="w-full">
-      {/* <IntroModal /> */}
+      <IntroModal />
 
       <div className="flex items-center justify-between w-full">
         <Stage
