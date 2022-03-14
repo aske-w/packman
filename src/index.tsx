@@ -1,15 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom';
-import StripPackingPlayground from './pages/playground/StripPackingPlayground';
-import Home from './pages/Home';
-import OldStripPackingInteractive from './components/games/stripPacking/OldStripPackingInteractive';
+import App from './App';
+import './index.css';
+import BinPackingGame from './pages/games/BinPackingGame';
 import StripPackingGame from './pages/games/StripPackingGame';
-import { pathKey } from './pages/routes';
+import Home from './pages/Home';
 import BinPackingPlayground from './pages/playground/BinPackingPlayground';
+import StripPackingPlayground from './pages/playground/StripPackingPlayground';
+import { pathKey } from './pages/routes';
+import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -23,6 +23,7 @@ ReactDOM.render(
           </Route>
           <Route path={pathKey.GAME} element={<Outlet />}>
             <Route path={pathKey.STRIP} element={<StripPackingGame />} />
+            <Route path={pathKey.BIN} element={<BinPackingGame />} />
           </Route>
         </Route>
       </Routes>

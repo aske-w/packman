@@ -10,4 +10,5 @@ export const pathName = {
   BIN_PLAYGROUND: '/playground/bin',
   GAME: '/game',
   STRIP_GAME: '/game/strip',
+  BIN_GAME: '/game/bin',
 };

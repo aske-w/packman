@@ -1,44 +1,44 @@
-import { useCallback, useRef, useState } from "react";
-import FiniteFirstFit from "../algorithms/bin/offline/FiniteFirstFit";
-import FiniteNextFit from "../algorithms/bin/offline/FiniteNextFit";
-import HybridFirstFit from "../algorithms/bin/offline/HybridFirstFit";
-import { NextFitDecreasingHeight } from "../algorithms/strip/NextFitDecreasingHeight";
-import { BinPackingAlgorithms } from "../types/BinPackingAlgorithm.interface";
-import { Dimensions } from "../types/Dimensions.interface";
-import { DimensionsWithConfig } from "../types/DimensionsWithConfig.type";
-import { PackingAlgorithm } from "../types/PackingAlgorithm.interface";
-import { RectangleConfig } from "../types/RectangleConfig.interface";
-import { useStats } from "./useStats";
+import { useCallback, useRef, useState } from 'react';
+import FiniteFirstFit from '../algorithms/bin/offline/FiniteFirstFit';
+import FiniteNextFit from '../algorithms/bin/offline/FiniteNextFit';
+import HybridFirstFit from '../algorithms/bin/offline/HybridFirstFit';
+import { NextFitDecreasingHeight } from '../algorithms/strip/NextFitDecreasingHeight';
+import { BinPackingAlgorithms } from '../types/BinPackingAlgorithm.interface';
+import { Dimensions } from '../types/Dimensions.interface';
+import { DimensionsWithConfig } from '../types/DimensionsWithConfig.type';
+import { PackingAlgorithm } from '../types/PackingAlgorithm.interface';
+import { RectangleConfig } from '../types/RectangleConfig.interface';
+import { useStats } from './useStats';
 
 const { FINITE_NEXT_FIT, FINITE_FIRST_FIT, HYBRID_FIRST_FIT } =
   BinPackingAlgorithms;
 
-export type AlgoStates = "RUNNING" | "STOPPED" | "PAUSED";
+export type AlgoStates = 'RUNNING' | 'STOPPED' | 'PAUSED';
 
 export const useBinPackingAlgorithm = (
   binSize: Dimensions,
   selectedAlgorithm: BinPackingAlgorithms
 ) => {
   const { addArea, getStats } = useStats(binSize.width);
-  const [algoState, setAlgoState] = useState<AlgoStates>("STOPPED");
+  const [algoState, setAlgoState] = useState<AlgoStates>('STOPPED');
   const [isFinished, setIsFinished] = useState(true);
-  // TODO better typings than any :)
+
   const algorithm = useRef<
     PackingAlgorithm<{}, RectangleConfig & { binId: number }>
   >(new NextFitDecreasingHeight(binSize));
 
   const reset = useCallback(() => {
     setIsFinished(true);
-    setAlgoState("STOPPED");
+    setAlgoState('STOPPED');
   }, []);
 
   const intializeOnStart = useCallback(() => {
     setIsFinished(false);
-    setAlgoState("RUNNING");
+    setAlgoState('RUNNING');
   }, []);
 
   const pause = useCallback(() => {
-    setAlgoState((prev) => (prev === "PAUSED" ? "RUNNING" : "PAUSED"));
+    setAlgoState(prev => (prev === 'PAUSED' ? 'RUNNING' : 'PAUSED'));
   }, []);
 
   const place = useCallback(() => {
@@ -71,7 +71,7 @@ export const useBinPackingAlgorithm = (
 
         default:
           reset();
-          console.error("unkown algorithm: ", selectedAlgorithm);
+          console.error('unkown algorithm: ', selectedAlgorithm);
           break;
       }
     },

@@ -1,12 +1,12 @@
-import Konva from "konva";
-import React, { useState } from "react";
-import Bin from "../../components/playground/Bin";
-import BinPackingSidebar from "../../components/Sidebar/BinPackingSidebar";
-import { genId } from "../../config/canvasConfig";
-import { useBinPackingAlgorithm } from "../../hooks/useBinPackingAlgorithm";
-import { BinPackingAlgorithms } from "../../types/BinPackingAlgorithm.interface";
-import { ColorRect } from "../../types/ColorRect.interface";
-import { Dimensions } from "../../types/Dimensions.interface";
+import Konva from 'konva';
+import React, { useState } from 'react';
+import Bin from '../../components/playground/Bin';
+import BinPackingSidebar from '../../components/Sidebar/BinPackingSidebar';
+import { genId } from '../../config/canvasConfig';
+import { useBinPackingAlgorithm } from '../../hooks/useBinPackingAlgorithm';
+import { BinPackingAlgorithms } from '../../types/BinPackingAlgorithm.interface';
+import { ColorRect } from '../../types/ColorRect.interface';
+import { Dimensions } from '../../types/Dimensions.interface';
 
 interface BinPackingPlaygroundProps {}
 const width = Math.floor(window.innerWidth * 0.2);
@@ -27,13 +27,15 @@ const BinPackingPlayground: React.FC<BinPackingPlaygroundProps> = ({}) => {
 
   const placeNext = () => {
     const rect = place();
+    console.log(rect);
+
     if (rect) {
       // update ui in sidebar
-      setDimensionsStorage((d) =>
-        d.filter((d) => !(d.height === rect.height && d.width === rect.width))
+      setDimensionsStorage(d =>
+        d.filter(d => !(d.height === rect.height && d.width === rect.width))
       );
-      setBins((old) => {
-        const tmp = [...old.map((o) => [...o])];
+      setBins(old => {
+        const tmp = [...old.map(o => [...o])];
         if (tmp.length - 1 < rect.binId) {
           for (let i = tmp.length - 1; i < rect.binId; i++) {
             tmp.push([]);
