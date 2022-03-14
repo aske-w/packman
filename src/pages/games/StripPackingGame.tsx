@@ -145,7 +145,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
       setRenderInventory((old) => {
         const tmp = [...old];
         tmp.splice(rIdx, 1);
-        return tmp;
+        return [...compressInventory(tmp, inventoryWidth)];
       });
 
       setRectanglesLeft(renderInventory.length - 1);
@@ -379,7 +379,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
 
   return (
     <div className="w-full">
-      <IntroModal />
+      {/* <IntroModal /> */}
 
       <div className="flex items-center justify-between w-full">
         <Stage

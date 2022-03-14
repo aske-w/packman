@@ -23,7 +23,9 @@ export const generateData = (
 };
 
 export const generateInventory = (inventorySize: number, numItems = 50) => {
-  return generateData(numItems, 200, 25).reduce<Acc>(
+  return generateData(numItems, 200, 25).reduce<
+    Acc<ColorRect<RectangleConfig & { order?: number }>>
+  >(
     (acc, attrs, i) => {
       const { height, width } = attrs;
 
@@ -82,7 +84,9 @@ export const compressInventory = (
         }
       >
     >(
-      (acc, rect, i) => {
+      (acc, _rect, i) => {
+        const rect = { ..._rect, x: PADDING, y: PADDING };
+
         const { height, width } = rect;
 
         acc.row.prevRowHeight = Math.max(
