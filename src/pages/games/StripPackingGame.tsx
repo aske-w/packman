@@ -1,41 +1,40 @@
-import { Layer as KonvaLayer } from 'konva/lib/Layer';
-import { Rect as KonvaRect } from 'konva/lib/shapes/Rect';
-import { Vector2d } from 'konva/lib/types';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Layer, Rect, Stage } from 'react-konva';
-import Inventory from '../../components/games/stripPacking/Inventory';
+import { Layer as KonvaLayer } from "konva/lib/Layer";
+import { Rect as KonvaRect } from "konva/lib/shapes/Rect";
+import { Vector2d } from "konva/lib/types";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { Layer, Rect, Stage } from "react-konva";
+import Inventory from "../../components/games/stripPacking/Inventory";
 import StripPackingAlgorithm, {
   StripPackingAlgorithmHandle,
-} from '../../components/games/stripPacking/StripPackingAlgorithm';
+} from "../../components/games/stripPacking/StripPackingAlgorithm";
 import StripPackingInteractive, {
   StripPackingInteractiveHandle,
-} from '../../components/games/stripPacking/StripPackingInteractive';
+} from "../../components/games/stripPacking/StripPackingInteractive";
 import {
   NAV_HEIGHT,
   RECT_OVERLAP_COLOR,
-  SCROLLBAR_HEIGHT,
   SNAPPING_THRESHOLD,
   STROKE_WIDTH,
   SCROLLBAR_WIDTH,
   PADDING,
-} from '../../config/canvasConfig';
+} from "../../config/canvasConfig";
 import {
   defaultScrollHandler,
   useKonvaWheelHandler,
-} from '../../hooks/useKonvaWheelHandler';
-import ScrollBar from '../../components/canvas/ScrollBar';
-import { Group } from 'konva/lib/Group';
-import { intersects } from '../../utils/intersects';
-import { Rectangle } from '../../types/Rectangle.interface';
-import { Shape, ShapeConfig } from 'konva/lib/Shape';
-import { Coordinate } from '../../types/Coordinate.interface';
-import { clamp } from '../../utils/clamp';
-import { useWindowSize } from '../../hooks/useWindowSize';
-import useAlgorithmStore from '../../store/algorithm';
-import useScoreStore from '../../store/score';
-import { ColorRect } from '../../types/ColorRect.interface';
-import { RectangleConfig } from '../../types/RectangleConfig.interface';
-import { generateInventory } from '../../utils/generateData';
+} from "../../hooks/useKonvaWheelHandler";
+import ScrollBar from "../../components/canvas/ScrollBar";
+import { Group } from "konva/lib/Group";
+import { intersects } from "../../utils/intersects";
+import { Rectangle } from "../../types/Rectangle.interface";
+import { Shape } from "konva/lib/Shape";
+import { Coordinate } from "../../types/Coordinate.interface";
+import { clamp } from "../../utils/clamp";
+import { useWindowSize } from "../../hooks/useWindowSize";
+import useAlgorithmStore from "../../store/algorithm";
+import useScoreStore from "../../store/score";
+import { ColorRect } from "../../types/ColorRect.interface";
+import { RectangleConfig } from "../../types/RectangleConfig.interface";
+import { generateInventory } from "../../utils/generateData";
 
 interface StripPackingGameProps {}
 const NUM_ITEMS = 50;
@@ -46,10 +45,10 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   const gameHeight = wHeight - NAV_HEIGHT;
 
   const algorithm = useAlgorithmStore(
-    useCallback(state => state.algorithm, [])
+    useCallback((state) => state.algorithm, [])
   );
   const setRectanglesLeft = useScoreStore(
-    useCallback(state => state.setRectanglesLeft, [])
+    useCallback((state) => state.setRectanglesLeft, [])
   );
 
   const [stripRects, setStripRects] = useState<ColorRect[]>([]);
@@ -85,6 +84,10 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   const interactiveScrollBarRef = useRef<KonvaRect>(null);
   const interactiveLayerRef = useRef<KonvaLayer>(null);
 
+  // Algo layer scroll
+  const algorithmScrollbarRef = useRef<KonvaRect>(null);
+  const algorithmLayerRef = useRef<KonvaLayer>(null);
+
   useEffect(() => {
     const reset = () => {
       setStartingInventory(generateInventory(inventoryWidth, NUM_ITEMS));
@@ -98,7 +101,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
    * Pos is absolute position in the canvas
    */
   const onDraggedToStrip = (rectName: string, pos: Vector2d): boolean => {
-    const rIdx = renderInventory.findIndex(r => r.name === rectName);
+    const rIdx = renderInventory.findIndex((r) => r.name === rectName);
 
     if (rIdx !== -1) {
       const rect = renderInventory[rIdx];
@@ -114,7 +117,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
         height: rect.height,
       };
 
-      interactiveRects?.forEach(ir => {
+      interactiveRects?.forEach((ir) => {
         if (intersects(ir.getAttrs(), rectToPlace)) intersectAny = true;
       });
 
@@ -137,7 +140,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
 
       interactiveRef.current?.place(rect, placement);
 
-      setRenderInventory(old => {
+      setRenderInventory((old) => {
         const tmp = [...old];
         tmp.splice(rIdx, 1);
         return tmp;
@@ -149,9 +152,9 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
         const [placedName, order] = res;
 
         // give the order of placement to the starting state
-        setStartingInventory(old => {
+        setStartingInventory((old) => {
           const tmp = [...old];
-          const idx = tmp.findIndex(r => r.name === placedName);
+          const idx = tmp.findIndex((r) => r.name === placedName);
           if (idx === -1) return old;
           tmp[idx] = { ...tmp[idx], order };
           return tmp;
@@ -162,18 +165,18 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   };
 
   const snapInteractive = (destination: Group[], target: Shape) => {
-    const newDestination = destination.map(g => {
+    const newDestination = destination.map((g) => {
       const rect: ColorRect<RectangleConfig> = g.getAttrs();
       return rect;
     });
 
     target.setAttr(
-      'x',
-      clamp(target.getAttr('x'), 0, stripWidth - target.getAttr('width'))
+      "x",
+      clamp(target.getAttr("x"), 0, stripWidth - target.getAttr("width"))
     );
     target.setAttr(
-      'y',
-      clamp(target.getAttr('y'), 0, scrollableHeight - target.getAttr('height'))
+      "y",
+      clamp(target.getAttr("y"), 0, scrollableHeight - target.getAttr("height"))
     );
     snap(newDestination, target);
   };
@@ -186,7 +189,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
       return;
     }
 
-    const newDestination = destination.map(g => {
+    const newDestination = destination.map((g) => {
       const rect: ColorRect<RectangleConfig> = g.getAttrs();
       return rect;
     });
@@ -263,7 +266,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
       }
     }
 
-    destination.forEach(f => {
+    destination.forEach((f) => {
       const { name, x, y, height, width } = f;
 
       if (name == targetName) return;
@@ -327,11 +330,11 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
       targetY > scrollableHeight
     ) {
       //overlap while dragging
-      target.setAttr('fill', RECT_OVERLAP_COLOR);
+      target.setAttr("fill", RECT_OVERLAP_COLOR);
     } else {
       //no overlap while dragging
-      let color = startingInventory.find(r => r.name == target.name())!.fill;
-      target.setAttr('fill', color!.substring(0, 7) + '80');
+      let color = startingInventory.find((r) => r.name == target.name())!.fill;
+      target.setAttr("fill", color!.substring(0, 7) + "80");
     }
   };
 
@@ -359,6 +362,16 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
         scrollBarRef: interactiveScrollBarRef,
         scrollableHeight,
       }),
+      defaultScrollHandler({
+        activeArea: {
+          minX: stripWidth + inventoryWidth,
+          maxX: stripWidth * 2 + inventoryWidth,
+        },
+        visibleHeight: gameHeight,
+        layerRef: algorithmLayerRef,
+        scrollBarRef: algorithmScrollbarRef,
+        scrollableHeight,
+      }),
     ],
   });
 
@@ -368,7 +381,8 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
         <Stage
           onWheel={handleWheel}
           width={window.innerWidth}
-          height={gameHeight}>
+          height={gameHeight}
+        >
           <Layer>
             {/* Strip canvas */}
             <Rect fill="#555" x={0} width={stripWidth} height={gameHeight} />
@@ -392,7 +406,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
               scrollableHeight={scrollableHeight}
               x={stripWidth + inventoryWidth - PADDING - SCROLLBAR_WIDTH}
               gameHeight={gameHeight}
-              onYChanged={newY => inventoryLayer.current?.y(newY)}
+              onYChanged={(newY) => inventoryLayer.current?.y(newY)}
             />
             <ScrollBar
               startPosition="bottom"
@@ -400,8 +414,18 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
               scrollableHeight={scrollableHeight}
               x={stripWidth - PADDING - SCROLLBAR_WIDTH}
               gameHeight={gameHeight}
-              onYChanged={newY => {
+              onYChanged={(newY) => {
                 interactiveLayerRef.current?.y(newY);
+              }}
+            />
+            <ScrollBar
+              startPosition="bottom"
+              ref={algorithmScrollbarRef}
+              scrollableHeight={scrollableHeight}
+              x={inventoryWidth + stripWidth * 2 - PADDING - SCROLLBAR_WIDTH}
+              gameHeight={gameHeight}
+              onYChanged={(newY) => {
+                algorithmLayerRef.current?.y(newY);
               }}
             />
           </Layer>
@@ -444,6 +468,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
             height={gameHeight}
             inventory={startingInventory}
             algorithm={algorithm}
+            layerRef={algorithmLayerRef}
           />
         </Stage>
       </div>
