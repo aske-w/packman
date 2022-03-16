@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { pathName, pathKey } from "../pages/routes";
 import Logo from "../resources/Logo.svg";
@@ -7,6 +7,7 @@ import useScoreStore from "../store/score";
 import { ALL_PACKING_ALGORITHMS } from "../types/PackingAlgorithm.interface";
 import AlgoSelect from "./AlgoSelect";
 import Score from "./Score";
+import TimeBar from "./TimeBar";
 
 interface NavProps {
   height: number;
@@ -89,6 +90,7 @@ const Nav: React.FC<NavProps> = ({ height, children }) => {
           </div>
         )}
       </nav>
+      <TimeBar navbarHeight={height} />
       {children}
     </div>
   );
