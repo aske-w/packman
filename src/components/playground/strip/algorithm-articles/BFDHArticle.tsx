@@ -9,28 +9,17 @@ const BFDHArticle: React.FC<BFDHArticleProps> = ({}) => {
 
   return (
     <>
-      <p>
-        Best fit decreasing height build on the principles of First fit
-        decreasing height
-      </p>
+      <p>Best fit decreasing height build on the principles of Next fit decreasing height</p>
       <h4>Preparation</h4>
       <p>
         Since this is an{' '}
-        <span
-          data-tip="Means the entire input is known beforehand"
-          className="underline decoration-dotted decoration-gray-500 decoration-1 ">
+        <span data-tip="Means the entire input is known beforehand" className="underline decoration-dotted decoration-gray-500 decoration-1 ">
           offline
         </span>{' '}
-        algorithm, we know the entire input beforehand. We utilize this to sort
-        it by non-increasing height.
+        algorithm, we know the entire input beforehand. We utilize this to sort it by non-increasing height.
       </p>
       <div className="flex flex-col items-center p-5 bg-gray-700 rounded-lg not-prose">
-        <svg
-          width="798"
-          height="158"
-          viewBox="0 0 798 158"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg">
+        <svg width="798" height="158" viewBox="0 0 798 158" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect y="126" width="150" height="32" fill="#FBBF24" />
           <rect x="165" y="59" width="78" height="99" fill="#FBBF24" />
           <rect x="258" y="142" width="21" height="16" fill="#FBBF24" />
@@ -44,12 +33,7 @@ const BFDHArticle: React.FC<BFDHArticleProps> = ({}) => {
         <p className="mt-5 text-sm text-white">Unsorted input</p>
       </div>
       <div className="flex flex-col items-center p-5 mt-10 bg-gray-700 rounded-lg not-prose">
-        <svg
-          width="798"
-          height="158"
-          viewBox="0 0 798 158"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg">
+        <svg width="798" height="158" viewBox="0 0 798 158" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect width="157" height="158" fill="#FBBF24" />
           <rect x="172" y="30" width="78" height="128" fill="#FBBF24" />
           <rect x="265" y="59" width="78" height="99" fill="#FBBF24" />
@@ -64,110 +48,29 @@ const BFDHArticle: React.FC<BFDHArticleProps> = ({}) => {
       </div>
       <h4>Execution</h4>
       <p>
-        With the sorted data we now take the tallest rectangle from the input.
-        This is placed in the bottom left of the strip. We have now started a
+        With the sorted data we now take the tallest rectangle from the input. This is placed in the bottom left of the strip. We have now started a
         new shelf with the height of the first placed rectangle.
       </p>
       <p>
-        When placing the next rectangle, we need to look at all the shelves in
-        the strip. We always want to place the next rectangle on the shelf where
-        there is the least amount of remaining space.
+        When placing the next rectangle, we need to look at all the shelves in the strip. We always want to place the next rectangle on the shelf
+        where there is the least amount of remaining space.
       </p>
       <p>This is repeated until the entire input is packed</p>
       <div className="flex flex-col items-center">
         <div className="flex flex-col items-center p-5 bg-gray-700 rounded-lg not-prose max-w-min">
-          <svg
-            width="376"
-            height="319"
-            viewBox="0 0 376 319"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg">
+          <svg width="376" height="319" viewBox="0 0 376 319" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect x="1" width="375" height="319" fill="white" />
-            <rect
-              x="350.5"
-              y="144.5"
-              width="20"
-              height="15"
-              fill="#FBBF24"
-              stroke="black"
-            />
-            <rect
-              x="336.5"
-              y="303.5"
-              width="20"
-              height="15"
-              fill="#FBBF24"
-              fill-opacity="0.3"
-              stroke="black"
-            />
-            <rect
-              x="229.5"
-              y="141.5"
-              width="120"
-              height="18"
-              fill="#FBBF24"
-              stroke="black"
-            />
-            <rect
-              x="232.5"
-              y="220.5"
-              width="77"
-              height="98"
-              fill="#FBBF24"
-              stroke="black"
-            />
-            <rect
-              x="310.5"
-              y="230.5"
-              width="25"
-              height="88"
-              fill="#FBBF24"
-              stroke="black"
-            />
-            <rect
-              x="1.5"
-              y="111.5"
-              width="77"
-              height="48"
-              fill="#FBBF24"
-              stroke="black"
-            />
-            <rect
-              x="79.5"
-              y="128.5"
-              width="149"
-              height="31"
-              fill="#FBBF24"
-              stroke="black"
-            />
-            <rect
-              x="157.5"
-              y="191.5"
-              width="77"
-              height="127"
-              fill="#FBBF24"
-              stroke="black"
-            />
-            <rect
-              x="1.5"
-              y="161.5"
-              width="156"
-              height="157"
-              fill="#FBBF24"
-              stroke="black"
-            />
-            <path
-              d="M3 160H375"
-              stroke="black"
-              stroke-width="2"
-              stroke-dasharray="4 4"
-            />
-            <path
-              d="M0 110H375"
-              stroke="black"
-              stroke-width="2"
-              stroke-dasharray="4 4"
-            />
+            <rect x="350.5" y="144.5" width="20" height="15" fill="#FBBF24" stroke="black" />
+            <rect x="336.5" y="303.5" width="20" height="15" fill="#FBBF24" fill-opacity="0.3" stroke="black" />
+            <rect x="229.5" y="141.5" width="120" height="18" fill="#FBBF24" stroke="black" />
+            <rect x="232.5" y="220.5" width="77" height="98" fill="#FBBF24" stroke="black" />
+            <rect x="310.5" y="230.5" width="25" height="88" fill="#FBBF24" stroke="black" />
+            <rect x="1.5" y="111.5" width="77" height="48" fill="#FBBF24" stroke="black" />
+            <rect x="79.5" y="128.5" width="149" height="31" fill="#FBBF24" stroke="black" />
+            <rect x="157.5" y="191.5" width="77" height="127" fill="#FBBF24" stroke="black" />
+            <rect x="1.5" y="161.5" width="156" height="157" fill="#FBBF24" stroke="black" />
+            <path d="M3 160H375" stroke="black" stroke-width="2" stroke-dasharray="4 4" />
+            <path d="M0 110H375" stroke="black" stroke-width="2" stroke-dasharray="4 4" />
             <path
               d="M345.646 295.354C345.842 295.549 346.158 295.549 346.354 295.354L349.536 292.172C349.731 291.976 349.731 291.66 349.536 291.464C349.34 291.269 349.024 291.269 348.828 291.464L346 294.293L343.172 291.464C342.976 291.269 342.66 291.269 342.464 291.464C342.269 291.66 342.269 291.976 342.464 292.172L345.646 295.354ZM345.5 210L345.5 295L346.5 295L346.5 210L345.5 210Z"
               fill="black"
@@ -186,9 +89,7 @@ const BFDHArticle: React.FC<BFDHArticleProps> = ({}) => {
             />
           </svg>
 
-          <p className="mt-5 text-sm text-white">
-            Rectangle cannot fit on the first shelf.
-          </p>
+          <p className="mt-5 text-sm text-white">Rectangle cannot fit on the first shelf.</p>
         </div>
       </div>
     </>
