@@ -1,8 +1,8 @@
 export enum Events {
   IDLE = "idle",
-  START = "start",
-  PROGRESS = "progress",
+  PLAYING = "playing",
   RESTART_TIME = "restart_time",
   OUT_OF_TIME = "out_of_time",
+  FINISHED = "finished",
   GAME_OVER = "game_over",
 }

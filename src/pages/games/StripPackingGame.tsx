@@ -38,7 +38,7 @@ import { generateInventory } from "../../utils/generateData";
 import IntroModal from "../../components/games/stripPacking/IntroModal";
 
 interface StripPackingGameProps {}
-const NUM_ITEMS = 50;
+const NUM_ITEMS = 2;
 const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   const { width: wWidth, height: wHeight } = useWindowSize();
   const stripWidth = wWidth * 0.2;
@@ -46,10 +46,10 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   const gameHeight = wHeight - NAV_HEIGHT;
 
   const algorithm = useAlgorithmStore(
-    useCallback((state) => state.algorithm, [])
+    useCallback(({ algorithm }) => algorithm, [])
   );
   const setRectanglesLeft = useScoreStore(
-    useCallback((state) => state.setRectanglesLeft, [])
+    useCallback(({ setRectanglesLeft }) => setRectanglesLeft, [])
   );
 
   const [stripRects, setStripRects] = useState<ColorRect[]>([]);
@@ -60,6 +60,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
     ReadonlyArray<ColorRect<RectangleConfig & { order?: number }>>
   >(() => []);
   const [inventoryChanged, setInventoryChanged] = useState(true);
+
   /**
    * This is the inventory, used for rendering the draggable rects. Whenever an
    * item is placed in the strip, it's removed from this array
@@ -67,6 +68,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   const [renderInventory, setRenderInventory] = useState<
     ColorRect<RectangleConfig>[]
   >([]);
+
   useEffect(() => {
     if (inventoryChanged) {
       setRenderInventory([...startingInventory]);
@@ -105,6 +107,8 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
     const rIdx = renderInventory.findIndex((r) => r.name === rectName);
 
     if (rIdx !== -1) {
+      // isStart && setEvent(Events.START);
+
       const rect = renderInventory[rIdx];
       const interactiveScrollOffset = interactiveLayerRef.current?.y()!;
       const interactiveRects = interactiveLayerRef.current?.children;
@@ -379,6 +383,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   return (
     <div className="w-full">
       {/* <IntroModal /> */}
+      <h2>{event}</h2>
 
       <div className="flex items-center justify-between w-full">
         <Stage
