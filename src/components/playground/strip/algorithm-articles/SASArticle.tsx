@@ -1,22 +1,24 @@
 import React, { useEffect } from 'react';
 import ReactTooltip from 'react-tooltip';
 
-interface BFDHArticleProps {}
-const BFDHArticle: React.FC<BFDHArticleProps> = ({}) => {
+interface SASArticleProps {}
+const SASArticle: React.FC<SASArticleProps> = ({}) => {
   useEffect(() => {
     ReactTooltip.rebuild();
   });
 
   return (
     <>
-      <p>Best fit decreasing height build on the principles of Next fit decreasing height</p>
+      <p>Size alternating stack is modern attempt at a strip packing algortihm.</p>
       <h4>Preparation</h4>
       <p>
         Since this is an{' '}
         <span data-tip="Means the entire input is known beforehand" className="underline decoration-dotted decoration-gray-500 decoration-1 ">
           offline
         </span>{' '}
-        algorithm, we know the entire input beforehand. We utilize this to sort it by non-increasing height.
+        algorithm, we know the entire input beforehand. We utilize this to sort it. The input is sorted into two lists. One where the rectangles are
+        more wide than tall called <i>wide rectangles</i> and the other list is called <i>tall rectangles</i>. The wide rectangles are sorted by
+        non-increasing width and the tall rectangles are sorted by non-incresing height.
       </p>
       <div className="flex flex-col items-center p-5 bg-gray-700 rounded-lg not-prose">
         <svg width="798" height="158" viewBox="0 0 798 158" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -96,4 +98,4 @@ const BFDHArticle: React.FC<BFDHArticleProps> = ({}) => {
   );
 };
 
-export default BFDHArticle;
+export default SASArticle;
