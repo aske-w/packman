@@ -35,8 +35,8 @@ import TimeBar from '../../components/TimeBar';
 import { useEvents } from '../../hooks/useEvents';
 import { Events } from '../../types/Events.enum';
 import { sleep } from '../../utils/utils';
-import useLevelStore from '../../store/level.store';
 import GameEndModal from '../../components/gameEndModal/Modal';
+import { useRestartStripPacking } from '../../hooks/useRestartStripPacking';
 
 interface StripPackingGameProps {}
 const NUM_ITEMS = 5;
@@ -47,7 +47,6 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   const gameHeight = wHeight - NAV_HEIGHT;
 
   const algorithm = useAlgorithmStore(useCallback(({ algorithm }) => algorithm, []));
-  const level = useLevelStore(useCallback(({ level }) => level, []));
   const setRectanglesLeft = useScoreStore(useCallback(({ setRectanglesLeft }) => setRectanglesLeft, []));
 
   const [stripRects, setStripRects] = useState<ColorRect[]>([]);
@@ -65,7 +64,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
    */
   const [renderInventory, setRenderInventory] = useState<ColorRect<RectangleConfig>[]>([]);
 
-  const { onPlaceEvent, setEvent, event } = useEvents();
+  const { onPlaceEvent, event } = useEvents();
 
   useEffect(() => {
     if (inventoryChanged) {
@@ -89,28 +88,12 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   const algorithmScrollbarRef = useRef<KonvaRect>(null);
   const algorithmLayerRef = useRef<KonvaLayer>(null);
 
-  const reset = () => {
-    setStartingInventory(generateInventory(inventoryWidth, NUM_ITEMS));
-    setInventoryChanged(true);
-    setEvent(Events.IDLE);
-    interactiveRef.current?.reset();
-    algoRef.current?.reset();
-  };
+  const resetFuncs = [() => setStartingInventory(generateInventory(inventoryWidth, NUM_ITEMS)),
+    () => setInventoryChanged(true),
+    interactiveRef.current?.reset,
+    algoRef.current?.reset];
 
-  useEffect(() => {
-    reset();
-  }, [algorithm, level]);
-
-  useEffect(() => {
-    switch (event) {
-      case Events.RESTART:
-        reset();
-        break;
-
-      default:
-        break;
-    }
-  }, [event]);
+  useRestartStripPacking(resetFuncs, algorithm);
 
   /**
    * Pos is absolute position in the canvas

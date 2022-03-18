@@ -11,6 +11,7 @@ export const useEvents = () => {
     },
     [setEvent]
   );
+  
 
   return { onPlaceEvent, setEvent, event };
 };
