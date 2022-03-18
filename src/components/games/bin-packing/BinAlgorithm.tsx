@@ -1,7 +1,7 @@
-import Konva from 'konva';
-import { Layer as KonvaLayer } from 'konva/lib/Layer';
+import Konva from "konva";
+import { Layer as KonvaLayer } from "konva/lib/Layer";
 
-import { IRect, Vector2d } from 'konva/lib/types';
+import { IRect, Vector2d } from "konva/lib/types";
 import {
   forwardRef,
   Fragment,
@@ -11,20 +11,20 @@ import {
   useMemo,
   useRef,
   useState,
-} from 'react';
-import { Rect as KonvaRect, RectConfig } from 'konva/lib/shapes/Rect';
+} from "react";
+import { Rect as KonvaRect, RectConfig } from "konva/lib/shapes/Rect";
 
-import { Group, KonvaNodeEvents, Layer, Rect, Text } from 'react-konva';
-import FiniteFirstFit from '../../../algorithms/bin/offline/FiniteFirstFit';
-import FiniteNextFit from '../../../algorithms/bin/offline/FiniteNextFit';
-import HybridFirstFit from '../../../algorithms/bin/offline/HybridFirstFit';
-import algorithm from '../../../store/algorithm';
-import { BinPackingAlgorithms } from '../../../types/BinPackingAlgorithm.interface';
-import { ColorRect } from '../../../types/ColorRect.interface';
-import { Dimensions } from '../../../types/Dimensions.interface';
-import { DimensionsWithConfig } from '../../../types/DimensionsWithConfig.type';
-import { PackingAlgorithm } from '../../../types/PackingAlgorithm.interface';
-import { RectangleConfig } from '../../../types/RectangleConfig.interface';
+import { Group, KonvaNodeEvents, Layer, Rect, Text } from "react-konva";
+import FiniteFirstFit from "../../../algorithms/bin/offline/FiniteFirstFit";
+import FiniteNextFit from "../../../algorithms/bin/offline/FiniteNextFit";
+import HybridFirstFit from "../../../algorithms/bin/offline/HybridFirstFit";
+import algorithm from "../../../store/algorithm.store";
+import { BinPackingAlgorithms } from "../../../types/BinPackingAlgorithm.interface";
+import { ColorRect } from "../../../types/ColorRect.interface";
+import { Dimensions } from "../../../types/Dimensions.interface";
+import { DimensionsWithConfig } from "../../../types/DimensionsWithConfig.type";
+import { PackingAlgorithm } from "../../../types/PackingAlgorithm.interface";
+import { RectangleConfig } from "../../../types/RectangleConfig.interface";
 interface BinAlgorithmProps {
   offset: Vector2d;
   dimensions: Dimensions;
@@ -72,7 +72,7 @@ const BinAlgorithm = forwardRef<BinAlgorithmHandle, BinAlgorithmProps>(
         if (algorithm.current?.isFinished()) return;
         const rect = algorithm.current?.place();
         if (!rect) return;
-        const inventoryRect = inventory.find(r => r.name === rect.name)!;
+        const inventoryRect = inventory.find((r) => r.name === rect.name)!;
 
         // remove the scroll offset from y value
         const scrollOffset = getInventoryScrollOffset();
@@ -82,7 +82,7 @@ const BinAlgorithm = forwardRef<BinAlgorithmHandle, BinAlgorithmProps>(
           prevX: inventoryRect.x - offset.x, // substract the inventory width (its relative to the strip)
           prevY: inventoryRect.y - scrollOffset - offset.y,
         };
-        setPlaced(p => p.concat(newRect));
+        setPlaced((p) => p.concat(newRect));
       },
     }));
 
@@ -103,7 +103,7 @@ const BinAlgorithm = forwardRef<BinAlgorithmHandle, BinAlgorithmProps>(
           break;
 
         default:
-          console.error('unkown algorithm:', selectedAlgorithm);
+          console.error("unkown algorithm:", selectedAlgorithm);
           break;
       }
     };
@@ -119,9 +119,9 @@ const BinAlgorithm = forwardRef<BinAlgorithmHandle, BinAlgorithmProps>(
 
           return (
             <Fragment key={i}>
-              <Rect {...b} fill={'#eee'} opacity={0.5} />
+              <Rect {...b} fill={"#eee"} opacity={0.5} />
               <Text text={i.toString()} x={b.x} y={b.y} fontSize={24} />
-              {binRects?.map(r => (
+              {binRects?.map((r) => (
                 <MyRect
                   {...r}
                   x={r.x + b.x}
@@ -164,8 +164,9 @@ const MyRect: React.FC<PrevPos & RectConfig & KonvaNodeEvents> = ({
       ref={ref}
       x={prevX}
       y={prevY}
-      stroke={'rgba(0,0,0,0.2)'}
+      stroke={"rgba(0,0,0,0.2)"}
       strokeWidth={1}
-      {...props}></Rect>
+      {...props}
+    ></Rect>
   );
 };

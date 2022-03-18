@@ -9,7 +9,7 @@ import { ColorRect } from "../../../types/ColorRect.interface";
 import { Layer as KonvaLayer } from "konva/lib/Layer";
 import { STROKE_WIDTH } from "../../../config/canvasConfig";
 import { Vector2d } from "konva/lib/types";
-import useScoreStore from "../../../store/score";
+import useScoreStore from "../../../store/score.store";
 import { Group } from "konva/lib/Group";
 import { Coordinate } from "../../../types/Coordinate.interface";
 import { KonvaEventObject } from "konva/lib/Node";

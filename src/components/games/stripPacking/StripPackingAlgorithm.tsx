@@ -13,7 +13,7 @@ import { BestFitDecreasingHeight } from "../../../algorithms/strip/BestFitDecrea
 import { FirstFitDecreasingHeight } from "../../../algorithms/strip/FirstFitDecreasingHeight";
 import { NextFitDecreasingHeight } from "../../../algorithms/strip/NextFitDecreasingHeight";
 import { SizeAlternatingStack } from "../../../algorithms/strip/SizeAlternatingStack";
-import useScoreStore from "../../../store/score";
+import useScoreStore from "../../../store/score.store";
 import { ColorRect } from "../../../types/ColorRect.interface";
 import {
   PackingAlgorithm,

@@ -1,15 +1,15 @@
-import React, { useCallback } from 'react';
-import ReactJoyride from 'react-joyride';
-import { Link, useLocation } from 'react-router-dom';
-import { pathName, pathKey } from '../pages/routes';
-import Logo from '../resources/Logo.svg';
-import useAlgorithmStore from '../store/algorithm';
-import useScoreStore from '../store/score';
-import { ALL_PACKING_ALGORITHMS } from '../types/PackingAlgorithm.interface';
-import AlgoSelect from './AlgoSelect';
-import Score from './Score';
-import { QuestionMarkCircleIcon } from '@heroicons/react/solid';
-import useHelpStore from '../store/help.store';
+import React, { useCallback } from "react";
+import ReactJoyride from "react-joyride";
+import { Link, useLocation } from "react-router-dom";
+import { pathName, pathKey } from "../pages/routes";
+import Logo from "../resources/Logo.svg";
+import useAlgorithmStore from "../store/algorithm.store";
+import useScoreStore from "../store/score.store";
+import { ALL_PACKING_ALGORITHMS } from "../types/PackingAlgorithm.interface";
+import AlgoSelect from "./AlgoSelect";
+import Score from "./Score";
+import { QuestionMarkCircleIcon } from "@heroicons/react/solid";
+import useHelpStore from "../store/help.store";
 interface NavProps {
   height: number;
 }
@@ -19,10 +19,10 @@ const SHOW_PLAYGROUNDS = [pathName.BIN_PLAYGROUND, pathName.STRIP_PLAYGROUND];
 
 const Nav: React.FC<NavProps> = ({ height, children }) => {
   const algorithm = useAlgorithmStore(
-    useCallback(state => state.algorithm, [])
+    useCallback((state) => state.algorithm, [])
   );
   const setAlgorithm = useAlgorithmStore(
-    useCallback(state => state.setAlgorithm, [])
+    useCallback((state) => state.setAlgorithm, [])
   );
   const score = useScoreStore(
     useCallback(
@@ -41,11 +41,13 @@ const Nav: React.FC<NavProps> = ({ height, children }) => {
     <div
       style={{
         height: `calc(100% - ${height}px)`,
-        width: '100%',
-      }}>
+        width: "100%",
+      }}
+    >
       <nav
         className="flex flex-row items-center justify-between w-full p-4 border-b border-gray-800 bg-main"
-        style={{ height }}>
+        style={{ height }}
+      >
         <Link to="/">
           <div className="flex flex-row items-center justify-start h-full space-x-4">
             <img src={Logo} alt="logo" className="" />
@@ -57,12 +59,14 @@ const Nav: React.FC<NavProps> = ({ height, children }) => {
           <div className="flex flex-row items-center justify-between space-x-10 text-white">
             <Link
               to={pathName.STRIP_PLAYGROUND}
-              className="text-sm cursor-pointer hover:text-gray-300">
+              className="text-sm cursor-pointer hover:text-gray-300"
+            >
               <label className="cursor-pointer">Strip playground</label>
             </Link>
             <Link
               to={pathName.BIN_PLAYGROUND}
-              className="text-sm cursor-pointer hover:text-gray-300">
+              className="text-sm cursor-pointer hover:text-gray-300"
+            >
               <label className="cursor-pointer">Bin playground</label>
             </Link>
           </div>
@@ -74,22 +78,22 @@ const Nav: React.FC<NavProps> = ({ height, children }) => {
               continuous
               steps={[
                 {
-                  target: '.user-score',
-                  content: 'This is your score.',
+                  target: ".user-score",
+                  content: "This is your score.",
                 },
                 {
-                  target: '.algorithm-score',
-                  content: 'This is the score of the algorithm.',
+                  target: ".algorithm-score",
+                  content: "This is the score of the algorithm.",
                 },
                 {
-                  target: '.rects-left',
+                  target: ".rects-left",
                   content:
-                    'Here you can see how much of your inventory, you still need to pack.',
+                    "Here you can see how much of your inventory, you still need to pack.",
                 },
                 {
-                  target: '.algorithm-select',
+                  target: ".algorithm-select",
                   content:
-                    'Here you can choose which algorithm you play against.',
+                    "Here you can choose which algorithm you play against.",
                 },
               ]}
             />
