@@ -47,7 +47,7 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
     <div>
       <Transition appear show={title !== undefined} as={Fragment}>
         <Dialog as="div" className="fixed inset-0 z-10 overflow-y-auto" onClose={() => {}}>
-          <Confetti recycle={false} run={title !== undefined && title == GameEndModalTitles.FINISHED}/>
+          <Confetti recycle={false} run={title !== undefined && title == GameEndModalTitles.FINISHED} />
           <Dialog.Overlay className="fixed inset-0 bg-black opacity-30" />
           <div className="min-h-screen px-4 text-center">
             <Transition.Child

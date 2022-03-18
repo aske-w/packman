@@ -88,10 +88,12 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   const algorithmScrollbarRef = useRef<KonvaRect>(null);
   const algorithmLayerRef = useRef<KonvaLayer>(null);
 
-  const resetFuncs = [() => setStartingInventory(generateInventory(inventoryWidth, NUM_ITEMS)),
+  const resetFuncs = [
+    () => setStartingInventory(generateInventory(inventoryWidth, NUM_ITEMS)),
     () => setInventoryChanged(true),
     interactiveRef.current?.reset,
-    algoRef.current?.reset];
+    algoRef.current?.reset,
+  ];
 
   useRestartStripPacking(resetFuncs, algorithm);
 
