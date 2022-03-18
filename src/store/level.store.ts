@@ -1,5 +1,5 @@
 import create from "zustand";
-import { Levels } from "../types/Levels.interface";
+import { Levels } from "../types/Levels.enum";
 
 export interface LevelState {
   level: Levels;

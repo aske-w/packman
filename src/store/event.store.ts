@@ -1,5 +1,5 @@
 import create from "zustand";
-import { Events } from "../types/Events.interface";
+import { Events } from "../types/Events.enum";
 
 export interface EventState {
   event: Events;
