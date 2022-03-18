@@ -1,8 +1,9 @@
 import { Dialog, Transition } from '@headlessui/react';
-import { Fragment, useState } from 'react';
+import { QuestionMarkCircleIcon } from '@heroicons/react/solid';
+import { Fragment } from 'react';
 import useHelpStore from '../../../store/help.store';
 
-export default function IntroModal() {
+export default function StripPackingGameIntroModal() {
   const { introOpen, setIntroOpen } = useHelpStore();
   return (
     <>
@@ -76,6 +77,11 @@ export default function IntroModal() {
                     After you have placed a rectangle the algorithm will do the
                     same. The numbers that appear in the inventory is the order
                     of which the algorithm has selected the rectangles.
+                  </p>
+                  <p className="italic">
+                    You can always open this again by clicking
+                    <QuestionMarkCircleIcon className="inline w-5 h-5 mx-2 text-gray-800" />
+                    in the top right corner
                   </p>
                 </div>
 

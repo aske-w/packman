@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom';
+import ReactTooltip from 'react-tooltip';
 import App from './App';
 import './index.css';
 import BinPackingGame from './pages/games/BinPackingGame';
@@ -13,6 +14,7 @@ import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
   <React.StrictMode>
+    <ReactTooltip />
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />}>

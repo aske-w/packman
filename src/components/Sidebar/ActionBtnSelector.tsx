@@ -1,7 +1,7 @@
-import React from "react";
-import { AlgoStates } from "../../hooks/usePackingAlgorithms";
-import Button from "../Button";
-import SideBarItem from "./SidebarItem";
+import React from 'react';
+import { AlgoStates } from '../../hooks/usePackingAlgorithms';
+import Button from '../Button';
+import SideBarItem from './SidebarItem';
 
 interface ActionBtnSelectorProps {
   pause(): void;
@@ -21,24 +21,25 @@ const ActionBtnSelector: React.FC<ActionBtnSelectorProps> = ({
   disabled,
 }) => {
   switch (algoState) {
-    case "RUNNING": {
-      const text = isAutoPlace ? "Pause" : "Next";
+    case 'RUNNING': {
+      const text = isAutoPlace ? 'Pause' : 'Next';
       return (
         <SideBarItem
           element={
             <Button
               text={text}
               onClick={isAutoPlace ? pause : placeNext}
-              className={isAutoPlace ? "bg-amber-600" : undefined}
+              className={isAutoPlace ? 'bg-amber-600' : undefined}
             />
           }
           text={text}
         />
       );
     }
-    case "STOPPED":
+    case 'STOPPED':
       return (
         <SideBarItem
+          className="strip-playground-start"
           element={
             <Button
               disabled={disabled}
@@ -50,11 +51,11 @@ const ActionBtnSelector: React.FC<ActionBtnSelectorProps> = ({
           text="Start"
         />
       );
-    case "PAUSED":
+    case 'PAUSED':
       return (
         <SideBarItem
           element={
-            <Button text="Resume" onClick={start} className={"bg-green-600"} />
+            <Button text="Resume" onClick={start} className={'bg-green-600'} />
           }
           text="Resume"
         />
