@@ -90,7 +90,6 @@ const Nav: React.FC<NavProps> = ({ height, children }) => {
           </div>
         )}
       </nav>
-      <TimeBar navbarHeight={height} />
       {children}
     </div>
   );

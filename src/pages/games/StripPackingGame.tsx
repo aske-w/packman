@@ -36,7 +36,7 @@ import useScoreStore from '../../store/score';
 import { ColorRect } from '../../types/ColorRect.interface';
 import { RectangleConfig } from '../../types/RectangleConfig.interface';
 import { generateInventory } from '../../utils/generateData';
-import { useTimeBar } from '../../components/TimeBar';
+import TimeBar from '../../components/TimeBar';
 
 interface StripPackingGameProps {}
 const NUM_ITEMS = 50;
@@ -86,17 +86,6 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   const interactiveScrollBarRef = useRef<KonvaRect>(null);
   const interactiveLayerRef = useRef<KonvaLayer>(null);
 
-  const {setVisible, setDuration, start, setObservers, running, setStopped, setRunning} = useTimeBar()
-
-  let gameStarted = false;
-
-  
-  useEffect(() => {
-    setVisible(true);
-    setDuration(2);
-    setObservers([() => {console.log("hejsa")}]);
-  }, []);
-
   useEffect(() => {
     const reset = () => {
       setStartingInventory(generateInventory(inventoryWidth, NUM_ITEMS));
@@ -139,11 +128,6 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
       )
         return false;
       // Place in algorithm canvas
-      if(running) {
-        setStopped(true);
-      }
-      start();
-
       const res = algoRef.current?.place(rect);
       
       const placement = {
@@ -160,8 +144,6 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
       });
 
       setRectanglesLeft(renderInventory.length - 1);
-
-      gameStarted = true
 
       if (res) {
         const [placedName, order] = res;
@@ -382,6 +364,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
 
   return (
     <div className="w-full">
+      <TimeBar duration={5} timeEndCallback={() => console.log("times up")} />
       <div className="flex items-center justify-between w-full">
         <Stage
           onWheel={handleWheel}
