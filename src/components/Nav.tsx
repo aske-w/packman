@@ -65,6 +65,9 @@ const Nav: React.FC<NavProps> = ({ height, children }) => {
               className="text-sm cursor-pointer hover:text-gray-300">
               <label className="cursor-pointer">Bin playground</label>
             </Link>
+            <button onClick={() => setIntroOpen(true)}>
+              <QuestionMarkCircleIcon className="w-10 h-10 text-white hover:text-gray-200" />
+            </button>
           </div>
         )}
 
