@@ -11,7 +11,7 @@ import { KonvaEventObject } from 'konva/lib/Node';
 import { Shape } from 'konva/lib/Shape';
 import { intersects } from '../../../utils/intersects';
 import { RectangleConfig } from '../../../types/RectangleConfig.interface';
-import { usePermissions } from '../../../hooks/usePermissions';
+import useLevelStore from '../../../store/level.store';
 interface StripPackingInteractiveProps {
   height: number;
   width: number;
@@ -31,7 +31,7 @@ const StripPackingInteractive = React.forwardRef<StripPackingInteractiveHandle, 
   ({ layerRef, height, scrollableHeight, stripRects, setStripRects, snap }, ref) => {
     // const [stripRects, setStripRects] = useState<ColorRect[]>([]);
     const setScore = useScoreStore(useCallback(state => state.setScore, []));
-    const { permission } = usePermissions();
+    const permission = useLevelStore(useCallback(state => state.getPermission(), []));
 
     useEffect(() => {
       const _height = stripRects.reduce((maxY, r) => Math.max(maxY, Math.round(height - r.y)), 0);

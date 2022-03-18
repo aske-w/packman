@@ -11,6 +11,8 @@ import Score from './Score';
 import { QuestionMarkCircleIcon } from '@heroicons/react/solid';
 import useHelpStore from '../store/help.store';
 import LevelSelect from './select/LevelSelect';
+import GameEndModal from './gameEndModal/Modal';
+import useGameEndStore from '../store/gameEnd.store';
 interface NavProps {
   height: number;
 }
@@ -21,6 +23,7 @@ const SHOW_PLAYGROUNDS = [pathName.BIN_PLAYGROUND, pathName.STRIP_PLAYGROUND];
 const Nav: React.FC<NavProps> = ({ height, children }) => {
   const algorithm = useAlgorithmStore(useCallback(state => state.algorithm, []));
   const setAlgorithm = useAlgorithmStore(useCallback(state => state.setAlgorithm, []));
+  const {blur: showModal} = useGameEndStore();
   const score = useScoreStore(
     useCallback(
       ({ algorithm, user, rectanglesLeft }) => ({
@@ -111,7 +114,9 @@ const Nav: React.FC<NavProps> = ({ height, children }) => {
           </>
         )}
       </nav>
-      {children}
+      <div className={`${showModal ? "blur" : ""} w-full h-full`}>
+        {children}  
+      </div>
     </div>
   );
 };

@@ -30,7 +30,8 @@ interface StripPackingAlgorithmProps {
 }
 
 export interface StripPackingAlgorithmHandle {
-  place: (inventoryRect: ColorRect<RectangleConfig>) => [string, number, number] | undefined;
+  next(): [ColorRect<RectangleConfig>, number, number] | undefined;
+  place: (inventoryRect: ColorRect<RectangleConfig>, idx: number) => [string, number, number] | undefined;
 }
 
 const StripPackingAlgorithm = React.forwardRef<StripPackingAlgorithmHandle, StripPackingAlgorithmProps>(
@@ -95,16 +96,8 @@ const StripPackingAlgorithm = React.forwardRef<StripPackingAlgorithmHandle, Stri
     }, [inventory, algorithm]);
 
     useImperativeHandle(ref, () => ({
-      place: (_: ColorRect<RectangleConfig>) => {
-        if (algo?.isFinished()) return;
-
-        const rect = algo?.place();
-
-        if (!rect) return;
-
+      place: (rect: ColorRect<RectangleConfig>, idx:number) => {
         rect.y = rect.y + height;
-
-        const idx = inventory.findIndex(r => r.name === rect.name)!;
         const inventoryRect = inventory[idx]!;
 
         // remove the scroll offset from y value
@@ -121,6 +114,17 @@ const StripPackingAlgorithm = React.forwardRef<StripPackingAlgorithmHandle, Stri
         setOrder(old => old + 1);
         return [rect.name, rOrder, idx];
       },
+      next: () => {
+        if (algo?.isFinished()) return;
+
+        const rect = algo?.place();
+
+        if(!rect) return;
+
+        const idx = inventory.findIndex(r => r.name === rect.name)!;
+
+        return [rect, order, idx];
+      }
     }));
 
     return (

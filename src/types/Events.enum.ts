@@ -6,6 +6,7 @@ export enum Events {
    */
   RECT_PLACED = "rect_placed",
   RUNNING = "running",
+  RESTART = "restart",
   OUT_OF_TIME = 'out_of_time',
   
   /**
