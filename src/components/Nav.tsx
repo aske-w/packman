@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import ReactJoyride from 'react-joyride';
 import { Link, useLocation } from 'react-router-dom';
-import { pathName, pathKey } from '../pages/routes';
+import { pathName } from '../pages/routes';
 import Logo from '../resources/Logo.svg';
 import useAlgorithmStore from '../store/algorithm.store';
 import useScoreStore from '../store/score.store';

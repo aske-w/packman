@@ -31,6 +31,7 @@ import { pushItemToBack } from '../../utils/array';
 import { clamp } from '../../utils/clamp';
 import { compressInventory, generateInventory } from '../../utils/generateData';
 import { intersects } from '../../utils/intersects';
+import TimeBar from '../../components/TimeBar';
 
 interface StripPackingGameProps {}
 const NUM_ITEMS = 5;
@@ -329,7 +330,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   return (
     <div className="w-full">
       <StripPackingGameIntroModal />
-
+      <TimeBar duration={5} timeEndCallback={() => console.log('times up')} />
       <div className="flex items-center justify-between w-full">
         <Stage onWheel={handleWheel} width={window.innerWidth} height={gameHeight}>
           <Layer>
