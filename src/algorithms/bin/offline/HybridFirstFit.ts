@@ -1,9 +1,9 @@
-import { ColorRect } from "../../../types/ColorRect.interface";
-import { Dimensions } from "../../../types/Dimensions.interface";
-import { DimensionsWithConfig } from "../../../types/DimensionsWithConfig.type";
-import { PackingAlgorithm } from "../../../types/PackingAlgorithm.interface";
-import { RectangleConfig } from "../../../types/RectangleConfig.interface";
-import { FirstFitDecreasingHeight } from "../../strip/FirstFitDecreasingHeight";
+import { ColorRect } from '../../../types/ColorRect.interface';
+import { Dimensions } from '../../../types/Dimensions.interface';
+import { DimensionsWithConfig } from '../../../types/DimensionsWithConfig.type';
+import { PackingAlgorithm } from '../../../types/PackingAlgorithm.interface';
+import { RectangleConfig } from '../../../types/RectangleConfig.interface';
+import { FirstFitDecreasingHeight } from '../../strip/FirstFitDecreasingHeight';
 
 type FFDHShelves<T> = Record<
   number, // bottomY
@@ -62,17 +62,13 @@ class HybridFirstFit<T = RectangleConfig> implements PackingAlgorithm<T> {
   }
 
   private buildBins(): void {
-    const bins = Object.values(this.ffdhShelves).reduce<
-      (ColorRect<T> & { binId: number })[]
-    >((acc, shelf) => {
-      const bin = this.bins.find((b) => b.remainingHeight >= shelf.shelfHeight);
+    const bins = Object.values(this.ffdhShelves).reduce<(ColorRect<T> & { binId: number })[]>((acc, shelf) => {
+      const bin = this.bins.find(b => b.remainingHeight >= shelf.shelfHeight);
 
       if (bin) {
         const bottomY = -1 * (this.binSize.height - bin.remainingHeight);
 
-        shelf.rects.forEach((r) =>
-          acc.push({ ...r, y: bottomY - r.height, binId: bin.id })
-        );
+        shelf.rects.forEach(r => acc.push({ ...r, y: bottomY - r.height, binId: bin.id }));
 
         bin.remainingHeight -= shelf.shelfHeight;
         return acc;
@@ -85,9 +81,7 @@ class HybridFirstFit<T = RectangleConfig> implements PackingAlgorithm<T> {
       };
 
       // Place in new bin
-      shelf.rects.forEach((r) =>
-        acc.push({ ...r, y: -r.height, binId: newBin.id })
-      );
+      shelf.rects.forEach(r => acc.push({ ...r, y: -r.height, binId: newBin.id }));
 
       this.bins.push(newBin);
 
@@ -100,7 +94,7 @@ class HybridFirstFit<T = RectangleConfig> implements PackingAlgorithm<T> {
   }
 
   place(): ColorRect<T> & { binId: number } {
-    if (this.isFinished()) throw new Error("isFinished");
+    if (this.isFinished()) throw new Error('isFinished');
 
     return this.placedRectangles.shift()!;
   }

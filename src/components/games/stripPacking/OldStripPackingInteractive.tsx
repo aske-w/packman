@@ -31,15 +31,8 @@ interface StripPackingInteractiveProps extends CanvasProps {
 
 console.log({ gameHeight: GAME_HEIGHT });
 
-const OldStripPackingInteractive: React.FC<StripPackingInteractiveProps> = ({
-  input,
-  onDragDrop,
-  scrollableStripHeight,
-}) => {
-  const scrollableInventoryHeight = useMemo(
-    () => input.reduce((height, r) => height + r.height + PADDING, 0),
-    [input]
-  );
+const OldStripPackingInteractive: React.FC<StripPackingInteractiveProps> = ({ input, onDragDrop, scrollableStripHeight }) => {
+  const scrollableInventoryHeight = useMemo(() => input.reduce((height, r) => height + r.height + PADDING, 0), [input]);
 
   const [stripRects, setStripRects] = useState<ColorRect[]>([]);
   const [inventoryRects, setInventoryRects] = useState(() => {
@@ -73,11 +66,7 @@ const OldStripPackingInteractive: React.FC<StripPackingInteractiveProps> = ({
   };
 
   const totalHeight = useMemo(() => {
-    return stripRects.reduce(
-      (maxY, r) =>
-        Math.max(maxY, Math.round(scrollableStripHeight - r.y - GAME_HEIGHT)),
-      0
-    );
+    return stripRects.reduce((maxY, r) => Math.max(maxY, Math.round(scrollableStripHeight - r.y - GAME_HEIGHT)), 0);
   }, [stripRects]);
   // const [totalHeight, setTotalHeight] = useState(0);
 
@@ -198,9 +187,7 @@ const OldStripPackingInteractive: React.FC<StripPackingInteractiveProps> = ({
       const stageHeight = GAME_HEIGHT;
       const availableHeight = stageHeight - PADDING * 2 - SCROLLBAR_HEIGHT;
 
-      const vy =
-        (y / (-scrollableStripHeight + stageHeight)) * availableHeight +
-        PADDING;
+      const vy = (y / (-scrollableStripHeight + stageHeight)) * availableHeight + PADDING;
 
       stripVerticalBar.current?.y(vy);
 
@@ -224,9 +211,7 @@ const OldStripPackingInteractive: React.FC<StripPackingInteractiveProps> = ({
     const stageHeight = GAME_HEIGHT;
     const availableHeight = stageHeight - PADDING * 2 - SCROLLBAR_HEIGHT;
 
-    const vy =
-      (y / (-scrollableInventoryHeight + stageHeight)) * availableHeight +
-      PADDING;
+    const vy = (y / (-scrollableInventoryHeight + stageHeight)) * availableHeight + PADDING;
 
     inventoryVerticalBar.current?.y(vy);
   };
@@ -258,10 +243,7 @@ const OldStripPackingInteractive: React.FC<StripPackingInteractiveProps> = ({
           />
         </Layer>
         {/* Strip layer */}
-        <Layer
-          {...STRIP_SIZE}
-          y={-(scrollableStripHeight - STRIP_SIZE.height)}
-          ref={stripLayer}>
+        <Layer {...STRIP_SIZE} y={-(scrollableStripHeight - STRIP_SIZE.height)} ref={stripLayer}>
           {stripRects.map((r, i) => {
             return (
               <Rect
@@ -286,7 +268,8 @@ const OldStripPackingInteractive: React.FC<StripPackingInteractiveProps> = ({
           x={0}
           y={-(scrollableInventoryHeight - INVENTORY_SIZE.height)}
           ref={inventoryLayer}
-          name="INVENTORY_LAYER">
+          name="INVENTORY_LAYER"
+        >
           {inventoryRects.map((r, i) => {
             return (
               <Rect

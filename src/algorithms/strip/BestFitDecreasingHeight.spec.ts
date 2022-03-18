@@ -1,9 +1,4 @@
-import {
-  ExpectedData,
-  GameSize,
-  TestData,
-  LastShelf,
-} from './BestFitDecreasingHeight.fixture';
+import { ExpectedData, GameSize, TestData, LastShelf } from './BestFitDecreasingHeight.fixture';
 import { Dimensions } from '../../types/Dimensions.interface';
 import { BestFitDecreasingHeight } from './BestFitDecreasingHeight';
 
@@ -63,9 +58,7 @@ describe('Best fit decreasing height tests', () => {
     bfdh.load(rawData);
     bfdh.place();
     expect(bfdh.lastShelf.height).toBe(sortedData[0].height);
-    expect(bfdh.lastShelf.remainingWidth).toBe(
-      GameSize.width - sortedData[0].width
-    );
+    expect(bfdh.lastShelf.remainingWidth).toBe(GameSize.width - sortedData[0].width);
   });
 
   it('should create a new shelf when width overflows current shelf width', () => {

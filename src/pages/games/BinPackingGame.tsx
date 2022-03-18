@@ -4,20 +4,11 @@ import { IRect, Vector2d } from 'konva/lib/types';
 import React, { useEffect, useRef, useState } from 'react';
 import { Layer, Rect, Stage } from 'react-konva';
 import ScrollBar from '../../components/canvas/ScrollBar';
-import BinAlgorithm, {
-  BinAlgorithmHandle,
-} from '../../components/games/bin-packing/BinAlgorithm';
+import BinAlgorithm, { BinAlgorithmHandle } from '../../components/games/bin-packing/BinAlgorithm';
 import BinInteractive from '../../components/games/bin-packing/BinInteractive';
 import BinInventory from '../../components/games/bin-packing/BinInventory';
-import {
-  NAV_HEIGHT,
-  PADDING,
-  SCROLLBAR_WIDTH,
-} from '../../config/canvasConfig';
-import {
-  defaultScrollHandler,
-  useKonvaWheelHandler,
-} from '../../hooks/useKonvaWheelHandler';
+import { NAV_HEIGHT, PADDING, SCROLLBAR_WIDTH } from '../../config/canvasConfig';
+import { defaultScrollHandler, useKonvaWheelHandler } from '../../hooks/useKonvaWheelHandler';
 import { useWindowSize } from '../../hooks/useWindowSize';
 import { BinPackingAlgorithms } from '../../types/BinPackingAlgorithm.interface';
 import { ColorRect } from '../../types/ColorRect.interface';
@@ -46,9 +37,7 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
   const interactiveScrollableHeight = binAreaHeight * 2;
   // algorithm handle
   const algorithm = useRef<BinAlgorithmHandle>(null);
-  const [staticInventory, setStaticInventory] = useState(
-    generateInventory(inventoryWidth, NUM_ITEMS)
-  );
+  const [staticInventory, setStaticInventory] = useState(generateInventory(inventoryWidth, NUM_ITEMS));
   const [inventoryChanged, setInventoryChanged] = useState(true);
   /**
    * This is the inventory, used for rendering the draggable rects. Whenever an
@@ -128,20 +117,9 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
           {/* Inventory BG */}
           <Rect fill="#555" x={0} width={inventoryWidth} height={gameHeight} />
           {/* Interactive BG */}
-          <Rect
-            fill="#666"
-            x={inventoryWidth}
-            width={binAreaWidth}
-            height={binAreaHeight}
-          />
+          <Rect fill="#666" x={inventoryWidth} width={binAreaWidth} height={binAreaHeight} />
           {/* Algorithm BG */}
-          <Rect
-            fill="#444"
-            x={inventoryWidth}
-            y={binAreaHeight}
-            width={binAreaWidth}
-            height={binAreaHeight}
-          />
+          <Rect fill="#444" x={inventoryWidth} y={binAreaHeight} width={binAreaWidth} height={binAreaHeight} />
         </Layer>
         <BinInteractive
           binSize={binSize}
@@ -156,13 +134,7 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
         />
 
         <Layer>
-          <Rect
-            fill="#444"
-            x={inventoryWidth}
-            y={binAreaHeight}
-            width={binAreaWidth}
-            height={binAreaHeight}
-          />
+          <Rect fill="#444" x={inventoryWidth} y={binAreaHeight} width={binAreaWidth} height={binAreaHeight} />
         </Layer>
         <BinAlgorithm
           getInventoryScrollOffset={() => -inventoryLayer.current?.y()!}

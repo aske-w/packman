@@ -7,20 +7,10 @@ interface SideBarItemProps {
   className?: string;
 }
 
-const SideBarItem: React.FC<SideBarItemProps> = ({
-  text,
-  element,
-  className,
-}) => {
+const SideBarItem: React.FC<SideBarItemProps> = ({ text, element, className }) => {
   return (
-    <div
-      className={classNames(
-        'w-full flex items-center justify-between',
-        className
-      )}>
-      <label className="text-base font-normal tracking-wide text-white">
-        {text}
-      </label>
+    <div className={classNames('w-full flex items-center justify-between', className)}>
+      <label className="text-base font-normal tracking-wide text-white">{text}</label>
       {element}
     </div>
   );

@@ -4,21 +4,23 @@
 @import 'react-toastify/dist/ReactToastify.css';
 
 @layer components {
-    .rect-input {@apply rounded-full text-center px-3 border-2 col-span-5 font-medium}
+  .rect-input {
+    @apply rounded-full text-center px-3 border-2 col-span-5 font-medium;
+  }
 
-    .appearance-arrow-none::-webkit-outer-spin-button,
-    .appearance-arrow-none::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
+  .appearance-arrow-none::-webkit-outer-spin-button,
+  .appearance-arrow-none::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
 
-    /* Firefox */
-    .appearance-arrow-none[type=number] {
-      -moz-appearance: textfield;
-    }
+  /* Firefox */
+  .appearance-arrow-none[type='number'] {
+    -moz-appearance: textfield;
+  }
 }
 
-      /* width */
+/* width */
 .custom-scrollbar::-webkit-scrollbar {
   width: 5px;
 }

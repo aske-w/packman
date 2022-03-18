@@ -1,4 +1,4 @@
-import React, { ChangeEventHandler, RefObject } from "react";
+import React, { ChangeEventHandler, RefObject } from 'react';
 
 interface RectInputProps {
   value: string | number;
@@ -10,21 +10,11 @@ interface RectInputProps {
   sec?: string;
 }
 
-const RectInput: React.FC<RectInputProps> = ({
-  value,
-  className,
-  reference,
-  readonly = false,
-  onChange: onChangeHandler,
-  disabled = false,
-  sec,
-}) => {
+const RectInput: React.FC<RectInputProps> = ({ value, className, reference, readonly = false, onChange: onChangeHandler, disabled = false, sec }) => {
   return (
     <div
       className={
-        className +
-        (disabled ? " opacity-40 " : "") +
-        " flex flex-row items-center bg-canvas p-2 w-full focus:outline-none border-none rounded-lg"
+        className + (disabled ? ' opacity-40 ' : '') + ' flex flex-row items-center bg-canvas p-2 w-full focus:outline-none border-none rounded-lg'
       }
     >
       <input
@@ -36,9 +26,7 @@ const RectInput: React.FC<RectInputProps> = ({
         disabled={disabled}
         ref={reference}
       />
-      {sec && (
-        <small className="w-2/12 text-xs uppercase text-gray-400">{sec}</small>
-      )}
+      {sec && <small className="w-2/12 text-xs uppercase text-gray-400">{sec}</small>}
     </div>
   );
 };

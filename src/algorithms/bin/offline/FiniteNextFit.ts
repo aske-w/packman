@@ -64,13 +64,9 @@ class FiniteNextFit<T = RectangleConfig> implements PackingAlgorithm<T> {
 
     // Create new bin if cannot fit
 
-    const shouldCreateNewBin =
-      -1 * this.shelf.bottomY + this.shelf.height + nextRect.height >
-      this.binSize.height;
+    const shouldCreateNewBin = -1 * this.shelf.bottomY + this.shelf.height + nextRect.height > this.binSize.height;
 
-    const bottomY = shouldCreateNewBin
-      ? 0
-      : this.shelf.bottomY - this.shelf.height;
+    const bottomY = shouldCreateNewBin ? 0 : this.shelf.bottomY - this.shelf.height;
 
     if (shouldCreateNewBin) {
       this.currBin++;

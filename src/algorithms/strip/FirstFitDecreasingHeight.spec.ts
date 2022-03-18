@@ -1,9 +1,4 @@
-import {
-  ExpectedData,
-  GameSize,
-  TestData,
-  LastShelf,
-} from './FirstFitDecreasingHeight.fixture';
+import { ExpectedData, GameSize, TestData, LastShelf } from './FirstFitDecreasingHeight.fixture';
 import { Dimensions } from '../../types/Dimensions.interface';
 import { FirstFitDecreasingHeight } from './FirstFitDecreasingHeight';
 
@@ -63,9 +58,7 @@ describe('First fit decreasing height test', () => {
     ffdh.load(rawData);
     ffdh.place();
     expect(ffdh.lastShelf.height).toBe(sortedData[0].height);
-    expect(ffdh.lastShelf.remainingWidth).toBe(
-      GameSize.width - sortedData[0].width
-    );
+    expect(ffdh.lastShelf.remainingWidth).toBe(GameSize.width - sortedData[0].width);
   });
 
   it('should create a new shelf when width overflows current shelf width', () => {

@@ -6,11 +6,7 @@ interface SideBarSectionProps {
   className?: string;
 }
 
-const SideBarSection: React.FC<SideBarSectionProps> = ({
-  title,
-  className,
-  children,
-}) => {
+const SideBarSection: React.FC<SideBarSectionProps> = ({ title, className, children }) => {
   return (
     <>
       <div className={'bg-lightMain text-white px-3 py-2 '}>

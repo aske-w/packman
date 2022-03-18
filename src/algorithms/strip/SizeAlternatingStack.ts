@@ -16,12 +16,7 @@ interface Level extends Dimensions {
 }
 type RectCategory = 'wide' | 'narrow';
 export class SizeAlternatingStack<T = RectangleConfig>
-  implements
-    PackingAlgorithm<
-      T,
-      T,
-      [narrow: DimensionsWithConfig<T>[], wide: DimensionsWithConfig<T>[]]
-    >
+  implements PackingAlgorithm<T, T, [narrow: DimensionsWithConfig<T>[], wide: DimensionsWithConfig<T>[]]>
 {
   /**
    * L2 rectangles, length is n2
@@ -60,15 +55,9 @@ export class SizeAlternatingStack<T = RectangleConfig>
     return this.L2.length;
   }
 
-  private sortedData: [
-    narrow: DimensionsWithConfig<T>[],
-    wide: DimensionsWithConfig<T>[]
-  ] = [[], []];
+  private sortedData: [narrow: DimensionsWithConfig<T>[], wide: DimensionsWithConfig<T>[]] = [[], []];
 
-  getSortedData(): [
-    narrow: DimensionsWithConfig<T>[],
-    wide: DimensionsWithConfig<T>[]
-  ] {
+  getSortedData(): [narrow: DimensionsWithConfig<T>[], wide: DimensionsWithConfig<T>[]] {
     return this.sortedData;
   }
 
@@ -98,9 +87,7 @@ export class SizeAlternatingStack<T = RectangleConfig>
 
   private wideOrNarrow() {
     const nextTall = this.L1.length ? this.L1[0] : zeroDim;
-    const nextWide = this.wideRectangles.length
-      ? this.wideRectangles[0]
-      : zeroDim;
+    const nextWide = this.wideRectangles.length ? this.wideRectangles[0] : zeroDim;
     if (nextTall.height > nextWide.height) {
       return 'narrow';
     } else {
@@ -153,28 +140,16 @@ export class SizeAlternatingStack<T = RectangleConfig>
       if (variant === 'narrow') {
         this.packWide(this.lastShelf.remainingWidth, this.lastShelf.height);
       } else {
-        this.packNarrow(
-          this.lastShelf.remainingWidth,
-          this.lastShelf.height,
-          tallest.width,
-          this.lastShelf.bottomY
-        );
+        this.packNarrow(this.lastShelf.remainingWidth, this.lastShelf.height, tallest.width, this.lastShelf.bottomY);
       }
       this.narrowRectangles = this.narrowRectangles.filter(l => l !== null);
       this.wideRectangles = this.wideRectangles.filter(l => l !== null);
     }
   }
 
-  private packNarrow(
-    width: number,
-    verticalSpace: number,
-    x: number,
-    bottomY: number
-  ) {
+  private packNarrow(width: number, verticalSpace: number, x: number, bottomY: number) {
     // pack first rectangle that fits width and height wise
-    const firstFitsIdx = this.L1.findIndex(
-      r => r !== null && r.width <= width && r.height <= verticalSpace
-    );
+    const firstFitsIdx = this.L1.findIndex(r => r !== null && r.width <= width && r.height <= verticalSpace);
     if (firstFitsIdx === -1) return; // no rectangles that fit
 
     const rect = this.L1[firstFitsIdx];
@@ -191,9 +166,7 @@ export class SizeAlternatingStack<T = RectangleConfig>
     while (true) {
       // Search L1 (narrow recs)
 
-      const idx = this.L1.findIndex(
-        r => r !== null && r.width <= sliceWidth && r.height <= sliceHeight
-      );
+      const idx = this.L1.findIndex(r => r !== null && r.width <= sliceWidth && r.height <= sliceHeight);
 
       if (idx !== -1) {
         //   Stack rect
@@ -253,12 +226,7 @@ export class SizeAlternatingStack<T = RectangleConfig>
 
         // If rectangles has uneven widths
         if (isUneven && !isFirst) {
-          this.packNarrow(
-            lastPlacedWidth - rect.width,
-            shelfHeight - lastPlacedHeight,
-            rectX,
-            rectY + rect.height
-          );
+          this.packNarrow(lastPlacedWidth - rect.width, shelfHeight - lastPlacedHeight, rectX, rectY + rect.height);
         }
         lastPlacedHeight += rect.height;
 

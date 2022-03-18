@@ -3,10 +3,7 @@ import { useAutoPlace } from '../../hooks/useAutoPlace';
 import { AlgoStates } from '../../hooks/usePackingAlgorithms';
 import { useToggle } from '../../hooks/useToggle';
 import { Dimensions } from '../../types/Dimensions.interface';
-import {
-  ALL_PACKING_ALGORITHMS,
-  PackingAlgorithms,
-} from '../../types/PackingAlgorithm.interface';
+import { ALL_PACKING_ALGORITHMS, PackingAlgorithms } from '../../types/PackingAlgorithm.interface';
 import AlgoSelect from '../AlgoSelect';
 import SideBarItem from './SidebarItem';
 import SideBarSection from './SideBarSection';
@@ -55,11 +52,7 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
   const [teachingOpen, setTeachingOpen] = useState(false);
   return (
     <Sidebar className="inline-flex flex-col overflow-hidden">
-      <TeachAlgoModal
-        algorithm={selectedAlgorithm}
-        visible={teachingOpen}
-        onClose={() => setTeachingOpen(false)}
-      />
+      <TeachAlgoModal algorithm={selectedAlgorithm} visible={teachingOpen} onClose={() => setTeachingOpen(false)} />
       <SideBarSection title="Algorithms">
         <div className="flex flex-row items-center justify-between">
           <AlgoSelect<PackingAlgorithms>
@@ -78,24 +71,14 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
       <SideBarSection title="Actions panel">
         <SideBarItem
           className="strip-playground-auto-place"
-          element={
-            <Switch
-              onColor="#34C659"
-              checked={checked}
-              onChange={updateChecked}
-              checkedIcon={false}
-              uncheckedIcon={false}
-            />
-          }
+          element={<Switch onColor="#34C659" checked={checked} onChange={updateChecked} checkedIcon={false} uncheckedIcon={false} />}
           text="Auto place"
         />
 
         <SideBarItem
           className="strip-playground-reset"
           element={
-            <button
-              className="px-2 py-1 font-medium text-white bg-red-600 rounded shadow hover:bg-red-700"
-              onClick={reset}>
+            <button className="px-2 py-1 font-medium text-white bg-red-600 rounded shadow hover:bg-red-700" onClick={reset}>
               Reset
             </button>
           }
@@ -119,12 +102,7 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
         {checked && (
           <div className="flex flex-row items-center space-x-20">
             <RangeSlider progress={speed} onChange={updateSpeed} hideTooltip />
-            <RectInput
-              value={speed}
-              className="w-4/12 px-3 select-none"
-              sec="ms"
-              readonly
-            />
+            <RectInput value={speed} className="w-4/12 px-3 select-none" sec="ms" readonly />
           </div>
         )}
       </SideBarSection>
@@ -134,9 +112,7 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
           <RectInput
             disabled={isStarted}
             value={stripWidth}
-            onChange={({ target: { value } }) =>
-              setStripWidth(value ? Number.parseInt(value) : 0)
-            }
+            onChange={({ target: { value } }) => setStripWidth(value ? Number.parseInt(value) : 0)}
             className="w-4/12 px-3 select-none"
             sec="w"
           />
@@ -157,10 +133,9 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
               />
               <button
                 onClick={() => setDimensionsStorage(generateData(genNum))}
-                className={`px-2 py-1 font-medium text-white rounded shadow bg-blue-700 ${
-                  isStarted ? 'opacity-60' : 'hover:bg-blue-800'
-                }`}
-                disabled={isStarted}>
+                className={`px-2 py-1 font-medium text-white rounded shadow bg-blue-700 ${isStarted ? 'opacity-60' : 'hover:bg-blue-800'}`}
+                disabled={isStarted}
+              >
                 Generate data
               </button>
             </div>
@@ -173,10 +148,9 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
           element={
             <div className="flex items-center space-x-5 justify-right">
               <button
-                className={`px-2 py-1 font-medium text-white rounded shadow bg-blue-700 ${
-                  isStarted ? 'opacity-60' : 'hover:bg-blue-800'
-                }`}
-                onClick={() => setDimensionsStorage(r => previousData)}>
+                className={`px-2 py-1 font-medium text-white rounded shadow bg-blue-700 ${isStarted ? 'opacity-60' : 'hover:bg-blue-800'}`}
+                onClick={() => setDimensionsStorage(r => previousData)}
+              >
                 Reuse previous data
               </button>
             </div>
@@ -186,11 +160,9 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
 
       <SideBarSection
         title={'Manuel data set (' + dimensionsStorage.length + ')'}
-        className="flex flex-col p-0 overflow-hidden strip-playground-test-data">
-        <BoxInput
-          dimensionsStorage={dimensionsStorage}
-          setDimensionsStorage={setDimensionsStorage}
-          disabled={algoState === 'RUNNING'}></BoxInput>
+        className="flex flex-col p-0 overflow-hidden strip-playground-test-data"
+      >
+        <BoxInput dimensionsStorage={dimensionsStorage} setDimensionsStorage={setDimensionsStorage} disabled={algoState === 'RUNNING'}></BoxInput>
       </SideBarSection>
     </Sidebar>
   );
