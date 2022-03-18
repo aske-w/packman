@@ -102,7 +102,7 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
         {checked && (
           <div className="flex flex-row items-center space-x-20">
             <RangeSlider progress={speed} onChange={updateSpeed} hideTooltip />
-            <RectInput value={speed} className="w-4/12 px-3 select-none" sec="ms" readonly />
+            <RectInput value={speed} className="w-4/12 px-3 select-none" sec="%" readonly />
           </div>
         )}
       </SideBarSection>
@@ -132,7 +132,7 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
                 sec=""
               />
               <button
-                onClick={() => setDimensionsStorage(generateData(genNum))}
+                onClick={() => setDimensionsStorage(generateData(genNum, 100, 5))}
                 className={`px-2 py-1 font-medium text-white rounded shadow bg-blue-700 ${isStarted ? 'opacity-60' : 'hover:bg-blue-800'}`}
                 disabled={isStarted}
               >
