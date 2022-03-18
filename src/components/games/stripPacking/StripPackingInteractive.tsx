@@ -16,7 +16,6 @@ import { KonvaEventObject } from "konva/lib/Node";
 import { Shape } from "konva/lib/Shape";
 import { intersects } from "../../../utils/intersects";
 import { RectangleConfig } from "../../../types/RectangleConfig.interface";
-import useLevelStore from "../../../store/level.store";
 import { usePermissions } from "../../../hooks/usePermissions";
 interface StripPackingInteractiveProps {
   height: number;
