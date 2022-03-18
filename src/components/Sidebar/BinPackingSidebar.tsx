@@ -9,7 +9,7 @@ import {
 } from "../../types/BinPackingAlgorithm.interface";
 import { Dimensions } from "../../types/Dimensions.interface";
 import { generateData } from "../../utils/generateData";
-import AlgoSelect from "../AlgoSelect";
+import Select from "../select/Select";
 import BoxInput from "../BoxInput";
 import RangeSlider from "../RangeSlider";
 import RectInput from "../RectInput";
@@ -59,7 +59,7 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
   return (
     <Sidebar className="inline-flex flex-col overflow-hidden">
       <SideBarSection title="Algorithms">
-        <AlgoSelect<BinPackingAlgorithms>
+        <Select<BinPackingAlgorithms>
           className="text-base font-thin text-white w-72"
           options={ALL_BIN_PACKING_ALGORITHMS}
           onChange={setAlgorithm}

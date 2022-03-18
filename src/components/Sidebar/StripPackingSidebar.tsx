@@ -7,7 +7,7 @@ import {
   ALL_PACKING_ALGORITHMS,
   PackingAlgorithms,
 } from "../../types/PackingAlgorithm.interface";
-import AlgoSelect from "../AlgoSelect";
+import Select from "../select/Select";
 import SideBarItem from "./SidebarItem";
 import SideBarSection from "./SideBarSection";
 import Switch from "react-switch";
@@ -54,7 +54,7 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
   return (
     <Sidebar className="inline-flex flex-col overflow-hidden">
       <SideBarSection title="Algorithms">
-        <AlgoSelect<PackingAlgorithms>
+        <Select<PackingAlgorithms>
           className="text-base font-thin text-white w-72"
           options={ALL_PACKING_ALGORITHMS}
           onChange={setSelectedAlgorithm}

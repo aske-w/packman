@@ -3,3 +3,5 @@ export enum Levels {
   NOVICE = "Novice",
   EXPERT = "Expert",
 }
+
+export const LevelList = [Levels.BEGINNER, Levels.NOVICE, Levels.EXPERT];

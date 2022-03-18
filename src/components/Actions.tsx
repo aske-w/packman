@@ -7,7 +7,7 @@ import {
   ALL_PACKING_ALGORITHMS,
   PackingAlgorithms,
 } from "../types/PackingAlgorithm.interface";
-import AlgoSelect from "./AlgoSelect";
+import Select from "./select/Select";
 import { useAutoPlace } from "../hooks/useAutoPlace";
 import { AlgoStates } from "../hooks/usePackingAlgorithms";
 import Card from "./Card";
@@ -45,7 +45,7 @@ const Actions: React.FC<Props> = ({
   return (
     <Card className="p-3 flex flex-col bg-slate-200 space-y-4">
       <div className="flex flex-row space-x-4 items-center justify-center">
-        <AlgoSelect
+        <Select
           options={ALL_PACKING_ALGORITHMS}
           onChange={setSelectedAlgorithm}
           value={selectedAlgorithm}

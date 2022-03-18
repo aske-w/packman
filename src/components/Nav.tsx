@@ -6,10 +6,11 @@ import Logo from "../resources/Logo.svg";
 import useAlgorithmStore from "../store/algorithm.store";
 import useScoreStore from "../store/score.store";
 import { ALL_PACKING_ALGORITHMS } from "../types/PackingAlgorithm.interface";
-import AlgoSelect from "./AlgoSelect";
+import Select from "./select/Select";
 import Score from "./Score";
 import { QuestionMarkCircleIcon } from "@heroicons/react/solid";
 import useHelpStore from "../store/help.store";
+import LevelSelect from "./select/LevelSelect";
 interface NavProps {
   height: number;
 }
@@ -114,12 +115,13 @@ const Nav: React.FC<NavProps> = ({ height, children }) => {
                 <Score primary={`Rects left: ${score.rectanglesLeft}`} />
               </div>
 
-              <AlgoSelect
+              <Select
                 className="text-base font-thin w-72 algorithm-select"
                 options={ALL_PACKING_ALGORITHMS}
                 value={algorithm}
                 onChange={setAlgorithm}
               />
+              <LevelSelect />
               <button onClick={() => setIntroOpen(true)}>
                 <QuestionMarkCircleIcon className="w-10 h-10 text-white hover:text-gray-200" />
               </button>
