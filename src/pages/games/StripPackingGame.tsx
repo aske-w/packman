@@ -1,44 +1,46 @@
+import { Group } from 'konva/lib/Group';
 import { Layer as KonvaLayer } from 'konva/lib/Layer';
+import { Shape } from 'konva/lib/Shape';
 import { Rect as KonvaRect } from 'konva/lib/shapes/Rect';
 import { Vector2d } from 'konva/lib/types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Layer, Rect, Stage } from 'react-konva';
+import ScrollBar from '../../components/canvas/ScrollBar';
 import Inventory from '../../components/games/stripPacking/Inventory';
 import StripPackingAlgorithm, {
   StripPackingAlgorithmHandle,
 } from '../../components/games/stripPacking/StripPackingAlgorithm';
+import StripPackingGameIntroModal from '../../components/games/stripPacking/StripPackingGameIntroModal';
 import StripPackingInteractive, {
   StripPackingInteractiveHandle,
 } from '../../components/games/stripPacking/StripPackingInteractive';
 import {
+  ALGO_MOVE_ANIMATION_DURATION,
   NAV_HEIGHT,
+  PADDING,
   RECT_OVERLAP_COLOR,
+  SCROLLBAR_WIDTH,
   SNAPPING_THRESHOLD,
   STROKE_WIDTH,
-  SCROLLBAR_WIDTH,
-  PADDING,
 } from '../../config/canvasConfig';
 import {
   defaultScrollHandler,
   useKonvaWheelHandler,
 } from '../../hooks/useKonvaWheelHandler';
-import ScrollBar from '../../components/canvas/ScrollBar';
-import { Group } from 'konva/lib/Group';
-import { intersects } from '../../utils/intersects';
-import { Rectangle } from '../../types/Rectangle.interface';
-import { Shape } from 'konva/lib/Shape';
-import { Coordinate } from '../../types/Coordinate.interface';
-import { clamp } from '../../utils/clamp';
 import { useWindowSize } from '../../hooks/useWindowSize';
 import useAlgorithmStore from '../../store/algorithm';
 import useScoreStore from '../../store/score';
 import { ColorRect } from '../../types/ColorRect.interface';
+import { Coordinate } from '../../types/Coordinate.interface';
+import { Rectangle } from '../../types/Rectangle.interface';
 import { RectangleConfig } from '../../types/RectangleConfig.interface';
-import { generateInventory } from '../../utils/generateData';
-import StripPackingGameIntroModal from '../../components/games/stripPacking/StripPackingGameIntroModal';
+import { pushItemToBack } from '../../utils/array';
+import { clamp } from '../../utils/clamp';
+import { compressInventory, generateInventory } from '../../utils/generateData';
+import { intersects } from '../../utils/intersects';
 
 interface StripPackingGameProps {}
-const NUM_ITEMS = 50;
+const NUM_ITEMS = 5;
 const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   const { width: wWidth, height: wHeight } = useWindowSize();
   const stripWidth = wWidth * 0.2;
@@ -57,7 +59,9 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
    * This is the immutable inventory, used for rendering the ghosts
    */
   const [startingInventory, setStartingInventory] = useState<
-    ReadonlyArray<ColorRect<RectangleConfig & { order?: number }>>
+    ReadonlyArray<
+      ColorRect<RectangleConfig & { order?: number; removed?: boolean }>
+    >
   >(() => []);
   const [inventoryChanged, setInventoryChanged] = useState(true);
   /**
@@ -67,6 +71,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   const [renderInventory, setRenderInventory] = useState<
     ColorRect<RectangleConfig>[]
   >([]);
+
   useEffect(() => {
     if (inventoryChanged) {
       setRenderInventory([...startingInventory]);
@@ -141,25 +146,27 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
 
       interactiveRef.current?.place(rect, placement);
 
-      setRenderInventory(old => {
-        const tmp = [...old];
-        tmp.splice(rIdx, 1);
-        return tmp;
-      });
-
-      setRectanglesLeft(renderInventory.length - 1);
-
       if (res) {
-        const [placedName, order] = res;
+        setTimeout(() => {
+          const [placedName, order, recIdx] = res;
+          const inv = [...startingInventory];
+          const interactiveIdx = inv.findIndex(r => r.name === rectName);
 
-        // give the order of placement to the starting state
-        setStartingInventory(old => {
-          const tmp = [...old];
-          const idx = tmp.findIndex(r => r.name === placedName);
-          if (idx === -1) return old;
-          tmp[idx] = { ...tmp[idx], order };
-          return tmp;
-        });
+          inv[interactiveIdx].removed = true;
+          inv[recIdx].order = order;
+
+          // Pushes currently placed block at the back of the inventory lust
+          pushItemToBack(inv, interactiveIdx);
+
+          const compressedInv = compressInventory(inv, inventoryWidth);
+
+          const interactiveInventory = compressedInv.filter(r => !r.removed);
+          setRenderInventory(interactiveInventory);
+          setRectanglesLeft(renderInventory.length - 1);
+
+          // give the order of placement to the starting state
+          setStartingInventory(compressedInv);
+        }, ALGO_MOVE_ANIMATION_DURATION * 1500);
       }
     }
     return true;

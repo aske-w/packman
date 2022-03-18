@@ -21,6 +21,7 @@ import {
 } from "../../../types/PackingAlgorithm.interface";
 import { RectangleConfig } from "../../../types/RectangleConfig.interface";
 import { Layer as KonvaLayer } from "konva/lib/Layer";
+import { ALGO_MOVE_ANIMATION_DURATION as ALGO_ENTER_ANIMATION_DURATION } from "../../../config/canvasConfig";
 
 const {
   BEST_FIT_DECREASING_HEIGHT,
@@ -46,7 +47,7 @@ interface StripPackingAlgorithmProps {
 export interface StripPackingAlgorithmHandle {
   place: (
     inventoryRect: ColorRect<RectangleConfig>
-  ) => [string, number] | undefined;
+  ) => [string, number, number] | undefined;
 }
 
 const StripPackingAlgorithm = React.forwardRef<
@@ -82,7 +83,7 @@ const StripPackingAlgorithm = React.forwardRef<
 
     useEffect(() => {
       const _height = stripRects.reduce(
-        (maxY, r) => Math.max(maxY, Math.round(r.y * -1)),
+        (maxY, r) => Math.max(maxY, Math.round(height - r.y)),
         0
       );
       setScore(
@@ -152,7 +153,8 @@ const StripPackingAlgorithm = React.forwardRef<
 
         rect.y = rect.y + height;
 
-        const inventoryRect = inventory.find((r) => r.name === rect.name)!;
+        const idx = inventory.findIndex((r) => r.name === rect.name)!;
+        const inventoryRect = inventory[idx]!;
 
         // remove the scroll offset from y value
         const scrollOffset = getInventoryScrollOffset();
@@ -162,10 +164,11 @@ const StripPackingAlgorithm = React.forwardRef<
           prevX: inventoryRect.x - inventoryWidth, // substract the inventory width (its relative to the strip)
           prevY: inventoryRect.y - scrollOffset,
         };
+
         setStripRects((prev) => [...prev, newRect]);
         const rOrder = order;
         setOrder((old) => old + 1);
-        return [rect.name, rOrder];
+        return [rect.name, rOrder, idx];
       },
     }));
 
@@ -174,6 +177,7 @@ const StripPackingAlgorithm = React.forwardRef<
         {stripRects.map((r, i) => {
           return (
             <MyRect
+              gameHeight={height}
               key={r.name}
               {...r}
               strokeWidth={2}
@@ -188,20 +192,14 @@ const StripPackingAlgorithm = React.forwardRef<
   }
 );
 
-const ENTER_ANIMATION_DURATION_SECONDS = 0.5;
-
-const MyRect: React.FC<PrevPos & RectConfig & KonvaNodeEvents> = ({
-  x,
-  y,
-  prevX,
-  prevY,
-  ...props
-}) => {
+const MyRect: React.FC<
+  PrevPos & RectConfig & KonvaNodeEvents & { gameHeight: number }
+> = ({ x, y, prevX, prevY, gameHeight, ...props }) => {
   const ref = useRef<KonvaRect>(null);
   useEffect(() => {
     new Konva.Tween({
       node: ref.current!,
-      duration: ENTER_ANIMATION_DURATION_SECONDS,
+      duration: ALGO_ENTER_ANIMATION_DURATION,
       x,
       y,
       easing: Konva.Easings.StrongEaseInOut,
@@ -212,7 +210,7 @@ const MyRect: React.FC<PrevPos & RectConfig & KonvaNodeEvents> = ({
     <Rect
       ref={ref}
       x={prevX}
-      y={prevY}
+      y={prevY + gameHeight}
       stroke={"rgba(0,0,0,0.2)"}
       strokeWidth={1}
       {...props}
