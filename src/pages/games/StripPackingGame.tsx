@@ -65,7 +65,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
    */
   const [renderInventory, setRenderInventory] = useState<ColorRect<RectangleConfig>[]>([]);
 
-  const {onPlaceEvent, setEvent, event} = useEvents();
+  const { onPlaceEvent, setEvent, event } = useEvents();
 
   useEffect(() => {
     if (inventoryChanged) {
@@ -94,6 +94,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
     setInventoryChanged(true);
     setEvent(Events.IDLE);
     interactiveRef.current?.reset();
+    algoRef.current?.reset();
   };
 
   useEffect(() => {
@@ -105,13 +106,11 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
       case Events.RESTART:
         reset();
         break;
-    
+
       default:
         break;
     }
-  },[event])
-
-  
+  }, [event]);
 
   /**
    * Pos is absolute position in the canvas
@@ -148,7 +147,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
 
       interactiveRef.current?.place(rect, placement);
       const res = algoRef.current?.next();
-      if(!res) return false;
+      if (!res) return false;
       const [placedRect, order, recIdx] = res;
       const inv = [...startingInventory];
       const interactiveIdx = inv.findIndex(r => r.name === rectName);
@@ -172,12 +171,9 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
       /**
        * Let inventory compress before animating
        */
-      sleep(ALGO_MOVE_ANIMATION_DURATION * 500).then(() => 
-      {
+      sleep(ALGO_MOVE_ANIMATION_DURATION * 500).then(() => {
         algoRef.current?.place(placedRect, newRectIdx);
       });
-
-
     }
     return true;
   };
@@ -359,7 +355,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
     <div className="w-full ">
       <StripPackingGameIntroModal />
       <TimeBar />
-      <GameEndModal/>
+      <GameEndModal />
       <div className="flex items-center justify-between w-full">
         <Stage onWheel={handleWheel} width={window.innerWidth} height={gameHeight}>
           <Layer>

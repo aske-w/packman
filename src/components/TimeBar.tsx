@@ -19,15 +19,15 @@ interface TimeBarProps {
 const red: RGBColor = { /* tailwind bg-red-400*/ red: 240, green: 113, blue: 113 };
 const green: RGBColor = { /* tailwind bg-green-400 */ red: 74, green: 222, blue: 128 };
 
-const TimeBar: React.FC<TimeBarProps> = ({  targetFPS = 60, startColor = green, endColor = red }) => {
+const TimeBar: React.FC<TimeBarProps> = ({ targetFPS = 60, startColor = green, endColor = red }) => {
   const barRef = useRef<HTMLDivElement>(null);
   // let loop: NodeJS.Timer
   const [loop, setLoop] = useState<NodeJS.Timer>();
   const [clientWidth, setClientWidth] = useState(0);
   const currWidth = useRef(0);
   // const [gameOver, setGameOver] = useState(false);
-  const {blur: isGameOverModalShowing} = useGameEndStore();
-  const {event, setEvent} = useEventStore(useCallback(({ setEvent, event }) => ({setEvent, event}), []));
+  const { blur: isGameOverModalShowing } = useGameEndStore();
+  const { event, setEvent } = useEventStore(useCallback(({ setEvent, event }) => ({ setEvent, event }), []));
   const permission = useLevelStore(useCallback(state => state.getPermission(), []));
 
   const duration = permission?.time ?? 1;
@@ -53,7 +53,7 @@ const TimeBar: React.FC<TimeBarProps> = ({  targetFPS = 60, startColor = green, 
   };
 
   useEffect(() => {
-    if(permission?.time === undefined ) return;
+    if (permission?.time === undefined) return;
     setClientWidth(barRef.current!.clientWidth);
     currWidth.current = barRef.current!.clientWidth;
     barRef.current!.style.backgroundColor = `rgb(${startColor.red}, ${startColor.green}, ${startColor.blue})`;
@@ -61,45 +61,43 @@ const TimeBar: React.FC<TimeBarProps> = ({  targetFPS = 60, startColor = green, 
   }, [barRef, permission]);
 
   useEffect(() => {
-    if (clientWidth == 0 || permission?.time === undefined ) return;
-  
+    if (clientWidth == 0 || permission?.time === undefined) return;
 
     switch (event) {
       case Events.FINISHED:
         reset();
         break;
-           
+
       case Events.GAME_OVER:
-        reset({...red});
+        reset({ ...red });
         break;
-      
+
       case Events.IDLE:
-        reset()
+        reset();
         break;
 
       case Events.RECT_PLACED:
         setEvent(Events.RUNNING);
         restart();
-        
-        const timebarBg = {...startColor};
+
+        const timebarBg = { ...startColor };
 
         const interval = setInterval(() => {
-
-        timebarBg.red = timebarBg.red + redChange;
-        timebarBg.green = timebarBg.green + greenChange;
-        timebarBg.blue = timebarBg.blue + blueChange;
+          timebarBg.red = timebarBg.red + redChange;
+          timebarBg.green = timebarBg.green + greenChange;
+          timebarBg.blue = timebarBg.blue + blueChange;
 
           barRef.current!.style.backgroundColor = `rgb(${timebarBg.red}, ${timebarBg.green}, ${timebarBg.blue})`;
 
           const prevWidth = currWidth.current;
-            if (prevWidth <= 0) {
-              setEvent(Events.GAME_OVER);
-              barRef.current!.style.width = '0%';
-              clearInterval(interval);
-              return;
-            }
-            barRef.current!.style.width = `${((prevWidth - subtractPerFrame) / clientWidth) * 100}%`;
-            currWidth.current = prevWidth - subtractPerFrame;
+          if (prevWidth <= 0) {
+            setEvent(Events.GAME_OVER);
+            barRef.current!.style.width = '0%';
+            clearInterval(interval);
+            return;
+          }
+          barRef.current!.style.width = `${((prevWidth - subtractPerFrame) / clientWidth) * 100}%`;
+          currWidth.current = prevWidth - subtractPerFrame;
         }, frameTime);
         setLoop(interval);
 
@@ -107,20 +105,23 @@ const TimeBar: React.FC<TimeBarProps> = ({  targetFPS = 60, startColor = green, 
       default:
         return () => loop && clearInterval(loop);
     }
-
   }, [event, permission]);
 
+  console.log({ permission });
 
-  console.log({permission});
-  
-
-  return useMemo(() => ( permission.time ?
-    (<div className={`top-[${NAV_HEIGHT}px] w-full h-2 absolute z-10 overflow-hidden`}>
-      <div className="h-full w-full">
-        <div ref={barRef} className="h-full"></div>
-      </div>
-    </div>) : <></>
-  ),[barRef, permission]);
+  return useMemo(
+    () =>
+      permission.time ? (
+        <div className={`top-[${NAV_HEIGHT}px] w-full h-2 absolute z-10 overflow-hidden`}>
+          <div className="h-full w-full">
+            <div ref={barRef} className="h-full"></div>
+          </div>
+        </div>
+      ) : (
+        <></>
+      ),
+    [barRef, permission]
+  );
 };
 
 export default TimeBar;

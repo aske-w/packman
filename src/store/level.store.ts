@@ -12,7 +12,7 @@ export interface LevelState {
 const useLevelStore = create<LevelState>((set, get) => ({
   level: Levels.BEGINNER,
   setLevel: (level: Levels) => set(state => ({ ...state, level })),
-  getPermission: () => getPermissions(get().level)
+  getPermission: () => getPermissions(get().level),
 }));
 
 export default useLevelStore;

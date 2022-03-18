@@ -1,4 +1,4 @@
 export enum GameEndModalTitles {
-    GAME_OVER = "Game over",
-    FINISHED = "Finished"
+  GAME_OVER = 'Game over',
+  FINISHED = 'Finished',
 }

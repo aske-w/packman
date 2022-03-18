@@ -23,7 +23,7 @@ const SHOW_PLAYGROUNDS = [pathName.BIN_PLAYGROUND, pathName.STRIP_PLAYGROUND];
 const Nav: React.FC<NavProps> = ({ height, children }) => {
   const algorithm = useAlgorithmStore(useCallback(state => state.algorithm, []));
   const setAlgorithm = useAlgorithmStore(useCallback(state => state.setAlgorithm, []));
-  const {blur: showModal} = useGameEndStore();
+  const { blur: showModal } = useGameEndStore();
   const score = useScoreStore(
     useCallback(
       ({ algorithm, user, rectanglesLeft }) => ({
@@ -114,9 +114,7 @@ const Nav: React.FC<NavProps> = ({ height, children }) => {
           </>
         )}
       </nav>
-      <div className={`${showModal ? "blur" : ""} w-full h-full`}>
-        {children}  
-      </div>
+      <div className={`${showModal ? 'blur' : ''} w-full h-full`}>{children}</div>
     </div>
   );
 };

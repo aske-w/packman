@@ -32,6 +32,7 @@ interface StripPackingAlgorithmProps {
 export interface StripPackingAlgorithmHandle {
   next(): [ColorRect<RectangleConfig>, number, number] | undefined;
   place: (inventoryRect: ColorRect<RectangleConfig>, idx: number) => [string, number, number] | undefined;
+  reset(): void;
 }
 
 const StripPackingAlgorithm = React.forwardRef<StripPackingAlgorithmHandle, StripPackingAlgorithmProps>(
@@ -95,8 +96,13 @@ const StripPackingAlgorithm = React.forwardRef<StripPackingAlgorithmHandle, Stri
       setScore({ height: 0 }, 'algorithm');
     }, [inventory, algorithm]);
 
+    const reset = useCallback(() => {
+      setOrder(0);
+      setStripRects([]);
+    }, []);
+
     useImperativeHandle(ref, () => ({
-      place: (rect: ColorRect<RectangleConfig>, idx:number) => {
+      place: (rect: ColorRect<RectangleConfig>, idx: number) => {
         rect.y = rect.y + height;
         const inventoryRect = inventory[idx]!;
 
@@ -119,12 +125,13 @@ const StripPackingAlgorithm = React.forwardRef<StripPackingAlgorithmHandle, Stri
 
         const rect = algo?.place();
 
-        if(!rect) return;
+        if (!rect) return;
 
         const idx = inventory.findIndex(r => r.name === rect.name)!;
 
         return [rect, order, idx];
-      }
+      },
+      reset,
     }));
 
     return (
