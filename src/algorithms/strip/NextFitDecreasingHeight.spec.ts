@@ -1,8 +1,4 @@
-import {
-  ExpectedData,
-  GameSize,
-  TestData,
-} from './NextFitDecreasingHeight.fixture';
+import { ExpectedData, GameSize, TestData } from './NextFitDecreasingHeight.fixture';
 import { Dimensions } from '../../types/Dimensions.interface';
 import { NextFitDecreasingHeight } from './NextFitDecreasingHeight';
 
@@ -62,9 +58,7 @@ describe('Next fit decreasing height test', () => {
     nfdh.load(rawData);
     nfdh.place();
     expect(nfdh.shelf.height).toBe(sortedData[0].height);
-    expect(nfdh.shelf.remainingWidth).toBe(
-      GameSize.width - sortedData[0].width
-    );
+    expect(nfdh.shelf.remainingWidth).toBe(GameSize.width - sortedData[0].width);
   });
 
   it('should create a new shelf when width overflows current shelf width', () => {

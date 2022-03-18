@@ -1,10 +1,10 @@
 import React from 'react';
 
 interface HeaderProps {
-    title: string,
+  title: string;
 }
 
-const Header: React.FC<HeaderProps> = ({title}) => {
+const Header: React.FC<HeaderProps> = ({ title }) => {
   return <div className="text-center col-span-5 font-medium">{title}</div>;
 };
 

@@ -1,19 +1,15 @@
-import Konva from "konva";
-import { ColorRect } from "./../types/ColorRect.interface";
-import { genId, PADDING } from "../config/canvasConfig";
-import { Dimensions } from "../types/Dimensions.interface";
-import { RectangleConfig } from "../types/RectangleConfig.interface";
+import Konva from 'konva';
+import { ColorRect } from './../types/ColorRect.interface';
+import { genId, PADDING } from '../config/canvasConfig';
+import { Dimensions } from '../types/Dimensions.interface';
+import { RectangleConfig } from '../types/RectangleConfig.interface';
 
 interface Acc<T = {}> {
   rects: ColorRect<T>[];
   row: { prevRowHeight: number; y: number };
 }
 
-export const generateData = (
-  amount = 10,
-  max = 100,
-  min = 50
-): Dimensions[] => {
+export const generateData = (amount = 10, max = 100, min = 50): Dimensions[] => {
   return Array.from({ length: amount }, (_, _i) => {
     return {
       width: Math.round(Math.max(Math.random() * max, min)),
@@ -22,18 +18,12 @@ export const generateData = (
   });
 };
 
-export const generateInventory = <T = RectangleConfig>(
-  inventorySize: number,
-  numItems = 50
-) => {
+export const generateInventory = <T = RectangleConfig>(inventorySize: number, numItems = 50) => {
   return generateData(numItems, 200, 25).reduce<Acc<T>>(
     (acc, attrs, i) => {
       const { height, width } = attrs;
 
-      acc.row.prevRowHeight = Math.max(
-        acc.row.y + height,
-        acc.row.prevRowHeight
-      );
+      acc.row.prevRowHeight = Math.max(acc.row.y + height, acc.row.prevRowHeight);
 
       const rect: any = {
         width,
@@ -68,20 +58,14 @@ export const generateInventory = <T = RectangleConfig>(
   ).rects;
 };
 
-export const compressInventory = <T>(
-  rects: ColorRect<T>[],
-  inventorySize: number
-) => {
+export const compressInventory = <T>(rects: ColorRect<T>[], inventorySize: number) => {
   return rects.reduce<Acc<T>>(
     (acc, _rect, i) => {
       const rect = { ..._rect, x: PADDING, y: PADDING };
 
       const { height, width } = rect;
 
-      acc.row.prevRowHeight = Math.max(
-        acc.row.y + height,
-        acc.row.prevRowHeight
-      );
+      acc.row.prevRowHeight = Math.max(acc.row.y + height, acc.row.prevRowHeight);
 
       if (i === 0) {
         acc.rects.push(rect);

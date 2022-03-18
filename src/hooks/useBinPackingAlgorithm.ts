@@ -10,22 +10,16 @@ import { PackingAlgorithm } from '../types/PackingAlgorithm.interface';
 import { RectangleConfig } from '../types/RectangleConfig.interface';
 import { useStats } from './useStats';
 
-const { FINITE_NEXT_FIT, FINITE_FIRST_FIT, HYBRID_FIRST_FIT } =
-  BinPackingAlgorithms;
+const { FINITE_NEXT_FIT, FINITE_FIRST_FIT, HYBRID_FIRST_FIT } = BinPackingAlgorithms;
 
 export type AlgoStates = 'RUNNING' | 'STOPPED' | 'PAUSED';
 
-export const useBinPackingAlgorithm = (
-  binSize: Dimensions,
-  selectedAlgorithm: BinPackingAlgorithms
-) => {
+export const useBinPackingAlgorithm = (binSize: Dimensions, selectedAlgorithm: BinPackingAlgorithms) => {
   const { addArea, getStats } = useStats(binSize.width);
   const [algoState, setAlgoState] = useState<AlgoStates>('STOPPED');
   const [isFinished, setIsFinished] = useState(true);
 
-  const algorithm = useRef<
-    PackingAlgorithm<{}, RectangleConfig & { binId: number }>
-  >(new NextFitDecreasingHeight(binSize));
+  const algorithm = useRef<PackingAlgorithm<{}, RectangleConfig & { binId: number }>>(new NextFitDecreasingHeight(binSize));
 
   const reset = useCallback(() => {
     setIsFinished(true);

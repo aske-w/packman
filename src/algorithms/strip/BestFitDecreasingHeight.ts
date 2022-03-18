@@ -6,9 +6,7 @@ import { DimensionsWithConfig } from '../../types/DimensionsWithConfig.type';
 import { Dimensions } from '../../types/Dimensions.interface';
 import { ColorRect } from '../../types/ColorRect.interface';
 
-export class BestFitDecreasingHeight<T = RectangleConfig>
-  implements PackingAlgorithm<T>
-{
+export class BestFitDecreasingHeight<T = RectangleConfig> implements PackingAlgorithm<T> {
   data: DimensionsWithConfig<T>[] = [];
   shelves: Shelf[];
   constructor(readonly gameSize: Dimensions) {

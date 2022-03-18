@@ -12,26 +12,13 @@ interface ActionBtnSelectorProps {
   algoState: AlgoStates;
 }
 
-const ActionBtnSelector: React.FC<ActionBtnSelectorProps> = ({
-  algoState,
-  isAutoPlace,
-  pause,
-  placeNext,
-  start,
-  disabled,
-}) => {
+const ActionBtnSelector: React.FC<ActionBtnSelectorProps> = ({ algoState, isAutoPlace, pause, placeNext, start, disabled }) => {
   switch (algoState) {
     case 'RUNNING': {
       const text = isAutoPlace ? 'Pause' : 'Next';
       return (
         <SideBarItem
-          element={
-            <Button
-              text={text}
-              onClick={isAutoPlace ? pause : placeNext}
-              className={isAutoPlace ? 'bg-amber-600' : undefined}
-            />
-          }
+          element={<Button text={text} onClick={isAutoPlace ? pause : placeNext} className={isAutoPlace ? 'bg-amber-600' : undefined} />}
           text={text}
         />
       );
@@ -40,26 +27,12 @@ const ActionBtnSelector: React.FC<ActionBtnSelectorProps> = ({
       return (
         <SideBarItem
           className="strip-playground-start"
-          element={
-            <Button
-              disabled={disabled}
-              text="Start"
-              onClick={start}
-              className="bg-green-600"
-            />
-          }
+          element={<Button disabled={disabled} text="Start" onClick={start} className="bg-green-600" />}
           text="Start"
         />
       );
     case 'PAUSED':
-      return (
-        <SideBarItem
-          element={
-            <Button text="Resume" onClick={start} className={'bg-green-600'} />
-          }
-          text="Resume"
-        />
-      );
+      return <SideBarItem element={<Button text="Resume" onClick={start} className={'bg-green-600'} />} text="Resume" />;
 
     default:
       return <></>;

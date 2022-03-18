@@ -12,10 +12,7 @@ export default function StripPackingPlaygroundIntroModal() {
   return (
     <>
       <Transition appear show={introOpen} as={Fragment}>
-        <Dialog
-          as="div"
-          className="fixed inset-0 z-10 overflow-y-auto"
-          onClose={() => setIntroOpen(false)}>
+        <Dialog as="div" className="fixed inset-0 z-10 overflow-y-auto" onClose={() => setIntroOpen(false)}>
           <Dialog.Overlay className="fixed inset-0 bg-black opacity-30" />
           <div className="min-h-screen px-4 text-center">
             <Transition.Child
@@ -25,14 +22,13 @@ export default function StripPackingPlaygroundIntroModal() {
               enterTo="opacity-100"
               leave="ease-in duration-200"
               leaveFrom="opacity-100"
-              leaveTo="opacity-0">
+              leaveTo="opacity-0"
+            >
               <Dialog.Overlay className="fixed inset-0" />
             </Transition.Child>
 
             {/* This element is to trick the browser into centering the modal contents. */}
-            <span
-              className="inline-block h-screen align-middle"
-              aria-hidden="true">
+            <span className="inline-block h-screen align-middle" aria-hidden="true">
               &#8203;
             </span>
             <Transition.Child
@@ -42,22 +38,17 @@ export default function StripPackingPlaygroundIntroModal() {
               enterTo="opacity-100 scale-100"
               leave="ease-in duration-200"
               leaveFrom="opacity-100 scale-100"
-              leaveTo="opacity-0 scale-95">
+              leaveTo="opacity-0 scale-95"
+            >
               <div className="inline-block w-full max-w-2xl p-6 my-8 overflow-hidden prose text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl max-h-[40rem] overflow-y-auto">
-                <Dialog.Title
-                  as="h3"
-                  className="text-lg font-medium leading-6 text-gray-900">
+                <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
                   Welcome to the playground
                 </Dialog.Title>
                 <div className="mt-2 ">
+                  <p>Here you have the ability to visualize different algorithms to learn about how they work.</p>
                   <p>
-                    Here you have the ability to visualize different algorithms
-                    to learn about how they work.
-                  </p>
-                  <p>
-                    To the left you see all the options for the visualization
-                    and in the center is the strip where the algorithm is going
-                    to pack the rectangles
+                    To the left you see all the options for the visualization and in the center is the strip where the algorithm is going to pack the
+                    rectangles
                   </p>
                   <p className="italic">
                     You can always open this again by clicking
@@ -70,7 +61,8 @@ export default function StripPackingPlaygroundIntroModal() {
                   <button
                     type="button"
                     className="inline-flex justify-center px-4 py-2 text-sm font-medium text-blue-900 bg-blue-100 border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
-                    onClick={() => setIntroOpen(false)}>
+                    onClick={() => setIntroOpen(false)}
+                  >
                     Got it, thanks!
                   </button>
                 </div>

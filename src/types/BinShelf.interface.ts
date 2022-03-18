@@ -1,4 +1,4 @@
-import { Shelf } from "./Shelf.interface";
+import { Shelf } from './Shelf.interface';
 
 export interface BinShelf extends Shelf {
   binId: number;

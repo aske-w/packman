@@ -20,9 +20,7 @@ const Wides = [
   { width: 80, height: 20 }, // 8
 ];
 
-export const TestData: Dimensions[] = Narrows.concat(Wides).sort(() =>
-  Math.random() < 0.5 ? -1 : 1
-);
+export const TestData: Dimensions[] = Narrows.concat(Wides).sort(() => (Math.random() < 0.5 ? -1 : 1));
 
 // Pack wide
 export const ExpectedData: Rectangle[] = [

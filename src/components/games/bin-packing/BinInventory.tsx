@@ -15,16 +15,7 @@ interface BinInventoryProps {
 }
 
 const BinInventory = forwardRef<KonvaLayer, BinInventoryProps>(
-  (
-    {
-      staticInventory,
-      renderInventory,
-      gameHeight,
-      inventoryWidth,
-      onDraggedToBin,
-    },
-    ref
-  ) => {
+  ({ staticInventory, renderInventory, gameHeight, inventoryWidth, onDraggedToBin }, ref) => {
     const handleDragEnd = (evt: KonvaEventObject<DragEvent>) => {
       const rect = evt.target;
       const { name, width } = rect.getAttrs();
@@ -52,15 +43,7 @@ const BinInventory = forwardRef<KonvaLayer, BinInventoryProps>(
     return (
       <Layer x={0} y={0} ref={ref} name="INVENTORY_LAYER">
         {staticInventory.map((r, i) => {
-          return (
-            <Rect
-              key={r.name + 'ghost'}
-              {...r}
-              opacity={0.2}
-              strokeWidth={1}
-              id={`INVENTORY_GHOST_RECT`}
-            />
-          );
+          return <Rect key={r.name + 'ghost'} {...r} opacity={0.2} strokeWidth={1} id={`INVENTORY_GHOST_RECT`} />;
         })}
         {renderInventory.map((r, i) => {
           return (
