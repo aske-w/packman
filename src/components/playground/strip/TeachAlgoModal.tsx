@@ -2,6 +2,7 @@ import { Transition, Dialog } from '@headlessui/react';
 import { QuestionMarkCircleIcon } from '@heroicons/react/solid';
 import React, { Fragment, useMemo } from 'react';
 import { PackingAlgorithms } from '../../../types/PackingAlgorithm.interface';
+import BFDHArticle from './algorithm-articles/BFDHArticle';
 import FFDHArticle from './algorithm-articles/FFDHArticle';
 import NFDHArticle from './algorithm-articles/NFDHArticle';
 
@@ -22,6 +23,8 @@ const TeachAlgoModal: React.FC<TeachAlgoModalProps> = ({
         return <FFDHArticle />;
       case PackingAlgorithms.NEXT_FIT_DECREASING_HEIGHT:
         return <NFDHArticle />;
+      case PackingAlgorithms.BEST_FIT_DECREASING_HEIGHT:
+        return <BFDHArticle />;
       default:
         return null;
     }

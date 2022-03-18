@@ -10,7 +10,8 @@ const NFDHArticle: React.FC<NFDHArticleProps> = ({}) => {
   return (
     <>
       <p>
-        Next fit decreasing height is one of the first strip packing algorithms.
+        Next fit decreasing height is builds on the principles of First fit
+        decreasing height.
       </p>
       <h4>Preparation</h4>
       <p>
@@ -21,7 +22,7 @@ const NFDHArticle: React.FC<NFDHArticleProps> = ({}) => {
           offline
         </span>{' '}
         algorithm, we know the entire input beforehand. We utilize this to sort
-        it in non-increasing height.
+        it by non-increasing height.
       </p>
       <div className="flex flex-col items-center p-5 bg-gray-700 rounded-lg not-prose">
         <svg

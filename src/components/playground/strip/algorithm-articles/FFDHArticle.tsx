@@ -22,7 +22,7 @@ const FFDHArticle: React.FC<FFDHArticleProps> = ({}) => {
           offline
         </span>{' '}
         algorithm, we know the entire input beforehand. We utilize this to sort
-        it in non-increasing height.
+        it by non-increasing height.
       </p>
       <div className="flex flex-col items-center p-5 bg-gray-700 rounded-lg not-prose">
         <svg
