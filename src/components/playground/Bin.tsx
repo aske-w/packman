@@ -4,15 +4,7 @@ import { TextConfig } from 'konva/lib/shapes/Text';
 import { Stage as KonvaStage } from 'konva/lib/Stage';
 import { IRect } from 'konva/lib/types';
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  KonvaNodeEvents,
-  Label,
-  Layer,
-  Rect,
-  Stage,
-  Tag,
-  Text,
-} from 'react-konva';
+import { KonvaNodeEvents, Label, Layer, Rect, Stage, Tag, Text } from 'react-konva';
 import { ColorRect } from '../../types/ColorRect.interface';
 
 interface BinProps {
@@ -60,13 +52,7 @@ const Bin: React.FC<BinProps> = ({ height, items, width }) => {
       <Layer>
         <Rect {...{ width, height }} fill={'#555'} />
         {items.map(rect => (
-          <MyRect
-            key={rect.name}
-            onMouseMove={() => enableTooltip(rect)}
-            onMouseOut={() => disableTooltip()}
-            {...rect}
-            y={rect.y + height}
-          />
+          <MyRect key={rect.name} onMouseMove={() => enableTooltip(rect)} onMouseOut={() => disableTooltip()} {...rect} y={rect.y + height} />
         ))}
       </Layer>
       <Layer>
@@ -75,7 +61,8 @@ const Bin: React.FC<BinProps> = ({ height, items, width }) => {
             x: (tooltip.x || 0) + 10,
             y: (tooltip.y || 0) + 10,
             visible: tooltip.visible,
-          }}>
+          }}
+        >
           <Tag
             {...{
               fill: 'black',
@@ -98,7 +85,8 @@ const Bin: React.FC<BinProps> = ({ height, items, width }) => {
               padding: 5,
               fill: 'white',
               text: tooltip.text,
-            }}></Text>
+            }}
+          ></Text>
         </Label>
       </Layer>
     </Stage>
@@ -140,6 +128,7 @@ const MyRect: React.FC<RectConfig & KonvaNodeEvents> = ({
       scaleY={3}
       rotation={45}
       draggable
-      {...props}></Rect>
+      {...props}
+    ></Rect>
   );
 };

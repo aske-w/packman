@@ -4,10 +4,7 @@ import { Rectangle } from '../types/Rectangle.interface';
 export const useStats = (canvasWidth: number) => {
   const [areaFilled, setAreaFilled] = useState(0);
 
-  const addArea = useCallback(
-    (rec: Rectangle) => setAreaFilled(prev => prev + rec.width * rec.height),
-    []
-  );
+  const addArea = useCallback((rec: Rectangle) => setAreaFilled(prev => prev + rec.width * rec.height), []);
 
   const getStats = (canvasHeight: number) => {
     const gameArea = canvasWidth * canvasHeight;

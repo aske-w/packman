@@ -1,10 +1,10 @@
-import create from "zustand";
+import create from 'zustand';
 
 export interface Score {
   height: number;
 }
 
-type Player = "user" | "algorithm";
+type Player = 'user' | 'algorithm';
 
 export type ScoreState = Record<Player, Score> & {
   setScore(score: Score, player: Player): void;
@@ -12,7 +12,7 @@ export type ScoreState = Record<Player, Score> & {
   rectanglesLeft: number;
 };
 
-const useScoreStore = create<ScoreState>((set) => ({
+const useScoreStore = create<ScoreState>(set => ({
   algorithm: {
     height: 0,
   },
@@ -20,10 +20,9 @@ const useScoreStore = create<ScoreState>((set) => ({
     height: 0,
   },
   rectanglesLeft: 0,
-  setRectanglesLeft: (rectangles: number) =>
-    set((state) => ({ ...state, rectanglesLeft: rectangles })),
+  setRectanglesLeft: (rectangles: number) => set(state => ({ ...state, rectanglesLeft: rectangles })),
   setScore: (payload, player) =>
-    set((state) => ({
+    set(state => ({
       ...state,
       [player]: {
         ...payload,

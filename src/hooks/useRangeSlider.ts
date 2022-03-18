@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 export const useRangeSlider = (intial = 0, scale = 1) => {
   const [progress, setProgress] = React.useState(intial);

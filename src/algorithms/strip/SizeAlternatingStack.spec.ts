@@ -1,9 +1,5 @@
 import { SizeAlternatingStack } from './SizeAlternatingStack';
-import {
-  ExpectedData,
-  GameSize,
-  TestData,
-} from './SizeAlternatingStack.fixture';
+import { ExpectedData, GameSize, TestData } from './SizeAlternatingStack.fixture';
 
 describe('SizeAlternatingStack test suite', () => {
   let sas = new SizeAlternatingStack<{}>(GameSize);

@@ -19,11 +19,8 @@ const BinPackingPlayground: React.FC<BinPackingPlaygroundProps> = ({}) => {
     height,
   });
 
-  const [algorithm, setAlgorithm] = useState(
-    BinPackingAlgorithms.HYBRID_FIRST_FIT
-  );
-  const { start, place, isFinished, algoState, pause, reset } =
-    useBinPackingAlgorithm(binDimensions, algorithm);
+  const [algorithm, setAlgorithm] = useState(BinPackingAlgorithms.HYBRID_FIRST_FIT);
+  const { start, place, isFinished, algoState, pause, reset } = useBinPackingAlgorithm(binDimensions, algorithm);
 
   const placeNext = () => {
     const rect = place();
@@ -31,9 +28,7 @@ const BinPackingPlayground: React.FC<BinPackingPlaygroundProps> = ({}) => {
 
     if (rect) {
       // update ui in sidebar
-      setDimensionsStorage(d =>
-        d.filter(d => !(d.height === rect.height && d.width === rect.width))
-      );
+      setDimensionsStorage(d => d.filter(d => !(d.height === rect.height && d.width === rect.width)));
       setBins(old => {
         const tmp = [...old.map(o => [...o])];
         if (tmp.length - 1 < rect.binId) {
@@ -82,12 +77,7 @@ const BinPackingPlayground: React.FC<BinPackingPlaygroundProps> = ({}) => {
       <div className="inline-flex items-center justify-center overflow-y-auto custom-scrollbar">
         <div className="flex justify-start items-start flex-wrap h-full flex-shrink-0 gap-5 p-5 w-[calc(100vw-360px)]">
           {bins.map((bin, i) => (
-            <Bin
-              key={i}
-              height={binDimensions.height}
-              width={binDimensions.width}
-              items={bin}
-            />
+            <Bin key={i} height={binDimensions.height} width={binDimensions.width} items={bin} />
           ))}
         </div>
       </div>

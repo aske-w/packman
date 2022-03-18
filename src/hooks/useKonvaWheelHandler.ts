@@ -1,13 +1,9 @@
-import { KonvaEventObject } from "konva/lib/Node";
-import { Layer as KonvaLayer } from "konva/lib/Layer";
-import { Rect as KonvaRect } from "konva/lib/shapes/Rect";
-import {
-  KonvaWheelEvent,
-  PADDING,
-  SCROLLBAR_HEIGHT,
-} from "../config/canvasConfig";
-import { useCallback, RefObject } from "react";
-import { isNumber } from "lodash";
+import { KonvaEventObject } from 'konva/lib/Node';
+import { Layer as KonvaLayer } from 'konva/lib/Layer';
+import { Rect as KonvaRect } from 'konva/lib/shapes/Rect';
+import { KonvaWheelEvent, PADDING, SCROLLBAR_HEIGHT } from '../config/canvasConfig';
+import { useCallback, RefObject } from 'react';
+import { isNumber } from 'lodash';
 
 interface WheelHandlerParams {
   layerRef: RefObject<KonvaLayer>;
@@ -17,17 +13,13 @@ interface WheelHandlerParams {
   activeArea: { minX: number; maxX: number; minY?: number; maxY?: number };
 }
 
-type InitializedScrollHandler = (
-  e: (KonvaEventObject<WheelEvent> & KonvaWheelEvent)["evt"]
-) => void;
+type InitializedScrollHandler = (e: (KonvaEventObject<WheelEvent> & KonvaWheelEvent)['evt']) => void;
 type ScrollHandler = (params: WheelHandlerParams) => InitializedScrollHandler;
 interface UseKonvaWheelHandlerParams {
   handlers: InitializedScrollHandler[];
 }
 
-export const useKonvaWheelHandler = ({
-  handlers,
-}: UseKonvaWheelHandlerParams) => {
+export const useKonvaWheelHandler = ({ handlers }: UseKonvaWheelHandlerParams) => {
   const handleWheel = useCallback(
     (e: KonvaEventObject<WheelEvent> & KonvaWheelEvent) => {
       e.evt.preventDefault();
@@ -43,7 +35,7 @@ export const useKonvaWheelHandler = ({
 
 export const defaultScrollHandler: ScrollHandler =
   ({ layerRef, visibleHeight, scrollBarRef, scrollableHeight, activeArea }) =>
-  (e) => {
+  e => {
     const { layerX, layerY, deltaY } = e;
 
     const isActiveX = layerX > activeArea.minX && layerX < activeArea.maxX;
@@ -67,8 +59,7 @@ export const defaultScrollHandler: ScrollHandler =
 
       const availableHeight = visibleHeight - PADDING * 2 - SCROLLBAR_HEIGHT;
 
-      const vy =
-        (y / (-scrollableHeight + visibleHeight)) * availableHeight + PADDING;
+      const vy = (y / (-scrollableHeight + visibleHeight)) * availableHeight + PADDING;
 
       scrollBarRef.current?.y(vy);
 

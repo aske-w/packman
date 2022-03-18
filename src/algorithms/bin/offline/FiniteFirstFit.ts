@@ -1,9 +1,9 @@
-import { BinShelf } from "../../../types/BinShelf.interface";
-import { ColorRect } from "../../../types/ColorRect.interface";
-import { Dimensions } from "../../../types/Dimensions.interface";
-import { DimensionsWithConfig } from "../../../types/DimensionsWithConfig.type";
-import { PackingAlgorithm } from "../../../types/PackingAlgorithm.interface";
-import { RectangleConfig } from "../../../types/RectangleConfig.interface";
+import { BinShelf } from '../../../types/BinShelf.interface';
+import { ColorRect } from '../../../types/ColorRect.interface';
+import { Dimensions } from '../../../types/Dimensions.interface';
+import { DimensionsWithConfig } from '../../../types/DimensionsWithConfig.type';
+import { PackingAlgorithm } from '../../../types/PackingAlgorithm.interface';
+import { RectangleConfig } from '../../../types/RectangleConfig.interface';
 
 class FiniteFirstFit<T = RectangleConfig> implements PackingAlgorithm<T> {
   shelves: BinShelf[];
@@ -46,7 +46,7 @@ class FiniteFirstFit<T = RectangleConfig> implements PackingAlgorithm<T> {
   }
 
   place(): ColorRect<T> & { binId: number } {
-    if (this.isFinished()) throw new Error("isFinished");
+    if (this.isFinished()) throw new Error('isFinished');
     const nextRect = this.data.shift()!;
 
     for (const shelf of this.shelves) {
@@ -75,9 +75,7 @@ class FiniteFirstFit<T = RectangleConfig> implements PackingAlgorithm<T> {
     const binId = shouldCreateNewBin ? lastShelf.binId + 1 : lastShelf.binId;
 
     const newShelf = {
-      bottomY: shouldCreateNewBin
-        ? 0
-        : this.lastShelf.bottomY - this.lastShelf.height,
+      bottomY: shouldCreateNewBin ? 0 : this.lastShelf.bottomY - this.lastShelf.height,
       height: nextRect.height,
       remainingWidth: this.binSize.width - nextRect.width,
       binId,
@@ -96,13 +94,8 @@ class FiniteFirstFit<T = RectangleConfig> implements PackingAlgorithm<T> {
     return this.data.length === 0;
   }
 
-  private shouldCreateNewBin(
-    shelf: BinShelf,
-    nextRect: DimensionsWithConfig<T>
-  ) {
-    return (
-      -1 * shelf.bottomY + shelf.height + nextRect.height > this.binSize.height
-    );
+  private shouldCreateNewBin(shelf: BinShelf, nextRect: DimensionsWithConfig<T>) {
+    return -1 * shelf.bottomY + shelf.height + nextRect.height > this.binSize.height;
   }
 }
 

@@ -10,28 +10,23 @@ const Home: React.FC<HomeProps> = ({}) => {
         <li>
           <Link
             className="block px-4 py-2 font-medium text-center text-white bg-blue-700 rounded text-normal hover:bg-blue-900"
-            to="playground/strip">
+            to="playground/strip"
+          >
             Strip packing Playground
           </Link>
         </li>
         <li>
-          <Link
-            className="block px-4 py-2 font-medium text-center text-white bg-blue-700 rounded text-normal hover:bg-blue-900"
-            to="playground/bin">
+          <Link className="block px-4 py-2 font-medium text-center text-white bg-blue-700 rounded text-normal hover:bg-blue-900" to="playground/bin">
             Bin packing Playground
           </Link>
         </li>
         <li>
-          <Link
-            className="block px-4 py-2 font-medium text-center text-white bg-blue-700 rounded text-normal hover:bg-blue-900"
-            to="game/strip">
+          <Link className="block px-4 py-2 font-medium text-center text-white bg-blue-700 rounded text-normal hover:bg-blue-900" to="game/strip">
             Strip packing
           </Link>
         </li>
         <li>
-          <Link
-            className="block px-4 py-2 font-medium text-center text-white bg-blue-700 rounded text-normal hover:bg-blue-900"
-            to="game/bin">
+          <Link className="block px-4 py-2 font-medium text-center text-white bg-blue-700 rounded text-normal hover:bg-blue-900" to="game/bin">
             Bin packing
           </Link>
         </li>
