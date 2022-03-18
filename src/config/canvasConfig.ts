@@ -1,9 +1,9 @@
-import { DimensionsWithConfig } from './../types/DimensionsWithConfig.type';
-import Konva from 'konva';
-import { Dimensions } from '../types/Dimensions.interface';
-import { Rectangle } from '../types/Rectangle.interface';
-import { generateData } from '../utils/generateData';
-import { nanoid } from 'nanoid';
+import { DimensionsWithConfig } from "./../types/DimensionsWithConfig.type";
+import Konva from "konva";
+import { Dimensions } from "../types/Dimensions.interface";
+import { Rectangle } from "../types/Rectangle.interface";
+import { generateData } from "../utils/generateData";
+import { nanoid } from "nanoid";
 export interface CanvasProps {
   scrollableStripHeight: number;
   input: DimensionsWithConfig[];
@@ -30,6 +30,7 @@ export const SCROLLABLE_HEIGHT = GAME_HEIGHT * 1.5;
 export const SNAPPING_THRESHOLD = 10;
 export const RECT_OVERLAP_COLOR = "#ff000080"; //transparent red color
 export const STROKE_WIDTH = 2;
+export const ALGO_MOVE_ANIMATION_DURATION = 0.5;
 
 export const INVENTORY_SIZE: Rectangle = {
   height: GAME_HEIGHT,

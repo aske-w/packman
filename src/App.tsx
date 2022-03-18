@@ -1,7 +1,7 @@
-import React from "react";
-import { Outlet } from "react-router-dom";
-import Nav from "./components/Nav";
-import { NAV_HEIGHT } from "./config/canvasConfig";
+import React from 'react';
+import { Outlet } from 'react-router-dom';
+import Nav from './components/Nav';
+import { NAV_HEIGHT } from './config/canvasConfig';
 
 interface AppProps {}
 
