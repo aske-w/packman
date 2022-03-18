@@ -13,11 +13,13 @@ import { Rectangle } from '../../types/Rectangle.interface';
 
 function StripPackingPlayground() {
   const [stripWidth, setStripWidth] = useState(400);
-  const [selectedAlgorithm, setSelectedAlgorithm] = useState<PackingAlgorithms>(PackingAlgorithms.FIRST_FIT_DECREASING_HEIGHT);
+  const [selectedAlgorithm, setSelectedAlgorithm] = useState<PackingAlgorithms>(PackingAlgorithms.SLEATORS);
   const { start, pause, place, algoState, isFinished, reset: resetAlgo } = usePackingAlgorithms(stripWidth, selectedAlgorithm);
 
   const placeNext = () => {
     const rect = place();
+    console.log(rect);
+
     if (rect) {
       setRects(old => [...old, { ...rect, color: Konva.Util.getRandomColor() }]);
     }
