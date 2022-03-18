@@ -1,31 +1,24 @@
-import React, {
-  RefObject,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-} from "react";
-import { Layer, Rect } from "react-konva";
-import { ColorRect } from "../../../types/ColorRect.interface";
-import { Layer as KonvaLayer } from "konva/lib/Layer";
-import { STROKE_WIDTH } from "../../../config/canvasConfig";
-import { Vector2d } from "konva/lib/types";
-import useScoreStore from "../../../store/score.store";
-import { Group } from "konva/lib/Group";
-import { Coordinate } from "../../../types/Coordinate.interface";
-import { KonvaEventObject } from "konva/lib/Node";
-import { Shape } from "konva/lib/Shape";
-import { intersects } from "../../../utils/intersects";
-import { RectangleConfig } from "../../../types/RectangleConfig.interface";
-import { usePermissions } from "../../../hooks/usePermissions";
+import React, { RefObject, useCallback, useEffect, useImperativeHandle } from 'react';
+import { Layer, Rect } from 'react-konva';
+import { ColorRect } from '../../../types/ColorRect.interface';
+import { Layer as KonvaLayer } from 'konva/lib/Layer';
+import { STROKE_WIDTH } from '../../../config/canvasConfig';
+import { Vector2d } from 'konva/lib/types';
+import useScoreStore from '../../../store/score.store';
+import { Group } from 'konva/lib/Group';
+import { Coordinate } from '../../../types/Coordinate.interface';
+import { KonvaEventObject } from 'konva/lib/Node';
+import { Shape } from 'konva/lib/Shape';
+import { intersects } from '../../../utils/intersects';
+import { RectangleConfig } from '../../../types/RectangleConfig.interface';
+import { usePermissions } from '../../../hooks/usePermissions';
 interface StripPackingInteractiveProps {
   height: number;
   width: number;
   layerRef: RefObject<KonvaLayer>;
   scrollableHeight: number;
   stripRects: ColorRect<RectangleConfig>[];
-  setStripRects: React.Dispatch<
-    React.SetStateAction<ColorRect<RectangleConfig>[]>
-  >;
+  setStripRects: React.Dispatch<React.SetStateAction<ColorRect<RectangleConfig>[]>>;
   snap: (destination: Group[], target: Shape) => void;
 }
 
@@ -34,24 +27,15 @@ export interface StripPackingInteractiveHandle {
   reset: () => void;
 }
 
-const StripPackingInteractive = React.forwardRef<
-  StripPackingInteractiveHandle,
-  StripPackingInteractiveProps
->(
-  (
-    { layerRef, height, scrollableHeight, stripRects, setStripRects, snap },
-    ref
-  ) => {
+const StripPackingInteractive = React.forwardRef<StripPackingInteractiveHandle, StripPackingInteractiveProps>(
+  ({ layerRef, height, scrollableHeight, stripRects, setStripRects, snap }, ref) => {
     // const [stripRects, setStripRects] = useState<ColorRect[]>([]);
-    const setScore = useScoreStore(useCallback((state) => state.setScore, []));
+    const setScore = useScoreStore(useCallback(state => state.setScore, []));
     const { permission } = usePermissions();
 
     useEffect(() => {
-      const _height = stripRects.reduce(
-        (maxY, r) => Math.max(maxY, Math.round(height - r.y)),
-        0
-      );
-      setScore({ height: _height }, "user");
+      const _height = stripRects.reduce((maxY, r) => Math.max(maxY, Math.round(height - r.y)), 0);
+      setScore({ height: _height }, 'user');
     }, [stripRects, height]);
 
     useImperativeHandle(ref, () => ({
@@ -62,11 +46,11 @@ const StripPackingInteractive = React.forwardRef<
           y,
         };
 
-        setStripRects((old) => [...old, newRect]);
+        setStripRects(old => [...old, newRect]);
       },
       reset: () => {
         setStripRects([]);
-        setScore({ height: 0 }, "user");
+        setScore({ height: 0 }, 'user');
       },
     }));
 
@@ -80,12 +64,10 @@ const StripPackingInteractive = React.forwardRef<
     const handleStripDragEnd = (e: KonvaEventObject<DragEvent>) => {
       const target = e.target as Shape;
       const scrollOffset = layerRef.current?.y()!;
-      stripRects.forEach((r) => {
-        if (r.name == target.getAttr("name")) return;
+      stripRects.forEach(r => {
+        if (r.name == target.getAttr('name')) return;
 
-        var _r = layerRef.current?.children?.find(
-          (x) => x.getAttr("name") == r.name
-        );
+        var _r = layerRef.current?.children?.find(x => x.getAttr('name') == r.name);
         if (_r == undefined) return;
 
         if (intersects(target.getAttrs(), _r.getAttrs()))
@@ -94,11 +76,7 @@ const StripPackingInteractive = React.forwardRef<
             y: lastPos.y + scrollOffset,
           });
       });
-      target.fill(
-        stripRects
-          .find((r) => r.name == target.getAttr("name"))!
-          .fill.substring(0, 7) + "ff"
-      );
+      target.fill(stripRects.find(r => r.name == target.getAttr('name'))!.fill.substring(0, 7) + 'ff');
     };
 
     const handleDragMove = (e: KonvaEventObject<DragEvent>) => {

@@ -1,5 +1,5 @@
-import { Levels } from "../types/Levels.enum";
-import { Permission } from "../types/Permission.interface";
+import { Levels } from '../types/Levels.enum';
+import { Permission } from '../types/Permission.interface';
 
 export const getPermissions = (level: Levels): Permission => {
   switch (level) {

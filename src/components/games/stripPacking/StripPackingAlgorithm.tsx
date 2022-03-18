@@ -1,34 +1,19 @@
-import Konva from "konva";
-import { Rect as KonvaRect, RectConfig } from "konva/lib/shapes/Rect";
-import React, {
-  RefObject,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from "react";
-import { KonvaNodeEvents, Layer, Rect } from "react-konva";
-import { BestFitDecreasingHeight } from "../../../algorithms/strip/BestFitDecreasingHeight";
-import { FirstFitDecreasingHeight } from "../../../algorithms/strip/FirstFitDecreasingHeight";
-import { NextFitDecreasingHeight } from "../../../algorithms/strip/NextFitDecreasingHeight";
-import { SizeAlternatingStack } from "../../../algorithms/strip/SizeAlternatingStack";
-import useScoreStore from "../../../store/score.store";
-import { ColorRect } from "../../../types/ColorRect.interface";
-import {
-  PackingAlgorithm,
-  PackingAlgorithms,
-} from "../../../types/PackingAlgorithm.interface";
-import { RectangleConfig } from "../../../types/RectangleConfig.interface";
-import { Layer as KonvaLayer } from "konva/lib/Layer";
-import { ALGO_MOVE_ANIMATION_DURATION as ALGO_ENTER_ANIMATION_DURATION } from "../../../config/canvasConfig";
+import Konva from 'konva';
+import { Rect as KonvaRect, RectConfig } from 'konva/lib/shapes/Rect';
+import React, { RefObject, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { KonvaNodeEvents, Layer, Rect } from 'react-konva';
+import { BestFitDecreasingHeight } from '../../../algorithms/strip/BestFitDecreasingHeight';
+import { FirstFitDecreasingHeight } from '../../../algorithms/strip/FirstFitDecreasingHeight';
+import { NextFitDecreasingHeight } from '../../../algorithms/strip/NextFitDecreasingHeight';
+import { SizeAlternatingStack } from '../../../algorithms/strip/SizeAlternatingStack';
+import useScoreStore from '../../../store/score.store';
+import { ColorRect } from '../../../types/ColorRect.interface';
+import { PackingAlgorithm, PackingAlgorithms } from '../../../types/PackingAlgorithm.interface';
+import { RectangleConfig } from '../../../types/RectangleConfig.interface';
+import { Layer as KonvaLayer } from 'konva/lib/Layer';
+import { ALGO_MOVE_ANIMATION_DURATION as ALGO_ENTER_ANIMATION_DURATION } from '../../../config/canvasConfig';
 
-const {
-  BEST_FIT_DECREASING_HEIGHT,
-  NEXT_FIT_DECREASING_HEIGHT,
-  FIRST_FIT_DECREASING_HEIGHT,
-  SIZE_ALTERNATING_STACK,
-} = PackingAlgorithms;
+const { BEST_FIT_DECREASING_HEIGHT, NEXT_FIT_DECREASING_HEIGHT, FIRST_FIT_DECREASING_HEIGHT, SIZE_ALTERNATING_STACK } = PackingAlgorithms;
 
 type PrevPos = { prevX: number; prevY: number };
 
@@ -45,52 +30,26 @@ interface StripPackingAlgorithmProps {
 }
 
 export interface StripPackingAlgorithmHandle {
-  place: (
-    inventoryRect: ColorRect<RectangleConfig>
-  ) => [string, number, number] | undefined;
+  place: (inventoryRect: ColorRect<RectangleConfig>) => [string, number, number] | undefined;
 }
 
-const StripPackingAlgorithm = React.forwardRef<
-  StripPackingAlgorithmHandle,
-  StripPackingAlgorithmProps
->(
-  (
-    {
-      x,
-      height,
-      width,
-      inventory,
-      algorithm,
-      inventoryWidth,
-      layerRef,
-      getInventoryScrollOffset,
-    },
-    ref
-  ) => {
-    const [algo, setAlgo] = useState<PackingAlgorithm<
-      RectangleConfig,
-      RectangleConfig,
-      any
-    > | null>(null);
+const StripPackingAlgorithm = React.forwardRef<StripPackingAlgorithmHandle, StripPackingAlgorithmProps>(
+  ({ x, height, width, inventory, algorithm, inventoryWidth, layerRef, getInventoryScrollOffset }, ref) => {
+    const [algo, setAlgo] = useState<PackingAlgorithm<RectangleConfig, RectangleConfig, any> | null>(null);
 
-    const [stripRects, setStripRects] = useState<
-      ColorRect<RectangleConfig & PrevPos>[]
-    >([]);
+    const [stripRects, setStripRects] = useState<ColorRect<RectangleConfig & PrevPos>[]>([]);
 
     const [order, setOrder] = useState(0);
 
-    const setScore = useScoreStore(useCallback((state) => state.setScore, []));
+    const setScore = useScoreStore(useCallback(state => state.setScore, []));
 
     useEffect(() => {
-      const _height = stripRects.reduce(
-        (maxY, r) => Math.max(maxY, Math.round(height - r.y)),
-        0
-      );
+      const _height = stripRects.reduce((maxY, r) => Math.max(maxY, Math.round(height - r.y)), 0);
       setScore(
         {
           height: _height,
         },
-        "algorithm"
+        'algorithm'
       );
     }, [stripRects, height]);
 
@@ -100,37 +59,29 @@ const StripPackingAlgorithm = React.forwardRef<
       const invCopy = [...inventory];
       switch (algorithm) {
         case NEXT_FIT_DECREASING_HEIGHT: {
-          const a = new NextFitDecreasingHeight<ColorRect<RectangleConfig>>(
-            size
-          ).load(invCopy);
+          const a = new NextFitDecreasingHeight<ColorRect<RectangleConfig>>(size).load(invCopy);
           return a;
         }
         case FIRST_FIT_DECREASING_HEIGHT: {
-          const a = new FirstFitDecreasingHeight<ColorRect<RectangleConfig>>(
-            size
-          ).load(invCopy);
+          const a = new FirstFitDecreasingHeight<ColorRect<RectangleConfig>>(size).load(invCopy);
           return a;
         }
         case BEST_FIT_DECREASING_HEIGHT: {
-          const a = new BestFitDecreasingHeight<ColorRect<RectangleConfig>>(
-            size
-          ).load(invCopy);
+          const a = new BestFitDecreasingHeight<ColorRect<RectangleConfig>>(size).load(invCopy);
           return a;
         }
 
         case SIZE_ALTERNATING_STACK: {
-          const a = new SizeAlternatingStack<ColorRect<RectangleConfig>>(
-            size
-          ).load(invCopy);
+          const a = new SizeAlternatingStack<ColorRect<RectangleConfig>>(size).load(invCopy);
           return a;
         }
 
         default:
-          throw Error("unkown algorithm: " + algorithm);
+          throw Error('unkown algorithm: ' + algorithm);
       }
     };
 
-    const [prevInventory, setPrevInventory] = useState("");
+    const [prevInventory, setPrevInventory] = useState('');
 
     useEffect(() => {
       const newInv = JSON.stringify(inventory.map(({ name }) => name).sort());
@@ -140,7 +91,7 @@ const StripPackingAlgorithm = React.forwardRef<
       const algo = getAlgo(algorithm);
       setAlgo(algo);
       setStripRects([]);
-      setScore({ height: 0 }, "algorithm");
+      setScore({ height: 0 }, 'algorithm');
     }, [inventory, algorithm]);
 
     useImperativeHandle(ref, () => ({
@@ -153,7 +104,7 @@ const StripPackingAlgorithm = React.forwardRef<
 
         rect.y = rect.y + height;
 
-        const idx = inventory.findIndex((r) => r.name === rect.name)!;
+        const idx = inventory.findIndex(r => r.name === rect.name)!;
         const inventoryRect = inventory[idx]!;
 
         // remove the scroll offset from y value
@@ -165,9 +116,9 @@ const StripPackingAlgorithm = React.forwardRef<
           prevY: inventoryRect.y - scrollOffset,
         };
 
-        setStripRects((prev) => [...prev, newRect]);
+        setStripRects(prev => [...prev, newRect]);
         const rOrder = order;
-        setOrder((old) => old + 1);
+        setOrder(old => old + 1);
         return [rect.name, rOrder, idx];
       },
     }));
@@ -175,26 +126,14 @@ const StripPackingAlgorithm = React.forwardRef<
     return (
       <Layer x={x} y={-height} ref={layerRef}>
         {stripRects.map((r, i) => {
-          return (
-            <MyRect
-              gameHeight={height}
-              key={r.name}
-              {...r}
-              strokeWidth={2}
-              stroke={"#002050FF"}
-              y={r.y + height}
-              id={`STRIP_RECT`}
-            />
-          );
+          return <MyRect gameHeight={height} key={r.name} {...r} strokeWidth={2} stroke={'#002050FF'} y={r.y + height} id={`STRIP_RECT`} />;
         })}
       </Layer>
     );
   }
 );
 
-const MyRect: React.FC<
-  PrevPos & RectConfig & KonvaNodeEvents & { gameHeight: number }
-> = ({ x, y, prevX, prevY, gameHeight, ...props }) => {
+const MyRect: React.FC<PrevPos & RectConfig & KonvaNodeEvents & { gameHeight: number }> = ({ x, y, prevX, prevY, gameHeight, ...props }) => {
   const ref = useRef<KonvaRect>(null);
   useEffect(() => {
     new Konva.Tween({
@@ -206,16 +145,7 @@ const MyRect: React.FC<
     }).play();
   }, [x, y]);
 
-  return (
-    <Rect
-      ref={ref}
-      x={prevX}
-      y={prevY + gameHeight}
-      stroke={"rgba(0,0,0,0.2)"}
-      strokeWidth={1}
-      {...props}
-    ></Rect>
-  );
+  return <Rect ref={ref} x={prevX} y={prevY + gameHeight} stroke={'rgba(0,0,0,0.2)'} strokeWidth={1} {...props}></Rect>;
 };
 
 export default StripPackingAlgorithm;

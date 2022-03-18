@@ -1,6 +1,6 @@
-import { useCallback, useEffect } from "react";
-import useEventStore from "../store/event.store";
-import { Events } from "../types/Events.enum";
+import { useCallback, useEffect } from 'react';
+import useEventStore from '../store/event.store';
+import { Events } from '../types/Events.enum';
 
 export const useEvents = (startingInvLength: number, dynInvLength: number) => {
   const setEvent = useEventStore(useCallback(({ setEvent }) => setEvent, []));
