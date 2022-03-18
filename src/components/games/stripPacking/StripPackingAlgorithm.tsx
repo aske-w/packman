@@ -21,6 +21,7 @@ import {
 } from "../../../types/PackingAlgorithm.interface";
 import { RectangleConfig } from "../../../types/RectangleConfig.interface";
 import { Layer as KonvaLayer } from "konva/lib/Layer";
+import { ALGO_MOVE_ANIMATION_DURATION as ALGO_ENTER_ANIMATION_DURATION } from "../../../config/canvasConfig";
 
 const {
   BEST_FIT_DECREASING_HEIGHT,
@@ -191,8 +192,6 @@ const StripPackingAlgorithm = React.forwardRef<
   }
 );
 
-const ENTER_ANIMATION_DURATION_SECONDS = 0.5;
-
 const MyRect: React.FC<
   PrevPos & RectConfig & KonvaNodeEvents & { gameHeight: number }
 > = ({ x, y, prevX, prevY, gameHeight, ...props }) => {
@@ -200,7 +199,7 @@ const MyRect: React.FC<
   useEffect(() => {
     new Konva.Tween({
       node: ref.current!,
-      duration: ENTER_ANIMATION_DURATION_SECONDS,
+      duration: ALGO_ENTER_ANIMATION_DURATION,
       x,
       y,
       easing: Konva.Easings.StrongEaseInOut,

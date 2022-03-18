@@ -1,8 +1,7 @@
 import Konva from "konva";
 import { KonvaEventObject } from "konva/lib/Node";
-import { Rect as KonvaRect } from "konva/lib/shapes/Rect";
 import { Layer as KonvaLayer } from "konva/lib/Layer";
-import React, { useRef } from "react";
+import React from "react";
 import { Layer, Rect, Text } from "react-konva";
 import {
   CanvasProps,
@@ -110,8 +109,6 @@ const Inventory = React.forwardRef<KonvaLayer, InventoryProps>(
     //   if (closeToLeft) return 'left';
     //   if (closeToRight) return 'right';
     // };
-
-    console.log("rerender:", dynamicInventory);
 
     return (
       <>

@@ -17,6 +17,7 @@ import {
   STROKE_WIDTH,
   SCROLLBAR_WIDTH,
   PADDING,
+  ALGO_MOVE_ANIMATION_DURATION,
 } from "../../config/canvasConfig";
 import {
   defaultScrollHandler,
@@ -146,24 +147,26 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
       interactiveRef.current?.place(rect, placement);
 
       if (res) {
-        const [placedName, order, recIdx] = res;
-        const inv = [...startingInventory];
-        const interactiveIdx = inv.findIndex((r) => r.name === rectName);
+        setTimeout(() => {
+          const [placedName, order, recIdx] = res;
+          const inv = [...startingInventory];
+          const interactiveIdx = inv.findIndex((r) => r.name === rectName);
 
-        inv[interactiveIdx].removed = true;
-        inv[recIdx].order = order;
+          inv[interactiveIdx].removed = true;
+          inv[recIdx].order = order;
 
-        // Pushes currently placed block at the back of the inventory lust
-        pushItemToBack(inv, interactiveIdx);
+          // Pushes currently placed block at the back of the inventory lust
+          pushItemToBack(inv, interactiveIdx);
 
-        const compressedInv = compressInventory(inv, inventoryWidth);
+          const compressedInv = compressInventory(inv, inventoryWidth);
 
-        const interactiveInventory = compressedInv.filter((r) => !r.removed);
-        setRenderInventory(interactiveInventory);
-        setRectanglesLeft(renderInventory.length - 1);
+          const interactiveInventory = compressedInv.filter((r) => !r.removed);
+          setRenderInventory(interactiveInventory);
+          setRectanglesLeft(renderInventory.length - 1);
 
-        // give the order of placement to the starting state
-        setStartingInventory(compressedInv);
+          // give the order of placement to the starting state
+          setStartingInventory(compressedInv);
+        }, ALGO_MOVE_ANIMATION_DURATION * 1500);
       }
     }
     return true;
@@ -382,7 +385,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
 
   return (
     <div className="w-full">
-      <IntroModal />
+      {/* <IntroModal /> */}
 
       <div className="flex items-center justify-between w-full">
         <Stage
