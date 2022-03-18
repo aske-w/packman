@@ -385,7 +385,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
 
   return (
     <div className="w-full">
-      {/* <IntroModal /> */}
+      <IntroModal />
 
       <div className="flex items-center justify-between w-full">
         <Stage
