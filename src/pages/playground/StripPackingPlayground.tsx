@@ -18,7 +18,6 @@ function StripPackingPlayground() {
 
   const placeNext = () => {
     const rect = place();
-    console.log(rect);
 
     if (rect) {
       setRects(old => [...old, { ...rect, color: Konva.Util.getRandomColor() }]);
@@ -102,6 +101,7 @@ function StripPackingPlayground() {
           stripWidth,
         }}
       />
+
       <div className="flex items-center justify-center w-full h-full p-4">
         <Canvas rects={rects} width={stripWidth} />
       </div>

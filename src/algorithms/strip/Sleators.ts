@@ -11,9 +11,12 @@ export class Sleators<T = RectangleConfig> implements PackingAlgorithm<T> {
   data: DimensionsWithConfig<T>[] = [];
   lastPlaced: IRect = { height: 0, width: 0, x: 0, y: 0 };
   h0 = 0;
+  firstLinePlaced = false;
+  bottomShelfRemainingWidth: number;
   leftShelf: Shelf;
   rightShelf: Shelf;
   constructor(readonly gameSize: Dimensions) {
+    this.bottomShelfRemainingWidth = gameSize.width;
     this.leftShelf = {
       remainingWidth: gameSize.width / 2,
       bottomY: 0,
@@ -41,6 +44,36 @@ export class Sleators<T = RectangleConfig> implements PackingAlgorithm<T> {
     if (this.widest.length > 0) {
       return this.placeWide();
     }
+    let nextRect = this.data.shift()!;
+    if (!this.firstLinePlaced) {
+      if (this.bottomShelfRemainingWidth === this.gameSize.width) {
+        // if we havent placed anything yet. then we know that the next rect
+        // must be the tallest in this shelf
+
+        this.leftShelf.bottomY = -nextRect.height;
+      }
+      if (nextRect.width <= this.bottomShelfRemainingWidth) {
+        // can still place
+        const x = this.gameSize.width - this.bottomShelfRemainingWidth;
+        console.log('rw', this.bottomShelfRemainingWidth);
+        this.bottomShelfRemainingWidth -= nextRect.width;
+        console.log('rw after', this.bottomShelfRemainingWidth);
+        const halfWidth = this.gameSize.width / 2;
+
+        if (this.rightShelf.bottomY === 0 && x <= halfWidth && x + nextRect.width > halfWidth) {
+          // first rectangle where some of it is on the right side of the middle
+          this.rightShelf.bottomY = -nextRect.height;
+        }
+        return {
+          ...nextRect,
+          x,
+          y: this.h0 - nextRect.height,
+        };
+      } else {
+        // done placing the initial shelf
+        this.firstLinePlaced = true;
+      }
+    }
     // real packing.
     // always do the lowest side first.
     console.log({
@@ -50,13 +83,12 @@ export class Sleators<T = RectangleConfig> implements PackingAlgorithm<T> {
     });
 
     let [shelf, xOffset] =
-      this.leftShelf.bottomY - this.leftShelf.height >= this.rightShelf.bottomY - this.rightShelf.height || !this.rightInitialized
+      this.leftShelf.bottomY - this.leftShelf.height >= this.rightShelf.bottomY - this.rightShelf.height
         ? [this.leftShelf, 0]
         : [this.rightShelf, this.gameSize.width / 2];
     let side: Side = xOffset === 0 ? 'left' : 'right';
     console.log(xOffset === 0 ? 'left' : 'right');
 
-    const nextRect = this.data.shift()!;
     if (nextRect.width <= shelf.remainingWidth) {
       console.log('currentshelf', shelf);
       // can place on the shelf
@@ -71,12 +103,6 @@ export class Sleators<T = RectangleConfig> implements PackingAlgorithm<T> {
         x: this.gameSize.width / 2 - shelf.remainingWidth - nextRect.width + xOffset,
         y: shelf.bottomY - nextRect.height + this.h0,
       };
-    }
-
-    if (!this.rightInitialized) {
-      this.rightInitialized = true;
-      [shelf, xOffset] = [this.rightShelf, this.gameSize.width / 2];
-      side = 'right';
     }
 
     // new shelf
