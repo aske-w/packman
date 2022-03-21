@@ -64,7 +64,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
    */
   const [renderInventory, setRenderInventory] = useState<ColorRect<RectangleConfig>[]>([]);
 
-  const { onPlaceEvent, event } = useEvents();
+  const { onPlaceEvent, event } = useEvents(algorithm);  
 
   useEffect(() => {
     if (inventoryChanged) {
@@ -109,8 +109,6 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
       const interactiveScrollOffset = interactiveLayerRef.current?.y()!;
       const interactiveRects = interactiveLayerRef.current?.children;
 
-      let intersectAny = false;
-
       const rectToPlace: Rectangle = {
         x: pos.x,
         y: -interactiveScrollOffset + pos.y,
@@ -118,9 +116,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
         height: rect.height,
       };
 
-      interactiveRects?.forEach(ir => {
-        if (intersects(ir.getAttrs(), rectToPlace)) intersectAny = true;
-      });
+      const intersectAny = interactiveRects?.some(ir => intersects(ir.getAttrs(), rectToPlace));
 
       
       if (intersectAny || rectToPlace.x < 0 || rectToPlace.x > stripWidth || rectToPlace.y < 0 || rectToPlace.y > scrollableHeight) return false;
@@ -162,7 +158,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
       });
     }
 
-    
+
     return true;
   };
 

@@ -1,16 +1,22 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { ArrowLeftIcon, BadgeCheckIcon } from '@heroicons/react/outline';
+import { CheckIcon, XIcon } from '@heroicons/react/solid'
 import { RefreshIcon } from '@heroicons/react/solid';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import Confetti from 'react-confetti';
 import { Link } from 'react-router-dom';
 import { createSemanticDiagnosticsBuilderProgram } from 'typescript';
+import { useAutoPlace } from '../../hooks/useAutoPlace';
+import useAlgorithmStore from '../../store/algorithm.store';
 import useEventStore from '../../store/event.store';
 import useGameEndStore from '../../store/gameEnd.store';
+import useLevelStore from '../../store/level.store';
+import useScoreStore from '../../store/score.store';
 import { Events } from '../../types/Events.enum';
 import { GameEndModalTitles } from '../../types/GameEndModalTitles.enum';
 import { Levels } from '../../types/Levels.enum';
 import { PackingAlgorithms } from '../../types/PackingAlgorithm.interface';
+import { getYearMonthDay } from '../../utils/utils';
 import Button from './Button';
 import GameEndModalItem from './Item';
 
@@ -21,7 +27,10 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
   const [titleTextColor, setTitleTextColor] = useState<string | undefined>();
   const { event, setEvent } = useEventStore(useCallback(({ event, setEvent }) => ({ event, setEvent }), []));
   const { blur, setBlur } = useGameEndStore();
-
+  const {user: userScore, algo: algoScore } = useScoreStore(useCallback((state) => ({user: state.user.height, algo: state.algorithm.height}), []));
+  const {level} = useLevelStore();
+  const {algorithm} = useAlgorithmStore();
+  const { getPersonalBest, lastPlayed } = useScoreStore();
   useEffect(() => {
     switch (event) {
       case Events.GAME_OVER:
@@ -87,21 +96,50 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
                  * [Restart] [Back]
                  * [Your achievements]
                  */}
+                <div className='text-gray-200 absolute top-0 right-0 mr-3 mt-2'>
+                  <ul className='list-none leading-3 text-sm'>
+                    { getYearMonthDay(new Date(Date.now())) !== (lastPlayed ? getYearMonthDay(lastPlayed) : 0)/* TODO: get last game date from store */ 
+                      ? <li className='flex justify-start flex-row bg-zinc-500 bg rounded px-2 pb-1 pt-2 hover:scale-105 transition-all'>
+                          <CheckIcon className='h-4 pr-1 text-green-500'/>
+                          <span>First game of the day</span>
+                        </li>
+                      : undefined
+                    }
+                    { userScore < algoScore 
+                      ? <li className='flex justify-start flex-row bg-zinc-500 bg rounded px-2 pb-1 pt-2 hover:scale-105 transition-all'>
+                          <CheckIcon className='h-4 pr-1 text-green-500'/>
+                          <span>Beat the algorithm</span>
+                        </li> 
+                      : <li className='flex justify-start flex-row bg-zinc-500 bg rounded px-2 pb-1 pt-2 hover:scale-105 transition-all'>
+                          <XIcon className='h-4 pr-1 text-red-500'/>
+                          <span>Beat by the algorithm</span>
+                        </li> 
+                    }
+                    { userScore < (getPersonalBest(algorithm, level)?.height ?? (userScore + 1))
+                      ? <li className='flex justify-start flex-row bg-zinc-500 bg rounded px-2 pb-1 pt-2 hover:scale-105 transition-all'>
+                          <CheckIcon className='h-4 pr-1 text-green-500'/>
+                          <span>New personal best</span>
+                        </li> 
+                      : undefined 
+                    }
+                  </ul>
+                </div>
                 <div className="w-3/4 m-auto text-white">
-                  <GameEndModalItem name="Your score" value={1234} />
-                  <GameEndModalItem name="Personal best" value={4321} />
-                  <GameEndModalItem name="Level" value={Levels.EXPERT} />
-                  <GameEndModalItem name="Algorithm" value={PackingAlgorithms.BEST_FIT_DECREASING_HEIGHT} />
+                  <GameEndModalItem name="Your score" value={userScore} />
+                  <GameEndModalItem name="Personal best" value={getPersonalBest(algorithm, level)?.height ?? userScore} />
+                  <GameEndModalItem name="Algorithm score" value={algoScore} />
+                  <GameEndModalItem name="Level" value={level} />
+                  <GameEndModalItem name="Algorithm" value={algorithm} />
                   <div className="flex justify-between pt-3">
                     <div className="flex justify-start">
-                      <Button additionalClasses="mr-3" onClick={() => reset(Events.RESTART)}>
-                        <RefreshIcon className="h-5 pr-1" />
-                        Restart
-                      </Button>
-                      <Link to="/" className="modal-button no-underline" onClick={() => reset()}>
+                      <Link to="/" className="modal-button no-underline mr-3" onClick={() => reset()}>
                         <ArrowLeftIcon className="h-5 pr-1" />
                         Back
                       </Link>
+                      <Button onClick={() => reset(Events.RESTART)}>
+                        <RefreshIcon className="h-5 pr-1" />
+                        Restart
+                      </Button>
                     </div>
                     <Link to="/achievements" className="modal-button no-underline" onClick={() => reset()}>
                       <BadgeCheckIcon className="h-5 pr-1" />

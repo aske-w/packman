@@ -17,4 +17,8 @@ export enum Events {
    * Used when the user fails to meet an objective within set limits.
    */
   GAME_OVER = 'game_over',
+
+  // Events to dispatch when player finishes a game mode to serve badges
+  COMPLETED_BIN_PACKING = "completed_bin_packing",
+  COMPLEDED_STRIP_PACKING = "completed_strip_packing",
 }

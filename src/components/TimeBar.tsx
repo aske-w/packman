@@ -45,6 +45,12 @@ const TimeBar: React.FC<TimeBarProps> = ({ targetFPS = 60, startColor = green, e
     currWidth.current = clientWidth;
   };
 
+  const finish = (color?:RGBColor ) => {
+    clearInterval(loop!);
+    currWidth.current = clientWidth;
+    color && (barRef.current!.style.backgroundColor = `rgb(${color.red}, ${color.green}, ${color.blue})`);
+  }
+
   // reset timer to initial state and start immediately, i.e. when a user places a rectangle within sufficient time.
   const restart = () => {
     currWidth.current = clientWidth;
@@ -65,11 +71,11 @@ const TimeBar: React.FC<TimeBarProps> = ({ targetFPS = 60, startColor = green, e
 
     switch (event) {
       case Events.FINISHED:
-        reset();
+        finish();
         break;
 
       case Events.GAME_OVER:
-        reset({ ...red });
+        finish({...red});
         break;
 
       case Events.IDLE:
