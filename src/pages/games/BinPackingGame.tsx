@@ -13,6 +13,7 @@ import { useWindowSize } from '../../hooks/useWindowSize';
 import { BinPackingAlgorithms } from '../../types/BinPackingAlgorithm.interface';
 import { ColorRect } from '../../types/ColorRect.interface';
 import { generateInventory } from '../../utils/generateData';
+import { Gamemodes } from '../../types/Gamemodes.enum';
 
 interface BinPackingGameProps {}
 const NUM_ITEMS = 10;
@@ -39,6 +40,9 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
   const algorithm = useRef<BinAlgorithmHandle>(null);
   const [staticInventory, setStaticInventory] = useState(generateInventory(inventoryWidth, NUM_ITEMS));
   const [inventoryChanged, setInventoryChanged] = useState(true);
+
+  const { setCurrentGame } = useGameState();
+  setCurrentGame(Gamemodes.BIN_PACKING);
   /**
    * This is the inventory, used for rendering the draggable rects. Whenever an
    * item is placed in a bin, it's removed from this array
@@ -185,3 +189,6 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
 };
 
 export default BinPackingGame;
+function useGameState(): { setCurrentGame: any } {
+  throw new Error('Function not implemented.');
+}

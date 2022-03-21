@@ -1,7 +1,7 @@
 import create from 'zustand';
 import { Levels } from '../types/Levels.enum';
 import { PackingAlgorithms } from '../types/PackingAlgorithm.interface';
-import { LOCAL_STORAGE_PREFIX } from '../utils/utils';
+import { getLocalStorage, getYearMonthDay, LOCAL_STORAGE_PREFIX } from '../utils/utils';
 
 export interface Score {
   height: number;
@@ -27,11 +27,6 @@ export type ScoreState = Record<Player, Score> & {
   readonly personalBest: MappedScore | undefined;
 };
 
-const getLocalStorage = <T>(key: string) => {
-  const stored = window.localStorage.getItem(key);
-  return stored !== null ? (JSON.parse(stored) as T) : undefined;
-};
-
 const initScore = () => ({ height: 0 });
 
 const useScoreStore = create<ScoreState>((set, get) => ({
@@ -47,7 +42,7 @@ const useScoreStore = create<ScoreState>((set, get) => ({
   setLastPlayed: () =>
     set(state => {
       const date = new Date(Date.now());
-      window.localStorage.setItem(LAST_PLAYED_PREFIX, JSON.stringify(date));
+      window.localStorage.setItem(LAST_PLAYED_PREFIX, JSON.stringify(date.getTime()));
       return { ...state, lastPlayed: date };
     }),
   setRectanglesLeft: (rectangles: number) => set(state => ({ ...state, rectanglesLeft: rectangles })),
