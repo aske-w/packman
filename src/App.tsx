@@ -9,7 +9,7 @@ interface AppProps {}
 const App: React.FC<AppProps> = ({}) => {
   return (
     <div className="flex flex-col w-screen h-screen bg-canvas">
-      <BadgeContainer/>
+      <BadgeContainer />
       <Nav height={NAV_HEIGHT}>
         <Outlet />
       </Nav>

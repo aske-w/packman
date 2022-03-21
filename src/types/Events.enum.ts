@@ -19,6 +19,6 @@ export enum Events {
   GAME_OVER = 'game_over',
 
   // Events to dispatch when player finishes a game mode to serve badges
-  COMPLETED_BIN_PACKING = "completed_bin_packing",
-  COMPLEDED_STRIP_PACKING = "completed_strip_packing",
+  COMPLETED_BIN_PACKING = 'completed_bin_packing',
+  COMPLEDED_STRIP_PACKING = 'completed_strip_packing',
 }

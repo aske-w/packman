@@ -1,8 +1,8 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { ArrowLeftIcon, BadgeCheckIcon } from '@heroicons/react/outline';
-import { CheckIcon, XIcon } from '@heroicons/react/solid'
+import { CheckIcon, XIcon } from '@heroicons/react/solid';
 import { RefreshIcon } from '@heroicons/react/solid';
-import React, { Fragment, useCallback, useEffect, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import Confetti from 'react-confetti';
 import { Link } from 'react-router-dom';
 import { createSemanticDiagnosticsBuilderProgram } from 'typescript';
@@ -27,22 +27,23 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
   const [titleTextColor, setTitleTextColor] = useState<string | undefined>();
   const { event, setEvent } = useEventStore(useCallback(({ event, setEvent }) => ({ event, setEvent }), []));
   const { blur, setBlur } = useGameEndStore();
-  const {user: userScore, algo: algoScore } = useScoreStore(useCallback((state) => ({user: state.user.height, algo: state.algorithm.height}), []));
-  const {level} = useLevelStore();
-  const {algorithm} = useAlgorithmStore();
-  const { getPersonalBest, lastPlayed } = useScoreStore();
+  const { user: userScore, algo: algoScore } = useScoreStore(useCallback(state => ({ user: state.user.height, algo: state.algorithm.height }), []));
+  const { level } = useLevelStore();
+  const { algorithm } = useAlgorithmStore();
+  const { getPersonalBest, lastPlayed, setLastPlayed } = useScoreStore();
+
   useEffect(() => {
     switch (event) {
       case Events.GAME_OVER:
         setTitle(GameEndModalTitles.GAME_OVER);
         setTitleTextColor('text-red-500');
         setBlur(true);
-        break;
+        return () => setLastPlayed();
       case Events.FINISHED:
         setTitle(GameEndModalTitles.FINISHED);
         setTitleTextColor('text-green-500');
         setBlur(true);
-        break;
+        return () => setLastPlayed();
     }
   }, [event]);
 
@@ -96,32 +97,32 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
                  * [Restart] [Back]
                  * [Your achievements]
                  */}
-                <div className='text-gray-200 absolute top-0 right-0 mr-3 mt-2'>
-                  <ul className='list-none leading-3 text-sm'>
-                    { getYearMonthDay(new Date(Date.now())) !== (lastPlayed ? getYearMonthDay(lastPlayed) : 0)/* TODO: get last game date from store */ 
-                      ? <li className='flex justify-start flex-row bg-zinc-500 bg rounded px-2 pb-1 pt-2 hover:scale-105 transition-all'>
-                          <CheckIcon className='h-4 pr-1 text-green-500'/>
-                          <span>First game of the day</span>
-                        </li>
-                      : undefined
-                    }
-                    { userScore < algoScore 
-                      ? <li className='flex justify-start flex-row bg-zinc-500 bg rounded px-2 pb-1 pt-2 hover:scale-105 transition-all'>
-                          <CheckIcon className='h-4 pr-1 text-green-500'/>
-                          <span>Beat the algorithm</span>
-                        </li> 
-                      : <li className='flex justify-start flex-row bg-zinc-500 bg rounded px-2 pb-1 pt-2 hover:scale-105 transition-all'>
-                          <XIcon className='h-4 pr-1 text-red-500'/>
-                          <span>Beat by the algorithm</span>
-                        </li> 
-                    }
-                    { userScore < (getPersonalBest(algorithm, level)?.height ?? (userScore + 1))
-                      ? <li className='flex justify-start flex-row bg-zinc-500 bg rounded px-2 pb-1 pt-2 hover:scale-105 transition-all'>
-                          <CheckIcon className='h-4 pr-1 text-green-500'/>
-                          <span>New personal best</span>
-                        </li> 
-                      : undefined 
-                    }
+                <div className="text-gray-200 absolute top-0 right-0 mr-3 mt-2">
+                  <ul className="list-none leading-3 text-sm">
+                    {getYearMonthDay(new Date(Date.now())) !==
+                    (lastPlayed ? getYearMonthDay(lastPlayed) : 0) /* TODO: get last game date from store */ ? (
+                      <li className="flex justify-start flex-row bg-zinc-500 bg rounded px-2 pb-1 pt-2 hover:scale-105 transition-all">
+                        <CheckIcon className="h-4 pr-1 text-green-500" />
+                        <span>First game of the day</span>
+                      </li>
+                    ) : undefined}
+                    {userScore < algoScore ? (
+                      <li className="flex justify-start flex-row bg-zinc-500 bg rounded px-2 pb-1 pt-2 hover:scale-105 transition-all">
+                        <CheckIcon className="h-4 pr-1 text-green-500" />
+                        <span>Beat the algorithm</span>
+                      </li>
+                    ) : (
+                      <li className="flex justify-start flex-row bg-zinc-500 bg rounded px-2 pb-1 pt-2 hover:scale-105 transition-all">
+                        <XIcon className="h-4 pr-1 text-red-500" />
+                        <span>Beat by the algorithm</span>
+                      </li>
+                    )}
+                    {userScore < (getPersonalBest(algorithm, level)?.height ?? userScore + 1) ? (
+                      <li className="flex justify-start flex-row bg-zinc-500 bg rounded px-2 pb-1 pt-2 hover:scale-105 transition-all">
+                        <CheckIcon className="h-4 pr-1 text-green-500" />
+                        <span>New personal best</span>
+                      </li>
+                    ) : undefined}
                   </ul>
                 </div>
                 <div className="w-3/4 m-auto text-white">
