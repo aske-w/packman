@@ -15,6 +15,9 @@ import { ColorRect } from '../../types/ColorRect.interface';
 import { generateInventory } from '../../utils/generateData';
 import { Gamemodes } from '../../types/Gamemodes.enum';
 import useGameStore from '../../store/game.store';
+import Konva from 'konva';
+import { Shape, ShapeConfig } from 'konva/lib/Shape';
+import { Stage as KonvaStage } from 'konva/lib/Stage';
 
 interface BinPackingGameProps {}
 const NUM_ITEMS = 10;
@@ -68,15 +71,33 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
     });
   };
 
-  const handleDraggedToBin = (name: string, pos: Vector2d) => {
+  const handleDraggedToBin = (evtRect: Shape<ShapeConfig> | KonvaStage, startPos: Vector2d) => {
+    const { name } = evtRect.getAttrs();
     const offset = interactiveLayer.current!.y();
+    const dropPos = evtRect.getAbsolutePosition();
     // take the offset into account
-    pos.y -= offset;
+    dropPos.y -= offset;
 
-    const bin = findBin(pos);
-    const { x, y } = pos;
+    // Check if it's inside a bin
+
+    const bin = findBin(dropPos);
+
+    // Animate it back
+    if (bin === -1) {
+      return new Konva.Tween({
+        x: startPos.x,
+        y: startPos.y,
+        node: evtRect,
+        duration: 0.4,
+        easing: Konva.Easings.EaseOut,
+      }).play();
+    }
+
     const rect = renderInventory.find(r => r.name === name);
+
     if (!rect) return;
+
+    const { x, y } = dropPos;
     setBins(old => ({
       ...old,
       [bin]: (old[bin] ?? []).concat({ ...rect, x, y }),
