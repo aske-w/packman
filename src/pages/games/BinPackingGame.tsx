@@ -41,8 +41,8 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
   const [staticInventory, setStaticInventory] = useState(generateInventory(inventoryWidth, NUM_ITEMS));
   const [inventoryChanged, setInventoryChanged] = useState(true);
 
-  const { setCurrentGame } = useGameState();
-  setCurrentGame(Gamemodes.BIN_PACKING);
+  // const { setCurrentGame } = useGameState();
+  // setCurrentGame(Gamemodes.BIN_PACKING);
   /**
    * This is the inventory, used for rendering the draggable rects. Whenever an
    * item is placed in a bin, it's removed from this array
@@ -189,6 +189,6 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
 };
 
 export default BinPackingGame;
-function useGameState(): { setCurrentGame: any } {
-  throw new Error('Function not implemented.');
-}
+// function useGameState(): { setCurrentGame: any } {
+//   throw new Error('Function not implemented.');
+// }
