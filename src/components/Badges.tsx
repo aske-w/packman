@@ -80,35 +80,19 @@ export const BadgeContainer: React.FC<BadgesProps> = ({}) => {
   const addGameResult = useAchievementStore(useCallback(state => state.addGameResult, []));
   const user = useScoreStore(useCallback(state => state.user, []));
 
-  console.log({ currentGame, algorithm, level, user });
 
   useEffect(() => {
     switch (event) {
       case Events.FINISHED:
         console.log('Events.FINISHED');
-        // useSaveGameResult(true);
         addGameResult(currentGame!, algorithm, level, user.height, true);
         break;
       case Events.GAME_OVER:
         console.log('Events.GAME_OVER');
-        // useSaveGameResult(false);
         addGameResult(currentGame!, algorithm, level, user.height, false);
         break;
     }
   }, [event, currentGame, algorithm, level, user.height, addGameResult]);
-
-  // useEffect(() => {
-  //   switch (event) {
-  //     case Events.FINISHED:
-  //       console.log('Events.FINISHED');
-  //       useSaveGameResult(true);
-  //       break;
-  //     case Events.GAME_OVER:
-  //       console.log('Events.GAME_OVER');
-  //       useSaveGameResult(false);
-  //       break;
-  //   }
-  // }, [event]);
 
   return (
     <div>

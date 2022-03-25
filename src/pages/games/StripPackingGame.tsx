@@ -40,7 +40,7 @@ import useGameStore from '../../store/game.store';
 import { Gamemodes } from '../../types/Gamemodes.enum';
 
 interface StripPackingGameProps {}
-const NUM_ITEMS = 30;
+const NUM_ITEMS = 5;
 const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   const { width: wWidth, height: wHeight } = useWindowSize();
   const stripWidth = wWidth * 0.2;
@@ -101,6 +101,10 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
 
   useRestartStripPacking(resetFuncs, algorithm);
 
+  const stripRectChangedCallback = () => {
+    
+  }
+
   /**
    * Pos is absolute position in the canvas
    */
@@ -123,35 +127,34 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
 
       if (intersectAny || rectToPlace.x < 0 || rectToPlace.x > stripWidth || rectToPlace.y < 0 || rectToPlace.y > scrollableHeight) return false;
 
-      onPlaceEvent(renderInventory.length);
       const placement = {
         x: pos.x,
         y: pos.y - gameHeight - interactiveScrollOffset,
       };
-
+      
       interactiveRef.current?.place(rect, placement);
       const res = algoRef.current?.next();
       if (!res) return false;
       const [placedRect, order, recIdx] = res;
       const inv = [...startingInventory];
       const interactiveIdx = inv.findIndex(r => r.name === rectName);
-
+      
       inv[interactiveIdx].removed = true;
       inv[recIdx].order = order;
-
+      
       // Pushes currently placed block at the back of the inventory lust
       pushItemToBack(inv, interactiveIdx);
-
+      
       let newRectIdx = 0;
       const compressedInv = compressInventory(inv, inventoryWidth, (rect, i) => rect.name === placedRect.name && (newRectIdx = i));
-
+      
       const interactiveInventory = compressedInv.filter(r => !r.removed);
       setRenderInventory(interactiveInventory);
       setRectanglesLeft(renderInventory.length - 1);
-
+      
       // give the order of placement to the starting state
       setStartingInventory(compressedInv);
-
+      
       /**
        * Let inventory compress before animating
        */
@@ -388,6 +391,8 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
             stripRects={stripRects}
             setStripRects={setStripRects}
             snap={snapInteractive}
+            stripRectChangedCallback={stripRectChangedCallback}
+            staticInvLength={startingInventory.length}
           />
           <Inventory
             ref={inventoryLayer}
