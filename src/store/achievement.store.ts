@@ -40,11 +40,6 @@ const useAchievementStore = create<AchievementStore>(
     (set, get) => ({
       badges: get()?.badges || [],
       gameResults: get()?.gameResults || [],
-      // (function () {
-      //   const storedResults = getLocalStorage<AchievementLocalstorage[]>(GAME_RESULT_PREFIX);
-      //   if (!storedResults) return [];
-      //   return storedResults;
-      // })(),
       addGameResult: (gamemode: Gamemodes, algorithm: Algorithms, level: Levels, score: number, didWin: boolean) =>
         set(state => {
           const gameResults = [...state.gameResults];
