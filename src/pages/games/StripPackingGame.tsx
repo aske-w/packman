@@ -33,12 +33,10 @@ import { compressInventory, generateInventory } from '../../utils/generateData';
 import { intersects } from '../../utils/intersects';
 import TimeBar from '../../components/TimeBar';
 import { useEvents } from '../../hooks/useEvents';
-import { Events } from '../../types/Events.enum';
 import { sleep } from '../../utils/utils';
 import GameEndModal from '../../components/gameEndModal/Modal';
 import { useRestartStripPacking } from '../../hooks/useRestartStripPacking';
 import useGameStore from '../../store/game.store';
-import { Gamemodes } from '../../types/Gamemodes.enum';
 
 interface StripPackingGameProps {}
 const NUM_ITEMS = 5;

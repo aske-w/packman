@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import create from 'zustand';
 import { NAV_HEIGHT } from '../config/canvasConfig';
 import useEventStore from '../store/event.store';
 import useGameEndStore from '../store/gameEnd.store';

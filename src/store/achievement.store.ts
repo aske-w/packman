@@ -4,7 +4,7 @@ import { Levels } from '../types/Levels.enum';
 import create from 'zustand';
 import useAlgorithmStore from './algorithm.store';
 import useLevelStore from './level.store';
-import { getLocalStorage } from '../utils/utils';
+import { getLocalStorage, LOCAL_STORAGE_PREFIX } from '../utils/utils';
 import useGameStore from './game.store';
 
 /**
@@ -15,7 +15,7 @@ export interface AchievementStore {
   addGameResult: (didWin: boolean) => void;
 }
 
-const name = 'gameResults';
+const GAME_RESULT_PREFIX = LOCAL_STORAGE_PREFIX + 'gameResults';
 
 interface AchievementLocalstorage {
   gamemode: Gamemodes;
@@ -27,7 +27,7 @@ interface AchievementLocalstorage {
 
 const useAchievementStore = create<AchievementStore>((set, get) => ({
   gameResults: (function () {
-    const storedResults = getLocalStorage<AchievementLocalstorage[]>(name);
+    const storedResults = getLocalStorage<AchievementLocalstorage[]>(GAME_RESULT_PREFIX);
     if (!storedResults) return [];
     return storedResults;
   })(),
@@ -36,7 +36,9 @@ const useAchievementStore = create<AchievementStore>((set, get) => ({
       const { currentGame: gamemode } = useGameStore();
       const { algorithm } = useAlgorithmStore();
       const { level } = useLevelStore();
-      const index = state.gameResults!.findIndex(x => x.gamemode == gamemode && x.algorithm == algorithm && x.level == level);
+
+      const index = state.gameResults!.findIndex(x => x.gamemode === gamemode && x.algorithm === algorithm && x.level === level);
+
       if (index > -1) {
         if (didWin) {
           state.gameResults![index].wins++;
@@ -52,8 +54,12 @@ const useAchievementStore = create<AchievementStore>((set, get) => ({
         }
         state.gameResults!.push(newData);
       }
-      window.localStorage.setItem(name, JSON.stringify(state.gameResults));
-      return {};
+
+      window.localStorage.setItem(GAME_RESULT_PREFIX, JSON.stringify(state.gameResults));
+
+      return {
+        ...state,
+      };
     }),
 }));
 
