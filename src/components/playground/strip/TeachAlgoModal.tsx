@@ -5,6 +5,7 @@ import { PackingAlgorithms } from '../../../types/PackingAlgorithm.interface';
 import BFDHArticle from './algorithm-articles/BFDHArticle';
 import FFDHArticle from './algorithm-articles/FFDHArticle';
 import NFDHArticle from './algorithm-articles/NFDHArticle';
+import SleatorsArticle from './algorithm-articles/SleatorsArticle';
 
 interface TeachAlgoModalProps {
   visible: boolean;
@@ -21,6 +22,8 @@ const TeachAlgoModal: React.FC<TeachAlgoModalProps> = ({ algorithm, onClose, vis
         return <NFDHArticle />;
       case PackingAlgorithms.BEST_FIT_DECREASING_HEIGHT:
         return <BFDHArticle />;
+      case PackingAlgorithms.SLEATORS:
+        return <SleatorsArticle />;
       default:
         return null;
     }
