@@ -3,11 +3,17 @@ import { Levels } from '../../../types/Levels.enum';
 import { PackingAlgorithms } from '../../../types/PackingAlgorithm.interface';
 import classNames from 'classnames';
 
-interface TableProps {
-  className?: string;
+export interface Row {
+  text: string;
 }
 
-const Table: React.FC<TableProps> = ({ className }) => {
+interface TableProps {
+  className?: string;
+  headers: string[];
+  rows: Row[][];
+}
+
+const Table: React.FC<TableProps> = ({ className, headers, rows }) => {
   return (
     <div className={classNames('flex flex-col', className)}>
       <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -16,33 +22,22 @@ const Table: React.FC<TableProps> = ({ className }) => {
             <table className="min-w-full">
               <thead className="bg-lightMain">
                 <tr>
-                  <Header text="Algorithm" />
-                  <Header text="Level" />
-                  <Header text="Score" />
-                  <Header text="Date" />
+                  {headers.map(header => {
+                    return <Header key={header} text={header} />;
+                  })}
                 </tr>
               </thead>
               <tbody>
-                <tr className="border-b bg-main border-gray-700">
-                  <Row text={PackingAlgorithms.BEST_FIT_DECREASING_HEIGHT} />
-                  <Row text={Levels.EXPERT} />
-                  <Row text="100" />
-                  <Row text={Date.now().toLocaleString()} />
-                </tr>
-
-                <tr className="border-b bg-main border-gray-700">
-                  <Row text={PackingAlgorithms.FIRST_FIT_DECREASING_HEIGHT} />
-                  <Row text={Levels.EXPERT} />
-                  <Row text="100" />
-                  <Row text={Date.now().toLocaleString()} />
-                </tr>
-
-                <tr className="bg-main">
-                  <Row text={PackingAlgorithms.NEXT_FIT_DECREASING_HEIGHT} />
-                  <Row text={Levels.EXPERT} />
-                  <Row text="100" />
-                  <Row text={Date.now().toLocaleString()} />
-                </tr>
+                {rows.map((_rows, i) => {
+                  const border = i !== rows.length - 1 ? 'border-b border-gray-700' : '';
+                  return (
+                    <tr className={'bg-main ' + border}>
+                      {_rows.map((row, j) => {
+                        return <Row key={row.text} text={row.text} />;
+                      })}
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

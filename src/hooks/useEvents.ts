@@ -9,10 +9,11 @@ export const useEvents = (algo: PackingAlgorithms) => {
   const level = useLevelStore(useCallback(({ level }) => level, []));
   const { setEvent, event } = useEventStore(useCallback(({ setEvent, event }) => ({ setEvent, event }), []));
   const { setEndScore } = useScoreStore(useCallback(({ setEndScore }) => ({ setEndScore }), []));
+  // const {  };
 
   const onPlaceEvent = useCallback(
     (dynInvLength: number) => {
-      dynInvLength === 1 ? setEvent(Events.FINISHED) : setEvent(Events.RECT_PLACED);
+      dynInvLength === 1 ? setEvent(Events.GAME_OVER) : setEvent(Events.RECT_PLACED);
     },
     [setEvent]
   );

@@ -37,6 +37,7 @@ import { sleep } from '../../utils/utils';
 import GameEndModal from '../../components/gameEndModal/Modal';
 import { useRestartStripPacking } from '../../hooks/useRestartStripPacking';
 import useGameStore from '../../store/game.store';
+import { Gamemodes } from '../../types/Gamemodes.enum';
 
 interface StripPackingGameProps {}
 const NUM_ITEMS = 5;
@@ -46,7 +47,8 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   const inventoryWidth = wWidth * 0.6;
   const gameHeight = wHeight - NAV_HEIGHT;
   const { setCurrentGame } = useGameStore();
-  // setCurrentGame(Gamemodes.STRIP_PACKING);
+
+  useEffect(() => setCurrentGame(Gamemodes.STRIP_PACKING), []);
 
   const algorithm = useAlgorithmStore(useCallback(({ algorithm }) => algorithm, []));
   const setRectanglesLeft = useScoreStore(useCallback(({ setRectanglesLeft }) => setRectanglesLeft, []));

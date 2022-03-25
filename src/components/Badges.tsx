@@ -1,6 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
+import useAchievementStore from '../store/achievement.store';
+import useAlgorithmStore from '../store/algorithm.store';
 import useEventStore from '../store/event.store';
+import useGameStore from '../store/game.store';
+import useLevelStore from '../store/level.store';
+import useScoreStore from '../store/score.store';
 import { Badges } from '../types/Badges.enum';
 import { Events } from '../types/Events.enum';
 
@@ -67,16 +72,43 @@ export const BadgeContainer: React.FC<BadgesProps> = ({}) => {
     CERTIFIED_EXPERT
       - save game mode/algorithm/level and check if all exists with expert level
   */
-  const { event } = useEventStore();
+  const { event } = useEventStore(useCallback(({ event, setEvent }) => ({ event, setEvent }), []));
+  // const { addGameResult } = useAchievementStore();
+  const currentGame = useGameStore(useCallback(state => state.currentGame, []));
+  const algorithm = useAlgorithmStore(useCallback(state => state.algorithm, []));
+  const level = useLevelStore(useCallback(state => state.level, []));
+  const addGameResult = useAchievementStore(useCallback(state => state.addGameResult, []));
+  const user = useScoreStore(useCallback(state => state.user, []));
+
+  console.log({ currentGame, algorithm, level, user });
 
   useEffect(() => {
     switch (event) {
       case Events.FINISHED:
+        console.log('Events.FINISHED');
+        // useSaveGameResult(true);
+        addGameResult(currentGame!, algorithm, level, user.height, true);
         break;
       case Events.GAME_OVER:
+        console.log('Events.GAME_OVER');
+        // useSaveGameResult(false);
+        addGameResult(currentGame!, algorithm, level, user.height, false);
         break;
     }
-  }, [event]);
+  }, [event, currentGame, algorithm, level, user.height, addGameResult]);
+
+  // useEffect(() => {
+  //   switch (event) {
+  //     case Events.FINISHED:
+  //       console.log('Events.FINISHED');
+  //       useSaveGameResult(true);
+  //       break;
+  //     case Events.GAME_OVER:
+  //       console.log('Events.GAME_OVER');
+  //       useSaveGameResult(false);
+  //       break;
+  //   }
+  // }, [event]);
 
   return (
     <div>
