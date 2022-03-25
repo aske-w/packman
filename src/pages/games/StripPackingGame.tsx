@@ -48,7 +48,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   const inventoryWidth = wWidth * 0.6;
   const gameHeight = wHeight - NAV_HEIGHT;
   const { setCurrentGame } = useGameStore();
-  setCurrentGame(Gamemodes.STRIP_PACKING);
+  // setCurrentGame(Gamemodes.STRIP_PACKING);
 
   const algorithm = useAlgorithmStore(useCallback(({ algorithm }) => algorithm, []));
   const setRectanglesLeft = useScoreStore(useCallback(({ setRectanglesLeft }) => setRectanglesLeft, []));

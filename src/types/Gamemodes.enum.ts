@@ -1,4 +1,4 @@
 export enum Gamemodes {
-    BIN_PACKING,
-    STRIP_PACKING
+  BIN_PACKING = 'Bin Packing',
+  STRIP_PACKING = 'Strip Packing',
 }
