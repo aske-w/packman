@@ -210,10 +210,10 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
             ref={algorithmScrollbarRef}
             scrollableHeight={algorithmScrollableHeight}
             x={inventoryWidth + binAreaWidth - PADDING - SCROLLBAR_WIDTH}
-            y={binAreaHeight}
+            y={binAreaHeight + PADDING}
             gameHeight={binAreaHeight}
             onYChanged={newY => {
-              algorithmLayerRef.current?.y(newY);
+              algorithmLayerRef.current?.y(binAreaHeight - newY);
             }}
           />
         </Layer>

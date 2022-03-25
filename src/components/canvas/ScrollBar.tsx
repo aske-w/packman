@@ -16,7 +16,7 @@ interface ScrollBarProps {
 const ScrollBar = forwardRef<KonvaRect, ScrollBarProps>(
   ({ scrollableHeight, onYChanged, y: inputY, x, gameHeight = GAME_HEIGHT, startPosition = 'bottom' }, ref) => {
     const y = inputY ?? (startPosition === 'bottom' ? gameHeight - PADDING - SCROLLBAR_HEIGHT : PADDING);
-    console.log({ yyy: y, inputY });
+    const startY = inputY ?? 0;
 
     return (
       <Rect
@@ -30,23 +30,21 @@ const ScrollBar = forwardRef<KonvaRect, ScrollBarProps>(
         draggable
         cornerRadius={5}
         dragBoundFunc={function (pos) {
-          console.log({ thisheigt: this.height(), posY: pos.y, gameHeight });
-
-          console.log({ y });
-
           pos.x = x;
-          pos.y = Math.max(Math.min(pos.y, gameHeight - this.height() - PADDING), PADDING);
+          pos.y = Math.max(Math.min(pos.y, startY + gameHeight - this.height() - PADDING), startY + PADDING);
+
           return pos;
         }}
-        // onDragMove={function (this: Konva.Layer, e) {
-        //   const verticalBar = e.target;
-        //   // delta in %
-        //   const availableHeight = gameHeight - PADDING * 2 - verticalBar.height();
-        //   var delta = (verticalBar.y() - PADDING) / availableHeight;
+        onDragMove={function (this: Konva.Layer, e) {
+          const verticalBar = e.target;
+          // delta in %
+          const availableHeight = gameHeight - PADDING * 2 - verticalBar.height();
+          var delta = (verticalBar.y() - PADDING - startY) / availableHeight;
 
-        //   const newY = -(scrollableHeight - gameHeight) * delta;
-        //   onYChanged(newY);
-        // }}
+          const newY = -(scrollableHeight - gameHeight) * delta;
+
+          onYChanged(newY);
+        }}
       />
     );
   }
