@@ -85,6 +85,7 @@ const SleatorsArticle: React.FC<SleatorsArticleProps> = ({}) => {
               fill="#000"
             />
           </svg>
+          <p className="mt-5 text-sm text-white">Example of Sleators algorithm packing</p>
         </div>
       </div>
     </>
