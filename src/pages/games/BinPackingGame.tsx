@@ -46,8 +46,8 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
   const algorithm = useRef<BinAlgorithmHandle>(null);
   const [staticInventory, setStaticInventory] = useState(generateInventory(inventoryWidth, NUM_ITEMS));
   const [inventoryChanged, setInventoryChanged] = useState(true);
-
   const { setCurrentGame } = useGameStore();
+  const algorithmStartY = binAreaHeight + PADDING;
 
   useEffect(() => setCurrentGame(Gamemodes.BIN_PACKING), []);
 
@@ -127,6 +127,7 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
           minY: binAreaHeight,
           maxY: binAreaHeight * 2,
         },
+        startY: algorithmStartY,
         visibleHeight: binAreaHeight,
         layerRef: algorithmLayerRef,
         scrollBarRef: algorithmScrollbarRef,
@@ -210,7 +211,7 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
             ref={algorithmScrollbarRef}
             scrollableHeight={algorithmScrollableHeight}
             x={inventoryWidth + binAreaWidth - PADDING - SCROLLBAR_WIDTH}
-            y={binAreaHeight + PADDING}
+            y={algorithmStartY}
             gameHeight={binAreaHeight}
             onYChanged={newY => {
               algorithmLayerRef.current?.y(binAreaHeight - newY);
