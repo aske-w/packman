@@ -46,6 +46,7 @@ export class Sleators<T = RectangleConfig> implements PackingAlgorithm<T> {
       return this.placeWide();
     }
     const h0 = this.lastPlaced.y; // figure out where we should start
+
     let nextRect = this.data.shift()!;
 
     // this is the firstline that goes across
@@ -127,11 +128,12 @@ export class Sleators<T = RectangleConfig> implements PackingAlgorithm<T> {
     const y = this.lastPlaced.y - next.height;
 
     const values = {
+      ...next,
       x: 0,
       y,
-      ...next,
     };
-    this.lastPlaced = values;
+    this.lastPlaced = { ...values };
+
     return values;
   }
 

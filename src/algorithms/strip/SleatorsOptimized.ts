@@ -6,7 +6,7 @@ import { PackingAlgorithm } from '../../types/PackingAlgorithm.interface';
 import { RectangleConfig } from '../../types/RectangleConfig.interface';
 import { Shelf } from '../../types/Shelf.interface';
 type Side = 'left' | 'right';
-export class Sleators<T = RectangleConfig> implements PackingAlgorithm<T> {
+export class SleatorsOptimized<T = RectangleConfig> implements PackingAlgorithm<T> {
   widest: DimensionsWithConfig<T>[] = [];
   data: DimensionsWithConfig<T>[] = [];
   lastPlaced: IRect = { height: 0, width: 0, x: 0, y: 0 };
@@ -129,9 +129,9 @@ export class Sleators<T = RectangleConfig> implements PackingAlgorithm<T> {
     }
 
     const values = {
+      ...next,
       x: 0,
       y,
-      ...next,
     };
     this.lastPlaced = values;
     return values;
