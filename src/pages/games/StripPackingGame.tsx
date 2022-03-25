@@ -40,7 +40,7 @@ import useGameStore from '../../store/game.store';
 import { Gamemodes } from '../../types/Gamemodes.enum';
 
 interface StripPackingGameProps {}
-const NUM_ITEMS = 5;
+const NUM_ITEMS = 30;
 const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   const { width: wWidth, height: wHeight } = useWindowSize();
   const stripWidth = wWidth * 0.2;

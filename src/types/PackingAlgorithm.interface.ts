@@ -19,6 +19,7 @@ export enum PackingAlgorithms {
   FIRST_FIT_DECREASING_HEIGHT = 'First Fit Decreasing Height',
   BEST_FIT_DECREASING_HEIGHT = 'Best Fit Decreasing Height',
   SIZE_ALTERNATING_STACK = 'Size Alternating Stack',
+  SLEATORS = 'Sleators',
 }
 
 export const ALL_PACKING_ALGORITHMS = [
@@ -26,4 +27,5 @@ export const ALL_PACKING_ALGORITHMS = [
   PackingAlgorithms.NEXT_FIT_DECREASING_HEIGHT,
   PackingAlgorithms.BEST_FIT_DECREASING_HEIGHT,
   PackingAlgorithms.SIZE_ALTERNATING_STACK,
+  PackingAlgorithms.SLEATORS,
 ];

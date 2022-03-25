@@ -68,10 +68,10 @@ const FFDHArticle: React.FC<FFDHArticleProps> = ({}) => {
             <rect x="231.5" y="220.5" width="77" height="98" fill="#FBBF24" stroke="black" />
             <rect x="309.5" y="230.5" width="25" height="88" fill="#FBBF24" stroke="black" />
             <rect x="335.5" y="270.5" width="77" height="48" fill="#FBBF24" stroke="black" />
-            <rect x="413.5" y="287.5" width="149" height="31" fill="#FBBF24" fill-opacity="0.5" stroke="black" />
+            <rect x="413.5" y="287.5" width="149" height="31" fill="#FBBF24" fillOpacity="0.5" stroke="black" />
             <rect x="156.5" y="191.5" width="77" height="127" fill="#FBBF24" stroke="black" />
             <rect x="0.5" y="161.5" width="156" height="157" fill="#FBBF24" stroke="black" />
-            <line x1="2" y1="160" x2="554" y2="160" stroke="black" stroke-width="2" stroke-dasharray="4 4" />
+            <line x1="2" y1="160" x2="554" y2="160" stroke="black" strokeWidth="2" strokeDasharray="4 4" />
           </svg>
           <p className="mt-5 text-sm text-white">Rectangle cannot fit on the first shelf.</p>
         </div>
@@ -84,8 +84,8 @@ const FFDHArticle: React.FC<FFDHArticleProps> = ({}) => {
             <rect x="0.5" y="129.5" width="149" height="31" fill="#FBBF24" stroke="black" />
             <rect x="156.5" y="191.5" width="77" height="127" fill="#FBBF24" stroke="black" />
             <rect x="0.5" y="161.5" width="156" height="157" fill="#FBBF24" stroke="black" />
-            <line x1="2" y1="160" x2="554" y2="160" stroke="black" stroke-width="2" stroke-dasharray="4 4" />
-            <line x1="2" y1="128" x2="554" y2="128" stroke="black" stroke-width="2" stroke-dasharray="4 4" />
+            <line x1="2" y1="160" x2="554" y2="160" stroke="black" strokeWidth="2" strokeDasharray="4 4" />
+            <line x1="2" y1="128" x2="554" y2="128" stroke="black" strokeWidth="2" strokeDasharray="4 4" />
           </svg>
           <p className="mt-5 text-sm text-white">A new shelf is created to fit the rectangle.</p>
         </div>
@@ -99,8 +99,8 @@ const FFDHArticle: React.FC<FFDHArticleProps> = ({}) => {
             <rect x="0.5" y="129.5" width="149" height="31" fill="#FBBF24" stroke="black" />
             <rect x="156.5" y="191.5" width="77" height="127" fill="#FBBF24" stroke="black" />
             <rect x="0.5" y="161.5" width="156" height="157" fill="#FBBF24" stroke="black" />
-            <line x1="2" y1="160" x2="554" y2="160" stroke="black" stroke-width="2" stroke-dasharray="4 4" />
-            <line x1="2" y1="128" x2="554" y2="128" stroke="black" stroke-width="2" stroke-dasharray="4 4" />
+            <line x1="2" y1="160" x2="554" y2="160" stroke="black" strokeWidth="2" strokeDasharray="4 4" />
+            <line x1="2" y1="128" x2="554" y2="128" stroke="black" strokeWidth="2" strokeDasharray="4 4" />
           </svg>
 
           <p className="mt-5 text-sm text-white">The last rectangle fits in the bottom shelf.</p>

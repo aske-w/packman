@@ -12,8 +12,9 @@ import { PackingAlgorithm, PackingAlgorithms } from '../../../types/PackingAlgor
 import { RectangleConfig } from '../../../types/RectangleConfig.interface';
 import { Layer as KonvaLayer } from 'konva/lib/Layer';
 import { ALGO_MOVE_ANIMATION_DURATION as ALGO_ENTER_ANIMATION_DURATION } from '../../../config/canvasConfig';
+import { Sleators } from '../../../algorithms/strip/Sleators';
 
-const { BEST_FIT_DECREASING_HEIGHT, NEXT_FIT_DECREASING_HEIGHT, FIRST_FIT_DECREASING_HEIGHT, SIZE_ALTERNATING_STACK } = PackingAlgorithms;
+const { BEST_FIT_DECREASING_HEIGHT, NEXT_FIT_DECREASING_HEIGHT, FIRST_FIT_DECREASING_HEIGHT, SIZE_ALTERNATING_STACK, SLEATORS } = PackingAlgorithms;
 
 type PrevPos = { prevX: number; prevY: number };
 
@@ -75,6 +76,10 @@ const StripPackingAlgorithm = React.forwardRef<StripPackingAlgorithmHandle, Stri
 
         case SIZE_ALTERNATING_STACK: {
           const a = new SizeAlternatingStack<ColorRect<RectangleConfig>>(size).load(invCopy);
+          return a;
+        }
+        case SLEATORS: {
+          const a = new Sleators<ColorRect<RectangleConfig>>(size).load(invCopy);
           return a;
         }
 
