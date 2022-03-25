@@ -102,7 +102,7 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
         {checked && (
           <div className="flex flex-row items-center space-x-20">
             <RangeSlider progress={speed} onChange={updateSpeed} hideTooltip />
-            <RectInput value={speed} className="w-4/12 px-3 select-none" sec="ms" readonly />
+            <RectInput value={speed} className="w-4/12 px-3 select-none" sec="%" readonly />
           </div>
         )}
       </SideBarSection>

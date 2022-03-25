@@ -61,7 +61,7 @@ const BFDHArticle: React.FC<BFDHArticleProps> = ({}) => {
           <svg width="376" height="319" viewBox="0 0 376 319" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect x="1" width="375" height="319" fill="white" />
             <rect x="350.5" y="144.5" width="20" height="15" fill="#FBBF24" stroke="black" />
-            <rect x="336.5" y="303.5" width="20" height="15" fill="#FBBF24" fill-opacity="0.3" stroke="black" />
+            <rect x="336.5" y="303.5" width="20" height="15" fill="#FBBF24" fillOpacity="0.3" stroke="black" />
             <rect x="229.5" y="141.5" width="120" height="18" fill="#FBBF24" stroke="black" />
             <rect x="232.5" y="220.5" width="77" height="98" fill="#FBBF24" stroke="black" />
             <rect x="310.5" y="230.5" width="25" height="88" fill="#FBBF24" stroke="black" />
@@ -69,8 +69,8 @@ const BFDHArticle: React.FC<BFDHArticleProps> = ({}) => {
             <rect x="79.5" y="128.5" width="149" height="31" fill="#FBBF24" stroke="black" />
             <rect x="157.5" y="191.5" width="77" height="127" fill="#FBBF24" stroke="black" />
             <rect x="1.5" y="161.5" width="156" height="157" fill="#FBBF24" stroke="black" />
-            <path d="M3 160H375" stroke="black" stroke-width="2" stroke-dasharray="4 4" />
-            <path d="M0 110H375" stroke="black" stroke-width="2" stroke-dasharray="4 4" />
+            <path d="M3 160H375" stroke="black" strokeWidth="2" strokeDasharray="4 4" />
+            <path d="M0 110H375" stroke="black" strokeWidth="2" strokeDasharray="4 4" />
             <path
               d="M345.646 295.354C345.842 295.549 346.158 295.549 346.354 295.354L349.536 292.172C349.731 291.976 349.731 291.66 349.536 291.464C349.34 291.269 349.024 291.269 348.828 291.464L346 294.293L343.172 291.464C342.976 291.269 342.66 291.269 342.464 291.464C342.269 291.66 342.269 291.976 342.464 292.172L345.646 295.354ZM345.5 210L345.5 295L346.5 295L346.5 210L345.5 210Z"
               fill="black"

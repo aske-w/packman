@@ -1,11 +1,12 @@
 import { Transition, Dialog } from '@headlessui/react';
 import { QuestionMarkCircleIcon } from '@heroicons/react/solid';
-import React, { Fragment, useMemo } from 'react';
+import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { PackingAlgorithms } from '../../../types/PackingAlgorithm.interface';
 import BFDHArticle from './algorithm-articles/BFDHArticle';
 import FFDHArticle from './algorithm-articles/FFDHArticle';
 import NFDHArticle from './algorithm-articles/NFDHArticle';
 import SleatorsArticle from './algorithm-articles/SleatorsArticle';
+import SASArticle from './algorithm-articles/SASArticle';
 
 interface TeachAlgoModalProps {
   visible: boolean;
@@ -24,10 +25,21 @@ const TeachAlgoModal: React.FC<TeachAlgoModalProps> = ({ algorithm, onClose, vis
         return <BFDHArticle />;
       case PackingAlgorithms.SLEATORS:
         return <SleatorsArticle />;
+      case PackingAlgorithms.SIZE_ALTERNATING_STACK:
+        return <SASArticle />;
       default:
         return null;
     }
   }, [algorithm]);
+
+  const [top, setTop] = useState<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (visible && top) {
+      top?.scrollIntoView({
+        block: 'start',
+      });
+    }
+  }, [visible, top]);
 
   return (
     <>
@@ -61,9 +73,8 @@ const TeachAlgoModal: React.FC<TeachAlgoModalProps> = ({ algorithm, onClose, vis
               leaveTo="opacity-0 scale-95"
             >
               <div className="inline-block w-full max-w-4xl p-6 my-8 overflow-hidden prose text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl max-h-[40rem] overflow-y-auto">
-                <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
-                  {algorithm}
-                </Dialog.Title>
+                <div ref={setTop} />
+                <Dialog.Title className="text-lg font-medium leading-6 text-gray-900">{algorithm}</Dialog.Title>
                 <div className="mt-2 ">{article}</div>
                 <div className="flex justify-end mt-4">
                   <button
