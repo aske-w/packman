@@ -38,9 +38,6 @@ const Achievement: React.FC<AchievementProps> = ({}) => {
         { text: new Date(result.date).toLocaleDateString() },
       ];
 
-      console.log({ gamemode: result.gamemode, acc });
-      if (!result?.gamemode) return acc;
-
       acc[result.gamemode].push(rows);
 
       return acc;
