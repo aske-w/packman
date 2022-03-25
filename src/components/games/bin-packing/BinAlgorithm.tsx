@@ -2,7 +2,7 @@ import Konva from 'konva';
 import { Layer as KonvaLayer } from 'konva/lib/Layer';
 
 import { IRect, Vector2d } from 'konva/lib/types';
-import { forwardRef, Fragment, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import { forwardRef, Fragment, RefObject, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { Rect as KonvaRect, RectConfig } from 'konva/lib/shapes/Rect';
 
 import { Group, KonvaNodeEvents, Layer, Rect, Text } from 'react-konva';
@@ -23,6 +23,7 @@ interface BinAlgorithmProps {
   selectedAlgorithm: BinPackingAlgorithms;
   data: DimensionsWithConfig[];
   binLayout: IRect[];
+  layerRef: RefObject<KonvaLayer>;
   staticInventory: ColorRect[];
   getInventoryScrollOffset: () => number;
 }
@@ -36,7 +37,7 @@ export interface BinAlgorithmHandle {
 const PADDING = 30;
 const { FINITE_FIRST_FIT, FINITE_NEXT_FIT, HYBRID_FIRST_FIT } = BinPackingAlgorithms;
 const BinAlgorithm = forwardRef<BinAlgorithmHandle, BinAlgorithmProps>(
-  ({ offset, dimensions, data, selectedAlgorithm, binSize, binLayout, staticInventory: inventory, getInventoryScrollOffset }, ref) => {
+  ({ offset, layerRef, dimensions, data, selectedAlgorithm, binSize, binLayout, staticInventory: inventory, getInventoryScrollOffset }, ref) => {
     const [placed, setPlaced] = useState<
       ColorRect<
         RectangleConfig & {
@@ -89,7 +90,7 @@ const BinAlgorithm = forwardRef<BinAlgorithmHandle, BinAlgorithmProps>(
     }, [selectedAlgorithm]);
 
     return (
-      <Layer y={offset.y} x={offset.x}>
+      <Layer y={offset.y} x={offset.x} ref={layerRef}>
         {binLayout.map((b, i) => {
           const binRects = placed.filter(({ binId }) => binId === i);
           console.log(binRects);

@@ -14,6 +14,7 @@ import { BinPackingAlgorithms } from '../../types/BinPackingAlgorithm.interface'
 import { ColorRect } from '../../types/ColorRect.interface';
 import { generateInventory } from '../../utils/generateData';
 import { Gamemodes } from '../../types/Gamemodes.enum';
+import useGameStore from '../../store/game.store';
 
 interface BinPackingGameProps {}
 const NUM_ITEMS = 10;
@@ -36,13 +37,20 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
   const interactiveScrollBarRef = useRef<KonvaRect>(null);
   const interactiveLayer = useRef<KonvaLayer>(null);
   const interactiveScrollableHeight = binAreaHeight * 2;
+  // algorithm scroll
+  const algorithmScrollbarRef = useRef<KonvaRect>(null);
+  const algorithmLayerRef = useRef<KonvaLayer>(null);
+  const algorithmScrollableHeight = binAreaHeight * 2;
+
   // algorithm handle
   const algorithm = useRef<BinAlgorithmHandle>(null);
   const [staticInventory, setStaticInventory] = useState(generateInventory(inventoryWidth, NUM_ITEMS));
   const [inventoryChanged, setInventoryChanged] = useState(true);
 
-  const { setCurrentGame } = useGameState();
-  setCurrentGame(Gamemodes.BIN_PACKING);
+  const { setCurrentGame } = useGameStore();
+
+  useEffect(() => setCurrentGame(Gamemodes.BIN_PACKING), []);
+
   /**
    * This is the inventory, used for rendering the draggable rects. Whenever an
    * item is placed in a bin, it's removed from this array
@@ -111,6 +119,19 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
         scrollBarRef: interactiveScrollBarRef,
         scrollableHeight: interactiveScrollableHeight,
       }),
+      // algorithm
+      defaultScrollHandler({
+        activeArea: {
+          minX: inventoryWidth,
+          maxX: wWidth,
+          minY: binAreaHeight,
+          maxY: binAreaHeight * 2,
+        },
+        visibleHeight: binAreaHeight,
+        layerRef: algorithmLayerRef,
+        scrollBarRef: algorithmScrollbarRef,
+        scrollableHeight: algorithmScrollableHeight,
+      }),
     ],
   });
 
@@ -141,6 +162,7 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
           <Rect fill="#444" x={inventoryWidth} y={binAreaHeight} width={binAreaWidth} height={binAreaHeight} />
         </Layer>
         <BinAlgorithm
+          layerRef={algorithmLayerRef}
           getInventoryScrollOffset={() => -inventoryLayer.current?.y()!}
           staticInventory={staticInventory}
           binLayout={binLayout}
@@ -182,6 +204,18 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
             gameHeight={binAreaHeight}
             onYChanged={newY => interactiveLayer.current?.y(newY)}
           />
+          <ScrollBar
+            key="algo scroll bar"
+            startPosition="bottom"
+            ref={algorithmScrollbarRef}
+            scrollableHeight={algorithmScrollableHeight}
+            x={inventoryWidth + binAreaWidth - PADDING - SCROLLBAR_WIDTH}
+            y={binAreaHeight}
+            gameHeight={binAreaHeight}
+            onYChanged={newY => {
+              algorithmLayerRef.current?.y(newY);
+            }}
+          />
         </Layer>
       </Stage>
     </div>
@@ -189,6 +223,3 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
 };
 
 export default BinPackingGame;
-function useGameState(): { setCurrentGame: any } {
-  throw new Error('Function not implemented.');
-}
