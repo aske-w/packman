@@ -33,7 +33,7 @@ import { compressInventory, generateInventory } from '../../utils/generateData';
 import { intersects } from '../../utils/intersects';
 
 interface StripPackingGameProps {}
-const NUM_ITEMS = 5;
+const NUM_ITEMS = 30;
 const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   const { width: wWidth, height: wHeight } = useWindowSize();
   const stripWidth = wWidth * 0.2;

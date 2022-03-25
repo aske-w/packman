@@ -7,8 +7,9 @@ import { FirstFitDecreasingHeight } from '../algorithms/strip/FirstFitDecreasing
 import { BestFitDecreasingHeight } from '../algorithms/strip/BestFitDecreasingHeight';
 import { SizeAlternatingStack } from '../algorithms/strip/SizeAlternatingStack';
 import { DimensionsWithConfig } from '../types/DimensionsWithConfig.type';
+import { Sleators } from '../algorithms/strip/Sleators';
 
-const { BEST_FIT_DECREASING_HEIGHT, NEXT_FIT_DECREASING_HEIGHT, FIRST_FIT_DECREASING_HEIGHT, SIZE_ALTERNATING_STACK } = PackingAlgorithms;
+const { BEST_FIT_DECREASING_HEIGHT, NEXT_FIT_DECREASING_HEIGHT, FIRST_FIT_DECREASING_HEIGHT, SIZE_ALTERNATING_STACK, SLEATORS } = PackingAlgorithms;
 
 export type AlgoStates = 'RUNNING' | 'STOPPED' | 'PAUSED';
 
@@ -64,6 +65,9 @@ export const usePackingAlgorithms = (width: number, selectedAlgorithm: PackingAl
 
         case SIZE_ALTERNATING_STACK:
           algorithm.current = new SizeAlternatingStack<{}>(size).load(data);
+          break;
+        case SLEATORS:
+          algorithm.current = new Sleators<{}>(size).load(data);
           break;
 
         default:

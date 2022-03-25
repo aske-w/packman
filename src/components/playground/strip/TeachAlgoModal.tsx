@@ -5,6 +5,7 @@ import { PackingAlgorithms } from '../../../types/PackingAlgorithm.interface';
 import BFDHArticle from './algorithm-articles/BFDHArticle';
 import FFDHArticle from './algorithm-articles/FFDHArticle';
 import NFDHArticle from './algorithm-articles/NFDHArticle';
+import SleatorsArticle from './algorithm-articles/SleatorsArticle';
 import SASArticle from './algorithm-articles/SASArticle';
 
 interface TeachAlgoModalProps {
@@ -22,6 +23,8 @@ const TeachAlgoModal: React.FC<TeachAlgoModalProps> = ({ algorithm, onClose, vis
         return <NFDHArticle />;
       case PackingAlgorithms.BEST_FIT_DECREASING_HEIGHT:
         return <BFDHArticle />;
+      case PackingAlgorithms.SLEATORS:
+        return <SleatorsArticle />;
       case PackingAlgorithms.SIZE_ALTERNATING_STACK:
         return <SASArticle />;
       default:

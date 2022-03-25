@@ -132,7 +132,7 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
                 sec=""
               />
               <button
-                onClick={() => setDimensionsStorage(generateData(genNum, 100, 5))}
+                onClick={() => setDimensionsStorage(generateData(genNum, stripWidth * 0.52, 5))}
                 className={`px-2 py-1 font-medium text-white rounded shadow bg-blue-700 ${isStarted ? 'opacity-60' : 'hover:bg-blue-800'}`}
                 disabled={isStarted}
               >
