@@ -61,9 +61,8 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(({ width, rects }, handle) 
 
   return (
     <Card
-      className="flex flex-col w-full h-full bg-white overflow-y-scroll"
+      className="flex flex-col h-full overflow-y-scroll bg-white"
       style={{
-        width: width + 'px',
         height: window.innerHeight * 0.9 + 'px',
       }}
     >
