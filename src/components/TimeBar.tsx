@@ -115,7 +115,9 @@ const TimeBar: React.FC<TimeBarProps> = ({ targetFPS = 60, startColor = green, e
   return useMemo(
     () =>
       permission.time ? (
-        <div className={`top-[${NAV_HEIGHT}px] w-full h-2 absolute z-10 overflow-hidden`}>
+        <div
+          style={{top: NAV_HEIGHT}} 
+          className={`w-full h-2 absolute z-10 overflow-hidden`}>
           <div className="h-full w-full">
             <div ref={barRef} className="h-full"></div>
           </div>
