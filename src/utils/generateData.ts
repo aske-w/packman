@@ -58,7 +58,7 @@ export const generateInventory = <T = RectangleConfig>(inventorySize: number, nu
   ).rects;
 };
 
-export const compressInventory = <T>(rects: ColorRect<T>[], inventorySize: number) => {
+export const compressInventory = <T>(rects: ColorRect<T>[], inventorySize: number, cb?: (rect: ColorRect<T>, idx: number) => void) => {
   return rects.reduce<Acc<T>>(
     (acc, _rect, i) => {
       const rect = { ..._rect, x: PADDING, y: PADDING };
@@ -85,6 +85,8 @@ export const compressInventory = <T>(rects: ColorRect<T>[], inventorySize: numbe
 
         acc.rects.push(rect);
       }
+
+      cb?.(rect, i);
 
       return acc;
     },

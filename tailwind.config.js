@@ -9,6 +9,8 @@ module.exports = {
         main: '#232323',
         lightMain: '#2E2E31',
         canvas: '#383838',
+        lightCanvas: '#636363',
+        badge:'#121212'
       },
     },
   },

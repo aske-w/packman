@@ -4,6 +4,7 @@ import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom';
 import ReactTooltip from 'react-tooltip';
 import App from './App';
 import './index.css';
+import Achievement from './pages/achievement/Achievement';
 import BinPackingGame from './pages/games/BinPackingGame';
 import StripPackingGame from './pages/games/StripPackingGame';
 import Home from './pages/Home';
@@ -27,6 +28,7 @@ ReactDOM.render(
             <Route path={pathKey.STRIP} element={<StripPackingGame />} />
             <Route path={pathKey.BIN} element={<BinPackingGame />} />
           </Route>
+          <Route path={pathKey.ACHIEVEMENTS} element={<Achievement />} />
         </Route>
       </Routes>
     </BrowserRouter>

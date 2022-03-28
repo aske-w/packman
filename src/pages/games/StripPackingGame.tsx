@@ -21,8 +21,8 @@ import {
 } from '../../config/canvasConfig';
 import { defaultScrollHandler, useKonvaWheelHandler } from '../../hooks/useKonvaWheelHandler';
 import { useWindowSize } from '../../hooks/useWindowSize';
-import useAlgorithmStore from '../../store/algorithm';
-import useScoreStore from '../../store/score';
+import useAlgorithmStore from '../../store/algorithm.store';
+import useScoreStore from '../../store/score.store';
 import { ColorRect } from '../../types/ColorRect.interface';
 import { Coordinate } from '../../types/Coordinate.interface';
 import { Rectangle } from '../../types/Rectangle.interface';
@@ -31,17 +31,27 @@ import { pushItemToBack } from '../../utils/array';
 import { clamp } from '../../utils/clamp';
 import { compressInventory, generateInventory } from '../../utils/generateData';
 import { intersects } from '../../utils/intersects';
+import TimeBar from '../../components/TimeBar';
+import { useEvents } from '../../hooks/useEvents';
+import { sleep } from '../../utils/utils';
+import GameEndModal from '../../components/gameEndModal/Modal';
+import { useRestartStripPacking } from '../../hooks/useRestartStripPacking';
+import useGameStore from '../../store/game.store';
+import { Gamemodes } from '../../types/Gamemodes.enum';
 
 interface StripPackingGameProps {}
-const NUM_ITEMS = 30;
+const NUM_ITEMS = 5;
 const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   const { width: wWidth, height: wHeight } = useWindowSize();
   const stripWidth = wWidth * 0.2;
   const inventoryWidth = wWidth * 0.6;
   const gameHeight = wHeight - NAV_HEIGHT;
+  const { setCurrentGame } = useGameStore();
 
-  const algorithm = useAlgorithmStore(useCallback(state => state.algorithm, []));
-  const setRectanglesLeft = useScoreStore(useCallback(state => state.setRectanglesLeft, []));
+  useEffect(() => setCurrentGame(Gamemodes.STRIP_PACKING), []);
+
+  const algorithm = useAlgorithmStore(useCallback(({ algorithm }) => algorithm, []));
+  const setRectanglesLeft = useScoreStore(useCallback(({ setRectanglesLeft }) => setRectanglesLeft, []));
 
   const [stripRects, setStripRects] = useState<ColorRect[]>([]);
   /**
@@ -51,11 +61,14 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
     () => []
   );
   const [inventoryChanged, setInventoryChanged] = useState(true);
+
   /**
    * This is the inventory, used for rendering the draggable rects. Whenever an
    * item is placed in the strip, it's removed from this array
    */
   const [renderInventory, setRenderInventory] = useState<ColorRect<RectangleConfig>[]>([]);
+
+  const { onPlaceEvent, event } = useEvents(algorithm);
 
   useEffect(() => {
     if (inventoryChanged) {
@@ -79,14 +92,18 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   const algorithmScrollbarRef = useRef<KonvaRect>(null);
   const algorithmLayerRef = useRef<KonvaLayer>(null);
 
-  useEffect(() => {
-    const reset = () => {
-      setStartingInventory(generateInventory(inventoryWidth, NUM_ITEMS));
-      setInventoryChanged(true);
-      interactiveRef.current?.reset();
-    };
-    reset();
-  }, [algorithm]);
+  const resetFuncs = [
+    () => setStartingInventory(generateInventory(inventoryWidth, NUM_ITEMS)),
+    () => setInventoryChanged(true),
+    interactiveRef.current?.reset,
+    algoRef.current?.reset,
+  ];
+
+  useRestartStripPacking(resetFuncs, algorithm);
+
+  const stripRectChangedCallback = () => {
+    
+  }
 
   /**
    * Pos is absolute position in the canvas
@@ -99,8 +116,6 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
       const interactiveScrollOffset = interactiveLayerRef.current?.y()!;
       const interactiveRects = interactiveLayerRef.current?.children;
 
-      let intersectAny = false;
-
       const rectToPlace: Rectangle = {
         x: pos.x,
         y: -interactiveScrollOffset + pos.y,
@@ -108,9 +123,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
         height: rect.height,
       };
 
-      interactiveRects?.forEach(ir => {
-        if (intersects(ir.getAttrs(), rectToPlace)) intersectAny = true;
-      });
+      const intersectAny = interactiveRects?.some(ir => intersects(ir.getAttrs(), rectToPlace));
 
       if (intersectAny || rectToPlace.x < 0 || rectToPlace.x > stripWidth || rectToPlace.y < 0 || rectToPlace.y > scrollableHeight) return false;
 
@@ -118,35 +131,38 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
         x: pos.x,
         y: pos.y - gameHeight - interactiveScrollOffset,
       };
-
-      // Place in algorithm canvas
-      const res = algoRef.current?.place(rect);
-
+      
       interactiveRef.current?.place(rect, placement);
-
-      if (res) {
-        setTimeout(() => {
-          const [placedName, order, recIdx] = res;
-          const inv = [...startingInventory];
-          const interactiveIdx = inv.findIndex(r => r.name === rectName);
-
-          inv[interactiveIdx].removed = true;
-          inv[recIdx].order = order;
-
-          // Pushes currently placed block at the back of the inventory lust
-          pushItemToBack(inv, interactiveIdx);
-
-          const compressedInv = compressInventory(inv, inventoryWidth);
-
-          const interactiveInventory = compressedInv.filter(r => !r.removed);
-          setRenderInventory(interactiveInventory);
-          setRectanglesLeft(renderInventory.length - 1);
-
-          // give the order of placement to the starting state
-          setStartingInventory(compressedInv);
-        }, ALGO_MOVE_ANIMATION_DURATION * 1500);
-      }
+      const res = algoRef.current?.next();
+      if (!res) return false;
+      const [placedRect, order, recIdx] = res;
+      const inv = [...startingInventory];
+      const interactiveIdx = inv.findIndex(r => r.name === rectName);
+      
+      inv[interactiveIdx].removed = true;
+      inv[recIdx].order = order;
+      
+      // Pushes currently placed block at the back of the inventory lust
+      pushItemToBack(inv, interactiveIdx);
+      
+      let newRectIdx = 0;
+      const compressedInv = compressInventory(inv, inventoryWidth, (rect, i) => rect.name === placedRect.name && (newRectIdx = i));
+      
+      const interactiveInventory = compressedInv.filter(r => !r.removed);
+      setRenderInventory(interactiveInventory);
+      setRectanglesLeft(renderInventory.length - 1);
+      
+      // give the order of placement to the starting state
+      setStartingInventory(compressedInv);
+      
+      /**
+       * Let inventory compress before animating
+       */
+      sleep(ALGO_MOVE_ANIMATION_DURATION * 500).then(() => {
+        algoRef.current?.place(placedRect, newRectIdx);
+      });
     }
+
     return true;
   };
 
@@ -324,9 +340,10 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   });
 
   return (
-    <div className="w-full">
+    <div className="w-full ">
       <StripPackingGameIntroModal />
-
+      <TimeBar />
+      <GameEndModal />
       <div className="flex items-center justify-between w-full">
         <Stage onWheel={handleWheel} width={window.innerWidth} height={gameHeight}>
           <Layer>
@@ -374,6 +391,8 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
             stripRects={stripRects}
             setStripRects={setStripRects}
             snap={snapInteractive}
+            stripRectChangedCallback={stripRectChangedCallback}
+            staticInvLength={startingInventory.length}
           />
           <Inventory
             ref={inventoryLayer}

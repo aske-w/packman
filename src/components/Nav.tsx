@@ -1,15 +1,18 @@
 import React, { useCallback } from 'react';
 import ReactJoyride from 'react-joyride';
 import { Link, useLocation } from 'react-router-dom';
-import { pathName, pathKey } from '../pages/routes';
+import { pathName } from '../pages/routes';
 import Logo from '../resources/Logo.svg';
-import useAlgorithmStore from '../store/algorithm';
-import useScoreStore from '../store/score';
+import useAlgorithmStore from '../store/algorithm.store';
+import useScoreStore from '../store/score.store';
 import { ALL_PACKING_ALGORITHMS } from '../types/PackingAlgorithm.interface';
-import AlgoSelect from './AlgoSelect';
+import Select from './select/Select';
 import Score from './Score';
 import { QuestionMarkCircleIcon } from '@heroicons/react/solid';
 import useHelpStore from '../store/help.store';
+import LevelSelect from './select/LevelSelect';
+import GameEndModal from './gameEndModal/Modal';
+import useGameEndStore from '../store/gameEnd.store';
 interface NavProps {
   height: number;
 }
@@ -20,6 +23,7 @@ const SHOW_PLAYGROUNDS = [pathName.BIN_PLAYGROUND, pathName.STRIP_PLAYGROUND];
 const Nav: React.FC<NavProps> = ({ height, children }) => {
   const algorithm = useAlgorithmStore(useCallback(state => state.algorithm, []));
   const setAlgorithm = useAlgorithmStore(useCallback(state => state.setAlgorithm, []));
+  const { blur: showModal } = useGameEndStore();
   const score = useScoreStore(
     useCallback(
       ({ algorithm, user, rectanglesLeft }) => ({
@@ -96,12 +100,13 @@ const Nav: React.FC<NavProps> = ({ height, children }) => {
                 <Score primary={`Rects left: ${score.rectanglesLeft}`} />
               </div>
 
-              <AlgoSelect
+              <Select
                 className="text-base font-thin w-72 algorithm-select"
                 options={ALL_PACKING_ALGORITHMS}
                 value={algorithm}
                 onChange={setAlgorithm}
               />
+              <LevelSelect />
               <button onClick={() => setIntroOpen(true)}>
                 <QuestionMarkCircleIcon className="w-10 h-10 text-white hover:text-gray-200" />
               </button>
@@ -109,7 +114,7 @@ const Nav: React.FC<NavProps> = ({ height, children }) => {
           </>
         )}
       </nav>
-      {children}
+      <div className={`${showModal ? 'blur' : ''} w-full h-full`}>{children}</div>
     </div>
   );
 };
