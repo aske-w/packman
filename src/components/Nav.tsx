@@ -14,7 +14,7 @@ interface NavProps {
   height: number;
 }
 
-const SHOW_ALGO_AND_SCORE = [pathName.STRIP_GAME];
+const SHOW_ALGO_AND_SCORE = [pathName.STRIP_GAME, pathName.ONLINE_STRIP_GAME];
 const SHOW_PLAYGROUNDS = [pathName.BIN_PLAYGROUND, pathName.STRIP_PLAYGROUND];
 
 const Nav: React.FC<NavProps> = ({ height, children }) => {

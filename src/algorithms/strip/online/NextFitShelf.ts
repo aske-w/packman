@@ -1,39 +1,44 @@
-import { log } from 'console';
 import { Dimensions } from '../../../types/Dimensions.interface';
+import { OnlineStripPacking } from '../../../types/OnlineStripPackingAlgorithm.interface';
 import { Rectangle } from '../../../types/Rectangle.interface';
 import { Shelf } from '../../../types/Shelf.interface';
+import { DimensionsWithConfig } from '../../../types/DimensionsWithConfig.type';
+import { ColorRect } from '../../../types/ColorRect.interface';
+import { RectangleExPos } from '../../../types/RectangleExPos.type';
 
-export class NextFitShelf {
+export class NextFitShelf<T = Record<string, any>> implements OnlineStripPacking<T> {
   /**
    *
    */
   constructor(readonly gameSize: Dimensions, readonly r: number) {}
 
-  private denormalize({ height, width, x, y }: Rectangle): Rectangle {
+  private denormalize(rect: ColorRect<T>): ColorRect<T> {
     const unit = 1 / this.gameSize.width;
     return {
-      height: height / unit,
-      width: width / unit,
-      x: x / unit,
-      y: y / unit,
+      ...rect,
+      height: rect.height / unit,
+      width: rect.width / unit,
+      x: rect.x / unit,
+      y: rect.y / unit,
     };
   }
-  private normalize({ height, width }: Dimensions): Dimensions {
+  private normalize(rect: RectangleExPos<T>): RectangleExPos<T> {
     const unit = 1 / this.gameSize.width;
     return {
-      height: height * unit,
-      width: width * unit,
+      ...rect,
+      height: rect.height * unit,
+      width: rect.width * unit,
     };
   }
 
   shelves: Shelf[] = [];
 
   getShelfHeight(rectHeight: number) {
-    const r = this.r; //0,5
+    const r = this.r;
     const h = rectHeight;
 
-    for (let k = -10; k < 10; k++) {
-      //   console.log(`checking: ${(r ** (k + 1)).toFixed(2)} < ${h} <= ${(r ** k).toFixed(2)}`);
+    for (let k = -10; k < 1000; k++) {
+      console.log(`checking: ${(r ** (k + 1)).toFixed(2)} < ${h} <= ${(r ** k).toFixed(2)}`);
       if (r ** (k + 1) < h && h <= r ** k) {
         console.log('found height!', r ** k);
         return r ** k; // Shelf height
@@ -42,9 +47,8 @@ export class NextFitShelf {
     throw new Error('something went wrong :(');
   }
 
-  public place(_rect: Dimensions) {
+  public place(_rect: RectangleExPos<T>): ColorRect<T> {
     const rect = this.normalize(_rect);
-    console.log({ rect });
 
     const shelfHeight = this.getShelfHeight(rect.height);
     for (let i = this.shelves.length - 1; i >= 0; i--) {
@@ -54,11 +58,14 @@ export class NextFitShelf {
         // check that the rectangle still fits
         if (shelf.remainingWidth >= rect.width) {
           // can place
+          //@ts-expect-error
           const canvasRect = this.denormalize({
+            ..._rect,
             ...rect,
             y: shelf.bottomY - rect.height,
-            x: shelf.remainingWidth,
+            x: 1 - shelf.remainingWidth,
           });
+
           shelf.remainingWidth -= rect.width;
           return canvasRect;
         }
@@ -79,10 +86,12 @@ export class NextFitShelf {
 
     this.shelves.push(shelf);
 
+    //@ts-expect-error
     return this.denormalize({
+      ..._rect,
       ...rect,
       y: shelf.bottomY - rect.height,
-      x: shelf.remainingWidth,
+      x: 0,
     });
   }
 
