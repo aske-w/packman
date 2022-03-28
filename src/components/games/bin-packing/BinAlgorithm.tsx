@@ -9,7 +9,7 @@ import { Group, KonvaNodeEvents, Layer, Rect, Text } from 'react-konva';
 import FiniteFirstFit from '../../../algorithms/bin/offline/FiniteFirstFit';
 import FiniteNextFit from '../../../algorithms/bin/offline/FiniteNextFit';
 import HybridFirstFit from '../../../algorithms/bin/offline/HybridFirstFit';
-import algorithm from '../../../store/algorithm';
+import algorithm from '../../../store/algorithm.store';
 import { BinPackingAlgorithms } from '../../../types/BinPackingAlgorithm.interface';
 import { ColorRect } from '../../../types/ColorRect.interface';
 import { Dimensions } from '../../../types/Dimensions.interface';

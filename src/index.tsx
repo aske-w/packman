@@ -4,6 +4,7 @@ import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom';
 import ReactTooltip from 'react-tooltip';
 import App from './App';
 import './index.css';
+import Achievement from './pages/achievement/Achievement';
 import BinPackingGame from './pages/games/BinPackingGame';
 import OnlineBinPackingGame from './pages/games/OnlineBinPackingGame';
 import OnlineStripPackingGame from './pages/games/OnlineStripPackingGame';
@@ -30,6 +31,7 @@ ReactDOM.render(
             <Route path={pathKey.BIN} element={<BinPackingGame />} />
             <Route path={pathKey.ONLINE_STRIP} element={<OnlineStripPackingGame />} />
           </Route>
+          <Route path={pathKey.ACHIEVEMENTS} element={<Achievement />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -1,27 +1,41 @@
 import { Listbox, Transition } from '@headlessui/react';
 import React, { Fragment } from 'react';
 import { CheckIcon, SelectorIcon } from '@heroicons/react/solid';
-import { PackingAlgorithms } from '../types/PackingAlgorithm.interface';
 import classNames from 'classnames';
 
-interface AlgoSelectProps<T = string> {
+interface SelectProps<T = string> {
   value: T;
   onChange: (val: T) => void;
   readonly options: T[];
   className?: string;
+  innerClassname?: string;
+  selectIconClass?: string;
   disabled?: boolean;
 }
 
-function AlgoSelect<T>({ value, onChange, options, disabled, className }: AlgoSelectProps<T>) {
+function Select<T>({
+  value,
+  onChange,
+  options,
+  disabled,
+  selectIconClass = 'w-5 h-5 text-gray-400',
+  innerClassname = 'bg-canvas',
+  className,
+}: SelectProps<T>) {
   return (
     <div className={classNames('relative', className)}>
       {disabled && <div className="absolute z-50 w-full h-full bg-gray-700 rounded-lg opacity-70"></div>}
       <Listbox value={value} onChange={onChange}>
         <div className="relative">
-          <Listbox.Button className="relative w-full py-2 pl-3 pr-10 text-left rounded-lg shadow-md cursor-default bg-canvas focus:outline-none focus-visible:ring-2 focus-visible:ring-opacity-75 focus-visible:ring-white focus-visible:ring-offset-orange-300 focus-visible:ring-offset-2 focus-visible:border-indigo-500">
+          <Listbox.Button
+            className={classNames(
+              'relative w-full py-2 pl-3 pr-10 text-left rounded-lg shadow-md cursor-default focus:outline-none focus-visible:ring-2 focus-visible:ring-opacity-75 focus-visible:ring-white focus-visible:ring-offset-orange-300 focus-visible:ring-offset-2 focus-visible:border-indigo-500',
+              innerClassname
+            )}
+          >
             <span className={`block truncate ${disabled ? 'text-gray-400' : ''}`}>{value}</span>
             <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-              <SelectorIcon className="w-5 h-5 text-gray-400" aria-hidden="true" />
+              <SelectorIcon className={selectIconClass} aria-hidden="true" />
             </span>
           </Listbox.Button>
           <Transition as={Fragment} leave="transition ease-in duration-100" leaveFrom="opacity-100" leaveTo="opacity-0">
@@ -58,4 +72,4 @@ function AlgoSelect<T>({ value, onChange, options, disabled, className }: AlgoSe
   );
 }
 
-export default AlgoSelect;
+export default Select;

@@ -38,6 +38,12 @@ const Home: React.FC<HomeProps> = ({}) => {
           >
             Online Strip Packing
           </Link>
+          <Link
+            className="block px-4 py-2 font-medium text-center text-white bg-blue-700 rounded text-normal hover:bg-blue-900"
+            to={pathName.ACHIEVEMENTS}
+          >
+            Your Achievements
+          </Link>
         </li>
       </ul>
     </div>

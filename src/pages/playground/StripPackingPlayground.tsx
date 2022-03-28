@@ -41,7 +41,7 @@ function StripPackingPlayground() {
     promptBadge(Badges.COMPLETED_AN_ALGORITHM);
     promptBadge(Badges.ACHIEVED_FULL_POINTS);
     promptBadge(Badges.IMITATED_ALL_ALGORITHMS);
-    promptBadge(Badges.COMPETED_AGAINST_ALL_ALGORITHMS);
+    // promptBadge(Badges.COMPETED_AGAINST_ALL_ALGORITHMS);
     promptBadge(Badges.COMPLETED_TUTORIAL);
   }, []);
 

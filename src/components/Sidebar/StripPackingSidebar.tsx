@@ -4,7 +4,7 @@ import { AlgoStates } from '../../hooks/usePackingAlgorithms';
 import { useToggle } from '../../hooks/useToggle';
 import { Dimensions } from '../../types/Dimensions.interface';
 import { ALL_PACKING_ALGORITHMS, PackingAlgorithms } from '../../types/PackingAlgorithm.interface';
-import AlgoSelect from '../AlgoSelect';
+import Select from '../select/Select';
 import SideBarItem from './SidebarItem';
 import SideBarSection from './SideBarSection';
 import Switch from 'react-switch';
@@ -14,8 +14,8 @@ import BoxInput from '../BoxInput';
 import RectInput from '../RectInput';
 import { generateData } from '../../utils/generateData';
 import Sidebar from './Sidebar';
-import { AcademicCapIcon } from '@heroicons/react/solid';
 import TeachAlgoModal from '../playground/strip/TeachAlgoModal';
+import { AcademicCapIcon } from '@heroicons/react/solid';
 
 interface SidebarProps {
   placeNext(): void;
@@ -55,7 +55,7 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
       <TeachAlgoModal algorithm={selectedAlgorithm} visible={teachingOpen} onClose={() => setTeachingOpen(false)} />
       <SideBarSection title="Algorithms">
         <div className="flex flex-row items-center justify-between">
-          <AlgoSelect<PackingAlgorithms>
+          <Select<PackingAlgorithms>
             className="text-base font-thin text-white w-72 strip-playground-algo-select"
             options={ALL_PACKING_ALGORITHMS}
             onChange={setSelectedAlgorithm}

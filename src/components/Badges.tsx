@@ -1,10 +1,42 @@
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
+import useAchievementStore from '../store/achievement.store';
+import useAlgorithmStore from '../store/algorithm.store';
+import useEventStore from '../store/event.store';
+import useGameStore from '../store/game.store';
+import useLevelStore from '../store/level.store';
+import useScoreStore from '../store/score.store';
 import { Badges } from '../types/Badges.enum';
+import { BinPackingAlgorithms } from '../types/BinPackingAlgorithm.interface';
+import { Events } from '../types/Events.enum';
 
 interface BadgesProps {}
 
 export const BadgeContainer: React.FC<BadgesProps> = ({}) => {
+  
+  const { event } = useEventStore(useCallback(({ event, setEvent }) => ({ event, setEvent }), []));
+  // const { addGameResult } = useAchievementStore();
+  const currentGame = useGameStore(useCallback(state => state.currentGame, []));
+  const algorithm = useAlgorithmStore(useCallback(state => state.algorithm, []));
+  const level = useLevelStore(useCallback(state => state.level, []));
+  const addGameResult = useAchievementStore(useCallback(state => state.addGameResult, []));
+  const user = useScoreStore(useCallback(state => state.user, []));
+
+  
+
+  useEffect(() => {
+    switch (event) {
+      case Events.FINISHED:
+        console.log('Events.FINISHED');
+        addGameResult(currentGame!, algorithm, level, user.height, true);
+        break;
+      case Events.GAME_OVER:
+        console.log('Events.GAME_OVER');
+        addGameResult(currentGame!, algorithm, level, user.height, false);
+        break;
+    }
+  }, [event, currentGame, algorithm, level, user.height, addGameResult]);
+
   return (
     <div>
       <ToastContainer
