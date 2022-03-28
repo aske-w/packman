@@ -11,7 +11,7 @@ import OnlineStripPackingAlgorithm, {
 import { NAV_HEIGHT, PADDING, SCROLLBAR_WIDTH } from '../../config/canvasConfig';
 import { defaultScrollHandler, useKonvaWheelHandler } from '../../hooks/useKonvaWheelHandler';
 import { useWindowSize } from '../../hooks/useWindowSize';
-import useAlgorithmStore from '../../store/algorithm';
+import useAlgorithmStore from '../../store/algorithm.store';
 import { ColorRect } from '../../types/ColorRect.interface';
 import { generateData } from '../../utils/generateData';
 interface OnlineStripPackingGameProps {}
