@@ -8,12 +8,11 @@ import ScrollBar from '../../components/canvas/ScrollBar';
 import OnlineStripPackingAlgorithm, {
   OnlineStripPackingAlgorithmHandle,
 } from '../../components/games/onlineStripPacking/OnlineStripPackingAlgorithm';
-import { genId, NAV_HEIGHT, PADDING, SCROLLBAR_WIDTH } from '../../config/canvasConfig';
+import { NAV_HEIGHT, PADDING, SCROLLBAR_WIDTH } from '../../config/canvasConfig';
 import { defaultScrollHandler, useKonvaWheelHandler } from '../../hooks/useKonvaWheelHandler';
 import { useWindowSize } from '../../hooks/useWindowSize';
 import useAlgorithmStore from '../../store/algorithm';
 import { ColorRect } from '../../types/ColorRect.interface';
-import { OnlineStripPackingAlgorithms } from '../../types/OnlineStripPackingAlgorithm.interface';
 import { generateData } from '../../utils/generateData';
 interface OnlineStripPackingGameProps {}
 
