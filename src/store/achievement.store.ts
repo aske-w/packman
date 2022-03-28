@@ -4,6 +4,10 @@ import { Levels } from '../types/Levels.enum';
 import create from 'zustand';
 import { persist } from './middleware/persist.middleware';
 import { Badges } from '../types/Badges.enum';
+import { sleep } from '../utils/utils';
+import { checkAchievements } from '../utils/achievementChecker';
+import { promptBadge } from '../components/Badges';
+
 
 /**
  * Game mode | algorithm | level | loses | wins
@@ -15,13 +19,13 @@ export interface AchievementStore {
   setBadges: (badge: Badges, date: Date, text?: string) => void;
 }
 
-interface BadgesLocalStorage {
+export interface BadgesLocalStorage {
   title: Badges;
   text?: string;
   date: string;
 }
 
-interface AchievementLocalstorage {
+export interface AchievementLocalstorage {
   gamemode: Gamemodes;
   algorithm: Algorithms;
   level: Levels;
@@ -74,11 +78,16 @@ const useAchievementStore = create<AchievementStore>(
             }
             gameResults.push(newData);
           }
+          
+          const newAchievements = checkAchievements(gameResults).filter(a => !state.badges.some(b => b.title == a.title));
+          newAchievements.forEach(na => promptBadge(na.title));
+          
           const res = {
             ...state,
             gameResults: gameResults,
+            badges: [...state.badges, ...newAchievements]
           };
-          console.log(res.gameResults);
+          
           return res;
         }),
       setBadges: (badge, date, text) =>
@@ -98,5 +107,7 @@ const useAchievementStore = create<AchievementStore>(
     })
   )
 );
+
+
 
 export default useAchievementStore;

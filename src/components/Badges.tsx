@@ -7,71 +7,13 @@ import useGameStore from '../store/game.store';
 import useLevelStore from '../store/level.store';
 import useScoreStore from '../store/score.store';
 import { Badges } from '../types/Badges.enum';
+import { BinPackingAlgorithms } from '../types/BinPackingAlgorithm.interface';
 import { Events } from '../types/Events.enum';
 
 interface BadgesProps {}
 
 export const BadgeContainer: React.FC<BadgesProps> = ({}) => {
-  /*
-    AT_LEAST_YOU_TRIED
-    STREAK
-    SUCCESS_ON_FIRST_ATTEMPT
-    COMPLETED_AN_ALGORITHM
-    ACHIEVED_FULL_POINTS
-    IMITATED_ALL_ALGORITHMS
-
-    COMPETED_AGAINST_ALL_ALGORITHMS_BIN_PACKING
-      - save the algorithm/game mode combinations the user has completed
-      - every time event FINISHED || GAME_OVER is dispatched, check algorithm/game mode combinations
-    WON_AGAINST_ANY_ALGORITHM_BIN_PACKING
-      - events FINISHED and check algorithm/game mode/result
-    WON_AGAINST_ALL_ALGORITHM_BIN_PACKING
-      - save the algorithm/game mode/result combinations the user has completed
-      - every time event FINISHED || GAME_OVER is dispatched, check algorithm/game mode/result combinations
-    LOSE_AGAINST_ANY_ALGORITHM_BIN_PACKING
-      - events GAME_OVER and check algorithm/game mode/result
-    LOSE_AGAINST_ALL_ALGORITHM_BIN_PACKING
-      - save the algorithm/game mode/result combinations the user has completed
-      - every time event FINISHED || GAME_OVER is dispatched, check algorithm/game mode combinations
-    COMPLETE_ALL_ALGORITHMS_BEGINNER_BIN_PACKING
-      - save game mode/algorithm/level and check if all exists with beginner level for bin packing
-    COMPLETE_ALL_ALGORITHMS_INTERMEDIATE_BIN_PACKING
-      - save game mode/algorithm/level and check if all exists with beginner level for bin packing
-    COMPLETE_ALL_ALGORITHMS_EXPERT_BIN_PACKING
-      - save game mode/algorithm/level and check if all exists with beginner level for bin packing
-
-
-    COMPETED_AGAINST_ALL_ALGORITHMS_STRIP_PACKING
-      - save the algorithm/game mode combinations the user has completed
-      - every time event FINISHED || GAME_OVER is dispatched, check algorithm/game mode combinations
-    WON_AGAINST_ANY_ALGORITHM_STRIP_PACKING
-      - events FINISHED
-    WON_AGAINST_ALL_ALGORITHM_STRIP_PACKING
-      - save the algorithm/game mode/result combinations the user has completed
-      - every time event COMPLETED_STRIP_PACKING is dispatched, check algorithm/game mode combinations
-    LOSE_AGAINST_ANY_ALGORITHM_STRIP_PACKING
-      - events GAME_OVER
-    LOSE_AGAINST_ALL_ALGORITHM_STRIP_PACKING
-      - save the algorithm/game mode/result combinations the user has completed
-      - every time event COMPLETED_STRIP_PACKING is dispatched, check algorithm/game mode combinations
-    COMPLETE_ALL_ALGORITHMS_BEGINNER_STRIP_PACKING
-      - save game mode/algorithm/level and check if all exists with beginner level for strip packing
-    COMPLETE_ALL_ALGORITHMS_INTERMEDIATE_STRIP_PACKING
-      - save game mode/algorithm/level and check if all exists with beginner level for strip packing
-    COMPLETE_ALL_ALGORITHMS_EXPERT_STRIP_PACKING
-      - save game mode/algorithm/level and check if all exists with beginner level for strip packing
-
-
-    COMPLETED_TUTORIAL
-    PLAYED_ALL_GAME_MODES
-      - events COMPLETED_BIN_PACKING && COMPLEDED_STRIP_PACKING
-    LEARNING_THE_ROPES
-      - save game mode/algorithm/level and check if all exists with beginner level
-    LOOK_MA_NO_HANDS
-      - save game mode/algorithm/level and check if all exists with intermediate level
-    CERTIFIED_EXPERT
-      - save game mode/algorithm/level and check if all exists with expert level
-  */
+  
   const { event } = useEventStore(useCallback(({ event, setEvent }) => ({ event, setEvent }), []));
   // const { addGameResult } = useAchievementStore();
   const currentGame = useGameStore(useCallback(state => state.currentGame, []));
@@ -80,35 +22,20 @@ export const BadgeContainer: React.FC<BadgesProps> = ({}) => {
   const addGameResult = useAchievementStore(useCallback(state => state.addGameResult, []));
   const user = useScoreStore(useCallback(state => state.user, []));
 
-  console.log({ currentGame, algorithm, level, user });
+  
 
   useEffect(() => {
     switch (event) {
       case Events.FINISHED:
         console.log('Events.FINISHED');
-        // useSaveGameResult(true);
         addGameResult(currentGame!, algorithm, level, user.height, true);
         break;
       case Events.GAME_OVER:
         console.log('Events.GAME_OVER');
-        // useSaveGameResult(false);
         addGameResult(currentGame!, algorithm, level, user.height, false);
         break;
     }
   }, [event, currentGame, algorithm, level, user.height, addGameResult]);
-
-  // useEffect(() => {
-  //   switch (event) {
-  //     case Events.FINISHED:
-  //       console.log('Events.FINISHED');
-  //       useSaveGameResult(true);
-  //       break;
-  //     case Events.GAME_OVER:
-  //       console.log('Events.GAME_OVER');
-  //       useSaveGameResult(false);
-  //       break;
-  //   }
-  // }, [event]);
 
   return (
     <div>
