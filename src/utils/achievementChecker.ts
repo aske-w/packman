@@ -61,7 +61,7 @@ export const checkAchievements = (gameResults: AchievementLocalstorage[]): Badge
 
  
   const t = total.map(b => {
-    const myObj: BadgesLocalStorage = {title: b, text: b.toString(), date: new Date(Date.now()).toLocaleString()};
+    const myObj: BadgesLocalStorage = {title: b, text: b.toString(), date: new Date(Date.now()).toString()};
     return myObj;
   });
   return t;

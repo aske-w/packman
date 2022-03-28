@@ -17,7 +17,7 @@ const Badge: React.FC<BadgeProps> = ({badge}) => {
       </p> */}
 
       <small className="text-xs text-gray-300 mt-8">
-        {badge.date}
+        {new Date(badge.date).toDateString()}
       </small>
     </div>
   );
