@@ -26,6 +26,7 @@ const Achievement: React.FC<AchievementProps> = ({}) => {
   const totalLosses = useMemo(() => gameResults.reduce((acc, v) => v.loses + acc, 0), [gameResults]);
 
   console.log({ gameResults });
+  console.log({ badges });
 
   useEffect(() => {
     const rows = gameResults.reduce<MappedRow>((acc, result) => {
@@ -91,9 +92,9 @@ const Achievement: React.FC<AchievementProps> = ({}) => {
           {badges.length} badge{badges.length === 1 ? '' : 's'}
         </small>
       </div>
-      <div className="flex justify-start flex-col text-white">
+      <div className="flex justify-start flex-row flex-wrap text-white">
         {badges.map(badge => (
-          <Badge key={badge.title} />
+          <Badge key={badge.title} badge={badge} />
         ))}
       </div>
     </div>
