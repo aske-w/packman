@@ -22,6 +22,15 @@ export type ScoreState = Record<Player, Score> & {
   setEndScore(algo: PackingAlgorithms, level: Levels): void;
   getPersonalBest(algo: PackingAlgorithms, level: Levels): Score | undefined;
   setLastPlayed(): void;
+  setAverageTimeUsed(avg: number | undefined): void;
+  setUsedRectsArea(avg: number | undefined): void;
+  setUsedGameArea(avg: number | undefined): void;
+  // Percentage
+  averageTimeUsed: number | undefined;
+  // Total area of rectangles placed in game
+  usedRectsArea: number | undefined;
+  // Area from bottom to highest placed rect in game
+  usedGameArea: number | undefined;
   rectanglesLeft: number;
   lastPlayed: Date | undefined;
   readonly personalBest: MappedScore | undefined;
@@ -30,6 +39,15 @@ export type ScoreState = Record<Player, Score> & {
 const initScore = () => ({ height: 0 });
 
 const useScoreStore = create<ScoreState>((set, get) => ({
+  usedGameArea: undefined,
+  setUsedGameArea: (area: number) => set(state => ({...state, usedGameArea: area})),
+  usedRectsArea: undefined,
+  setUsedRectsArea: (area: number) => set(state => ({...state, usedRectsArea: area})),
+  averageTimeUsed: undefined,
+  setAverageTimeUsed: (avg: number) => set(state => {
+    console.log("avg time used store");
+    return {...state, averageTimeUsed: avg}
+  }),
   algorithm: initScore(),
   user: initScore(),
   personalBest: getLocalStorage<MappedScore>(SCORE_PREFIX),

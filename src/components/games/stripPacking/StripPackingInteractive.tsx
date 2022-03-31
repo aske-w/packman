@@ -14,6 +14,7 @@ import { RectangleConfig } from '../../../types/RectangleConfig.interface';
 import useLevelStore from '../../../store/level.store';
 import { useEvents } from '../../../hooks/useEvents';
 import useAlgorithmStore from '../../../store/algorithm.store';
+import { Events } from '../../../types/Events.enum';
 interface StripPackingInteractiveProps {
   height: number;
   width: number;
@@ -32,7 +33,7 @@ export interface StripPackingInteractiveHandle {
 }
 
 const StripPackingInteractive = React.forwardRef<StripPackingInteractiveHandle, StripPackingInteractiveProps>(
-  ({ layerRef, height, scrollableHeight, stripRects, setStripRects, snap, stripRectChangedCallback, staticInvLength }, ref) => {
+  ({ layerRef, width, height, scrollableHeight, stripRects, setStripRects, snap, stripRectChangedCallback, staticInvLength }, ref) => {
     // const [stripRects, setStripRects] = useState<ColorRect[]>([]);
     const setScore = useScoreStore(useCallback(state => state.setScore, []));
     const algorithm = useAlgorithmStore(useCallback(({ algorithm }) => algorithm, []));
@@ -41,13 +42,20 @@ const StripPackingInteractive = React.forwardRef<StripPackingInteractiveHandle, 
 
     const { onPlaceEvent, event } = useEvents(algorithm);
 
-    const { user, algorithm: algoScore } = useScoreStore();
+    const { user, algorithm: algoScore, setUsedGameArea } = useScoreStore();
     const permission = useLevelStore(useCallback(state => state.getPermission(), []));
 
     useEffect(() => {
       const _height = stripRects.reduce((maxY, r) => Math.max(maxY, Math.round(height - r.y)), 0);
       setScore({ height: _height }, 'user');
     }, [stripRects, height]);
+
+    useEffect(() => {
+      if (event == Events.FINISHED || event == Events.GAME_OVER) {
+        const _height = stripRects.reduce((maxY, r) => Math.max(maxY, Math.round(height - r.y)), 0);
+        setUsedGameArea(_height * width);
+      }
+    }, [event])
 
     useEffect(() => {
       setUserScoreChanged(user.height != 0)

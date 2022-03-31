@@ -3,6 +3,7 @@ import { NAV_HEIGHT } from '../config/canvasConfig';
 import useEventStore from '../store/event.store';
 import useGameEndStore from '../store/gameEnd.store';
 import useLevelStore from '../store/level.store';
+import useScoreStore from '../store/score.store';
 import { Events } from '../types/Events.enum';
 import { RGBColor } from '../types/RGBColor.interface';
 
@@ -23,10 +24,13 @@ const TimeBar: React.FC<TimeBarProps> = ({ targetFPS = 60, startColor = green, e
   // let loop: NodeJS.Timer
   const [loop, setLoop] = useState<NodeJS.Timer>();
   const [clientWidth, setClientWidth] = useState(0);
+  const [percentTimeLeftWhenRestarted, setPercentTimeLeftWhenRestarted] = useState<number[] | undefined>();
+  const [restartCount, setRestartCount] = useState<number | undefined>();
   const currWidth = useRef(0);
   // const [gameOver, setGameOver] = useState(false);
   const { blur: isGameOverModalShowing } = useGameEndStore();
   const { event, setEvent } = useEventStore(useCallback(({ setEvent, event }) => ({ setEvent, event }), []));
+  const { setAverageTimeUsed } = useScoreStore();
   const permission = useLevelStore(useCallback(state => state.getPermission(), []));
 
   const duration = permission?.time ?? 1;
@@ -45,16 +49,42 @@ const TimeBar: React.FC<TimeBarProps> = ({ targetFPS = 60, startColor = green, e
   };
 
   const finish = (color?: RGBColor) => {
+    console.log({restartCount});
+    const avgPctLeftWhenRestarted = percentTimeLeftWhenRestarted!.reduce((prev, curr) => prev + curr, currWidth.current / clientWidth * 100) / (restartCount! + 1);
+    console.log({avgPctLeftWhenRestarted});
+    console.log("finish? ");
+    
+    setAverageTimeUsed(avgPctLeftWhenRestarted);
+    resetAvgCounting();
     clearInterval(loop!);
     currWidth.current = clientWidth;
     color && (barRef.current!.style.backgroundColor = `rgb(${color.red}, ${color.green}, ${color.blue})`);
   };
 
+  const resetAvgCounting = () => {
+    setRestartCount(undefined)
+    setPercentTimeLeftWhenRestarted(undefined)
+  }
+
+  const avg = useCallback(() => {
+    if(restartCount == undefined) {
+      setRestartCount(0);
+    } else {
+      setRestartCount(restartCount + 1)
+    }
+    if(percentTimeLeftWhenRestarted == undefined) {
+      setPercentTimeLeftWhenRestarted([])
+    } else {
+      setPercentTimeLeftWhenRestarted([...percentTimeLeftWhenRestarted!, currWidth.current / clientWidth * 100]);
+    }
+  },[clientWidth, percentTimeLeftWhenRestarted]);
+
   // reset timer to initial state and start immediately, i.e. when a user places a rectangle within sufficient time.
   const restart = () => {
+    avg();
+    clearInterval(loop!);
     currWidth.current = clientWidth;
     barRef.current!.style.backgroundColor = `rgb(${startColor.red}, ${startColor.green}, ${startColor.blue})`;
-    clearInterval(loop!);
   };
 
   useEffect(() => {

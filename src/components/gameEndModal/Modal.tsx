@@ -14,8 +14,9 @@ import useLevelStore from '../../store/level.store';
 import useScoreStore from '../../store/score.store';
 import { Events } from '../../types/Events.enum';
 import { GameEndModalTitles } from '../../types/GameEndModalTitles.enum';
-import { Levels } from '../../types/Levels.enum';
+import { LevelList, Levels } from '../../types/Levels.enum';
 import { PackingAlgorithms } from '../../types/PackingAlgorithm.interface';
+import { getMultiplier } from '../../utils/timeMultiplier';
 import { getYearMonthDay } from '../../utils/utils';
 import Button from './Button';
 import GameEndModalItem from './Item';
@@ -30,7 +31,38 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
   const { user: userScore, algo: algoScore } = useScoreStore(useCallback(state => ({ user: state.user.height, algo: state.algorithm.height }), []));
   const { level } = useLevelStore();
   const { algorithm } = useAlgorithmStore();
-  const { getPersonalBest, lastPlayed, setLastPlayed } = useScoreStore();
+  const { getPersonalBest, lastPlayed, setLastPlayed, averageTimeUsed, usedRectsArea, usedGameArea, setAverageTimeUsed, setUsedGameArea, setUsedRectsArea } = useScoreStore();
+  const [points, setPoints] = useState(0)
+
+  useEffect(() => {
+    // console.log("calcpoints");
+    // console.log({averageTimeUsed});
+    // console.log({usedRectsArea});
+    // console.log({usedGameArea});
+    
+    if((averageTimeUsed == undefined && level != Levels.BEGINNER) ||
+      usedRectsArea == undefined ||
+      usedGameArea == undefined || !(event == Events.FINISHED || event == Events.GAME_OVER))
+      return;
+
+      
+    const timeMultiplier = getMultiplier(averageTimeUsed ?? 0);
+    const levelsCount = LevelList.length;
+    const decrementInterval = 0.05;
+    const n = LevelList.indexOf(level);
+    const levelModifier = 1 - (decrementInterval * (levelsCount - n - 1));
+    const areaRatio = (usedRectsArea / usedGameArea) / 1.2;
+    // console.log({timeMultiplier});
+    // console.log({levelsCount});
+    // console.log({n});
+    // console.log({levelModifier});
+    // console.log({areaRatio});
+    // TODO: breakdown of points by its different components to see how they impact points
+    setAverageTimeUsed(undefined);
+    setUsedGameArea(undefined);
+    setUsedRectsArea(undefined);
+    setPoints(areaRatio * levelModifier * timeMultiplier * 1000);
+  }, [level, averageTimeUsed, usedRectsArea, usedGameArea, event]);
 
   useEffect(() => {
     switch (event) {
@@ -38,11 +70,13 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
         setTitle(GameEndModalTitles.GAME_OVER);
         setTitleTextColor('text-red-500');
         setBlur(true);
+        // calcPoints();
         return () => setLastPlayed();
       case Events.FINISHED:
         setTitle(GameEndModalTitles.FINISHED);
         setTitleTextColor('text-green-500');
         setBlur(true);
+        // calcPoints();
         return () => setLastPlayed();
     }
   }, [event]);
@@ -127,6 +161,7 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
                 </div>
                 <div className="w-3/4 m-auto text-white">
                   <GameEndModalItem name="Your score" value={userScore} />
+                  <GameEndModalItem name="Your points" value={points.toFixed(0)} />
                   <GameEndModalItem name="Personal best" value={getPersonalBest(algorithm, level)?.height ?? userScore} />
                   <GameEndModalItem name="Algorithm score" value={algoScore} />
                   <GameEndModalItem name="Level" value={level} />

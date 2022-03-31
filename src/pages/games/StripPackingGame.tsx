@@ -52,6 +52,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
 
   const algorithm = useAlgorithmStore(useCallback(({ algorithm }) => algorithm, []));
   const setRectanglesLeft = useScoreStore(useCallback(({ setRectanglesLeft }) => setRectanglesLeft, []));
+  const { setUsedRectsArea } = useScoreStore();
 
   const [stripRects, setStripRects] = useState<ColorRect[]>([]);
   /**
@@ -93,7 +94,11 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   const algorithmLayerRef = useRef<KonvaLayer>(null);
 
   const resetFuncs = [
-    () => setStartingInventory(generateInventory(inventoryWidth, NUM_ITEMS)),
+    () => {
+      const newInv = generateInventory(inventoryWidth, NUM_ITEMS);
+      setUsedRectsArea(newInv.reduce((prev, curr) => prev + (curr.height * curr.width), 0))
+      setStartingInventory(newInv);
+    },
     () => setInventoryChanged(true),
     interactiveRef.current?.reset,
     algoRef.current?.reset,
