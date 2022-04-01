@@ -8,13 +8,13 @@ import useLevelStore from '../store/level.store';
 export const useEvents = (algo: PackingAlgorithms) => {
   const level = useLevelStore(useCallback(({ level }) => level, []));
   const { setEvent, event } = useEventStore(useCallback(({ setEvent, event }) => ({ setEvent, event }), []));
-  const { setEndScore, setUsedGameArea } = useScoreStore(useCallback(({ setEndScore, setUsedGameArea }) => ({ setEndScore, setUsedGameArea }), []));
+  const { setEndScore } = useScoreStore(useCallback(({ setEndScore }) => ({ setEndScore }), []));
   const { user: userScore, algo: algoScore } = useScoreStore(useCallback(state => ({ user: state.user.height, algo: state.algorithm.height }), []));
 
   const onPlaceEvent = useCallback(
     (interactiveLength: number, staticInvLength: number) => {
       if(interactiveLength === staticInvLength) { 
-        if(userScore <= algoScore) {
+        if(userScore >= algoScore) {
           setEvent(Events.FINISHED);
         } else {
           setEvent(Events.GAME_OVER);

@@ -91,10 +91,10 @@ const Nav: React.FC<NavProps> = ({ height, children }) => {
             />
             <div className="flex flex-row items-center justify-between space-x-10 text-white">
               <div className="user-score">
-                <Score primary={`Height: ${score.user.height}`} secondary="user" />
+                <Score primary={`Score: ${score.user.height.toFixed(0)}`} secondary="user" />
               </div>
               <div className="algorithm-score">
-                <Score primary={`Height: ${score.algorithm.height}`} secondary="algorithm" />
+                <Score primary={`Score: ${score.algorithm.height.toFixed(0)}`} secondary="algorithm" />
               </div>
               <div className="rects-left">
                 <Score primary={`Rects left: ${score.rectanglesLeft}`} />

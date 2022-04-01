@@ -5,7 +5,9 @@ import useGameEndStore from '../store/gameEnd.store';
 import useLevelStore from '../store/level.store';
 import useScoreStore from '../store/score.store';
 import { Events } from '../types/Events.enum';
+import { Levels } from '../types/Levels.enum';
 import { RGBColor } from '../types/RGBColor.interface';
+import { calculateScore } from '../utils/utils';
 
 interface TimeBarProps {
   /**
@@ -30,7 +32,7 @@ const TimeBar: React.FC<TimeBarProps> = ({ targetFPS = 60, startColor = green, e
   // const [gameOver, setGameOver] = useState(false);
   const { blur: isGameOverModalShowing } = useGameEndStore();
   const { event, setEvent } = useEventStore(useCallback(({ setEvent, event }) => ({ setEvent, event }), []));
-  const { setAverageTimeUsed } = useScoreStore();
+  const { averageTimeUsed, setAverageTimeUsed } = useScoreStore();
   const permission = useLevelStore(useCallback(state => state.getPermission(), []));
 
   const duration = permission?.time ?? 1;
@@ -39,6 +41,8 @@ const TimeBar: React.FC<TimeBarProps> = ({ targetFPS = 60, startColor = green, e
   const redChange = (endColor.red - startColor.red) / ((duration * 1000) / frameTime);
   const greenChange = (endColor.green - startColor.green) / ((duration * 1000) / frameTime);
   const blueChange = (endColor.blue - startColor.blue) / ((duration * 1000) / frameTime);
+  const { level } = useLevelStore();
+
 
   // reset timer to initial state without starting
   const reset = (color = startColor) => {
@@ -49,24 +53,18 @@ const TimeBar: React.FC<TimeBarProps> = ({ targetFPS = 60, startColor = green, e
   };
 
   const finish = (color?: RGBColor) => {
-    console.log({restartCount});
-    const avgPctLeftWhenRestarted = percentTimeLeftWhenRestarted!.reduce((prev, curr) => prev + curr, currWidth.current / clientWidth * 100) / (restartCount! + 1);
-    console.log({avgPctLeftWhenRestarted});
-    console.log("finish? ");
-    
-    setAverageTimeUsed(avgPctLeftWhenRestarted);
-    resetAvgCounting();
+    const avgTimeUsed = percentTimeLeftWhenRestarted!.reduce((prev, curr) => prev + curr, currWidth.current / clientWidth * 100) / (restartCount! + 1);
+    setAverageTimeUsed(avgTimeUsed);
+    setPercentTimeLeftWhenRestarted(undefined);
+    setRestartCount(undefined)
     clearInterval(loop!);
     currWidth.current = clientWidth;
     color && (barRef.current!.style.backgroundColor = `rgb(${color.red}, ${color.green}, ${color.blue})`);
   };
 
-  const resetAvgCounting = () => {
-    setRestartCount(undefined)
-    setPercentTimeLeftWhenRestarted(undefined)
-  }
-
   const avg = useCallback(() => {
+    if(level == Levels.BEGINNER)
+      console.log("avg && beginner");
     if(restartCount == undefined) {
       setRestartCount(0);
     } else {
@@ -76,8 +74,12 @@ const TimeBar: React.FC<TimeBarProps> = ({ targetFPS = 60, startColor = green, e
       setPercentTimeLeftWhenRestarted([])
     } else {
       setPercentTimeLeftWhenRestarted([...percentTimeLeftWhenRestarted!, currWidth.current / clientWidth * 100]);
+      setAverageTimeUsed(
+        [...percentTimeLeftWhenRestarted!, currWidth.current / clientWidth * 100]
+        .reduce((prev, curr) => prev + curr, currWidth.current / clientWidth * 100) / (restartCount! + 1)
+      );
     }
-  },[clientWidth, percentTimeLeftWhenRestarted]);
+  },[clientWidth, percentTimeLeftWhenRestarted, currWidth]);
 
   // reset timer to initial state and start immediately, i.e. when a user places a rectangle within sufficient time.
   const restart = () => {
@@ -97,7 +99,6 @@ const TimeBar: React.FC<TimeBarProps> = ({ targetFPS = 60, startColor = green, e
 
   useEffect(() => {
     if (clientWidth == 0 || permission?.time === undefined) return;
-
     switch (event) {
       case Events.FINISHED:
         finish();

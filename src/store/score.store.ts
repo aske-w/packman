@@ -22,15 +22,21 @@ export type ScoreState = Record<Player, Score> & {
   setEndScore(algo: PackingAlgorithms, level: Levels): void;
   getPersonalBest(algo: PackingAlgorithms, level: Levels): Score | undefined;
   setLastPlayed(): void;
-  setAverageTimeUsed(avg: number | undefined): void;
-  setUsedRectsArea(avg: number | undefined): void;
-  setUsedGameArea(avg: number | undefined): void;
   // Percentage
   averageTimeUsed: number | undefined;
+  setAverageTimeUsed(avg: number | undefined): void;
   // Total area of rectangles placed in game
-  usedRectsArea: number | undefined;
+  usedRectsAreaUser: number | undefined;
+  setUsedRectsAreaUser(avg: number | undefined): void;
   // Area from bottom to highest placed rect in game
-  usedGameArea: number | undefined;
+  usedGameAreaUser: number | undefined;
+  setUsedGameAreaUser(avg: number | undefined): void;
+  // Total area of rectangles placed in game
+  usedRectsAreaAlgo: number | undefined;
+  setUsedRectsAreaAlgo(avg: number | undefined): void;
+  // Area from bottom to highest placed rect in game
+  usedGameAreaAlgo: number | undefined;
+  setUsedGameAreaAlgo(avg: number | undefined): void;
   rectanglesLeft: number;
   lastPlayed: Date | undefined;
   readonly personalBest: MappedScore | undefined;
@@ -39,15 +45,16 @@ export type ScoreState = Record<Player, Score> & {
 const initScore = () => ({ height: 0 });
 
 const useScoreStore = create<ScoreState>((set, get) => ({
-  usedGameArea: undefined,
-  setUsedGameArea: (area: number) => set(state => ({...state, usedGameArea: area})),
-  usedRectsArea: undefined,
-  setUsedRectsArea: (area: number) => set(state => ({...state, usedRectsArea: area})),
+  usedGameAreaUser: undefined,
+  setUsedGameAreaUser: (area: number) => set(state => ({...state, usedGameAreaUser: area})),
+  usedRectsAreaUser: undefined,
+  setUsedRectsAreaUser: (area: number) => set(state => ({...state, usedRectsAreaUser: area})),
+  usedGameAreaAlgo: undefined,
+  setUsedGameAreaAlgo: (area: number) => set(state => ({...state, usedGameAreaAlgo: area})),
+  usedRectsAreaAlgo: undefined,
+  setUsedRectsAreaAlgo: (area: number) => set(state => ({...state, usedRectsAreaAlgo: area})),
   averageTimeUsed: undefined,
-  setAverageTimeUsed: (avg: number) => set(state => {
-    console.log("avg time used store");
-    return {...state, averageTimeUsed: avg}
-  }),
+  setAverageTimeUsed: (avg: number) => set(state => ({...state, averageTimeUsed: avg})),
   algorithm: initScore(),
   user: initScore(),
   personalBest: getLocalStorage<MappedScore>(SCORE_PREFIX),

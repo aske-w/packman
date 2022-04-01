@@ -15,6 +15,7 @@ import useLevelStore from '../../../store/level.store';
 import { useEvents } from '../../../hooks/useEvents';
 import useAlgorithmStore from '../../../store/algorithm.store';
 import { Events } from '../../../types/Events.enum';
+import { calculateScore } from '../../../utils/utils';
 interface StripPackingInteractiveProps {
   height: number;
   width: number;
@@ -42,20 +43,20 @@ const StripPackingInteractive = React.forwardRef<StripPackingInteractiveHandle, 
 
     const { onPlaceEvent, event } = useEvents(algorithm);
 
-    const { user, algorithm: algoScore, setUsedGameArea } = useScoreStore();
+    const { level } = useLevelStore();
+    const { user, algorithm: algoScore, setUsedGameAreaUser, setUsedRectsAreaUser, averageTimeUsed, usedRectsAreaUser } = useScoreStore();
     const permission = useLevelStore(useCallback(state => state.getPermission(), []));
 
     useEffect(() => {
       const _height = stripRects.reduce((maxY, r) => Math.max(maxY, Math.round(height - r.y)), 0);
-      setScore({ height: _height }, 'user');
-    }, [stripRects, height]);
-
-    useEffect(() => {
-      if (event == Events.FINISHED || event == Events.GAME_OVER) {
-        const _height = stripRects.reduce((maxY, r) => Math.max(maxY, Math.round(height - r.y)), 0);
-        setUsedGameArea(_height * width);
+      setUsedGameAreaUser(_height * width);
+      if(_height === 0) {
+        setScore({ height: 0 }, 'algorithm');
+        return;
       }
-    }, [event])
+      const score = calculateScore(level, usedRectsAreaUser!, _height * width, averageTimeUsed );
+      setScore({ height: score }, 'user');
+    }, [stripRects, height]);
 
     useEffect(() => {
       setUserScoreChanged(user.height != 0)
@@ -79,7 +80,7 @@ const StripPackingInteractive = React.forwardRef<StripPackingInteractiveHandle, 
           x,
           y,
         };
-
+        setUsedRectsAreaUser(stripRects.reduce((prev, curr) => curr.height * curr.width + prev, newRect.height * newRect.width));
         setStripRects(old => [...old, newRect]);
       },
       reset: () => {
