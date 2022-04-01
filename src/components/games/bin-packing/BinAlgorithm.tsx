@@ -9,13 +9,13 @@ import { Group, KonvaNodeEvents, Layer, Rect, Text } from 'react-konva';
 import FiniteFirstFit from '../../../algorithms/bin/offline/FiniteFirstFit';
 import FiniteNextFit from '../../../algorithms/bin/offline/FiniteNextFit';
 import HybridFirstFit from '../../../algorithms/bin/offline/HybridFirstFit';
-import algorithm from '../../../store/algorithm.store';
 import { BinPackingAlgorithms } from '../../../types/BinPackingAlgorithm.interface';
 import { ColorRect } from '../../../types/ColorRect.interface';
 import { Dimensions } from '../../../types/Dimensions.interface';
 import { DimensionsWithConfig } from '../../../types/DimensionsWithConfig.type';
 import { PackingAlgorithm } from '../../../types/PackingAlgorithm.interface';
 import { RectangleConfig } from '../../../types/RectangleConfig.interface';
+import { BinPackingAlgoRect, BinPackingRect, PlacedBinPackingAlgoRect, PrevPos } from '../../../types/BinPackingRect.interface';
 interface BinAlgorithmProps {
   offset: Vector2d;
   dimensions: Dimensions;
@@ -28,44 +28,46 @@ interface BinAlgorithmProps {
   getInventoryScrollOffset: () => number;
 }
 
-type PrevPos = { prevX: number; prevY: number };
-
 export interface BinAlgorithmHandle {
-  place: () => void;
+  next(): [ColorRect<BinPackingAlgoRect>, number, number] | undefined;
+  place: (inventoryRect: ColorRect<BinPackingAlgoRect>, idx: number) => void;
 }
 
 const PADDING = 30;
 const { FINITE_FIRST_FIT, FINITE_NEXT_FIT, HYBRID_FIRST_FIT } = BinPackingAlgorithms;
 const BinAlgorithm = forwardRef<BinAlgorithmHandle, BinAlgorithmProps>(
   ({ offset, layerRef, dimensions, data, selectedAlgorithm, binSize, binLayout, staticInventory: inventory, getInventoryScrollOffset }, ref) => {
-    const [placed, setPlaced] = useState<
-      ColorRect<
-        RectangleConfig & {
-          binId: number;
-        } & PrevPos
-      >[]
-    >([]);
+    const [placed, setPlaced] = useState<PlacedBinPackingAlgoRect[]>([]);
 
     useImperativeHandle(ref, () => ({
-      place: () => {
+      next: () => {
         if (algorithm.current?.isFinished()) return;
         const rect = algorithm.current?.place();
         if (!rect) return;
-        const inventoryRect = inventory.find(r => r.name === rect.name)!;
 
+        const idx = inventory.findIndex(r => r.name === rect.name)!;
+        // Todo fix this
+        const order = 0;
+        return [rect, idx, order];
+      },
+      place: (rect: ColorRect<BinPackingAlgoRect>, invIdx: number) => {
+        const inventoryRect = inventory[invIdx]!;
         // remove the scroll offset from y value
         const scrollOffset = getInventoryScrollOffset();
 
-        const newRect = {
+        const newRect: PlacedBinPackingAlgoRect = {
           ...rect,
           prevX: inventoryRect.x - offset.x, // substract the inventory width (its relative to the strip)
           prevY: inventoryRect.y - scrollOffset - offset.y,
         };
+
         setPlaced(p => p.concat(newRect));
+
+        // Update order
       },
     }));
 
-    const algorithm = useRef<PackingAlgorithm<{}, RectangleConfig & { binId: number }>>();
+    const algorithm = useRef<PackingAlgorithm<{}, BinPackingAlgoRect>>();
     const start = (data: DimensionsWithConfig[]) => {
       switch (selectedAlgorithm) {
         case FINITE_NEXT_FIT:

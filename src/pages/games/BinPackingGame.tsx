@@ -19,6 +19,8 @@ import Konva from 'konva';
 import { Shape, ShapeConfig } from 'konva/lib/Shape';
 import { Stage as KonvaStage } from 'konva/lib/Stage';
 import { Dimensions } from '../../types/Dimensions.interface';
+import { compressBinPackingInv } from '../../utils/binPacking';
+import { BinPackingRect } from '../../types/BinPackingRect.interface';
 
 interface BinPackingGameProps {}
 const NUM_ITEMS = 10;
@@ -48,7 +50,7 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
 
   // algorithm handle
   const algorithm = useRef<BinAlgorithmHandle>(null);
-  const [staticInventory, setStaticInventory] = useState(generateInventory(inventoryWidth, NUM_ITEMS));
+  const [staticInventory, setStaticInventory] = useState<BinPackingRect[]>(generateInventory(inventoryWidth, NUM_ITEMS));
   const [inventoryChanged, setInventoryChanged] = useState(true);
   const { setCurrentGame } = useGameStore();
   const algorithmStartY = binAreaHeight + PADDING;
@@ -111,8 +113,24 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
       ...old,
       [bin]: (old[bin] ?? []).concat({ ...rect, x, y }),
     }));
-    setRenderInventory(old => old.filter(r => r.name !== name));
-    algorithm.current?.place();
+    // setRenderInventory(old => old.filter(r => r.name !== name));
+
+    const res = algorithm.current?.next();
+    if (!res) return false;
+    const [placedRect, order, recIdx] = res;
+
+    //  compress inventory
+    compressBinPackingInv({
+      placedRectIdx: recIdx,
+      order,
+      rectName: rect.name,
+      inventoryWidth,
+      placedRectName: placedRect.name,
+      staticInventory,
+      setStaticInventory: rects => setStaticInventory(rects),
+      setRenderInventory: rects => setRenderInventory(rects),
+      onCompress: idx => algorithm.current?.place(placedRect, idx),
+    });
   };
 
   useEffect(() => {
