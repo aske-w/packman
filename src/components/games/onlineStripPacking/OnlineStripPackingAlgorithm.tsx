@@ -2,16 +2,18 @@ import React, { RefObject, useEffect, useImperativeHandle, useState } from 'reac
 import { Layer, Rect } from 'react-konva';
 import { Layer as KonvaLayer } from 'konva/lib/Layer';
 import { NextFitShelf } from '../../../algorithms/strip/online/NextFitShelf';
-import { OnlineStripPacking, OnlineStripPackingAlgorithms } from '../../../types/OnlineStripPackingAlgorithm.interface';
+
 import { ColorRect } from '../../../types/ColorRect.interface';
 import { RectangleExPos } from '../../../types/RectangleExPos.type';
 import { first } from 'lodash';
+import { OnlineStripPackingAlgorithmEnum } from '../../../types/enums/OnlineStripPackingAlgorithm.enum';
+import { OnlineStripPacking } from '../../../types/OnlineStripPackingAlgorithm.interface';
 
 interface OnlineStripPackingAlgorithmProps {
   gameHeight: number;
   width: number;
   layerRef: RefObject<KonvaLayer>;
-  algorithm: OnlineStripPackingAlgorithms;
+  algorithm: OnlineStripPackingAlgorithmEnum;
   scrollableHeight: number;
   x: number;
 }
@@ -37,7 +39,7 @@ const OnlineStripPackingAlgorithm = React.forwardRef<OnlineStripPackingAlgorithm
 
     useEffect(() => {
       switch (selectedAlgorithm) {
-        case OnlineStripPackingAlgorithms.NEXT_FIT_SHELF:
+        case OnlineStripPackingAlgorithmEnum.NEXT_FIT_SHELF:
           setAlgorithm(new NextFitShelf({ height: gameHeight, width }, 0.5));
           break;
 

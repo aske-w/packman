@@ -1,21 +1,16 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { ArrowLeftIcon, BadgeCheckIcon } from '@heroicons/react/outline';
-import { CheckIcon, XIcon } from '@heroicons/react/solid';
-import { RefreshIcon } from '@heroicons/react/solid';
-import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
+import { CheckIcon, RefreshIcon, XIcon } from '@heroicons/react/solid';
+import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import Confetti from 'react-confetti';
 import { Link } from 'react-router-dom';
-import { createSemanticDiagnosticsBuilderProgram } from 'typescript';
-import { useAutoPlace } from '../../hooks/useAutoPlace';
 import useAlgorithmStore from '../../store/algorithm.store';
 import useEventStore from '../../store/event.store';
 import useGameEndStore from '../../store/gameEnd.store';
 import useLevelStore from '../../store/level.store';
 import useScoreStore from '../../store/score.store';
-import { Events } from '../../types/Events.enum';
-import { GameEndModalTitles } from '../../types/GameEndModalTitles.enum';
-import { Levels } from '../../types/Levels.enum';
-import { PackingAlgorithms } from '../../types/PackingAlgorithm.interface';
+import { Events } from '../../types/enums/Events.enum';
+import { GameEndModalTitle } from '../../types/enums/GameEndModalTitle.enum';
 import { getYearMonthDay } from '../../utils/utils';
 import Button from './Button';
 import GameEndModalItem from './Item';
@@ -23,7 +18,7 @@ import GameEndModalItem from './Item';
 interface GameEndModalProps {}
 
 const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
-  const [title, setTitle] = useState<GameEndModalTitles | undefined>();
+  const [title, setTitle] = useState<GameEndModalTitle | undefined>();
   const [titleTextColor, setTitleTextColor] = useState<string | undefined>();
   const { event, setEvent } = useEventStore(useCallback(({ event, setEvent }) => ({ event, setEvent }), []));
   const { blur, setBlur } = useGameEndStore();
@@ -35,12 +30,12 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
   useEffect(() => {
     switch (event) {
       case Events.GAME_OVER:
-        setTitle(GameEndModalTitles.GAME_OVER);
+        setTitle(GameEndModalTitle.GAME_OVER);
         setTitleTextColor('text-red-500');
         setBlur(true);
         return () => setLastPlayed();
       case Events.FINISHED:
-        setTitle(GameEndModalTitles.FINISHED);
+        setTitle(GameEndModalTitle.FINISHED);
         setTitleTextColor('text-green-500');
         setBlur(true);
         return () => setLastPlayed();
@@ -57,7 +52,7 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
     <div>
       <Transition appear show={title !== undefined} as={Fragment}>
         <Dialog as="div" className="fixed inset-0 z-10 overflow-y-auto" onClose={() => {}}>
-          <Confetti recycle={false} run={title !== undefined && title == GameEndModalTitles.FINISHED} />
+          <Confetti recycle={false} run={title !== undefined && title == GameEndModalTitle.FINISHED} />
           <Dialog.Overlay className="fixed inset-0 bg-black opacity-30" />
           <div className="min-h-screen px-4 text-center">
             <Transition.Child
@@ -97,28 +92,28 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
                  * [Restart] [Back]
                  * [Your achievements]
                  */}
-                <div className="text-gray-200 absolute top-0 right-0 mr-3 mt-2">
-                  <ul className="list-none leading-3 text-sm">
+                <div className="absolute top-0 right-0 mt-2 mr-3 text-gray-200">
+                  <ul className="text-sm leading-3 list-none">
                     {getYearMonthDay(new Date(Date.now())) !==
                     (lastPlayed ? getYearMonthDay(lastPlayed) : 0) /* TODO: get last game date from store */ ? (
-                      <li className="flex justify-start flex-row bg-zinc-500 bg rounded px-2 pb-1 pt-2 hover:scale-105 transition-all">
+                      <li className="flex flex-row justify-start px-2 pt-2 pb-1 transition-all rounded bg-zinc-500 bg hover:scale-105">
                         <CheckIcon className="h-4 pr-1 text-green-500" />
                         <span>First game of the day</span>
                       </li>
                     ) : undefined}
                     {userScore < algoScore ? (
-                      <li className="flex justify-start flex-row bg-zinc-500 bg rounded px-2 pb-1 pt-2 hover:scale-105 transition-all">
+                      <li className="flex flex-row justify-start px-2 pt-2 pb-1 transition-all rounded bg-zinc-500 bg hover:scale-105">
                         <CheckIcon className="h-4 pr-1 text-green-500" />
                         <span>Beat the algorithm</span>
                       </li>
                     ) : (
-                      <li className="flex justify-start flex-row bg-zinc-500 bg rounded px-2 pb-1 pt-2 hover:scale-105 transition-all">
+                      <li className="flex flex-row justify-start px-2 pt-2 pb-1 transition-all rounded bg-zinc-500 bg hover:scale-105">
                         <XIcon className="h-4 pr-1 text-red-500" />
                         <span>Beat by the algorithm</span>
                       </li>
                     )}
                     {userScore < (getPersonalBest(algorithm, level)?.height ?? userScore + 1) ? (
-                      <li className="flex justify-start flex-row bg-zinc-500 bg rounded px-2 pb-1 pt-2 hover:scale-105 transition-all">
+                      <li className="flex flex-row justify-start px-2 pt-2 pb-1 transition-all rounded bg-zinc-500 bg hover:scale-105">
                         <CheckIcon className="h-4 pr-1 text-green-500" />
                         <span>New personal best</span>
                       </li>
@@ -133,7 +128,7 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
                   <GameEndModalItem name="Algorithm" value={algorithm} />
                   <div className="flex justify-between pt-3">
                     <div className="flex justify-start">
-                      <Link to="/" className="modal-button no-underline mr-3" onClick={() => reset()}>
+                      <Link to="/" className="mr-3 no-underline modal-button" onClick={() => reset()}>
                         <ArrowLeftIcon className="h-5 pr-1" />
                         Back
                       </Link>
@@ -142,7 +137,7 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
                         Restart
                       </Button>
                     </div>
-                    <Link to="/achievements" className="modal-button no-underline" onClick={() => reset()}>
+                    <Link to="/achievements" className="no-underline modal-button" onClick={() => reset()}>
                       <BadgeCheckIcon className="h-5 pr-1" />
                       Your achievements
                     </Link>

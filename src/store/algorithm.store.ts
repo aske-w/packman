@@ -1,20 +1,19 @@
-import { PackingAlgorithms } from '../types/PackingAlgorithm.interface';
 import create from 'zustand';
-import { BinPackingAlgorithms } from '../types/BinPackingAlgorithm.interface';
-import { OnlineStripPacking, OnlineStripPackingAlgorithms } from '../types/OnlineStripPackingAlgorithm.interface';
+import { PackingAlgorithmEnum } from '../types/enums/OfflineStripPackingAlgorithm.enum';
+import { OnlineStripPackingAlgorithmEnum } from '../types/enums/OnlineStripPackingAlgorithm.enum';
 
 export interface AlgorithmState {
-  readonly algorithm: PackingAlgorithms;
-  readonly onlineStripPackingAlgorithm: OnlineStripPackingAlgorithms;
-  setAlgorithm: (algorithm: PackingAlgorithms) => void;
-  setOnlineStripPackingAlgorithm: (onlineStripPackingAlgorithm: OnlineStripPackingAlgorithms) => void;
+  readonly algorithm: PackingAlgorithmEnum;
+  readonly onlineStripPackingAlgorithm: OnlineStripPackingAlgorithmEnum;
+  setAlgorithm: (algorithm: PackingAlgorithmEnum) => void;
+  setOnlineStripPackingAlgorithm: (onlineStripPackingAlgorithm: OnlineStripPackingAlgorithmEnum) => void;
 }
 
 const useAlgorithmStore = create<AlgorithmState>((set, get) => ({
-  algorithm: PackingAlgorithms.NEXT_FIT_DECREASING_HEIGHT,
-  onlineStripPackingAlgorithm: OnlineStripPackingAlgorithms.NEXT_FIT_SHELF,
-  setAlgorithm: (algorithm: PackingAlgorithms) => set(state => ({ ...state, algorithm })),
-  setOnlineStripPackingAlgorithm: (onlineStripPackingAlgorithm: OnlineStripPackingAlgorithms) =>
+  algorithm: PackingAlgorithmEnum.NEXT_FIT_DECREASING_HEIGHT,
+  onlineStripPackingAlgorithm: OnlineStripPackingAlgorithmEnum.NEXT_FIT_SHELF,
+  setAlgorithm: (algorithm: PackingAlgorithmEnum) => set(state => ({ ...state, algorithm })),
+  setOnlineStripPackingAlgorithm: (onlineStripPackingAlgorithm: OnlineStripPackingAlgorithmEnum) =>
     set(state => ({ ...state, onlineStripPackingAlgorithm })),
 }));
 

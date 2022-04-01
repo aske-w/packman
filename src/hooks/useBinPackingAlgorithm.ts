@@ -3,18 +3,18 @@ import FiniteFirstFit from '../algorithms/bin/offline/FiniteFirstFit';
 import FiniteNextFit from '../algorithms/bin/offline/FiniteNextFit';
 import HybridFirstFit from '../algorithms/bin/offline/HybridFirstFit';
 import { NextFitDecreasingHeight } from '../algorithms/strip/NextFitDecreasingHeight';
-import { BinPackingAlgorithms } from '../types/BinPackingAlgorithm.interface';
+import { BinPackingAlgorithm } from '../types/enums/BinPackingAlgorithm.enum';
 import { Dimensions } from '../types/Dimensions.interface';
 import { DimensionsWithConfig } from '../types/DimensionsWithConfig.type';
 import { PackingAlgorithm } from '../types/PackingAlgorithm.interface';
 import { RectangleConfig } from '../types/RectangleConfig.interface';
 import { useStats } from './useStats';
 
-const { FINITE_NEXT_FIT, FINITE_FIRST_FIT, HYBRID_FIRST_FIT } = BinPackingAlgorithms;
+const { FINITE_NEXT_FIT, FINITE_FIRST_FIT, HYBRID_FIRST_FIT } = BinPackingAlgorithm;
 
 export type AlgoStates = 'RUNNING' | 'STOPPED' | 'PAUSED';
 
-export const useBinPackingAlgorithm = (binSize: Dimensions, selectedAlgorithm: BinPackingAlgorithms) => {
+export const useBinPackingAlgorithm = (binSize: Dimensions, selectedAlgorithm: BinPackingAlgorithm) => {
   const { addArea, getStats } = useStats(binSize.width);
   const [algoState, setAlgoState] = useState<AlgoStates>('STOPPED');
   const [isFinished, setIsFinished] = useState(true);

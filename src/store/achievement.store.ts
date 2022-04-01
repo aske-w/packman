@@ -1,13 +1,12 @@
-import { Gamemodes } from '../types/Gamemodes.enum';
-import { Algorithms } from '../types/AllAlgorithms.enum';
-import { Levels } from '../types/Levels.enum';
+import { Gamemodes } from '../types/enums/Gamemodes.enum';
+import { Algorithm } from '../types/enums/AllAlgorithms.enum';
+import { Levels } from '../types/enums/Levels.enum';
 import create from 'zustand';
 import { persist } from './middleware/persist.middleware';
-import { Badges } from '../types/Badges.enum';
+import { Badges } from '../types/enums/Badges.enum';
 import { sleep } from '../utils/utils';
 import { checkAchievements } from '../utils/achievementChecker';
 import { promptBadge } from '../components/Badges';
-
 
 /**
  * Game mode | algorithm | level | loses | wins
@@ -15,7 +14,7 @@ import { promptBadge } from '../components/Badges';
 export interface AchievementStore {
   gameResults: AchievementLocalstorage[];
   badges: BadgesLocalStorage[];
-  addGameResult: (gamemode: Gamemodes, algorithm: Algorithms, level: Levels, score: number, didWin: boolean) => void;
+  addGameResult: (gamemode: Gamemodes, algorithm: Algorithm, level: Levels, score: number, didWin: boolean) => void;
   setBadges: (badge: Badges, date: Date, text?: string) => void;
 }
 
@@ -27,7 +26,7 @@ export interface BadgesLocalStorage {
 
 export interface AchievementLocalstorage {
   gamemode: Gamemodes;
-  algorithm: Algorithms;
+  algorithm: Algorithm;
   level: Levels;
   score: number;
   loses: number;
@@ -44,7 +43,7 @@ const useAchievementStore = create<AchievementStore>(
     (set, get) => ({
       badges: get()?.badges || [],
       gameResults: get()?.gameResults || [],
-      addGameResult: (gamemode: Gamemodes, algorithm: Algorithms, level: Levels, score: number, didWin: boolean) =>
+      addGameResult: (gamemode: Gamemodes, algorithm: Algorithm, level: Levels, score: number, didWin: boolean) =>
         set(state => {
           const gameResults = [...state.gameResults];
           const index = gameResults.findIndex(x => x.gamemode === gamemode && x.algorithm === algorithm && x.level === level);
@@ -78,16 +77,16 @@ const useAchievementStore = create<AchievementStore>(
             }
             gameResults.push(newData);
           }
-          
+
           const newAchievements = checkAchievements(gameResults).filter(a => !state.badges.some(b => b.title == a.title));
           newAchievements.forEach(na => promptBadge(na.title));
-          
+
           const res = {
             ...state,
             gameResults: gameResults,
-            badges: [...state.badges, ...newAchievements]
+            badges: [...state.badges, ...newAchievements],
           };
-          
+
           return res;
         }),
       setBadges: (badge, date, text) =>
@@ -107,7 +106,5 @@ const useAchievementStore = create<AchievementStore>(
     })
   )
 );
-
-
 
 export default useAchievementStore;

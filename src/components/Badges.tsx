@@ -6,14 +6,13 @@ import useEventStore from '../store/event.store';
 import useGameStore from '../store/game.store';
 import useLevelStore from '../store/level.store';
 import useScoreStore from '../store/score.store';
-import { Badges } from '../types/Badges.enum';
-import { BinPackingAlgorithms } from '../types/BinPackingAlgorithm.interface';
-import { Events } from '../types/Events.enum';
+import { Badges } from '../types/enums/Badges.enum';
+import { BinPackingAlgorithm } from '../types/enums/BinPackingAlgorithm.enum';
+import { Events } from '../types/enums/Events.enum';
 
 interface BadgesProps {}
 
 export const BadgeContainer: React.FC<BadgesProps> = ({}) => {
-  
   const { event } = useEventStore(useCallback(({ event, setEvent }) => ({ event, setEvent }), []));
   // const { addGameResult } = useAchievementStore();
   const currentGame = useGameStore(useCallback(state => state.currentGame, []));
@@ -21,8 +20,6 @@ export const BadgeContainer: React.FC<BadgesProps> = ({}) => {
   const level = useLevelStore(useCallback(state => state.level, []));
   const addGameResult = useAchievementStore(useCallback(state => state.addGameResult, []));
   const user = useScoreStore(useCallback(state => state.user, []));
-
-  
 
   useEffect(() => {
     switch (event) {
@@ -59,7 +56,7 @@ export const BadgeContainer: React.FC<BadgesProps> = ({}) => {
 export const promptBadge = (x: Badges) => {
   toast(
     <div className="flex items-center">
-      <span className="text-3xl w-fit pr-3">🏅</span>
+      <span className="pr-3 text-3xl w-fit">🏅</span>
       <span className="w-fit">
         Badge '<span className="font-bold">{x}</span>' unlocked!
       </span>

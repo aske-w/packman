@@ -1,5 +1,5 @@
 import create from 'zustand';
-import { Gamemodes } from '../types/Gamemodes.enum';
+import { Gamemodes } from '../types/enums/Gamemodes.enum';
 
 interface GameState {
   currentGame: Gamemodes | undefined;

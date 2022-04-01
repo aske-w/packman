@@ -1,7 +1,5 @@
-import React from 'react';
-import { Levels } from '../../../types/Levels.enum';
-import { PackingAlgorithms } from '../../../types/PackingAlgorithm.interface';
 import classNames from 'classnames';
+import React from 'react';
 
 export interface Row {
   text: string;
@@ -49,14 +47,14 @@ const Table: React.FC<TableProps> = ({ className, headers, rows }) => {
 
 const Header: React.FC<{ text: string }> = ({ text }) => {
   return (
-    <th scope="col" className="py-3 px-6 text-xs font-medium tracking-wider text-left uppercase text-gray-400">
+    <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-400 uppercase">
       {text}
     </th>
   );
 };
 
 const Row: React.FC<{ text: string }> = ({ text }) => {
-  return <td className="py-4 px-6 text-sm font-medium whitespace-nowrap text-white">{text}</td>;
+  return <td className="px-6 py-4 text-sm font-medium text-white whitespace-nowrap">{text}</td>;
 };
 
 export default Table;

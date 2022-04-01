@@ -8,13 +8,15 @@ import { NextFitDecreasingHeight } from '../../../algorithms/strip/NextFitDecrea
 import { SizeAlternatingStack } from '../../../algorithms/strip/SizeAlternatingStack';
 import useScoreStore from '../../../store/score.store';
 import { ColorRect } from '../../../types/ColorRect.interface';
-import { PackingAlgorithm, PackingAlgorithms } from '../../../types/PackingAlgorithm.interface';
+import { PackingAlgorithm } from '../../../types/PackingAlgorithm.interface';
 import { RectangleConfig } from '../../../types/RectangleConfig.interface';
 import { Layer as KonvaLayer } from 'konva/lib/Layer';
 import { ALGO_MOVE_ANIMATION_DURATION as ALGO_ENTER_ANIMATION_DURATION } from '../../../config/canvasConfig';
 import { Sleators } from '../../../algorithms/strip/Sleators';
+import { PackingAlgorithmEnum } from '../../../types/enums/OfflineStripPackingAlgorithm.enum';
 
-const { BEST_FIT_DECREASING_HEIGHT, NEXT_FIT_DECREASING_HEIGHT, FIRST_FIT_DECREASING_HEIGHT, SIZE_ALTERNATING_STACK, SLEATORS } = PackingAlgorithms;
+const { BEST_FIT_DECREASING_HEIGHT, NEXT_FIT_DECREASING_HEIGHT, FIRST_FIT_DECREASING_HEIGHT, SIZE_ALTERNATING_STACK, SLEATORS } =
+  PackingAlgorithmEnum;
 
 type PrevPos = { prevX: number; prevY: number };
 
@@ -22,7 +24,7 @@ interface StripPackingAlgorithmProps {
   x: number;
   height: number;
   width: number;
-  algorithm: PackingAlgorithms;
+  algorithm: PackingAlgorithmEnum;
   layerRef: RefObject<KonvaLayer>;
   inventory: ReadonlyArray<ColorRect<RectangleConfig>>;
   inventoryWidth: number;
@@ -56,7 +58,7 @@ const StripPackingAlgorithm = React.forwardRef<StripPackingAlgorithmHandle, Stri
       );
     }, [stripRects, height]);
 
-    const getAlgo = (algorithm: PackingAlgorithms) => {
+    const getAlgo = (algorithm: PackingAlgorithmEnum) => {
       const size = { width, height };
       // algorithms change the array, we cannot allow that
       const invCopy = [...inventory];

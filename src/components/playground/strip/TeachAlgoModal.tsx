@@ -1,31 +1,32 @@
 import { Transition, Dialog } from '@headlessui/react';
 import { QuestionMarkCircleIcon } from '@heroicons/react/solid';
 import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react';
-import { PackingAlgorithms } from '../../../types/PackingAlgorithm.interface';
+
 import BFDHArticle from './algorithm-articles/BFDHArticle';
 import FFDHArticle from './algorithm-articles/FFDHArticle';
 import NFDHArticle from './algorithm-articles/NFDHArticle';
 import SleatorsArticle from './algorithm-articles/SleatorsArticle';
 import SASArticle from './algorithm-articles/SASArticle';
+import { PackingAlgorithmEnum } from '../../../types/enums/OfflineStripPackingAlgorithm.enum';
 
 interface TeachAlgoModalProps {
   visible: boolean;
   onClose: () => void;
-  algorithm: PackingAlgorithms;
+  algorithm: PackingAlgorithmEnum;
 }
 
 const TeachAlgoModal: React.FC<TeachAlgoModalProps> = ({ algorithm, onClose, visible }) => {
   const article = useMemo(() => {
     switch (algorithm) {
-      case PackingAlgorithms.FIRST_FIT_DECREASING_HEIGHT:
+      case PackingAlgorithmEnum.FIRST_FIT_DECREASING_HEIGHT:
         return <FFDHArticle />;
-      case PackingAlgorithms.NEXT_FIT_DECREASING_HEIGHT:
+      case PackingAlgorithmEnum.NEXT_FIT_DECREASING_HEIGHT:
         return <NFDHArticle />;
-      case PackingAlgorithms.BEST_FIT_DECREASING_HEIGHT:
+      case PackingAlgorithmEnum.BEST_FIT_DECREASING_HEIGHT:
         return <BFDHArticle />;
-      case PackingAlgorithms.SLEATORS:
+      case PackingAlgorithmEnum.SLEATORS:
         return <SleatorsArticle />;
-      case PackingAlgorithms.SIZE_ALTERNATING_STACK:
+      case PackingAlgorithmEnum.SIZE_ALTERNATING_STACK:
         return <SASArticle />;
       default:
         return null;
