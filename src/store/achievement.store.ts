@@ -1,6 +1,6 @@
 import { Gamemodes } from '../types/Gamemodes.enum';
 import { Algorithms } from '../types/AllAlgorithms.enum';
-import { Levels } from '../types/Levels.enum';
+import { Levels } from '../types/enums/Levels.enum';
 import create from 'zustand';
 import { persist } from './middleware/persist.middleware';
 import { Badges } from '../types/enums/Badges.enums.enum';

@@ -1,6 +1,6 @@
 import create from 'zustand';
 import { getPermissions } from '../permissions/permissions';
-import { Levels } from '../types/Levels.enum';
+import { Levels } from '../types/enums/Levels.enum';
 import { Permission } from '../types/Permission.interface';
 
 export interface LevelState {

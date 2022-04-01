@@ -1,5 +1,5 @@
 import create from 'zustand';
-import { Levels } from '../types/Levels.enum';
+import { Levels } from '../types/enums/Levels.enum';
 import { PackingAlgorithms } from '../types/PackingAlgorithm.interface';
 import { getLocalStorage, getYearMonthDay, LOCAL_STORAGE_PREFIX } from '../utils/utils';
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Levels } from '../../../types/Levels.enum';
+import { Levels } from '../../../types/enums/Levels.enum';
 import { PackingAlgorithms } from '../../../types/PackingAlgorithm.interface';
 import classNames from 'classnames';
 
