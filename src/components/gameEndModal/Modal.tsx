@@ -109,7 +109,7 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
                         <span>First game of the day</span>
                       </li>
                     ) : undefined}
-                    {userScore < algoScore ? (
+                    {userScore >= algoScore ? (
                       <li className="flex justify-start flex-row bg-zinc-500 bg rounded px-2 pb-1 pt-2 hover:scale-105 transition-all">
                         <CheckIcon className="h-4 pr-1 text-green-500" />
                         <span>Beat the algorithm</span>
@@ -120,7 +120,7 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
                         <span>Beat by the algorithm</span>
                       </li>
                     )}
-                    {userScore < (getPersonalBest(algorithm, level)?.height ?? userScore + 1) ? (
+                    {userScore > (getPersonalBest(algorithm, level)?.height ?? userScore + 1) ? (
                       <li className="flex justify-start flex-row bg-zinc-500 bg rounded px-2 pb-1 pt-2 hover:scale-105 transition-all">
                         <CheckIcon className="h-4 pr-1 text-green-500" />
                         <span>New personal best</span>
@@ -130,7 +130,7 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
                 </div>
                 <div className="w-3/4 m-auto text-white">
                   <GameEndModalItem name="Your score" value={userScore.toFixed(0)} />
-                  <GameEndModalItem name="Personal best" value={getPersonalBest(algorithm, level)?.height ?? userScore} />
+                  <GameEndModalItem name="Personal best" value={(getPersonalBest(algorithm, level)?.height ?? userScore).toFixed(0)} />
                   <GameEndModalItem name="Algorithm score" value={algoScore.toFixed(0)} />
                   <GameEndModalItem name="Level" value={level} />
                   <GameEndModalItem name="Algorithm" value={algorithm} />

@@ -84,7 +84,7 @@ const useScoreStore = create<ScoreState>((set, get) => ({
       const prevScore = state.getPersonalBest(algo, level);
       const currScore = state.user;
 
-      if (!prevScore || currScore.height < prevScore.height) {
+      if (!prevScore || currScore.height > prevScore.height) {
         const levelScore = state.personalBest?.[algo] || { [Levels.BEGINNER]: undefined, [Levels.NOVICE]: undefined, [Levels.EXPERT]: undefined };
 
         const newPersonalBest: MappedScore = { ...state.personalBest, [algo]: { ...levelScore, [level]: { ...currScore } } };
