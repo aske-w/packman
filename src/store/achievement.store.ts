@@ -3,7 +3,7 @@ import { Algorithms } from '../types/AllAlgorithms.enum';
 import { Levels } from '../types/enums/Levels.enum';
 import create from 'zustand';
 import { persist } from './middleware/persist.middleware';
-import { Badges } from '../types/enums/Badges.enums.enum';
+import { Badges } from '../types/enums/Badges.enum';
 import { sleep } from '../utils/utils';
 import { checkAchievements } from '../utils/achievementChecker';
 import { promptBadge } from '../components/Badges';

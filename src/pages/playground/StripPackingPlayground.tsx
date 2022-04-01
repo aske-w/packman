@@ -6,7 +6,7 @@ import Canvas, { WithColor } from '../../components/Canvas';
 import StripPackingPlaygroundIntroModal from '../../components/playground/strip/StripPackingPlaygroundIntroModal';
 import StripPackingSidebar from '../../components/Sidebar/StripPackingSidebar';
 import { usePackingAlgorithms } from '../../hooks/usePackingAlgorithms';
-import { Badges } from '../../types/enums/Badges.enums.enum';
+import { Badges } from '../../types/enums/Badges.enum';
 import { Dimensions } from '../../types/Dimensions.interface';
 import { PackingAlgorithms } from '../../types/PackingAlgorithm.interface';
 import { Rectangle } from '../../types/Rectangle.interface';

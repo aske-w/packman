@@ -1,6 +1,6 @@
 import React from 'react';
 import { BadgesLocalStorage } from '../../../store/achievement.store';
-import { Badges } from '../../../types/enums/Badges.enums.enum';
+import { Badges } from '../../../types/enums/Badges.enum';
 
 interface BadgeProps {
   badge: BadgesLocalStorage;

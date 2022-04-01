@@ -6,7 +6,7 @@ import useEventStore from '../store/event.store';
 import useGameStore from '../store/game.store';
 import useLevelStore from '../store/level.store';
 import useScoreStore from '../store/score.store';
-import { Badges } from '../types/enums/Badges.enums.enum';
+import { Badges } from '../types/enums/Badges.enum';
 import { BinPackingAlgorithm } from '../types/enums/BinPackingAlgorithm.enum';
 import { Events } from '../types/enums/Events.enum';
 
@@ -56,7 +56,7 @@ export const BadgeContainer: React.FC<BadgesProps> = ({}) => {
 export const promptBadge = (x: Badges) => {
   toast(
     <div className="flex items-center">
-      <span className="text-3xl w-fit pr-3">🏅</span>
+      <span className="pr-3 text-3xl w-fit">🏅</span>
       <span className="w-fit">
         Badge '<span className="font-bold">{x}</span>' unlocked!
       </span>
