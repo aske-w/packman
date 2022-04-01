@@ -4,7 +4,6 @@ import { Layer as KonvaLayer } from 'konva/lib/Layer';
 import { Shape } from 'konva/lib/Shape';
 import { Rect as KonvaRect } from 'konva/lib/shapes/Rect';
 import { Vector2d } from 'konva/lib/types';
-import { nanoid } from 'nanoid';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Layer, Rect, Stage } from 'react-konva';
 import ScrollBar from '../../components/canvas/ScrollBar';
@@ -17,6 +16,7 @@ import OnlineStripPackingInteractive, {
 import OnlineStripPackingInventory from '../../components/games/onlineStripPacking/OnlineStripPackingInventory';
 import { NAV_HEIGHT, PADDING, SCROLLBAR_WIDTH } from '../../config/canvasConfig';
 import { defaultScrollHandler, useKonvaWheelHandler } from '../../hooks/useKonvaWheelHandler';
+import { useOnlineStripPackingInventory } from '../../hooks/useOnlineStripPackingInventory';
 import { useSnap } from '../../hooks/useSnap';
 import { useWindowSize } from '../../hooks/useWindowSize';
 import useAlgorithmStore from '../../store/algorithm.store';
@@ -32,13 +32,15 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
   const gameHeight = wHeight - NAV_HEIGHT;
   const inventoryWidth = totalGameWidth * 0.3;
   const colWidth = (totalGameWidth - inventoryWidth) / 2;
-  const scrollableHeight = gameHeight * 1.5;
+  const scrollableHeight = gameHeight * 5;
 
   const [stripRects, setStripRects] = useState<ColorRect[]>([]);
+  const placedRects = useMemo(() => stripRects.map(({ name }) => name), [stripRects]);
+  const { visibleInventory, setVisibileInventory, compressInventory, inventory } = useOnlineStripPackingInventory({
+    inventoryWidth,
+    placedRects,
+  });
 
-  const [inventory, setInventory] = useState(() =>
-    generateData(100, inventoryWidth * 0.6, 10).map(r => ({ ...r, fill: Konva.Util.getRandomColor(), name: nanoid() }))
-  );
   const interactiveLayerRef = useRef<KonvaLayer>(null);
   const interactiveScrollBarRef = useRef<KonvaRect>(null);
   const interactiveHandle = useRef<OnlineStripPackingInteractiveHandle>(null);
@@ -50,39 +52,16 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
   const algorithm = useAlgorithmStore(useCallback(state => state.onlineStripPackingAlgorithm, []));
   const algorithmHandle = useRef<OnlineStripPackingAlgorithmHandle>(null);
 
-  const [shownInventory, setShownInventory] = useState(() => {
-    return inventory.reduce<ColorRect[]>((acc, attrs, i) => {
-      const { height, width } = attrs;
-
-      const rect: any = {
-        width,
-        height,
-        x: PADDING,
-        y: PADDING,
-        fill: Konva.Util.getRandomColor(),
-        name: nanoid(),
-      };
-      if (i === 0) {
-        acc.push(rect);
-      } else {
-        const prev = acc[i - 1];
-        rect.y = prev.height + prev.y + PADDING * 2;
-        acc.push(rect);
-      }
-
-      return acc;
-    }, []);
-  });
-
   // Snapping
-  const { snapInventory, snapInteractive } = useSnap<ColorRect>({
-    inventory: shownInventory,
+  const { snapInventory, snapInteractive } = useSnap({
+    inventory: inventory,
     inventoryWidth,
     stripWidth: colWidth,
     gameHeight,
     inventoryLayer: inventoryLayerRef,
     interactiveLayerRef,
     inventoryFilterFunc: (r, target) => r.name == target.name(),
+
     scrollableHeight,
   });
 
@@ -90,10 +69,10 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
    * Pos is absolute position in the canvas
    */
   const onDraggedToStrip = (rectName: string, pos: Vector2d): boolean => {
-    const rIdx = shownInventory.findIndex(r => r.name === rectName);
+    const rIdx = visibleInventory.findIndex(r => r.name === rectName);
 
     if (rIdx !== -1) {
-      const rect = shownInventory[rIdx];
+      const rect = visibleInventory[rIdx];
       const interactiveScrollOffset = interactiveLayerRef.current?.y()!;
       const interactiveRects = interactiveLayerRef.current?.children;
 
@@ -115,12 +94,6 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
 
       interactiveHandle.current?.place(rect, placement);
       algorithmHandle.current?.place(rect);
-
-      setShownInventory(prev => {
-        const newInventory = [...prev];
-        newInventory.splice(rIdx, 1);
-        return newInventory;
-      });
     }
 
     return true;
@@ -199,7 +172,7 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
           snap={(target: Shape) => snapInventory(interactiveLayerRef.current?.children as KonvaGroup[], target)}
           ref={inventoryLayerRef}
           x={colWidth}
-          shownInventory={shownInventory}
+          shownInventory={visibleInventory}
         />
 
         <OnlineStripPackingAlgorithm

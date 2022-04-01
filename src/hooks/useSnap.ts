@@ -131,8 +131,10 @@ export const useSnap = <T>({
       target.setAttr('fill', RECT_OVERLAP_COLOR);
     } else {
       //no overlap while dragging
-      let color = inventory.find((r, i) => inventoryFilterFunc(r, target, i))!.fill;
-      target.setAttr('fill', color!.substring(0, 7) + '80');
+      let color = inventory.find((r, i) => inventoryFilterFunc(r, target, i))?.fill;
+      if (color) {
+        target.setAttr('fill', color.substring(0, 7) + '80');
+      }
     }
   };
 

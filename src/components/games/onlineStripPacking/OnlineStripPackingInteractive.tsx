@@ -93,7 +93,7 @@ const OnlineStripPackingInteractive = React.forwardRef<OnlineStripPackingInterac
       stripRects.forEach(r => {
         if (r.name == target.getAttr('name')) return;
 
-        var _r = layerRef.current?.children?.find(x => x.getAttr('name') == r.name);
+        const _r = layerRef.current?.children?.find(x => x.getAttr('name') == r.name);
         if (_r == undefined) return;
 
         if (intersects(target.getAttrs(), _r.getAttrs()))
