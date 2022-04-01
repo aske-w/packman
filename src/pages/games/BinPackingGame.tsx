@@ -18,6 +18,7 @@ import useGameStore from '../../store/game.store';
 import Konva from 'konva';
 import { Shape, ShapeConfig } from 'konva/lib/Shape';
 import { Stage as KonvaStage } from 'konva/lib/Stage';
+import { Dimensions } from '../../types/Dimensions.interface';
 
 interface BinPackingGameProps {}
 const NUM_ITEMS = 10;
@@ -62,32 +63,40 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
   const [bins, setBins] = useState<Record<number, ColorRect[]>>({});
   const [binLayout, setBinLayout] = useState<IRect[]>([]);
 
-  const findBin = (pos: Vector2d) => {
-    return binLayout.findIndex(({ height, width, x, y }) => {
-      const rectX = pos.x - inventoryWidth;
-      const fitsX = rectX > x && rectX < x + width;
-      const fitsY = pos.y > y && pos.y < y + height;
-      return fitsX && fitsY;
+  const findBin = (dropPos: Vector2d, rect: Dimensions & Vector2d) => {
+    return binLayout.findIndex(({ height: binHeight, width: binWidth, x: binX, y: binY }) => {
+      // Check if the drop position is within the bin
+      const binX2 = binX + binWidth;
+      const binY2 = binY + binHeight;
+      const rectX = dropPos.x;
+      const rectY = dropPos.y;
+      const rectX2 = dropPos.x + rect.width;
+      const rectY2 = dropPos.y + rect.height;
+
+      const fitsX1 = rectX >= binX;
+      const fitsX2 = rectX2 <= binX2;
+      const fitsY1 = rectY >= binY;
+      const fitsY2 = rectY2 <= binY2;
+
+      return fitsX1 && fitsX2 && fitsY1 && fitsY2;
     });
   };
 
-  const handleDraggedToBin = (evtRect: Shape<ShapeConfig> | KonvaStage, startPos: Vector2d) => {
-    const { name } = evtRect.getAttrs();
+  const handleDraggedToBin = (evt: Shape<ShapeConfig> | KonvaStage, startPos: Vector2d) => {
+    const { name, ...evtRect } = evt.getAttrs() as Dimensions & Vector2d & { name: string };
     const offset = interactiveLayer.current!.y();
-    const dropPos = evtRect.getAbsolutePosition();
+    const dropPos = evt.getAbsolutePosition();
     // take the offset into account
     dropPos.y -= offset;
 
-    // Check if it's inside a bin
-
-    const bin = findBin(dropPos);
+    const bin = findBin({ x: dropPos.x - inventoryWidth, y: dropPos.y }, evtRect);
 
     // Animate it back
     if (bin === -1) {
       return new Konva.Tween({
         x: startPos.x,
         y: startPos.y,
-        node: evtRect,
+        node: evt,
         duration: 0.4,
         easing: Konva.Easings.EaseOut,
       }).play();

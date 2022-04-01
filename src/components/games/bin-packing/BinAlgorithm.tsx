@@ -93,12 +93,11 @@ const BinAlgorithm = forwardRef<BinAlgorithmHandle, BinAlgorithmProps>(
       <Layer y={offset.y} x={offset.x} ref={layerRef}>
         {binLayout.map((b, i) => {
           const binRects = placed.filter(({ binId }) => binId === i);
-          console.log(binRects);
 
           return (
             <Fragment key={i}>
               <Rect {...b} fill={'#eee'} opacity={0.5} />
-              <Text text={i.toString()} x={b.x} y={b.y} fontSize={24} />
+              <Text text={i.toString()} x={b.x} y={b.y - 24} fontSize={24} />
               {binRects?.map(r => (
                 <MyRect {...r} x={r.x + b.x} y={r.y + b.y + b.height} key={r.name} />
               ))}
