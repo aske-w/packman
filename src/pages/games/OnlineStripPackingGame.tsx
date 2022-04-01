@@ -50,7 +50,7 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
   const algorithm = useAlgorithmStore(useCallback(state => state.onlineStripPackingAlgorithm, []));
   const algorithmHandle = useRef<OnlineStripPackingAlgorithmHandle>(null);
 
-  const shownInventory = useMemo(() => {
+  const [shownInventory, setShownInventory] = useState(() => {
     return inventory.reduce<ColorRect[]>((acc, attrs, i) => {
       const { height, width } = attrs;
 
@@ -72,7 +72,7 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
 
       return acc;
     }, []);
-  }, []);
+  });
 
   // Snapping
   const { snapInventory, snapInteractive } = useSnap<ColorRect>({
@@ -90,11 +90,10 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
    * Pos is absolute position in the canvas
    */
   const onDraggedToStrip = (rectName: string, pos: Vector2d): boolean => {
-    const renderInventory = shownInventory;
-    const rIdx = renderInventory.findIndex(r => r.name === rectName);
+    const rIdx = shownInventory.findIndex(r => r.name === rectName);
 
     if (rIdx !== -1) {
-      const rect = renderInventory[rIdx];
+      const rect = shownInventory[rIdx];
       const interactiveScrollOffset = interactiveLayerRef.current?.y()!;
       const interactiveRects = interactiveLayerRef.current?.children;
 
@@ -117,33 +116,11 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
       interactiveHandle.current?.place(rect, placement);
       algorithmHandle.current?.place(rect);
 
-      // if (!res) return false;
-      // const [placedRect, order, recIdx] = res;
-      // const inv = [...startingInventory];
-      // const interactiveIdx = inv.findIndex(r => r.name === rectName);
-
-      // inv[interactiveIdx].removed = true;
-      // inv[recIdx].order = order;
-
-      // // Pushes currently placed block at the back of the inventory lust
-      // pushItemToBack(inv, interactiveIdx);
-
-      // let newRectIdx = 0;
-      // const compressedInv = compressInventory(inv, inventoryWidth, (rect, i) => rect.name === placedRect.name && (newRectIdx = i));
-
-      // const interactiveInventory = compressedInv.filter(r => !r.removed);
-      // setRenderInventory(interactiveInventory);
-      // setRectanglesLeft(renderInventory.length - 1);
-
-      // // give the order of placement to the starting state
-      // setStartingInventory(compressedInv);
-
-      // /**
-      //  * Let inventory compress before animating
-      //  */
-      // sleep(ALGO_MOVE_ANIMATION_DURATION * 500).then(() => {
-      //   algoRef.current?.place(placedRect, newRectIdx);
-      // });
+      setShownInventory(prev => {
+        const newInventory = [...prev];
+        newInventory.splice(rIdx, 1);
+        return newInventory;
+      });
     }
 
     return true;
@@ -178,18 +155,6 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
 
   return (
     <div className="flex justify-center h-full max-w-screen-xl mx-auto ">
-      <button
-        onClick={() => {
-          const toPlace = inventory.shift();
-          console.log('toPlace', toPlace);
-
-          if (!toPlace) return;
-          setInventory(inventory);
-          algorithmHandle.current?.place(toPlace);
-        }}
-      >
-        place
-      </button>
       <Stage onWheel={handleWheel} width={totalGameWidth} height={gameHeight}>
         <Layer>
           {/* Interactive BG */}
@@ -237,7 +202,6 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
           shownInventory={shownInventory}
         />
 
-        <Layer y={-gameHeight} ref={interactiveLayerRef}></Layer>
         <OnlineStripPackingAlgorithm
           x={colWidth + inventoryWidth}
           layerRef={algorithmLayerRef}
