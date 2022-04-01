@@ -13,7 +13,7 @@ import useGameEndStore from '../../store/gameEnd.store';
 import useLevelStore from '../../store/level.store';
 import useScoreStore from '../../store/score.store';
 import { Events } from '../../types/enums/Events.enum';
-import { GameEndModalTitles } from '../../types/GameEndModalTitles.enum';
+import { GameEndModalTitle } from '../../types/enums/GameEndModalTitle.enum';
 import { Levels } from '../../types/enums/Levels.enum';
 import { PackingAlgorithms } from '../../types/PackingAlgorithm.interface';
 import { getYearMonthDay } from '../../utils/utils';
@@ -23,7 +23,7 @@ import GameEndModalItem from './Item';
 interface GameEndModalProps {}
 
 const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
-  const [title, setTitle] = useState<GameEndModalTitles | undefined>();
+  const [title, setTitle] = useState<GameEndModalTitle | undefined>();
   const [titleTextColor, setTitleTextColor] = useState<string | undefined>();
   const { event, setEvent } = useEventStore(useCallback(({ event, setEvent }) => ({ event, setEvent }), []));
   const { blur, setBlur } = useGameEndStore();
@@ -35,12 +35,12 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
   useEffect(() => {
     switch (event) {
       case Events.GAME_OVER:
-        setTitle(GameEndModalTitles.GAME_OVER);
+        setTitle(GameEndModalTitle.GAME_OVER);
         setTitleTextColor('text-red-500');
         setBlur(true);
         return () => setLastPlayed();
       case Events.FINISHED:
-        setTitle(GameEndModalTitles.FINISHED);
+        setTitle(GameEndModalTitle.FINISHED);
         setTitleTextColor('text-green-500');
         setBlur(true);
         return () => setLastPlayed();
@@ -57,7 +57,7 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
     <div>
       <Transition appear show={title !== undefined} as={Fragment}>
         <Dialog as="div" className="fixed inset-0 z-10 overflow-y-auto" onClose={() => {}}>
-          <Confetti recycle={false} run={title !== undefined && title == GameEndModalTitles.FINISHED} />
+          <Confetti recycle={false} run={title !== undefined && title == GameEndModalTitle.FINISHED} />
           <Dialog.Overlay className="fixed inset-0 bg-black opacity-30" />
           <div className="min-h-screen px-4 text-center">
             <Transition.Child
