@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from 'react';
 import { Dimensions } from '../types/Dimensions.interface';
 import { NextFitDecreasingHeight } from '../algorithms/strip/NextFitDecreasingHeight';
-import { PackingAlgorithm, PackingAlgorithms } from '../types/PackingAlgorithm.interface';
+import { PackingAlgorithm, PackingAlgorithmEnum } from '../types/PackingAlgorithm.interface';
 import { useStats } from './useStats';
 import { FirstFitDecreasingHeight } from '../algorithms/strip/FirstFitDecreasingHeight';
 import { BestFitDecreasingHeight } from '../algorithms/strip/BestFitDecreasingHeight';
@@ -9,11 +9,12 @@ import { SizeAlternatingStack } from '../algorithms/strip/SizeAlternatingStack';
 import { DimensionsWithConfig } from '../types/DimensionsWithConfig.type';
 import { Sleators } from '../algorithms/strip/Sleators';
 
-const { BEST_FIT_DECREASING_HEIGHT, NEXT_FIT_DECREASING_HEIGHT, FIRST_FIT_DECREASING_HEIGHT, SIZE_ALTERNATING_STACK, SLEATORS } = PackingAlgorithms;
+const { BEST_FIT_DECREASING_HEIGHT, NEXT_FIT_DECREASING_HEIGHT, FIRST_FIT_DECREASING_HEIGHT, SIZE_ALTERNATING_STACK, SLEATORS } =
+  PackingAlgorithmEnum;
 
 export type AlgoStates = 'RUNNING' | 'STOPPED' | 'PAUSED';
 
-export const usePackingAlgorithms = (width: number, selectedAlgorithm: PackingAlgorithms) => {
+export const usePackingAlgorithms = (width: number, selectedAlgorithm: PackingAlgorithmEnum) => {
   const { addArea, getStats } = useStats(width);
   const [algoState, setAlgoState] = useState<AlgoStates>('STOPPED');
   const [isFinished, setIsFinished] = useState(true);

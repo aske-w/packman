@@ -14,7 +14,7 @@ export interface PackingAlgorithm<
   // getSortedData(): SortedData;
 }
 
-export enum PackingAlgorithms {
+export enum PackingAlgorithmEnum {
   NEXT_FIT_DECREASING_HEIGHT = 'Next Fit Decreasing Height',
   FIRST_FIT_DECREASING_HEIGHT = 'First Fit Decreasing Height',
   BEST_FIT_DECREASING_HEIGHT = 'Best Fit Decreasing Height',
@@ -23,9 +23,9 @@ export enum PackingAlgorithms {
 }
 
 export const ALL_PACKING_ALGORITHMS = [
-  PackingAlgorithms.FIRST_FIT_DECREASING_HEIGHT,
-  PackingAlgorithms.NEXT_FIT_DECREASING_HEIGHT,
-  PackingAlgorithms.BEST_FIT_DECREASING_HEIGHT,
-  PackingAlgorithms.SIZE_ALTERNATING_STACK,
-  PackingAlgorithms.SLEATORS,
+  PackingAlgorithmEnum.FIRST_FIT_DECREASING_HEIGHT,
+  PackingAlgorithmEnum.NEXT_FIT_DECREASING_HEIGHT,
+  PackingAlgorithmEnum.BEST_FIT_DECREASING_HEIGHT,
+  PackingAlgorithmEnum.SIZE_ALTERNATING_STACK,
+  PackingAlgorithmEnum.SLEATORS,
 ];

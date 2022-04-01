@@ -2,10 +2,10 @@ import { useCallback, useEffect } from 'react';
 import useEventStore from '../store/event.store';
 import useScoreStore from '../store/score.store';
 import { Events } from '../types/enums/Events.enum';
-import { PackingAlgorithms } from '../types/PackingAlgorithm.interface';
+import { PackingAlgorithmEnum } from '../types/PackingAlgorithm.interface';
 import useLevelStore from '../store/level.store';
 
-export const useEvents = (algo: PackingAlgorithms) => {
+export const useEvents = (algo: PackingAlgorithmEnum) => {
   const level = useLevelStore(useCallback(({ level }) => level, []));
   const { setEvent, event } = useEventStore(useCallback(({ setEvent, event }) => ({ setEvent, event }), []));
   const { setEndScore } = useScoreStore(useCallback(({ setEndScore }) => ({ setEndScore }), []));

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Levels } from '../../../types/enums/Levels.enum';
-import { PackingAlgorithms } from '../../../types/PackingAlgorithm.interface';
+import { PackingAlgorithmEnum } from '../../../types/PackingAlgorithm.interface';
 import classNames from 'classnames';
 
 export interface Row {

@@ -3,7 +3,7 @@ import { useAutoPlace } from '../../hooks/useAutoPlace';
 import { AlgoStates } from '../../hooks/usePackingAlgorithms';
 import { useToggle } from '../../hooks/useToggle';
 import { Dimensions } from '../../types/Dimensions.interface';
-import { ALL_PACKING_ALGORITHMS, PackingAlgorithms } from '../../types/PackingAlgorithm.interface';
+import { ALL_PACKING_ALGORITHMS, PackingAlgorithmEnum } from '../../types/PackingAlgorithm.interface';
 import Select from '../select/Select';
 import SideBarItem from './SidebarItem';
 import SideBarSection from './SideBarSection';
@@ -21,8 +21,8 @@ interface SidebarProps {
   placeNext(): void;
   algoState: AlgoStates;
   start(data: Dimensions[]): void;
-  selectedAlgorithm: PackingAlgorithms;
-  setSelectedAlgorithm: React.Dispatch<React.SetStateAction<PackingAlgorithms>>;
+  selectedAlgorithm: PackingAlgorithmEnum;
+  setSelectedAlgorithm: React.Dispatch<React.SetStateAction<PackingAlgorithmEnum>>;
   dimensionsStorage: Dimensions[];
   setDimensionsStorage: React.Dispatch<React.SetStateAction<Dimensions[]>>;
   reset(): void;
@@ -55,7 +55,7 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
       <TeachAlgoModal algorithm={selectedAlgorithm} visible={teachingOpen} onClose={() => setTeachingOpen(false)} />
       <SideBarSection title="Algorithms">
         <div className="flex flex-row items-center justify-between">
-          <Select<PackingAlgorithms>
+          <Select<PackingAlgorithmEnum>
             className="text-base font-thin text-white w-72 strip-playground-algo-select"
             options={ALL_PACKING_ALGORITHMS}
             onChange={setSelectedAlgorithm}

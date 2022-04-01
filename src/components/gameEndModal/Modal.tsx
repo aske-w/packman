@@ -15,7 +15,7 @@ import useScoreStore from '../../store/score.store';
 import { Events } from '../../types/enums/Events.enum';
 import { GameEndModalTitle } from '../../types/enums/GameEndModalTitle.enum';
 import { Levels } from '../../types/enums/Levels.enum';
-import { PackingAlgorithms } from '../../types/PackingAlgorithm.interface';
+import { PackingAlgorithmEnum } from '../../types/PackingAlgorithm.interface';
 import { getYearMonthDay } from '../../utils/utils';
 import Button from './Button';
 import GameEndModalItem from './Item';

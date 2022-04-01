@@ -26,7 +26,7 @@ import useAlgorithmStore from '../../store/algorithm.store';
 import useScoreStore from '../../store/score.store';
 import { ColorRect } from '../../types/ColorRect.interface';
 import { Coordinate } from '../../types/Coordinate.interface';
-import { PackingAlgorithms } from '../../types/PackingAlgorithm.interface';
+import { PackingAlgorithmEnum } from '../../types/PackingAlgorithm.interface';
 import { Rectangle } from '../../types/Rectangle.interface';
 import { RectangleConfig } from '../../types/RectangleConfig.interface';
 import { pushItemToBack } from '../../utils/array';

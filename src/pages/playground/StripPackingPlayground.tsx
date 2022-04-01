@@ -8,12 +8,12 @@ import StripPackingSidebar from '../../components/Sidebar/StripPackingSidebar';
 import { usePackingAlgorithms } from '../../hooks/usePackingAlgorithms';
 import { Badges } from '../../types/enums/Badges.enum';
 import { Dimensions } from '../../types/Dimensions.interface';
-import { PackingAlgorithms } from '../../types/PackingAlgorithm.interface';
+import { PackingAlgorithmEnum } from '../../types/PackingAlgorithm.interface';
 import { Rectangle } from '../../types/Rectangle.interface';
 
 function StripPackingPlayground() {
   const [stripWidth, setStripWidth] = useState(400);
-  const [selectedAlgorithm, setSelectedAlgorithm] = useState<PackingAlgorithms>(PackingAlgorithms.SLEATORS);
+  const [selectedAlgorithm, setSelectedAlgorithm] = useState<PackingAlgorithmEnum>(PackingAlgorithmEnum.SLEATORS);
   const { start, pause, place, algoState, isFinished, reset: resetAlgo } = usePackingAlgorithms(stripWidth, selectedAlgorithm);
 
   const placeNext = () => {
