@@ -39,8 +39,7 @@ const OnlineStripPackingInteractive = React.forwardRef<OnlineStripPackingInterac
     const [userScoreChanged, setUserScoreChanged] = useState(false);
     const [algoScoreChanged, setAlgoScoreChanged] = useState(false);
 
-    // TODO fix
-    const { onPlaceEvent, event } = useEvents(algorithm as any);
+    const { onPlaceEvent, event } = useEvents(algorithm);
 
     const { user, algorithm: algoScore } = useScoreStore();
     const permission = useLevelStore(useCallback(state => state.getPermission(), []));

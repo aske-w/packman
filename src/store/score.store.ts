@@ -1,4 +1,5 @@
 import create from 'zustand';
+import { Algorithm } from '../types/enums/AllAlgorithms.enum';
 import { Levels } from '../types/enums/Levels.enum';
 import { PackingAlgorithmEnum } from '../types/PackingAlgorithm.interface';
 import { getLocalStorage, getYearMonthDay, LOCAL_STORAGE_PREFIX } from '../utils/utils';
@@ -19,8 +20,8 @@ const LAST_PLAYED_PREFIX = LOCAL_STORAGE_PREFIX + 'last_played';
 export type ScoreState = Record<Player, Score> & {
   setScore(score: Score, player: Player): void;
   setRectanglesLeft(rectangles: number): void;
-  setEndScore(algo: PackingAlgorithmEnum, level: Levels): void;
-  getPersonalBest(algo: PackingAlgorithmEnum, level: Levels): Score | undefined;
+  setEndScore(algo: Algorithm, level: Levels): void;
+  getPersonalBest(algo: Algorithm, level: Levels): Score | undefined;
   setLastPlayed(): void;
   rectanglesLeft: number;
   lastPlayed: Date | undefined;
@@ -53,8 +54,8 @@ const useScoreStore = create<ScoreState>((set, get) => ({
         ...payload,
       },
     })),
-  getPersonalBest: (algo: PackingAlgorithmEnum, level: Levels) => get().personalBest?.[algo]?.[level],
-  setEndScore: (algo: PackingAlgorithmEnum, level: Levels) =>
+  getPersonalBest: (algo: Algorithm, level: Levels) => get().personalBest?.[algo]?.[level],
+  setEndScore: (algo: Algorithm, level: Levels) =>
     set(state => {
       const prevScore = state.getPersonalBest(algo, level);
       const currScore = state.user;

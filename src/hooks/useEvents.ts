@@ -4,8 +4,9 @@ import useScoreStore from '../store/score.store';
 import { Events } from '../types/enums/Events.enum';
 import { PackingAlgorithmEnum } from '../types/PackingAlgorithm.interface';
 import useLevelStore from '../store/level.store';
+import { Algorithm } from '../types/enums/AllAlgorithms.enum';
 
-export const useEvents = (algo: PackingAlgorithmEnum) => {
+export const useEvents = (algo: Algorithm) => {
   const level = useLevelStore(useCallback(({ level }) => level, []));
   const { setEvent, event } = useEventStore(useCallback(({ setEvent, event }) => ({ setEvent, event }), []));
   const { setEndScore } = useScoreStore(useCallback(({ setEndScore }) => ({ setEndScore }), []));
