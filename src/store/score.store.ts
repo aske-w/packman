@@ -1,7 +1,7 @@
 import create from 'zustand';
 import { Algorithm } from '../types/enums/AllAlgorithms.enum';
 import { Levels } from '../types/enums/Levels.enum';
-import { PackingAlgorithmEnum } from '../types/PackingAlgorithm.interface';
+
 import { getLocalStorage, getYearMonthDay, LOCAL_STORAGE_PREFIX } from '../utils/utils';
 
 export interface Score {

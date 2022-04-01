@@ -8,8 +8,9 @@ import StripPackingSidebar from '../../components/Sidebar/StripPackingSidebar';
 import { usePackingAlgorithms } from '../../hooks/usePackingAlgorithms';
 import { Badges } from '../../types/enums/Badges.enum';
 import { Dimensions } from '../../types/Dimensions.interface';
-import { PackingAlgorithmEnum } from '../../types/PackingAlgorithm.interface';
+
 import { Rectangle } from '../../types/Rectangle.interface';
+import { PackingAlgorithmEnum } from '../../types/enums/OfflineStripPackingAlgorithm.enum';
 
 function StripPackingPlayground() {
   const [stripWidth, setStripWidth] = useState(400);

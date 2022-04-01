@@ -17,7 +17,7 @@ import {
 } from '../../../config/canvasConfig';
 import { ColorRect } from '../../../types/ColorRect.interface';
 import { Dimensions } from '../../../types/Dimensions.interface';
-import { PackingAlgorithmEnum, PackingAlgorithm } from '../../../types/PackingAlgorithm.interface';
+import { PackingAlgorithm } from '../../../types/PackingAlgorithm.interface';
 import { DimensionsWithConfig } from '../../../types/DimensionsWithConfig.type';
 import { RectangleConfig } from '../../../types/RectangleConfig.interface';
 import Konva from 'konva';
@@ -26,6 +26,7 @@ import { Layer as KonvaLayer } from 'konva/lib/Layer';
 import { SizeAlternatingStack } from '../../../algorithms/strip/SizeAlternatingStack';
 import { KonvaEventObject } from 'konva/lib/Node';
 import ScrollBar from '../../canvas/ScrollBar';
+import { PackingAlgorithmEnum } from '../../../types/enums/OfflineStripPackingAlgorithm.enum';
 
 const { BEST_FIT_DECREASING_HEIGHT, NEXT_FIT_DECREASING_HEIGHT, FIRST_FIT_DECREASING_HEIGHT, SIZE_ALTERNATING_STACK } = PackingAlgorithmEnum;
 

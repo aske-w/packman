@@ -4,7 +4,7 @@ import { Badges } from '../types/enums/Badges.enum';
 import { ALL_BIN_PACKING_ALGORITHMS } from '../types/enums/BinPackingAlgorithm.enum';
 import { ALL_GAMEMODES, Gamemodes } from '../types/enums/Gamemodes.enum';
 import { Levels } from '../types/enums/Levels.enum';
-import { ALL_PACKING_ALGORITHMS } from '../types/PackingAlgorithm.interface';
+import { ALL_PACKING_ALGORITHMS } from '../types/enums/OfflineStripPackingAlgorithm.enum';
 
 const stripPackingAlgorithmsCounter = () => {
   return initPackingAlgorithmsMap(Gamemodes.STRIP_PACKING);

@@ -8,11 +8,12 @@ import { NextFitDecreasingHeight } from '../../../algorithms/strip/NextFitDecrea
 import { SizeAlternatingStack } from '../../../algorithms/strip/SizeAlternatingStack';
 import useScoreStore from '../../../store/score.store';
 import { ColorRect } from '../../../types/ColorRect.interface';
-import { PackingAlgorithm, PackingAlgorithmEnum } from '../../../types/PackingAlgorithm.interface';
+import { PackingAlgorithm } from '../../../types/PackingAlgorithm.interface';
 import { RectangleConfig } from '../../../types/RectangleConfig.interface';
 import { Layer as KonvaLayer } from 'konva/lib/Layer';
 import { ALGO_MOVE_ANIMATION_DURATION as ALGO_ENTER_ANIMATION_DURATION } from '../../../config/canvasConfig';
 import { Sleators } from '../../../algorithms/strip/Sleators';
+import { PackingAlgorithmEnum } from '../../../types/enums/OfflineStripPackingAlgorithm.enum';
 
 const { BEST_FIT_DECREASING_HEIGHT, NEXT_FIT_DECREASING_HEIGHT, FIRST_FIT_DECREASING_HEIGHT, SIZE_ALTERNATING_STACK, SLEATORS } =
   PackingAlgorithmEnum;

@@ -1,10 +1,9 @@
 import { useCallback, useEffect } from 'react';
 import useEventStore from '../store/event.store';
-import useScoreStore from '../store/score.store';
-import { Events } from '../types/enums/Events.enum';
-import { PackingAlgorithmEnum } from '../types/PackingAlgorithm.interface';
 import useLevelStore from '../store/level.store';
+import useScoreStore from '../store/score.store';
 import { Algorithm } from '../types/enums/AllAlgorithms.enum';
+import { Events } from '../types/enums/Events.enum';
 
 export const useEvents = (algo: Algorithm) => {
   const level = useLevelStore(useCallback(({ level }) => level, []));

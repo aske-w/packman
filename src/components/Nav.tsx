@@ -5,7 +5,7 @@ import { pathName } from '../pages/routes';
 import Logo from '../resources/Logo.svg';
 import useAlgorithmStore from '../store/algorithm.store';
 import useScoreStore from '../store/score.store';
-import { ALL_PACKING_ALGORITHMS } from '../types/PackingAlgorithm.interface';
+
 import Select from './select/Select';
 import Score from './Score';
 import { QuestionMarkCircleIcon } from '@heroicons/react/solid';
@@ -13,6 +13,7 @@ import useHelpStore from '../store/help.store';
 import LevelSelect from './select/LevelSelect';
 import GameEndModal from './gameEndModal/Modal';
 import useGameEndStore from '../store/gameEnd.store';
+import { ALL_PACKING_ALGORITHMS } from '../types/enums/OfflineStripPackingAlgorithm.enum';
 interface NavProps {
   height: number;
 }

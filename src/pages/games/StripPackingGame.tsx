@@ -6,40 +6,29 @@ import { Vector2d } from 'konva/lib/types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Layer, Rect, Stage } from 'react-konva';
 import ScrollBar from '../../components/canvas/ScrollBar';
+import GameEndModal from '../../components/gameEndModal/Modal';
 import Inventory from '../../components/games/stripPacking/Inventory';
 import StripPackingAlgorithm, { StripPackingAlgorithmHandle } from '../../components/games/stripPacking/StripPackingAlgorithm';
 import StripPackingGameIntroModal from '../../components/games/stripPacking/StripPackingGameIntroModal';
 import StripPackingInteractive, { StripPackingInteractiveHandle } from '../../components/games/stripPacking/StripPackingInteractive';
-import {
-  ALGO_MOVE_ANIMATION_DURATION,
-  NAV_HEIGHT,
-  PADDING,
-  RECT_OVERLAP_COLOR,
-  SCROLLBAR_WIDTH,
-  SNAPPING_THRESHOLD,
-  STROKE_WIDTH,
-} from '../../config/canvasConfig';
+import TimeBar from '../../components/TimeBar';
+import { ALGO_MOVE_ANIMATION_DURATION, NAV_HEIGHT, PADDING, SCROLLBAR_WIDTH } from '../../config/canvasConfig';
+import { useEvents } from '../../hooks/useEvents';
 import { defaultScrollHandler, useKonvaWheelHandler } from '../../hooks/useKonvaWheelHandler';
+import { useRestartStripPacking } from '../../hooks/useRestartStripPacking';
 import { useSnap } from '../../hooks/useSnap';
 import { useWindowSize } from '../../hooks/useWindowSize';
 import useAlgorithmStore from '../../store/algorithm.store';
+import useGameStore from '../../store/game.store';
 import useScoreStore from '../../store/score.store';
 import { ColorRect } from '../../types/ColorRect.interface';
-import { Coordinate } from '../../types/Coordinate.interface';
-import { PackingAlgorithmEnum } from '../../types/PackingAlgorithm.interface';
+import { Gamemodes } from '../../types/enums/Gamemodes.enum';
 import { Rectangle } from '../../types/Rectangle.interface';
 import { RectangleConfig } from '../../types/RectangleConfig.interface';
 import { pushItemToBack } from '../../utils/array';
-import { clamp } from '../../utils/clamp';
 import { compressInventory, generateInventory } from '../../utils/generateData';
 import { intersects } from '../../utils/intersects';
-import TimeBar from '../../components/TimeBar';
-import { useEvents } from '../../hooks/useEvents';
 import { sleep } from '../../utils/utils';
-import GameEndModal from '../../components/gameEndModal/Modal';
-import { useRestartStripPacking } from '../../hooks/useRestartStripPacking';
-import useGameStore from '../../store/game.store';
-import { Gamemodes } from '../../types/enums/Gamemodes.enum';
 
 interface StripPackingGameProps {}
 const NUM_ITEMS = 5;

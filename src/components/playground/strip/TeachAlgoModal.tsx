@@ -1,12 +1,13 @@
 import { Transition, Dialog } from '@headlessui/react';
 import { QuestionMarkCircleIcon } from '@heroicons/react/solid';
 import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react';
-import { PackingAlgorithmEnum } from '../../../types/PackingAlgorithm.interface';
+
 import BFDHArticle from './algorithm-articles/BFDHArticle';
 import FFDHArticle from './algorithm-articles/FFDHArticle';
 import NFDHArticle from './algorithm-articles/NFDHArticle';
 import SleatorsArticle from './algorithm-articles/SleatorsArticle';
 import SASArticle from './algorithm-articles/SASArticle';
+import { PackingAlgorithmEnum } from '../../../types/enums/OfflineStripPackingAlgorithm.enum';
 
 interface TeachAlgoModalProps {
   visible: boolean;

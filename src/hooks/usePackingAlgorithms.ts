@@ -1,13 +1,13 @@
 import { useCallback, useRef, useState } from 'react';
-import { Dimensions } from '../types/Dimensions.interface';
-import { NextFitDecreasingHeight } from '../algorithms/strip/NextFitDecreasingHeight';
-import { PackingAlgorithm, PackingAlgorithmEnum } from '../types/PackingAlgorithm.interface';
-import { useStats } from './useStats';
-import { FirstFitDecreasingHeight } from '../algorithms/strip/FirstFitDecreasingHeight';
 import { BestFitDecreasingHeight } from '../algorithms/strip/BestFitDecreasingHeight';
+import { FirstFitDecreasingHeight } from '../algorithms/strip/FirstFitDecreasingHeight';
+import { NextFitDecreasingHeight } from '../algorithms/strip/NextFitDecreasingHeight';
 import { SizeAlternatingStack } from '../algorithms/strip/SizeAlternatingStack';
-import { DimensionsWithConfig } from '../types/DimensionsWithConfig.type';
 import { Sleators } from '../algorithms/strip/Sleators';
+import { DimensionsWithConfig } from '../types/DimensionsWithConfig.type';
+import { PackingAlgorithmEnum } from '../types/enums/OfflineStripPackingAlgorithm.enum';
+import { PackingAlgorithm } from '../types/PackingAlgorithm.interface';
+import { useStats } from './useStats';
 
 const { BEST_FIT_DECREASING_HEIGHT, NEXT_FIT_DECREASING_HEIGHT, FIRST_FIT_DECREASING_HEIGHT, SIZE_ALTERNATING_STACK, SLEATORS } =
   PackingAlgorithmEnum;

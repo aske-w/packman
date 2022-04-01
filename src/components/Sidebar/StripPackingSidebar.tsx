@@ -3,7 +3,7 @@ import { useAutoPlace } from '../../hooks/useAutoPlace';
 import { AlgoStates } from '../../hooks/usePackingAlgorithms';
 import { useToggle } from '../../hooks/useToggle';
 import { Dimensions } from '../../types/Dimensions.interface';
-import { ALL_PACKING_ALGORITHMS, PackingAlgorithmEnum } from '../../types/PackingAlgorithm.interface';
+import { ALL_PACKING_ALGORITHMS, PackingAlgorithmEnum } from '../../types/enums/OfflineStripPackingAlgorithm.enum';
 import Select from '../select/Select';
 import SideBarItem from './SidebarItem';
 import SideBarSection from './SideBarSection';
