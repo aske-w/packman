@@ -1,11 +1,9 @@
 import Konva from 'konva';
 import { Layer as KonvaLayer } from 'konva/lib/Layer';
-
 import { IRect, Vector2d } from 'konva/lib/types';
-import { forwardRef, Fragment, RefObject, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import { forwardRef, Fragment, RefObject, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { Rect as KonvaRect, RectConfig } from 'konva/lib/shapes/Rect';
-
-import { Group, KonvaNodeEvents, Layer, Rect, Text } from 'react-konva';
+import { KonvaNodeEvents, Layer, Rect, Text } from 'react-konva';
 import FiniteFirstFit from '../../../algorithms/bin/offline/FiniteFirstFit';
 import FiniteNextFit from '../../../algorithms/bin/offline/FiniteNextFit';
 import HybridFirstFit from '../../../algorithms/bin/offline/HybridFirstFit';
@@ -14,8 +12,7 @@ import { ColorRect } from '../../../types/ColorRect.interface';
 import { Dimensions } from '../../../types/Dimensions.interface';
 import { DimensionsWithConfig } from '../../../types/DimensionsWithConfig.type';
 import { PackingAlgorithm } from '../../../types/PackingAlgorithm.interface';
-import { RectangleConfig } from '../../../types/RectangleConfig.interface';
-import { BinPackingAlgoRect, BinPackingRect, PlacedBinPackingAlgoRect, PrevPos } from '../../../types/BinPackingRect.interface';
+import { BinPackingAlgoRect, PlacedBinPackingAlgoRect, PrevPos } from '../../../types/BinPackingRect.interface';
 interface BinAlgorithmProps {
   offset: Vector2d;
   dimensions: Dimensions;
@@ -38,6 +35,7 @@ const { FINITE_FIRST_FIT, FINITE_NEXT_FIT, HYBRID_FIRST_FIT } = BinPackingAlgori
 const BinAlgorithm = forwardRef<BinAlgorithmHandle, BinAlgorithmProps>(
   ({ offset, layerRef, dimensions, data, selectedAlgorithm, binSize, binLayout, staticInventory: inventory, getInventoryScrollOffset }, ref) => {
     const [placed, setPlaced] = useState<PlacedBinPackingAlgoRect[]>([]);
+    const [order, setOrder] = useState(0);
 
     useImperativeHandle(ref, () => ({
       next: () => {
@@ -47,8 +45,8 @@ const BinAlgorithm = forwardRef<BinAlgorithmHandle, BinAlgorithmProps>(
 
         const idx = inventory.findIndex(r => r.name === rect.name)!;
         // Todo fix this
-        const order = 0;
-        return [rect, idx, order];
+
+        return [rect, order, idx];
       },
       place: (rect: ColorRect<BinPackingAlgoRect>, invIdx: number) => {
         const inventoryRect = inventory[invIdx]!;
@@ -62,8 +60,7 @@ const BinAlgorithm = forwardRef<BinAlgorithmHandle, BinAlgorithmProps>(
         };
 
         setPlaced(p => p.concat(newRect));
-
-        // Update order
+        setOrder(old => old + 1);
       },
     }));
 
