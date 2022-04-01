@@ -5,7 +5,6 @@ import { NextFitShelf } from '../../../algorithms/strip/online/NextFitShelf';
 
 import { ColorRect } from '../../../types/ColorRect.interface';
 import { RectangleExPos } from '../../../types/RectangleExPos.type';
-import { first } from 'lodash';
 import { OnlineStripPackingAlgorithmEnum } from '../../../types/enums/OnlineStripPackingAlgorithm.enum';
 import { OnlineStripPacking } from '../../../types/OnlineStripPackingAlgorithm.interface';
 

@@ -1,10 +1,9 @@
 import Konva from 'konva';
 import { Group as KonvaGroup } from 'konva/lib/Group';
 import { Layer as KonvaLayer } from 'konva/lib/Layer';
-import { Shape } from 'konva/lib/Shape';
 import { Rect as KonvaRect } from 'konva/lib/shapes/Rect';
 import { Vector2d } from 'konva/lib/types';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Layer, Rect, Stage } from 'react-konva';
 import ScrollBar from '../../components/canvas/ScrollBar';
 import OnlineStripPackingAlgorithm, {
@@ -21,9 +20,9 @@ import { useOnlineStripPackingInventory } from '../../hooks/useOnlineStripPackin
 import { useSnap } from '../../hooks/useSnap';
 import { useWindowSize } from '../../hooks/useWindowSize';
 import useAlgorithmStore from '../../store/algorithm.store';
+import useScoreStore from '../../store/score.store';
 import { ColorRect } from '../../types/ColorRect.interface';
 import { Rectangle } from '../../types/Rectangle.interface';
-import { generateData } from '../../utils/generateData';
 import { intersects } from '../../utils/intersects';
 interface OnlineStripPackingGameProps {}
 
@@ -37,11 +36,14 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
 
   const [stripRects, setStripRects] = useState<ColorRect[]>([]);
   const placedRects = useMemo(() => stripRects.map(({ name }) => name), [stripRects]);
-  const { visibleInventory, setVisibileInventory, compressInventory, inventory } = useOnlineStripPackingInventory({
+  const setRectanglesLeft = useScoreStore(useCallback(({ setRectanglesLeft }) => setRectanglesLeft, []));
+  const { visibleInventory, inventory } = useOnlineStripPackingInventory({
     inventoryWidth,
     inventoryHeight: gameHeight,
     placedRects,
   });
+
+  useEffect(() => setRectanglesLeft(inventory.length - placedRects.length), [inventory, placedRects]);
 
   const interactiveLayerRef = useRef<KonvaLayer>(null);
   const interactiveScrollBarRef = useRef<KonvaRect>(null);
@@ -63,7 +65,6 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
     inventoryLayer: inventoryLayerRef,
     interactiveLayerRef,
     inventoryFilterFunc: (r, target) => r.name == target.name(),
-
     scrollableHeight,
   });
 
