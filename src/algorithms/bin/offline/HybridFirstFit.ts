@@ -88,8 +88,6 @@ class HybridFirstFit<T = RectangleConfig> implements PackingAlgorithm<T> {
       return acc;
     }, []);
 
-    console.log({ bins });
-
     this.placedRectangles = bins;
   }
 

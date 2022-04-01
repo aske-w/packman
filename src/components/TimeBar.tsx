@@ -20,12 +20,11 @@ const green: RGBColor = { /* tailwind bg-green-400 */ red: 74, green: 222, blue:
 
 const TimeBar: React.FC<TimeBarProps> = ({ targetFPS = 60, startColor = green, endColor = red }) => {
   const barRef = useRef<HTMLDivElement>(null);
-  // let loop: NodeJS.Timer
+
   const [loop, setLoop] = useState<NodeJS.Timer>();
   const [clientWidth, setClientWidth] = useState(0);
   const currWidth = useRef(0);
-  // const [gameOver, setGameOver] = useState(false);
-  const { blur: isGameOverModalShowing } = useGameEndStore();
+
   const { event, setEvent } = useEventStore(useCallback(({ setEvent, event }) => ({ setEvent, event }), []));
   const permission = useLevelStore(useCallback(state => state.getPermission(), []));
 
@@ -120,9 +119,7 @@ const TimeBar: React.FC<TimeBarProps> = ({ targetFPS = 60, startColor = green, e
             <div ref={barRef} className="h-full"></div>
           </div>
         </div>
-      ) : (
-        <></>
-      ),
+      ) : null,
     [barRef, permission]
   );
 };

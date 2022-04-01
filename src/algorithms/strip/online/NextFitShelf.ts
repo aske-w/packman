@@ -10,7 +10,7 @@ export class NextFitShelf<T = Record<string, any>> implements OnlineStripPacking
   /**
    *
    */
-  constructor(readonly gameSize: Dimensions, readonly r: number) {}
+  constructor(readonly gameSize: Dimensions, readonly r: number, readonly debug = false) {}
 
   private denormalize(rect: ColorRect<T>): ColorRect<T> {
     const unit = 1 / this.gameSize.width;
@@ -38,9 +38,9 @@ export class NextFitShelf<T = Record<string, any>> implements OnlineStripPacking
     const h = rectHeight;
 
     for (let k = -10; k < 1000; k++) {
-      console.log(`checking: ${(r ** (k + 1)).toFixed(2)} < ${h} <= ${(r ** k).toFixed(2)}`);
+      if (this.debug) console.debug(`checking: ${(r ** (k + 1)).toFixed(2)} < ${h} <= ${(r ** k).toFixed(2)}`);
       if (r ** (k + 1) < h && h <= r ** k) {
-        console.log('found height!', r ** k);
+        if (this.debug) console.log('found height!', r ** k);
         return r ** k; // Shelf height
       }
     }

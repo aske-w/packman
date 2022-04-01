@@ -7,6 +7,7 @@ import { generateData } from '../utils/generateData';
 
 interface UseOnlineStripPackingInventoryParams {
   inventoryWidth: number;
+  inventoryHeight: number;
   placedRects: string[];
   visibleInventorySize?: number;
   inventorySize?: number;
@@ -14,6 +15,7 @@ interface UseOnlineStripPackingInventoryParams {
 
 export const useOnlineStripPackingInventory = ({
   inventoryWidth,
+  inventoryHeight,
   placedRects,
   visibleInventorySize = 2,
   inventorySize = 50,
@@ -26,14 +28,14 @@ export const useOnlineStripPackingInventory = ({
   const compressInventory = useCallback(() => {
     const filtered = inventory.filter(ir => !placedRects.includes(ir.name));
 
-    return filtered.slice(filtered.length - 5, filtered.length).reduce<ColorRect[]>((acc, attrs, i) => {
+    return filtered.slice(Math.max(filtered.length - 5, 0), filtered.length).reduce<ColorRect[]>((acc, attrs, i) => {
       const { height, width, name, fill } = attrs;
 
       const rect = {
         width,
         height,
-        x: PADDING,
-        y: PADDING,
+        x: (inventoryWidth - width) / 2,
+        y: inventoryHeight - height - PADDING,
         name,
         fill,
       };
@@ -41,7 +43,7 @@ export const useOnlineStripPackingInventory = ({
         acc.push(rect);
       } else {
         const prev = acc[i - 1];
-        rect.y = prev.height + prev.y + PADDING * 2;
+        rect.y = prev.y - height - PADDING * 2;
         acc.push(rect);
       }
 

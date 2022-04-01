@@ -27,7 +27,6 @@ const OnlineStripPackingAlgorithm = React.forwardRef<OnlineStripPackingAlgorithm
     useImperativeHandle(ref, () => ({
       place(r) {
         const placement = algorithm.place(r) as ColorRect; //TODO maybe fix?;
-        console.log('placement', placement);
 
         setItems(old => [...old, placement]);
       },
@@ -35,7 +34,6 @@ const OnlineStripPackingAlgorithm = React.forwardRef<OnlineStripPackingAlgorithm
 
     const [algorithm, setAlgorithm] = useState<OnlineStripPacking>(new NextFitShelf({ height: gameHeight, width }, 0.8));
     const [items, setItems] = useState<ColorRect[]>([]);
-    console.log(items);
 
     useEffect(() => {
       switch (selectedAlgorithm) {

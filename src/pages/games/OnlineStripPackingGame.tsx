@@ -14,6 +14,7 @@ import OnlineStripPackingInteractive, {
   OnlineStripPackingInteractiveHandle,
 } from '../../components/games/onlineStripPacking/OnlineStripPackingInteractive';
 import OnlineStripPackingInventory from '../../components/games/onlineStripPacking/OnlineStripPackingInventory';
+import OnlineStripPackingNav from '../../components/Nav/OnlineStripPackingNav';
 import { NAV_HEIGHT, PADDING, SCROLLBAR_WIDTH } from '../../config/canvasConfig';
 import { defaultScrollHandler, useKonvaWheelHandler } from '../../hooks/useKonvaWheelHandler';
 import { useOnlineStripPackingInventory } from '../../hooks/useOnlineStripPackingInventory';
@@ -38,6 +39,7 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
   const placedRects = useMemo(() => stripRects.map(({ name }) => name), [stripRects]);
   const { visibleInventory, setVisibileInventory, compressInventory, inventory } = useOnlineStripPackingInventory({
     inventoryWidth,
+    inventoryHeight: gameHeight,
     placedRects,
   });
 
@@ -127,8 +129,10 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
   });
 
   return (
-    <div className="flex justify-center h-full max-w-screen-xl mx-auto ">
-      <Stage onWheel={handleWheel} width={totalGameWidth} height={gameHeight}>
+    <div className="w-full h-full">
+      <OnlineStripPackingNav />
+
+      <Stage className="flex justify-center h-full max-w-screen-xl mx-auto " onWheel={handleWheel} width={totalGameWidth} height={gameHeight}>
         <Layer>
           {/* Interactive BG */}
           <Rect fill="#666" x={0} width={colWidth} height={gameHeight} />
@@ -136,6 +140,39 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
           <Rect fill="#555" x={colWidth} width={inventoryWidth} height={gameHeight} />
           {/* Algorithm BG */}
           <Rect fill="#444" x={colWidth + inventoryWidth} width={colWidth} height={gameHeight} />
+        </Layer>
+
+        <OnlineStripPackingInteractive
+          scrollableHeight={scrollableHeight}
+          ref={interactiveHandle}
+          layerRef={interactiveLayerRef}
+          width={colWidth}
+          height={gameHeight}
+          stripRects={stripRects}
+          setStripRects={setStripRects}
+          snap={snapInteractive}
+          staticInvLength={inventory.length}
+        />
+        <OnlineStripPackingInventory
+          entireInventory={inventory}
+          onDraggedToStrip={onDraggedToStrip}
+          snap={target => snapInventory(interactiveLayerRef.current?.children as KonvaGroup[], target)}
+          ref={inventoryLayerRef}
+          x={colWidth}
+          visibleInventory={visibleInventory}
+        />
+
+        <OnlineStripPackingAlgorithm
+          x={colWidth + inventoryWidth}
+          layerRef={algorithmLayerRef}
+          gameHeight={gameHeight}
+          width={colWidth}
+          ref={algorithmHandle}
+          scrollableHeight={scrollableHeight}
+          algorithm={algorithm}
+        />
+
+        <Layer>
           <ScrollBar
             key="interactive scroll bar"
             startPosition="bottom"
@@ -155,35 +192,6 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
             onYChanged={newY => algorithmLayerRef.current?.y(newY)}
           />
         </Layer>
-
-        <OnlineStripPackingInteractive
-          scrollableHeight={scrollableHeight}
-          ref={interactiveHandle}
-          layerRef={interactiveLayerRef}
-          width={colWidth}
-          height={gameHeight}
-          stripRects={stripRects}
-          setStripRects={setStripRects}
-          snap={snapInteractive}
-          staticInvLength={inventory.length}
-        />
-        <OnlineStripPackingInventory
-          onDraggedToStrip={onDraggedToStrip}
-          snap={(target: Shape) => snapInventory(interactiveLayerRef.current?.children as KonvaGroup[], target)}
-          ref={inventoryLayerRef}
-          x={colWidth}
-          shownInventory={visibleInventory}
-        />
-
-        <OnlineStripPackingAlgorithm
-          x={colWidth + inventoryWidth}
-          layerRef={algorithmLayerRef}
-          gameHeight={gameHeight}
-          width={colWidth}
-          ref={algorithmHandle}
-          scrollableHeight={scrollableHeight}
-          algorithm={algorithm}
-        />
       </Stage>
     </div>
   );

@@ -58,7 +58,7 @@ const useAchievementStore = create<AchievementStore>(
             }
             if (gameResults[index].score > score) {
               gameResults[index].score = score;
-              gameResults[index].date = new Date(Date.now()).toString();
+              gameResults[index].date = new Date().toString();
             }
           } else {
             const newData: AchievementLocalstorage = {
@@ -68,7 +68,7 @@ const useAchievementStore = create<AchievementStore>(
               wins: 0,
               loses: 0,
               score: score,
-              date: new Date(Date.now()).toString(),
+              date: new Date().toString(),
             };
             if (didWin) {
               newData.wins++;
