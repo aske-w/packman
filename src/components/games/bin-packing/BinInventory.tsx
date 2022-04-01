@@ -1,17 +1,20 @@
 import React, { forwardRef } from 'react';
-import { Layer, Rect } from 'react-konva';
+import { Layer, Rect, Text } from 'react-konva';
 import { Layer as KonvaLayer } from 'konva/lib/Layer';
 import { ColorRect } from '../../../types/ColorRect.interface';
 import { KonvaEventObject } from 'konva/lib/Node';
 import Konva from 'konva';
 import { Vector2d } from 'konva/lib/types';
+import { Shape, ShapeConfig } from 'konva/lib/Shape';
+import { Stage } from 'konva/lib/Stage';
+import { BinPackingRect } from '../../../types/BinPackingRect.interface';
 
 interface BinInventoryProps {
-  staticInventory: ColorRect[];
+  staticInventory: BinPackingRect[];
   renderInventory: ColorRect[];
   inventoryWidth: number;
   gameHeight: number;
-  onDraggedToBin: (name: string, pos: Vector2d) => void;
+  onDraggedToBin: (rect: Shape<ShapeConfig> | Stage, pos: Vector2d) => void;
 }
 
 const BinInventory = forwardRef<KonvaLayer, BinInventoryProps>(
@@ -20,14 +23,13 @@ const BinInventory = forwardRef<KonvaLayer, BinInventoryProps>(
       const rect = evt.target;
       const { name, width } = rect.getAttrs();
 
+      const { x: dropX } = rect.getAbsolutePosition();
       const { x: x, y: y } = renderInventory.find(r => r.name === name)!;
-
-      const { x: dropX, y: dropY } = rect.getAbsolutePosition();
 
       const inBinArea = dropX + width > inventoryWidth;
 
       if (inBinArea) {
-        return onDraggedToBin(name, { x: dropX, y: dropY });
+        return onDraggedToBin(rect, { x, y });
       }
 
       // animate back to starting position
@@ -60,6 +62,24 @@ const BinInventory = forwardRef<KonvaLayer, BinInventoryProps>(
               id={`INVENTORY_RECT`}
             />
           );
+        })}
+        {staticInventory.map((r, i) => {
+          return typeof r.order === 'number' ? (
+            <Text
+              key={r.name + 'ghost_text'}
+              text={r.order.toString()}
+              fontSize={20}
+              fill="white"
+              fontVariant="700"
+              align="center"
+              verticalAlign="middle"
+              x={r.x}
+              y={r.y}
+              width={r.width}
+              height={r.height}
+              listening={false}
+            />
+          ) : null;
         })}
       </Layer>
     );

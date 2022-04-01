@@ -46,7 +46,7 @@ const BinInteractive = forwardRef<KonvaLayer, BinInteractiveProps>(({ offset, di
         return (
           <Fragment key={i + '_text'}>
             <Rect {...b} fill={'#eee'} opacity={0.5} />
-            <Text text={i.toString()} x={b.x} y={b.y} fontSize={24} />
+            <Text text={i.toString()} x={b.x} y={b.y - 24} fontSize={24} />
             {bins[i]?.map(r => (
               <Rect {...r} key={r.name} draggable x={r.x - offset.x} />
             ))}

@@ -10,6 +10,7 @@ interface WheelHandlerParams {
   scrollBarRef: RefObject<KonvaRect>;
   scrollableHeight: number;
   visibleHeight: number;
+  startY?: number;
   activeArea: { minX: number; maxX: number; minY?: number; maxY?: number };
 }
 
@@ -34,7 +35,7 @@ export const useKonvaWheelHandler = ({ handlers }: UseKonvaWheelHandlerParams) =
 };
 
 export const defaultScrollHandler: ScrollHandler =
-  ({ layerRef, visibleHeight, scrollBarRef, scrollableHeight, activeArea }) =>
+  ({ layerRef, startY = 0, visibleHeight, scrollBarRef, scrollableHeight, activeArea }) =>
   e => {
     const { layerX, layerY, deltaY } = e;
 
@@ -50,14 +51,14 @@ export const defaultScrollHandler: ScrollHandler =
       const dy = deltaY;
       const oldY = layer.y();
 
-      const minY = -(scrollableHeight - visibleHeight);
-      const maxY = 0;
+      // TODO fix
+      const minY = startY || -(scrollableHeight - visibleHeight);
+      const maxY = startY ? startY + (scrollableHeight - visibleHeight) : 0;
+      const availableHeight = visibleHeight - PADDING * 2 - SCROLLBAR_HEIGHT;
 
       const y = Math.max(minY, Math.min(oldY - dy, maxY));
 
       layer.y(y);
-
-      const availableHeight = visibleHeight - PADDING * 2 - SCROLLBAR_HEIGHT;
 
       const vy = (y / (-scrollableHeight + visibleHeight)) * availableHeight + PADDING;
 

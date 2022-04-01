@@ -237,6 +237,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
               }}
             />
             <ScrollBar
+              key="algo scrollbar"
               startPosition="bottom"
               ref={algorithmScrollbarRef}
               scrollableHeight={scrollableHeight}
