@@ -53,11 +53,11 @@ const StripPackingAlgorithm = React.forwardRef<StripPackingAlgorithmHandle, Stri
     useEffect(() => {
       const _height = stripRects.reduce((maxY, r) => Math.max(maxY, Math.round(height - r.y)), 0);
       setUsedGameAreaAlgo(_height * width);
-      if(_height === 0) {
+      if (_height === 0) {
         setScore({ height: 0 }, 'algorithm');
         return;
       }
-      const score = calculateScore(level, usedRectsAreaAlgo!, _height * width, averageTimeUsed );
+      const score = calculateScore(level, usedRectsAreaAlgo!, _height * width, averageTimeUsed);
       setScore({ height: score }, 'algorithm');
     }, [stripRects, height]);
 

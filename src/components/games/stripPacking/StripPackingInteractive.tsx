@@ -38,8 +38,8 @@ const StripPackingInteractive = React.forwardRef<StripPackingInteractiveHandle, 
     // const [stripRects, setStripRects] = useState<ColorRect[]>([]);
     const setScore = useScoreStore(useCallback(state => state.setScore, []));
     const algorithm = useAlgorithmStore(useCallback(({ algorithm }) => algorithm, []));
-    const [ userScoreChanged, setUserScoreChanged ] = useState(false); 
-    const [ algoScoreChanged, setAlgoScoreChanged ] = useState(false); 
+    const [userScoreChanged, setUserScoreChanged] = useState(false);
+    const [algoScoreChanged, setAlgoScoreChanged] = useState(false);
 
     const { onPlaceEvent, event } = useEvents(algorithm);
 
@@ -50,23 +50,23 @@ const StripPackingInteractive = React.forwardRef<StripPackingInteractiveHandle, 
     useEffect(() => {
       const _height = stripRects.reduce((maxY, r) => Math.max(maxY, Math.round(height - r.y)), 0);
       setUsedGameAreaUser(_height * width);
-      if(_height === 0) {
+      if (_height === 0) {
         setScore({ height: 0 }, 'algorithm');
         return;
       }
-      const score = calculateScore(level, usedRectsAreaUser!, _height * width, averageTimeUsed );
+      const score = calculateScore(level, usedRectsAreaUser!, _height * width, averageTimeUsed);
       setScore({ height: score }, 'user');
     }, [stripRects, height]);
 
     useEffect(() => {
-      setUserScoreChanged(user.height != 0)
+      setUserScoreChanged(user.height != 0);
     }, [user]);
     useEffect(() => {
-      setAlgoScoreChanged(algoScore.height != 0)
+      setAlgoScoreChanged(algoScore.height != 0);
     }, [algoScore]);
 
     useEffect(() => {
-      if(userScoreChanged && algoScoreChanged) {
+      if (userScoreChanged && algoScoreChanged) {
         onPlaceEvent(stripRects.length, staticInvLength);
         setUserScoreChanged(false);
         setAlgoScoreChanged(false);

@@ -43,7 +43,6 @@ const TimeBar: React.FC<TimeBarProps> = ({ targetFPS = 60, startColor = green, e
   const blueChange = (endColor.blue - startColor.blue) / ((duration * 1000) / frameTime);
   const { level } = useLevelStore();
 
-
   // reset timer to initial state without starting
   const reset = (color = startColor) => {
     clearInterval(loop!);
@@ -53,33 +52,36 @@ const TimeBar: React.FC<TimeBarProps> = ({ targetFPS = 60, startColor = green, e
   };
 
   const finish = (color?: RGBColor) => {
-    const avgTimeUsed = percentTimeLeftWhenRestarted!.reduce((prev, curr) => prev + curr, currWidth.current / clientWidth * 100) / (restartCount! + 1);
+    const avgTimeUsed =
+      percentTimeLeftWhenRestarted!.reduce((prev, curr) => prev + curr, (currWidth.current / clientWidth) * 100) / (restartCount! + 1);
     setAverageTimeUsed(avgTimeUsed);
     setPercentTimeLeftWhenRestarted(undefined);
-    setRestartCount(undefined)
+    setRestartCount(undefined);
     clearInterval(loop!);
     currWidth.current = clientWidth;
     color && (barRef.current!.style.backgroundColor = `rgb(${color.red}, ${color.green}, ${color.blue})`);
   };
 
   const avg = useCallback(() => {
-    if(level == Levels.BEGINNER)
-      console.log("avg && beginner");
-    if(restartCount == undefined) {
+    if (level == Levels.BEGINNER) console.log('avg && beginner');
+    if (restartCount == undefined) {
       setRestartCount(0);
     } else {
-      setRestartCount(restartCount + 1)
+      setRestartCount(restartCount + 1);
     }
-    if(percentTimeLeftWhenRestarted == undefined) {
-      setPercentTimeLeftWhenRestarted([])
+    if (percentTimeLeftWhenRestarted == undefined) {
+      setPercentTimeLeftWhenRestarted([]);
     } else {
-      setPercentTimeLeftWhenRestarted([...percentTimeLeftWhenRestarted!, currWidth.current / clientWidth * 100]);
+      setPercentTimeLeftWhenRestarted([...percentTimeLeftWhenRestarted!, (currWidth.current / clientWidth) * 100]);
       setAverageTimeUsed(
-        [...percentTimeLeftWhenRestarted!, currWidth.current / clientWidth * 100]
-        .reduce((prev, curr) => prev + curr, currWidth.current / clientWidth * 100) / (restartCount! + 1)
+        [...percentTimeLeftWhenRestarted!, (currWidth.current / clientWidth) * 100].reduce(
+          (prev, curr) => prev + curr,
+          (currWidth.current / clientWidth) * 100
+        ) /
+          (restartCount! + 1)
       );
     }
-  },[clientWidth, percentTimeLeftWhenRestarted, currWidth]);
+  }, [clientWidth, percentTimeLeftWhenRestarted, currWidth]);
 
   // reset timer to initial state and start immediately, i.e. when a user places a rectangle within sufficient time.
   const restart = () => {
@@ -146,9 +148,7 @@ const TimeBar: React.FC<TimeBarProps> = ({ targetFPS = 60, startColor = green, e
   return useMemo(
     () =>
       permission.time ? (
-        <div
-          style={{top: NAV_HEIGHT}} 
-          className={`w-full h-2 absolute z-10 overflow-hidden`}>
+        <div style={{ top: NAV_HEIGHT }} className={`w-full h-2 absolute z-10 overflow-hidden`}>
           <div className="h-full w-full">
             <div ref={barRef} className="h-full"></div>
           </div>

@@ -1,5 +1,5 @@
-import { LevelList, Levels } from "../types/Levels.enum";
-import { getMultiplier } from "./timeMultiplier";
+import { LevelList, Levels } from '../types/Levels.enum';
+import { getMultiplier } from './timeMultiplier';
 
 export const LOCAL_STORAGE_PREFIX = 'learn_packing_';
 
@@ -17,7 +17,7 @@ export const calculateScore = (level: Levels, usedRectsArea: number, usedGameAre
   const levelsCount = LevelList.length;
   const decrementInterval = 0.05;
   const n = LevelList.indexOf(level);
-  const levelModifier = 1 - (decrementInterval * (levelsCount - n - 1));
-  const areaRatio = (usedRectsArea / usedGameArea) / 1.2;
-  return areaRatio * levelModifier * timeMultiplier * 1000
-}
+  const levelModifier = 1 - decrementInterval * (levelsCount - n - 1);
+  const areaRatio = usedRectsArea / usedGameArea / 1.2;
+  return areaRatio * levelModifier * timeMultiplier * 1000;
+};

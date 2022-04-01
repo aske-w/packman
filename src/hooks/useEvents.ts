@@ -13,8 +13,8 @@ export const useEvents = (algo: PackingAlgorithms) => {
 
   const onPlaceEvent = useCallback(
     (interactiveLength: number, staticInvLength: number) => {
-      if(interactiveLength === staticInvLength) { 
-        if(userScore >= algoScore) {
+      if (interactiveLength === staticInvLength) {
+        if (userScore >= algoScore) {
           setEvent(Events.FINISHED);
         } else {
           setEvent(Events.GAME_OVER);
