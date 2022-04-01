@@ -1,6 +1,6 @@
 import { PackingAlgorithms } from '../types/PackingAlgorithm.interface';
 import create from 'zustand';
-import { BinPackingAlgorithms } from '../types/BinPackingAlgorithm.interface';
+import { BinPackingAlgorithm } from '../types/enums/BinPackingAlgorithm.enum';
 import { OnlineStripPacking, OnlineStripPackingAlgorithms } from '../types/OnlineStripPackingAlgorithm.interface';
 
 export interface AlgorithmState {

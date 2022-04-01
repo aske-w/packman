@@ -10,7 +10,7 @@ import BinInventory from '../../components/games/bin-packing/BinInventory';
 import { NAV_HEIGHT, PADDING, SCROLLBAR_WIDTH } from '../../config/canvasConfig';
 import { defaultScrollHandler, useKonvaWheelHandler } from '../../hooks/useKonvaWheelHandler';
 import { useWindowSize } from '../../hooks/useWindowSize';
-import { BinPackingAlgorithms } from '../../types/BinPackingAlgorithm.interface';
+import { BinPackingAlgorithm } from '../../types/enums/BinPackingAlgorithm.enum';
 import { ColorRect } from '../../types/ColorRect.interface';
 import { generateInventory } from '../../utils/generateData';
 import { Gamemodes } from '../../types/enums/Gamemodes.enum';
@@ -145,7 +145,7 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
           staticInventory={staticInventory}
           binLayout={binLayout}
           data={staticInventory}
-          selectedAlgorithm={BinPackingAlgorithms.HYBRID_FIRST_FIT}
+          selectedAlgorithm={BinPackingAlgorithm.HYBRID_FIRST_FIT}
           binSize={binSize}
           ref={algorithm}
           dimensions={{

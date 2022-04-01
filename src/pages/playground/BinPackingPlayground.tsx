@@ -4,7 +4,7 @@ import Bin from '../../components/playground/Bin';
 import BinPackingSidebar from '../../components/Sidebar/BinPackingSidebar';
 import { genId } from '../../config/canvasConfig';
 import { useBinPackingAlgorithm } from '../../hooks/useBinPackingAlgorithm';
-import { BinPackingAlgorithms } from '../../types/BinPackingAlgorithm.interface';
+import { BinPackingAlgorithm } from '../../types/enums/BinPackingAlgorithm.enum';
 import { ColorRect } from '../../types/ColorRect.interface';
 import { Dimensions } from '../../types/Dimensions.interface';
 
@@ -19,7 +19,7 @@ const BinPackingPlayground: React.FC<BinPackingPlaygroundProps> = ({}) => {
     height,
   });
 
-  const [algorithm, setAlgorithm] = useState(BinPackingAlgorithms.HYBRID_FIRST_FIT);
+  const [algorithm, setAlgorithm] = useState(BinPackingAlgorithm.HYBRID_FIRST_FIT);
   const { start, place, isFinished, algoState, pause, reset } = useBinPackingAlgorithm(binDimensions, algorithm);
 
   const placeNext = () => {

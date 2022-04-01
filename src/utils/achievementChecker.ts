@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import useAchievementStore, { AchievementLocalstorage, BadgesLocalStorage } from '../store/achievement.store';
 import { Badges } from '../types/enums/Badges.enums.enum';
-import { ALL_BIN_PACKING_ALGORITHMS } from '../types/BinPackingAlgorithm.interface';
+import { ALL_BIN_PACKING_ALGORITHMS } from '../types/enums/BinPackingAlgorithm.enum';
 import { ALL_GAMEMODES, Gamemodes } from '../types/enums/Gamemodes.enum';
 import { Levels } from '../types/enums/Levels.enum';
 import { ALL_PACKING_ALGORITHMS } from '../types/PackingAlgorithm.interface';

@@ -1,4 +1,4 @@
-import { BinPackingAlgorithms } from '../types/BinPackingAlgorithm.interface';
+import { BinPackingAlgorithm } from './enums/BinPackingAlgorithm.enum';
 import { PackingAlgorithms } from '../types/PackingAlgorithm.interface';
 
-export type Algorithms = BinPackingAlgorithms | PackingAlgorithms;
+export type Algorithms = BinPackingAlgorithm | PackingAlgorithms;

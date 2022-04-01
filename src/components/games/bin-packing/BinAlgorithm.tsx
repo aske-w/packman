@@ -10,7 +10,7 @@ import FiniteFirstFit from '../../../algorithms/bin/offline/FiniteFirstFit';
 import FiniteNextFit from '../../../algorithms/bin/offline/FiniteNextFit';
 import HybridFirstFit from '../../../algorithms/bin/offline/HybridFirstFit';
 import algorithm from '../../../store/algorithm.store';
-import { BinPackingAlgorithms } from '../../../types/BinPackingAlgorithm.interface';
+import { BinPackingAlgorithm } from '../../../types/enums/BinPackingAlgorithm.enum';
 import { ColorRect } from '../../../types/ColorRect.interface';
 import { Dimensions } from '../../../types/Dimensions.interface';
 import { DimensionsWithConfig } from '../../../types/DimensionsWithConfig.type';
@@ -20,7 +20,7 @@ interface BinAlgorithmProps {
   offset: Vector2d;
   dimensions: Dimensions;
   binSize: Dimensions;
-  selectedAlgorithm: BinPackingAlgorithms;
+  selectedAlgorithm: BinPackingAlgorithm;
   data: DimensionsWithConfig[];
   binLayout: IRect[];
   staticInventory: ColorRect[];
@@ -34,7 +34,7 @@ export interface BinAlgorithmHandle {
 }
 
 const PADDING = 30;
-const { FINITE_FIRST_FIT, FINITE_NEXT_FIT, HYBRID_FIRST_FIT } = BinPackingAlgorithms;
+const { FINITE_FIRST_FIT, FINITE_NEXT_FIT, HYBRID_FIRST_FIT } = BinPackingAlgorithm;
 const BinAlgorithm = forwardRef<BinAlgorithmHandle, BinAlgorithmProps>(
   ({ offset, dimensions, data, selectedAlgorithm, binSize, binLayout, staticInventory: inventory, getInventoryScrollOffset }, ref) => {
     const [placed, setPlaced] = useState<
