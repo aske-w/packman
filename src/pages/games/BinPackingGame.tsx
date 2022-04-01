@@ -13,7 +13,7 @@ import { useWindowSize } from '../../hooks/useWindowSize';
 import { BinPackingAlgorithms } from '../../types/BinPackingAlgorithm.interface';
 import { ColorRect } from '../../types/ColorRect.interface';
 import { generateInventory } from '../../utils/generateData';
-import { Gamemodes } from '../../types/Gamemodes.enum';
+import { Gamemodes } from '../../types/enums/Gamemodes.enum';
 
 interface BinPackingGameProps {}
 const NUM_ITEMS = 10;

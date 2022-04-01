@@ -1,4 +1,4 @@
-import { Gamemodes } from '../types/Gamemodes.enum';
+import { Gamemodes } from '../types/enums/Gamemodes.enum';
 import { Algorithms } from '../types/AllAlgorithms.enum';
 import { Levels } from '../types/enums/Levels.enum';
 import create from 'zustand';

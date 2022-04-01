@@ -3,7 +3,7 @@ import Badge from './components/Badge';
 import HighLight from './components/HighLight';
 import Table, { Row } from './components/Table';
 import { ChevronRightIcon, ChevronLeftIcon } from '@heroicons/react/solid';
-import { Gamemodes } from '../../types/Gamemodes.enum';
+import { Gamemodes } from '../../types/enums/Gamemodes.enum';
 import { useCarousal } from '../../hooks/useCarousal';
 import useAchievementStore from '../../store/achievement.store';
 

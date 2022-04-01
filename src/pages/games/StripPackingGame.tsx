@@ -39,7 +39,7 @@ import { sleep } from '../../utils/utils';
 import GameEndModal from '../../components/gameEndModal/Modal';
 import { useRestartStripPacking } from '../../hooks/useRestartStripPacking';
 import useGameStore from '../../store/game.store';
-import { Gamemodes } from '../../types/Gamemodes.enum';
+import { Gamemodes } from '../../types/enums/Gamemodes.enum';
 
 interface StripPackingGameProps {}
 const NUM_ITEMS = 5;
