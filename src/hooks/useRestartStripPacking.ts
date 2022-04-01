@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import useEventStore from '../store/event.store';
 import useLevelStore from '../store/level.store';
-import { Events } from '../types/Events.enum';
+import { Events } from '../types/enums/Events.enum';
 import { PackingAlgorithms } from '../types/PackingAlgorithm.interface';
 
 type Cb = () => void;

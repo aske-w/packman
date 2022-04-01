@@ -12,7 +12,7 @@ import useEventStore from '../../store/event.store';
 import useGameEndStore from '../../store/gameEnd.store';
 import useLevelStore from '../../store/level.store';
 import useScoreStore from '../../store/score.store';
-import { Events } from '../../types/Events.enum';
+import { Events } from '../../types/enums/Events.enum';
 import { GameEndModalTitles } from '../../types/GameEndModalTitles.enum';
 import { Levels } from '../../types/enums/Levels.enum';
 import { PackingAlgorithms } from '../../types/PackingAlgorithm.interface';

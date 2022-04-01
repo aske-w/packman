@@ -8,7 +8,7 @@ import useLevelStore from '../store/level.store';
 import useScoreStore from '../store/score.store';
 import { Badges } from '../types/enums/Badges.enums.enum';
 import { BinPackingAlgorithms } from '../types/BinPackingAlgorithm.interface';
-import { Events } from '../types/Events.enum';
+import { Events } from '../types/enums/Events.enum';
 
 interface BadgesProps {}
 

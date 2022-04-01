@@ -3,7 +3,7 @@ import { NAV_HEIGHT } from '../config/canvasConfig';
 import useEventStore from '../store/event.store';
 import useGameEndStore from '../store/gameEnd.store';
 import useLevelStore from '../store/level.store';
-import { Events } from '../types/Events.enum';
+import { Events } from '../types/enums/Events.enum';
 import { RGBColor } from '../types/RGBColor.interface';
 
 interface TimeBarProps {
@@ -115,9 +115,7 @@ const TimeBar: React.FC<TimeBarProps> = ({ targetFPS = 60, startColor = green, e
   return useMemo(
     () =>
       permission.time ? (
-        <div
-          style={{top: NAV_HEIGHT}} 
-          className={`w-full h-2 absolute z-10 overflow-hidden`}>
+        <div style={{ top: NAV_HEIGHT }} className={`w-full h-2 absolute z-10 overflow-hidden`}>
           <div className="h-full w-full">
             <div ref={barRef} className="h-full"></div>
           </div>
