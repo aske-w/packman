@@ -11,6 +11,9 @@ import ScrollBar from '../../components/canvas/ScrollBar';
 import OnlineStripPackingAlgorithm, {
   OnlineStripPackingAlgorithmHandle,
 } from '../../components/games/onlineStripPacking/OnlineStripPackingAlgorithm';
+import OnlineStripPackingInteractive, {
+  OnlineStripPackingInteractiveHandle,
+} from '../../components/games/onlineStripPacking/OnlineStripPackingInteractive';
 import OnlineStripPackingInventory from '../../components/games/onlineStripPacking/OnlineStripPackingInventory';
 import { NAV_HEIGHT, PADDING, SCROLLBAR_WIDTH } from '../../config/canvasConfig';
 import { defaultScrollHandler, useKonvaWheelHandler } from '../../hooks/useKonvaWheelHandler';
@@ -31,15 +34,19 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
   const colWidth = (totalGameWidth - inventoryWidth) / 2;
   const scrollableHeight = gameHeight * 1.5;
 
+  const [stripRects, setStripRects] = useState<ColorRect[]>([]);
+
   const [inventory, setInventory] = useState(() =>
     generateData(100, inventoryWidth * 0.6, 10).map(r => ({ ...r, fill: Konva.Util.getRandomColor(), name: nanoid() }))
   );
   const interactiveLayerRef = useRef<KonvaLayer>(null);
   const interactiveScrollBarRef = useRef<KonvaRect>(null);
+  const interactiveHandle = useRef<OnlineStripPackingInteractiveHandle>(null);
+
   const inventoryLayerRef = useRef<KonvaLayer>(null);
+
   const algorithmLayerRef = useRef<KonvaLayer>(null);
   const algorithmScrollBarRef = useRef<KonvaRect>(null);
-
   const algorithm = useAlgorithmStore(useCallback(state => state.onlineStripPackingAlgorithm, []));
   const algorithmHandle = useRef<OnlineStripPackingAlgorithmHandle>(null);
 
@@ -107,8 +114,9 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
         y: pos.y - gameHeight - interactiveScrollOffset,
       };
 
-      // interactiveRef.current?.place(rect, placement);
-      // const res = algoRef.current?.next();
+      interactiveHandle.current?.place(rect, placement);
+      algorithmHandle.current?.place(rect);
+
       // if (!res) return false;
       // const [placedRect, order, recIdx] = res;
       // const inv = [...startingInventory];
@@ -209,6 +217,18 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
             onYChanged={newY => algorithmLayerRef.current?.y(newY)}
           />
         </Layer>
+
+        <OnlineStripPackingInteractive
+          scrollableHeight={scrollableHeight}
+          ref={interactiveHandle}
+          layerRef={interactiveLayerRef}
+          width={colWidth}
+          height={gameHeight}
+          stripRects={stripRects}
+          setStripRects={setStripRects}
+          snap={snapInteractive}
+          staticInvLength={inventory.length}
+        />
         <OnlineStripPackingInventory
           onDraggedToStrip={onDraggedToStrip}
           snap={(target: Shape) => snapInventory(interactiveLayerRef.current?.children as KonvaGroup[], target)}

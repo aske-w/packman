@@ -14,7 +14,7 @@ import { RectangleConfig } from '../../../types/RectangleConfig.interface';
 import useLevelStore from '../../../store/level.store';
 import { useEvents } from '../../../hooks/useEvents';
 import useAlgorithmStore from '../../../store/algorithm.store';
-interface StripPackingInteractiveProps {
+interface OnlineStripPackingInteractiveProps {
   height: number;
   width: number;
   layerRef: RefObject<KonvaLayer>;
@@ -22,7 +22,7 @@ interface StripPackingInteractiveProps {
   stripRects: ColorRect<RectangleConfig>[];
   setStripRects: React.Dispatch<React.SetStateAction<ColorRect<RectangleConfig>[]>>;
   snap: (destination: Group[], target: Shape) => void;
-  stripRectChangedCallback: () => void;
+  stripRectChangedCallback?(): void;
   staticInvLength: number;
 }
 
@@ -31,15 +31,16 @@ export interface OnlineStripPackingInteractiveHandle {
   reset: () => void;
 }
 
-const OnlineStripPackingInteractive = React.forwardRef<OnlineStripPackingInteractiveHandle, StripPackingInteractiveProps>(
+const OnlineStripPackingInteractive = React.forwardRef<OnlineStripPackingInteractiveHandle, OnlineStripPackingInteractiveProps>(
   ({ layerRef, height, scrollableHeight, stripRects, setStripRects, snap, stripRectChangedCallback, staticInvLength }, ref) => {
     // const [stripRects, setStripRects] = useState<ColorRect[]>([]);
     const setScore = useScoreStore(useCallback(state => state.setScore, []));
-    const algorithm = useAlgorithmStore(useCallback(({ algorithm }) => algorithm, []));
+    const algorithm = useAlgorithmStore(useCallback(({ onlineStripPackingAlgorithm }) => onlineStripPackingAlgorithm, []));
     const [userScoreChanged, setUserScoreChanged] = useState(false);
     const [algoScoreChanged, setAlgoScoreChanged] = useState(false);
 
-    const { onPlaceEvent, event } = useEvents(algorithm);
+    // TODO fix
+    const { onPlaceEvent, event } = useEvents(algorithm as any);
 
     const { user, algorithm: algoScore } = useScoreStore();
     const permission = useLevelStore(useCallback(state => state.getPermission(), []));
