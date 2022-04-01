@@ -1,12 +1,12 @@
 import React from 'react';
 import { BadgesLocalStorage } from '../../../store/achievement.store';
-import { Badges } from '../../../types/Badges.enum';
+import { Badges } from '../../../types/enums/Badges.enums.enum';
 
 interface BadgeProps {
-  badge: BadgesLocalStorage
+  badge: BadgesLocalStorage;
 }
 
-const Badge: React.FC<BadgeProps> = ({badge}) => {
+const Badge: React.FC<BadgeProps> = ({ badge }) => {
   return (
     <div className="bg-badge flex flex-col items-center justify-center text-white p-3 w-52 rounded-md hover:scale-105 ease-in-out duration-200 mr-3 mb-3">
       <span className="text-3xl w-fit pr-3 rounded-md">🏅</span>
@@ -16,9 +16,7 @@ const Badge: React.FC<BadgeProps> = ({badge}) => {
         {badge.text}
       </p> */}
 
-      <small className="text-xs text-gray-300 mt-8">
-        {new Date(badge.date).toDateString()}
-      </small>
+      <small className="text-xs text-gray-300 mt-8">{new Date(badge.date).toDateString()}</small>
     </div>
   );
 };
