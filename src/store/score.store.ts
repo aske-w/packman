@@ -1,7 +1,7 @@
 import create from 'zustand';
 import { Algorithm } from '../types/enums/AllAlgorithms.enum';
 import { Levels } from '../types/enums/Levels.enum';
-
+import { devtools } from 'zustand/middleware';
 import { getLocalStorage, getYearMonthDay, LOCAL_STORAGE_PREFIX } from '../utils/utils';
 
 export interface Score {
@@ -30,47 +30,49 @@ export type ScoreState = Record<Player, Score> & {
 
 const initScore = () => ({ height: 0 });
 
-const useScoreStore = create<ScoreState>((set, get) => ({
-  algorithm: initScore(),
-  user: initScore(),
-  personalBest: getLocalStorage<MappedScore>(SCORE_PREFIX),
-  lastPlayed: (function () {
-    const savedTime = getLocalStorage<string>(LAST_PLAYED_PREFIX);
-    if (!savedTime) return;
-    return new Date(parseInt(savedTime));
-  })(),
-  rectanglesLeft: 0,
-  setLastPlayed: () =>
-    set(state => {
-      const date = new Date(Date.now());
-      window.localStorage.setItem(LAST_PLAYED_PREFIX, JSON.stringify(date.getTime()));
-      return { ...state, lastPlayed: date };
-    }),
-  setRectanglesLeft: (rectangles: number) => set(state => ({ ...state, rectanglesLeft: rectangles })),
-  setScore: (payload, player) =>
-    set(state => ({
-      ...state,
-      [player]: {
-        ...payload,
-      },
-    })),
-  getPersonalBest: (algo: Algorithm, level: Levels) => get().personalBest?.[algo]?.[level],
-  setEndScore: (algo: Algorithm, level: Levels) =>
-    set(state => {
-      const prevScore = state.getPersonalBest(algo, level);
-      const currScore = state.user;
+const useScoreStore = create<ScoreState>(
+  devtools((set, get) => ({
+    algorithm: initScore(),
+    user: initScore(),
+    personalBest: getLocalStorage<MappedScore>(SCORE_PREFIX),
+    lastPlayed: (function () {
+      const savedTime = getLocalStorage<string>(LAST_PLAYED_PREFIX);
+      if (!savedTime) return;
+      return new Date(parseInt(savedTime));
+    })(),
+    rectanglesLeft: 0,
+    setLastPlayed: () =>
+      set(state => {
+        const date = new Date(Date.now());
+        window.localStorage.setItem(LAST_PLAYED_PREFIX, JSON.stringify(date.getTime()));
+        return { ...state, lastPlayed: date };
+      }),
+    setRectanglesLeft: (rectangles: number) => set(state => ({ ...state, rectanglesLeft: rectangles })),
+    setScore: (payload, player) =>
+      set(state => ({
+        ...state,
+        [player]: {
+          ...payload,
+        },
+      })),
+    getPersonalBest: (algo: Algorithm, level: Levels) => get().personalBest?.[algo]?.[level],
+    setEndScore: (algo: Algorithm, level: Levels) =>
+      set(state => {
+        const prevScore = state.getPersonalBest(algo, level);
+        const currScore = state.user;
 
-      if (!prevScore || currScore.height < prevScore.height) {
-        const levelScore = state.personalBest?.[algo] || { [Levels.BEGINNER]: undefined, [Levels.NOVICE]: undefined, [Levels.EXPERT]: undefined };
+        if (!prevScore || currScore.height < prevScore.height) {
+          const levelScore = state.personalBest?.[algo] || { [Levels.BEGINNER]: undefined, [Levels.NOVICE]: undefined, [Levels.EXPERT]: undefined };
 
-        const newPersonalBest: MappedScore = { ...state.personalBest, [algo]: { ...levelScore, [level]: { ...currScore } } };
-        window.localStorage.setItem(SCORE_PREFIX, JSON.stringify(newPersonalBest));
+          const newPersonalBest: MappedScore = { ...state.personalBest, [algo]: { ...levelScore, [level]: { ...currScore } } };
+          window.localStorage.setItem(SCORE_PREFIX, JSON.stringify(newPersonalBest));
 
-        return { ...state, personalBest: newPersonalBest };
-      }
+          return { ...state, personalBest: newPersonalBest };
+        }
 
-      return state;
-    }),
-}));
+        return state;
+      }),
+  }))
+);
 
 export default useScoreStore;

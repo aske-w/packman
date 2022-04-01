@@ -20,10 +20,13 @@ export const useOnlineStripPackingInventory = ({
   visibleInventorySize = 2,
   inventorySize = 50,
 }: UseOnlineStripPackingInventoryParams) => {
-  const inventory = useMemo(
-    () => generateData(inventorySize, inventoryWidth * 0.6, 10).map(r => ({ ...r, fill: Konva.Util.getRandomColor(), name: nanoid() })),
-    [inventorySize, inventoryWidth]
+  const [inventory, setInventory] = useState(() =>
+    generateData(inventorySize, inventoryWidth * 0.6, 10).map(r => ({ ...r, fill: Konva.Util.getRandomColor(), name: nanoid() }))
   );
+
+  useEffect(() => {
+    setInventory(generateData(inventorySize, inventoryWidth * 0.6, 10).map(r => ({ ...r, fill: Konva.Util.getRandomColor(), name: nanoid() })));
+  }, [inventorySize, inventoryWidth]);
 
   const compressInventory = useCallback(() => {
     const filtered = inventory.filter(ir => !placedRects.includes(ir.name));
@@ -57,5 +60,10 @@ export const useOnlineStripPackingInventory = ({
 
   const [visibleInventory, setVisibileInventory] = useState(compressInventory);
 
-  return { visibleInventory, setVisibileInventory, inventory, compressInventory };
+  const resetInventory = useCallback(() => {
+    setInventory(generateData(inventorySize, inventoryWidth * 0.6, 10).map(r => ({ ...r, fill: Konva.Util.getRandomColor(), name: nanoid() })));
+    setVisibileInventory([]);
+  }, [inventorySize, inventoryWidth]);
+
+  return { visibleInventory, resetInventory, setVisibileInventory, inventory, compressInventory };
 };

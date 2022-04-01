@@ -17,6 +17,7 @@ import OnlineStripPackingNav from '../../components/Nav/OnlineStripPackingNav';
 import { NAV_HEIGHT, PADDING, SCROLLBAR_WIDTH } from '../../config/canvasConfig';
 import { defaultScrollHandler, useKonvaWheelHandler } from '../../hooks/useKonvaWheelHandler';
 import { useOnlineStripPackingInventory } from '../../hooks/useOnlineStripPackingInventory';
+import { useRestartStripPacking } from '../../hooks/useRestartStripPacking';
 import { useSnap } from '../../hooks/useSnap';
 import { useWindowSize } from '../../hooks/useWindowSize';
 import useAlgorithmStore from '../../store/algorithm.store';
@@ -37,7 +38,7 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
   const [stripRects, setStripRects] = useState<ColorRect[]>([]);
   const placedRects = useMemo(() => stripRects.map(({ name }) => name), [stripRects]);
   const setRectanglesLeft = useScoreStore(useCallback(({ setRectanglesLeft }) => setRectanglesLeft, []));
-  const { visibleInventory, inventory } = useOnlineStripPackingInventory({
+  const { visibleInventory, resetInventory, inventory } = useOnlineStripPackingInventory({
     inventoryWidth,
     inventoryHeight: gameHeight,
     placedRects,
@@ -67,6 +68,10 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
     inventoryFilterFunc: (r, target) => r.name == target.name(),
     scrollableHeight,
   });
+
+  const resetFuncs = [() => setStripRects([]), resetInventory, interactiveHandle.current?.reset, algorithmHandle.current?.reset];
+
+  useRestartStripPacking(resetFuncs, algorithm);
 
   /**
    * Pos is absolute position in the canvas

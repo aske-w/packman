@@ -1,4 +1,4 @@
-import React, { RefObject, useEffect, useImperativeHandle, useState } from 'react';
+import React, { RefObject, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { Layer, Rect } from 'react-konva';
 import { Layer as KonvaLayer } from 'konva/lib/Layer';
 import { NextFitShelf } from '../../../algorithms/strip/online/NextFitShelf';
@@ -7,6 +7,7 @@ import { ColorRect } from '../../../types/ColorRect.interface';
 import { RectangleExPos } from '../../../types/RectangleExPos.type';
 import { OnlineStripPackingAlgorithmEnum } from '../../../types/enums/OnlineStripPackingAlgorithm.enum';
 import { OnlineStripPacking } from '../../../types/OnlineStripPackingAlgorithm.interface';
+import useScoreStore from '../../../store/score.store';
 
 interface OnlineStripPackingAlgorithmProps {
   gameHeight: number;
@@ -19,22 +20,18 @@ interface OnlineStripPackingAlgorithmProps {
 
 export interface OnlineStripPackingAlgorithmHandle {
   place: (r: RectangleExPos) => void;
+  reset(): void;
 }
 
 const OnlineStripPackingAlgorithm = React.forwardRef<OnlineStripPackingAlgorithmHandle, OnlineStripPackingAlgorithmProps>(
   ({ gameHeight, layerRef, width, scrollableHeight, algorithm: selectedAlgorithm, x }, ref) => {
-    useImperativeHandle(ref, () => ({
-      place(r) {
-        const placement = algorithm.place(r) as ColorRect; //TODO maybe fix?;
-
-        setItems(old => [...old, placement]);
-      },
-    }));
-
     const [algorithm, setAlgorithm] = useState<OnlineStripPacking>(new NextFitShelf({ height: gameHeight, width }, 0.8));
     const [items, setItems] = useState<ColorRect[]>([]);
+    const scoreHeight = useRef(0);
+    const setScore = useScoreStore(useCallback(state => state.setScore, []));
 
-    useEffect(() => {
+    const reset = useCallback(() => {
+      setItems([]);
       switch (selectedAlgorithm) {
         case OnlineStripPackingAlgorithmEnum.NEXT_FIT_SHELF:
           setAlgorithm(new NextFitShelf({ height: gameHeight, width }, 0.5));
@@ -44,6 +41,21 @@ const OnlineStripPackingAlgorithm = React.forwardRef<OnlineStripPackingAlgorithm
           throw Error('Unkown algorithm: ' + selectedAlgorithm);
       }
     }, [selectedAlgorithm]);
+
+    useImperativeHandle(ref, () => ({
+      place(r) {
+        const placement = algorithm.place(r) as ColorRect; //TODO maybe fix?;
+
+        setItems(old => [...old, placement]);
+
+        const y = Math.round(placement.y * -1);
+        if (y > scoreHeight.current) {
+          scoreHeight.current = y;
+          setScore({ height: y }, 'algorithm');
+        }
+      },
+      reset,
+    }));
 
     return (
       <Layer x={x} y={-(scrollableHeight - gameHeight)} ref={layerRef}>

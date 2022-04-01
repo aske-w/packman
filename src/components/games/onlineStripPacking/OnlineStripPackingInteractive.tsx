@@ -14,6 +14,7 @@ import { RectangleConfig } from '../../../types/RectangleConfig.interface';
 import useLevelStore from '../../../store/level.store';
 import { useEvents } from '../../../hooks/useEvents';
 import useAlgorithmStore from '../../../store/algorithm.store';
+import produce from 'immer';
 interface OnlineStripPackingInteractiveProps {
   height: number;
   width: number;
@@ -33,19 +34,22 @@ export interface OnlineStripPackingInteractiveHandle {
 
 const OnlineStripPackingInteractive = React.forwardRef<OnlineStripPackingInteractiveHandle, OnlineStripPackingInteractiveProps>(
   ({ layerRef, height, scrollableHeight, stripRects, setStripRects, snap, stripRectChangedCallback, staticInvLength }, ref) => {
-    // const [stripRects, setStripRects] = useState<ColorRect[]>([]);
     const setScore = useScoreStore(useCallback(state => state.setScore, []));
     const algorithm = useAlgorithmStore(useCallback(({ onlineStripPackingAlgorithm }) => onlineStripPackingAlgorithm, []));
     const [userScoreChanged, setUserScoreChanged] = useState(false);
     const [algoScoreChanged, setAlgoScoreChanged] = useState(false);
 
-    const { onPlaceEvent, event } = useEvents(algorithm);
+    const { onPlaceEvent } = useEvents(algorithm);
 
     const { user, algorithm: algoScore } = useScoreStore();
     const permission = useLevelStore(useCallback(state => state.getPermission(), []));
 
     useEffect(() => {
-      const _height = stripRects.reduce((maxY, r) => Math.max(maxY, Math.round(height - r.y)), 0);
+      console.log({ height, offset: layerRef.current!.y(), scrollableHeight });
+
+      console.log({ rects: stripRects?.[0] });
+
+      const _height = stripRects.reduce((maxY, r) => Math.max(maxY, Math.round(Math.abs(scrollableHeight - r.y) - height)), 0);
       setScore({ height: _height }, 'user');
     }, [stripRects, height]);
 
@@ -80,11 +84,11 @@ const OnlineStripPackingInteractive = React.forwardRef<OnlineStripPackingInterac
       },
     }));
 
-    let lastPos: Coordinate;
+    const [lastPos, setLastPos] = useState<Coordinate | null>(null);
 
     const handleStripDragStart = (e: KonvaEventObject<DragEvent>) => {
       const { x, y } = e.target.getAttrs();
-      lastPos = { x, y };
+      setLastPos({ x, y });
     };
 
     const handleStripDragEnd = (e: KonvaEventObject<DragEvent>) => {
@@ -96,13 +100,22 @@ const OnlineStripPackingInteractive = React.forwardRef<OnlineStripPackingInterac
         const _r = layerRef.current?.children?.find(x => x.getAttr('name') == r.name);
         if (_r == undefined) return;
 
-        if (intersects(target.getAttrs(), _r.getAttrs()))
+        if (intersects(target.getAttrs(), _r.getAttrs()) && lastPos)
           target.setAbsolutePosition({
             x: lastPos.x,
             y: lastPos.y + scrollOffset,
           });
       });
       target.fill(stripRects.find(r => r.name == target.getAttr('name'))!.fill.substring(0, 7) + 'ff');
+      setStripRects(
+        produce(draft => {
+          const pos = e.target.getAbsolutePosition();
+          const idx = draft.findIndex(sr => sr.name === target.name());
+          const y = pos.y - height - layerRef.current!.y();
+          draft[idx].x = pos.x;
+          draft[idx].y = y;
+        })
+      );
     };
 
     const handleDragMove = (e: KonvaEventObject<DragEvent>) => {

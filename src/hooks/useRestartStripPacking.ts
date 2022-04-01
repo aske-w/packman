@@ -2,11 +2,11 @@ import { useCallback, useEffect } from 'react';
 import useEventStore from '../store/event.store';
 import useLevelStore from '../store/level.store';
 import { Events } from '../types/enums/Events.enum';
-import { PackingAlgorithmEnum } from '../types/enums/OfflineStripPackingAlgorithm.enum';
+import { Algorithm } from '../types/enums/AllAlgorithms.enum';
 
 type Cb = () => void;
 
-export const useRestartStripPacking = (cbs: (Cb | undefined)[], algorithm: PackingAlgorithmEnum) => {
+export const useRestartStripPacking = (cbs: (Cb | undefined)[], algorithm: Algorithm) => {
   const { setEvent, event } = useEventStore(useCallback(({ setEvent, event }) => ({ setEvent, event }), []));
   const level = useLevelStore(useCallback(({ level }) => level, []));
 

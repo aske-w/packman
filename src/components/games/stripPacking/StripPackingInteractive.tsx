@@ -14,6 +14,7 @@ import { RectangleConfig } from '../../../types/RectangleConfig.interface';
 import useLevelStore from '../../../store/level.store';
 import { useEvents } from '../../../hooks/useEvents';
 import useAlgorithmStore from '../../../store/algorithm.store';
+import produce from 'immer';
 interface StripPackingInteractiveProps {
   height: number;
   width: number;
@@ -36,8 +37,8 @@ const StripPackingInteractive = React.forwardRef<StripPackingInteractiveHandle, 
     // const [stripRects, setStripRects] = useState<ColorRect[]>([]);
     const setScore = useScoreStore(useCallback(state => state.setScore, []));
     const algorithm = useAlgorithmStore(useCallback(({ algorithm }) => algorithm, []));
-    const [ userScoreChanged, setUserScoreChanged ] = useState(false); 
-    const [ algoScoreChanged, setAlgoScoreChanged ] = useState(false); 
+    const [userScoreChanged, setUserScoreChanged] = useState(false);
+    const [algoScoreChanged, setAlgoScoreChanged] = useState(false);
 
     const { onPlaceEvent, event } = useEvents(algorithm);
 
@@ -45,19 +46,19 @@ const StripPackingInteractive = React.forwardRef<StripPackingInteractiveHandle, 
     const permission = useLevelStore(useCallback(state => state.getPermission(), []));
 
     useEffect(() => {
-      const _height = stripRects.reduce((maxY, r) => Math.max(maxY, Math.round(height - r.y)), 0);
+      const _height = stripRects.reduce((maxY, r) => Math.max(maxY, Math.round(Math.abs(scrollableHeight - r.y) - height)), 0);
       setScore({ height: _height }, 'user');
     }, [stripRects, height]);
 
     useEffect(() => {
-      setUserScoreChanged(user.height != 0)
+      setUserScoreChanged(user.height != 0);
     }, [user]);
     useEffect(() => {
-      setAlgoScoreChanged(algoScore.height != 0)
+      setAlgoScoreChanged(algoScore.height != 0);
     }, [algoScore]);
 
     useEffect(() => {
-      if(userScoreChanged && algoScoreChanged) {
+      if (userScoreChanged && algoScoreChanged) {
         onPlaceEvent(stripRects.length, staticInvLength);
         setUserScoreChanged(false);
         setAlgoScoreChanged(false);
@@ -80,11 +81,11 @@ const StripPackingInteractive = React.forwardRef<StripPackingInteractiveHandle, 
       },
     }));
 
-    let lastPos: Coordinate;
+    const [lastPos, setLastPos] = useState<Coordinate | null>(null);
 
     const handleStripDragStart = (e: KonvaEventObject<DragEvent>) => {
       const { x, y } = e.target.getAttrs();
-      lastPos = { x, y };
+      setLastPos({ x, y });
     };
 
     const handleStripDragEnd = (e: KonvaEventObject<DragEvent>) => {
@@ -96,13 +97,23 @@ const StripPackingInteractive = React.forwardRef<StripPackingInteractiveHandle, 
         var _r = layerRef.current?.children?.find(x => x.getAttr('name') == r.name);
         if (_r == undefined) return;
 
-        if (intersects(target.getAttrs(), _r.getAttrs()))
+        if (intersects(target.getAttrs(), _r.getAttrs()) && lastPos)
           target.setAbsolutePosition({
             x: lastPos.x,
             y: lastPos.y + scrollOffset,
           });
       });
       target.fill(stripRects.find(r => r.name == target.getAttr('name'))!.fill.substring(0, 7) + 'ff');
+
+      setStripRects(
+        produce(draft => {
+          const pos = e.target.getAbsolutePosition();
+          const idx = draft.findIndex(sr => sr.name === target.name());
+          const y = pos.y - height - layerRef.current!.y();
+          draft[idx].x = pos.x;
+          draft[idx].y = y;
+        })
+      );
     };
 
     const handleDragMove = (e: KonvaEventObject<DragEvent>) => {
