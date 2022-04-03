@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Badge from './components/Badge';
-import HighLight from './components/HighLight';
 import Table, { Row } from './components/Table';
 import { Gamemodes } from '../../types/enums/Gamemodes.enum';
 import useAchievementStore from '../../store/achievement.store';
 import DefaultNav from '../../components/Nav/DefaultNav';
 import { NAV_HEIGHT } from '../../config/canvasConfig';
 import Tabs from '../../components/Tabs/Tabs';
+import { PieChart } from 'react-minimal-pie-chart';
 
 interface AchievementProps {}
 
@@ -59,8 +59,6 @@ const Achievement: React.FC<AchievementProps> = ({}) => {
           <div className="relative w-8/12">
             <Tabs tabs={gameModes}>
               {gameModes.map((mode, i) => {
-                console.log({ rows: rows[mode][0] });
-
                 if (rows[mode]?.length === 0)
                   return (
                     <div key={mode} className="flex flex-col ">
@@ -81,9 +79,35 @@ const Achievement: React.FC<AchievementProps> = ({}) => {
           </div>
 
           {/* Highlights */}
-          <div className="w-4/12 grid grid-cols-2">
-            <HighLight text="Total wins" className="bg-green-600" value={totalWins} />
-            <HighLight text="Total losses" className="bg-red-600" value={totalLosses} />
+          <div className="w-4/12 flex items-center justify-center">
+            <PieChart
+              className="max-h-64"
+              label={({ x, y, dx, dy, dataEntry }) => (
+                <g x={x} y={y} dx={dx} dy={dy}>
+                  <text x={x} y={y} dx={dx} dy={dy} dominantBaseline="central" textAnchor="middle" className="text-sm fill-slate-200">
+                    {dataEntry.value}
+                  </text>
+                  <text
+                    x={x}
+                    y={y + 10}
+                    dx={dx}
+                    dy={dy}
+                    dominantBaseline="central"
+                    textAnchor="middle"
+                    style={{ fontSize: 5 }}
+                    className="fill-slate-300"
+                  >
+                    {dataEntry.title}
+                  </text>
+                </g>
+              )}
+              data={[
+                { title: 'Wins', value: totalWins, color: '#059669' },
+                { title: 'Losses', value: totalLosses, color: '#dc2626' },
+              ]}
+              lineWidth={15}
+              rounded
+            />
           </div>
         </div>
         {/* Badge section */}
