@@ -14,16 +14,16 @@ import StripPackingInteractive, { StripPackingInteractiveHandle } from '../../co
 import StripPackingNav from '../../components/Nav/StripPackingNav';
 import TimeBar from '../../components/TimeBar';
 import { ALGO_MOVE_ANIMATION_DURATION, NAV_HEIGHT, PADDING, SCROLLBAR_WIDTH } from '../../config/canvasConfig';
-import { useEvents } from '../../hooks/useEvents';
 import { defaultScrollHandler, useKonvaWheelHandler } from '../../hooks/useKonvaWheelHandler';
+import { useOnGameStart } from '../../hooks/useOnGameStart';
 import { useRestartStripPacking } from '../../hooks/useRestartStripPacking';
 import { useSnap } from '../../hooks/useSnap';
 import { useWindowSize } from '../../hooks/useWindowSize';
 import useAlgorithmStore from '../../store/algorithm.store';
-import useGameStore from '../../store/game.store';
 import useScoreStore from '../../store/score.store';
 import { ColorRect } from '../../types/ColorRect.interface';
 import { Gamemodes } from '../../types/enums/Gamemodes.enum';
+import { PackingAlgorithmEnum } from '../../types/enums/OfflineStripPackingAlgorithm.enum';
 import { Rectangle } from '../../types/Rectangle.interface';
 import { RectangleConfig } from '../../types/RectangleConfig.interface';
 import { pushItemToBack } from '../../utils/array';
@@ -38,11 +38,8 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   const stripWidth = wWidth * 0.2;
   const inventoryWidth = wWidth * 0.6;
   const gameHeight = wHeight - NAV_HEIGHT;
-  const { setCurrentGame } = useGameStore();
 
-  useEffect(() => setCurrentGame(Gamemodes.STRIP_PACKING), []);
-
-  const algorithm = useAlgorithmStore(useCallback(({ algorithm }) => algorithm, []));
+  const { algorithm } = useOnGameStart<PackingAlgorithmEnum>(Gamemodes.STRIP_PACKING, PackingAlgorithmEnum.NEXT_FIT_DECREASING_HEIGHT);
   const setRectanglesLeft = useScoreStore(useCallback(({ setRectanglesLeft }) => setRectanglesLeft, []));
 
   const [stripRects, setStripRects] = useState<ColorRect[]>([]);
@@ -57,8 +54,6 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
    * item is placed in the strip, it's removed from this array
    */
   const [renderInventory, setRenderInventory] = useState<ColorRect<RectangleConfig>[]>([]);
-
-  const { onPlaceEvent, event } = useEvents(algorithm);
 
   useEffect(() => {
     if (inventoryChanged) {

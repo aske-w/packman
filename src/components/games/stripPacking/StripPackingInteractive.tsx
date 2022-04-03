@@ -40,7 +40,7 @@ const StripPackingInteractive = React.forwardRef<StripPackingInteractiveHandle, 
     const [userScoreChanged, setUserScoreChanged] = useState(false);
     const [algoScoreChanged, setAlgoScoreChanged] = useState(false);
 
-    const { onPlaceEvent, event } = useEvents(algorithm);
+    const { onPlaceEvent } = useEvents(algorithm);
 
     const { user, algorithm: algoScore } = useScoreStore();
     const permission = useLevelStore(useCallback(state => state.getPermission(), []));

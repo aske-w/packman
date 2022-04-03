@@ -28,8 +28,9 @@ const Table: React.FC<TableProps> = ({ className, headers, rows }) => {
               <tbody>
                 {rows.map((_rows, i) => {
                   const border = i !== rows.length - 1 ? 'border-b border-gray-700' : '';
+
                   return (
-                    <tr className={'bg-main ' + border}>
+                    <tr key={i} className={'bg-main ' + border}>
                       {_rows.map((row, j) => {
                         return <Row key={row.text} text={row.text} />;
                       })}

@@ -5,7 +5,7 @@ import useScoreStore from '../store/score.store';
 import { Algorithm } from '../types/enums/AllAlgorithms.enum';
 import { Events } from '../types/enums/Events.enum';
 
-export const useEvents = (algo: Algorithm) => {
+export const useEvents = (algo: Algorithm | null) => {
   const level = useLevelStore(useCallback(({ level }) => level, []));
   const { setEvent, event } = useEventStore(useCallback(({ setEvent, event }) => ({ setEvent, event }), []));
   const { setEndScore } = useScoreStore(useCallback(({ setEndScore }) => ({ setEndScore }), []));
@@ -27,7 +27,7 @@ export const useEvents = (algo: Algorithm) => {
   );
 
   useEffect(() => {
-    if (event === Events.FINISHED) {
+    if (event === Events.FINISHED && algo) {
       setEndScore(algo, level);
     }
   }, [event, level]);

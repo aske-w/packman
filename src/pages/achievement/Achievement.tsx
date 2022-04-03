@@ -2,12 +2,11 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Badge from './components/Badge';
 import HighLight from './components/HighLight';
 import Table, { Row } from './components/Table';
-import { ChevronRightIcon, ChevronLeftIcon } from '@heroicons/react/solid';
 import { Gamemodes } from '../../types/enums/Gamemodes.enum';
-import { useCarousal } from '../../hooks/useCarousal';
 import useAchievementStore from '../../store/achievement.store';
 import DefaultNav from '../../components/Nav/DefaultNav';
 import { NAV_HEIGHT } from '../../config/canvasConfig';
+import Tabs from '../../components/Tabs/Tabs';
 
 interface AchievementProps {}
 
@@ -16,19 +15,18 @@ type MappedRow = Record<Gamemodes, Row[][]>;
 const init = (): MappedRow => ({
   [Gamemodes.BIN_PACKING]: [],
   [Gamemodes.STRIP_PACKING]: [],
+  [Gamemodes.ONLINE_STRIP_PACKING]: [],
 });
 
 const Achievement: React.FC<AchievementProps> = ({}) => {
   const headers = useMemo(() => ['Algorithm', 'Level', 'Highest score', 'Wins', 'Losses', 'Date'], []);
   const [rows, setRows] = useState<MappedRow>(init);
-  const gameModes = [Gamemodes.STRIP_PACKING, Gamemodes.BIN_PACKING];
-  const { refs, previousItem, nextItem, activeItem } = useCarousal(gameModes);
+  const gameModes = [Gamemodes.STRIP_PACKING, Gamemodes.BIN_PACKING, Gamemodes.ONLINE_STRIP_PACKING];
   const { gameResults, badges } = useAchievementStore(useCallback(({ gameResults, badges }) => ({ gameResults, badges }), []));
   const totalWins = useMemo(() => gameResults.reduce((acc, v) => v.wins + acc, 0), [gameResults]);
   const totalLosses = useMemo(() => gameResults.reduce((acc, v) => v.loses + acc, 0), [gameResults]);
 
-  console.log({ gameResults });
-  console.log({ badges });
+  console.log({ gameResults, badges });
 
   useEffect(() => {
     const rows = gameResults.reduce<MappedRow>((acc, result) => {
@@ -40,6 +38,8 @@ const Achievement: React.FC<AchievementProps> = ({}) => {
         { text: result.loses.toFixed(0) },
         { text: new Date(result.date).toLocaleDateString() },
       ];
+
+      if (!result.gamemode) return acc;
 
       acc[result.gamemode].push(rows);
 
@@ -57,33 +57,30 @@ const Achievement: React.FC<AchievementProps> = ({}) => {
         <div className="w-full flex space-x-10 m-0">
           {/* All results */}
           <div className="relative w-8/12">
-            <div className="absolute flex flex-row items-center right-0 -top-8">
-              <ChevronLeftIcon className="w-6 hover:scale-125 duration-150 ease-out cursor-pointer" onClick={previousItem} />
-              <label>{activeItem}</label>
-              <ChevronRightIcon className="w-6 hover:scale-125 duration-150 ease-out cursor-pointer" onClick={nextItem} />
-            </div>
-            <div className="inline-flex w-full overflow-x-hidden snap-mandatory touch-none">
-              {rows[activeItem].length === 0 ? (
-                <div className="flex flex-col ">
-                  <h2 className="font-medium">You have no results yet</h2>
-                  <small className="text-gray-300">Start playing you punk</small>
-                </div>
-              ) : (
-                <>
-                  {gameModes.map((mode, i) => {
-                    return (
-                      <div className="w-full flex-shrink-0" key={mode} ref={refs[i]}>
-                        <Table className="w-full" headers={headers} rows={rows[mode]} />
-                      </div>
-                    );
-                  })}
-                </>
-              )}
-            </div>
+            <Tabs tabs={gameModes}>
+              {gameModes.map((mode, i) => {
+                console.log({ rows: rows[mode][0] });
+
+                if (rows[mode]?.length === 0)
+                  return (
+                    <div key={mode} className="flex flex-col ">
+                      <h2 className="font-medium">You have no results yet</h2>
+                      <small className="text-gray-300">Start playing you punk</small>
+                    </div>
+                  );
+
+                return (
+                  <div className="w-full flex-shrink-0" key={mode}>
+                    <Table className="w-full" headers={headers} rows={rows[mode]} />
+                  </div>
+                );
+              })}
+            </Tabs>
+
+            <div className="inline-flex w-full overflow-x-hidden snap-mandatory touch-none"></div>
           </div>
 
           {/* Highlights */}
-
           <div className="w-4/12 grid grid-cols-2">
             <HighLight text="Total wins" className="bg-green-600" value={totalWins} />
             <HighLight text="Total losses" className="bg-red-600" value={totalLosses} />

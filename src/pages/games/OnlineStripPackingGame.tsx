@@ -1,4 +1,3 @@
-import Konva from 'konva';
 import { Group as KonvaGroup } from 'konva/lib/Group';
 import { Layer as KonvaLayer } from 'konva/lib/Layer';
 import { Rect as KonvaRect } from 'konva/lib/shapes/Rect';
@@ -6,6 +5,7 @@ import { Vector2d } from 'konva/lib/types';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Layer, Rect, Stage } from 'react-konva';
 import ScrollBar from '../../components/canvas/ScrollBar';
+import GameEndModal from '../../components/gameEndModal/Modal';
 import OnlineStripPackingAlgorithm, {
   OnlineStripPackingAlgorithmHandle,
 } from '../../components/games/onlineStripPacking/OnlineStripPackingAlgorithm';
@@ -16,13 +16,15 @@ import OnlineStripPackingInventory from '../../components/games/onlineStripPacki
 import OnlineStripPackingNav from '../../components/Nav/OnlineStripPackingNav';
 import { NAV_HEIGHT, PADDING, SCROLLBAR_WIDTH } from '../../config/canvasConfig';
 import { defaultScrollHandler, useKonvaWheelHandler } from '../../hooks/useKonvaWheelHandler';
+import { useOnGameStart } from '../../hooks/useOnGameStart';
 import { useOnlineStripPackingInventory } from '../../hooks/useOnlineStripPackingInventory';
 import { useRestartStripPacking } from '../../hooks/useRestartStripPacking';
 import { useSnap } from '../../hooks/useSnap';
 import { useWindowSize } from '../../hooks/useWindowSize';
-import useAlgorithmStore from '../../store/algorithm.store';
 import useScoreStore from '../../store/score.store';
 import { ColorRect } from '../../types/ColorRect.interface';
+import { Gamemodes } from '../../types/enums/Gamemodes.enum';
+import { OnlineStripPackingAlgorithmEnum } from '../../types/enums/OnlineStripPackingAlgorithm.enum';
 import { Rectangle } from '../../types/Rectangle.interface';
 import { intersects } from '../../utils/intersects';
 interface OnlineStripPackingGameProps {}
@@ -42,9 +44,14 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
     inventoryWidth,
     inventoryHeight: gameHeight,
     placedRects,
+    inventorySize: 5,
   });
 
   useEffect(() => setRectanglesLeft(inventory.length - placedRects.length), [inventory, placedRects]);
+  const { algorithm } = useOnGameStart<OnlineStripPackingAlgorithmEnum>(
+    Gamemodes.ONLINE_STRIP_PACKING,
+    OnlineStripPackingAlgorithmEnum.NEXT_FIT_SHELF
+  );
 
   const interactiveLayerRef = useRef<KonvaLayer>(null);
   const interactiveScrollBarRef = useRef<KonvaRect>(null);
@@ -54,7 +61,6 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
 
   const algorithmLayerRef = useRef<KonvaLayer>(null);
   const algorithmScrollBarRef = useRef<KonvaRect>(null);
-  const algorithm = useAlgorithmStore(useCallback(state => state.onlineStripPackingAlgorithm, []));
   const algorithmHandle = useRef<OnlineStripPackingAlgorithmHandle>(null);
 
   // Snapping
@@ -136,6 +142,7 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
 
   return (
     <div className="w-full h-full">
+      <GameEndModal />
       <OnlineStripPackingNav />
 
       <Stage className="flex justify-center h-full max-w-screen-xl mx-auto " onWheel={handleWheel} width={totalGameWidth} height={gameHeight}>

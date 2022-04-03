@@ -5,7 +5,7 @@ import useAlgorithmStore from '../../store/algorithm.store';
 import useGameEndStore from '../../store/gameEnd.store';
 import useHelpStore from '../../store/help.store';
 import useScoreStore from '../../store/score.store';
-import { ALL_ONLINE_STRIP_PACKING_ALGORITHMS } from '../../types/enums/OnlineStripPackingAlgorithm.enum';
+import { ALL_ONLINE_STRIP_PACKING_ALGORITHMS, OnlineStripPackingAlgorithmEnum } from '../../types/enums/OnlineStripPackingAlgorithm.enum';
 import Score from '../Score';
 import LevelSelect from '../select/LevelSelect';
 import Select from '../select/Select';
@@ -16,11 +16,8 @@ interface OnlineStripPackingNavProps {}
 const OnlineStripPackingNav: React.FC<OnlineStripPackingNavProps> = ({}) => {
   const { blur: showModal } = useGameEndStore();
   const { setIntroOpen } = useHelpStore();
-  const { setOnlineStripPackingAlgorithm, onlineStripPackingAlgorithm } = useAlgorithmStore(
-    useCallback(
-      ({ setOnlineStripPackingAlgorithm, onlineStripPackingAlgorithm }) => ({ setOnlineStripPackingAlgorithm, onlineStripPackingAlgorithm }),
-      []
-    )
+  const { setAlgorithm, algorithm } = useAlgorithmStore(
+    useCallback(({ setAlgorithm, algorithm }) => ({ setAlgorithm, algorithm: algorithm || OnlineStripPackingAlgorithmEnum.NEXT_FIT_SHELF }), [])
   );
   const score = useScoreStore(
     useCallback(
@@ -49,8 +46,8 @@ const OnlineStripPackingNav: React.FC<OnlineStripPackingNavProps> = ({}) => {
         <Select
           className="text-base font-thin w-72 algorithm-select"
           options={ALL_ONLINE_STRIP_PACKING_ALGORITHMS}
-          value={onlineStripPackingAlgorithm}
-          onChange={setOnlineStripPackingAlgorithm}
+          value={algorithm}
+          onChange={setAlgorithm}
         />
         <LevelSelect />
         <button onClick={() => setIntroOpen(true)}>

@@ -35,7 +35,7 @@ export interface OnlineStripPackingInteractiveHandle {
 const OnlineStripPackingInteractive = React.forwardRef<OnlineStripPackingInteractiveHandle, OnlineStripPackingInteractiveProps>(
   ({ layerRef, height, scrollableHeight, stripRects, setStripRects, snap, stripRectChangedCallback, staticInvLength }, ref) => {
     const setScore = useScoreStore(useCallback(state => state.setScore, []));
-    const algorithm = useAlgorithmStore(useCallback(({ onlineStripPackingAlgorithm }) => onlineStripPackingAlgorithm, []));
+    const algorithm = useAlgorithmStore(useCallback(({ algorithm }) => algorithm, []));
     const [userScoreChanged, setUserScoreChanged] = useState(false);
     const [algoScoreChanged, setAlgoScoreChanged] = useState(false);
 
@@ -53,20 +53,22 @@ const OnlineStripPackingInteractive = React.forwardRef<OnlineStripPackingInterac
       setScore({ height: _height }, 'user');
     }, [stripRects, height]);
 
-    useEffect(() => {
-      setUserScoreChanged(user.height != 0);
-    }, [user]);
-    useEffect(() => {
-      setAlgoScoreChanged(algoScore.height != 0);
-    }, [algoScore]);
+    // useEffect(() => {
+    //   setUserScoreChanged(user.height != 0);
+    // }, [user]);
+    // useEffect(() => {
+    //   setAlgoScoreChanged(algoScore.height != 0);
+    // }, [algoScore]);
 
-    useEffect(() => {
-      if (userScoreChanged && algoScoreChanged) {
-        onPlaceEvent(stripRects.length, staticInvLength);
-        setUserScoreChanged(false);
-        setAlgoScoreChanged(false);
-      }
-    }, [userScoreChanged, algoScoreChanged]);
+    useEffect(() => onPlaceEvent(stripRects.length, staticInvLength), [stripRects.length, staticInvLength]);
+
+    // useEffect(() => {
+    //   if (userScoreChanged && algoScoreChanged) {
+    //     onPlaceEvent(stripRects.length, staticInvLength);
+    //     setUserScoreChanged(false);
+    //     setAlgoScoreChanged(false);
+    //   }
+    // }, [userScoreChanged, algoScoreChanged]);
 
     useImperativeHandle(ref, () => ({
       place: (r, { x, y }) => {

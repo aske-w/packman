@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { NAV_HEIGHT } from '../config/canvasConfig';
 import useEventStore from '../store/event.store';
-import useGameEndStore from '../store/gameEnd.store';
 import useLevelStore from '../store/level.store';
 import { Events } from '../types/enums/Events.enum';
 import { RGBColor } from '../types/RGBColor.interface';

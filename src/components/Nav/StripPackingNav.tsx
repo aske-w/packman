@@ -5,7 +5,7 @@ import { NAV_HEIGHT } from '../../config/canvasConfig';
 import useAlgorithmStore from '../../store/algorithm.store';
 import useHelpStore from '../../store/help.store';
 import useScoreStore from '../../store/score.store';
-import { ALL_ONLINE_STRIP_PACKING_ALGORITHMS } from '../../types/enums/OnlineStripPackingAlgorithm.enum';
+import { ALL_PACKING_ALGORITHMS } from '../../types/enums/OfflineStripPackingAlgorithm.enum';
 import Score from '../Score';
 import LevelSelect from '../select/LevelSelect';
 import Select from '../select/Select';
@@ -15,12 +15,7 @@ interface StripPackingNavProps {}
 
 const StripPackingNav: React.FC<StripPackingNavProps> = ({}) => {
   const { setIntroOpen } = useHelpStore();
-  const { setOnlineStripPackingAlgorithm, onlineStripPackingAlgorithm } = useAlgorithmStore(
-    useCallback(
-      ({ setOnlineStripPackingAlgorithm, onlineStripPackingAlgorithm }) => ({ setOnlineStripPackingAlgorithm, onlineStripPackingAlgorithm }),
-      []
-    )
-  );
+  const { setAlgorithm, algorithm } = useAlgorithmStore(useCallback(({ setAlgorithm, algorithm }) => ({ setAlgorithm, algorithm: algorithm }), []));
   const score = useScoreStore(
     useCallback(
       ({ algorithm, user, rectanglesLeft }) => ({
@@ -66,12 +61,9 @@ const StripPackingNav: React.FC<StripPackingNavProps> = ({}) => {
           <Score primary={`Rects left: ${score.rectanglesLeft}`} />
         </div>
 
-        <Select
-          className="text-base font-thin w-72 algorithm-select"
-          options={ALL_ONLINE_STRIP_PACKING_ALGORITHMS}
-          value={onlineStripPackingAlgorithm}
-          onChange={setOnlineStripPackingAlgorithm}
-        />
+        {algorithm && (
+          <Select className="text-base font-thin w-72 algorithm-select" options={ALL_PACKING_ALGORITHMS} value={algorithm} onChange={setAlgorithm} />
+        )}
         <LevelSelect />
         <button onClick={() => setIntroOpen(true)}>
           <QuestionMarkCircleIcon className="w-10 h-10 text-white hover:text-gray-200" />

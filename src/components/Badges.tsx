@@ -22,6 +22,8 @@ export const BadgeContainer: React.FC<BadgesProps> = ({}) => {
   const user = useScoreStore(useCallback(state => state.user, []));
 
   useEffect(() => {
+    if (!algorithm) return;
+
     switch (event) {
       case Events.FINISHED:
         console.log('Events.FINISHED');

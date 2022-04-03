@@ -48,6 +48,8 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
     setEvent(event);
   };
 
+  if (!algorithm) return <h3>Algorithm is null</h3>;
+
   return (
     <div>
       <Transition appear show={title !== undefined} as={Fragment}>
