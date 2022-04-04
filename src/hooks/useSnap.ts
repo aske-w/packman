@@ -88,7 +88,6 @@ export const useSnap = <T>({
             width: targetWidth,
           }) ||
           targetX < 0 || // outside strip's left boundary
-          targetX + targetWidth > stripWidth || // right side
           targetY < 0 || // top
           targetY + targetHeight > scrollableHeight // bottom
         ) {
@@ -119,8 +118,6 @@ export const useSnap = <T>({
     }
 
     if (0 + SNAPPING_THRESHOLD > targetY) {
-
-      console.log("hjesas");
       // Snap target's top to the top of the strip
       if (stripWidth - SNAPPING_THRESHOLD < targetX + targetWidth && stripWidth + SNAPPING_THRESHOLD > targetX + targetWidth) {
         //this is necessary to properly snap in the bottom right corner of the strip when dragging from inventory
