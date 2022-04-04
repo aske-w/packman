@@ -11,14 +11,14 @@ interface UseOnlineStripPackingInventoryParams {
   inventoryWidth: number;
   inventoryHeight: number;
   placedRects: string[];
-  inventorySize?: number;
+  inventorySize: number;
 }
 
 export const useOnlineStripPackingInventory = ({
   inventoryWidth,
   inventoryHeight,
   placedRects,
-  inventorySize = 50,
+  inventorySize,
 }: UseOnlineStripPackingInventoryParams) => {
   const [visibleInventorySize, setVisibleInventorySize] = useState(5);
   const level = useLevelStore(useCallback(({ level }) => level, []));

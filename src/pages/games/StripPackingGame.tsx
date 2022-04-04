@@ -59,7 +59,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
     if (inventoryChanged) {
       setRenderInventory([...startingInventory]);
       setInventoryChanged(false);
-      setRectanglesLeft(0);
+      setRectanglesLeft(startingInventory.length);
     }
   }, [startingInventory, inventoryChanged]);
 

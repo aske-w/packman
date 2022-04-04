@@ -40,6 +40,7 @@ export type ScoreState = Record<Player, Score> & {
   rectanglesLeft: number;
   lastPlayed: Date | undefined;
   readonly personalBest: MappedScore | undefined;
+  resetScore(): void;
 };
 
 const initScore = () => ({ height: 0 });
@@ -79,6 +80,10 @@ const useScoreStore = create<ScoreState>((set, get) => ({
       },
     })),
   getPersonalBest: (algo: Algorithm, level: Levels) => get().personalBest?.[algo]?.[level],
+  resetScore: () =>
+    set(state => {
+      return { ...state, user: { height: 0 }, algorithm: { height: 0 } };
+    }),
 }));
 
 export default useScoreStore;

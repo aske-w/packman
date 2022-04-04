@@ -34,6 +34,7 @@ const OnlineStripPackingAlgorithm = React.forwardRef<OnlineStripPackingAlgorithm
 
     const reset = ({ r }: { r: number }) => {
       setItems([]);
+      scoreHeight.current = 0;
       switch (selectedAlgorithm) {
         case OnlineStripPackingAlgorithmEnum.NEXT_FIT_SHELF:
           setAlgorithm(new NextFitShelf({ height: gameHeight, width }, r));

@@ -7,8 +7,6 @@ import { Vector2d } from 'konva/lib/types';
 import React, { RefObject, useCallback, useEffect, useImperativeHandle, useState } from 'react';
 import { Layer, Rect } from 'react-konva';
 import { STROKE_WIDTH } from '../../../config/canvasConfig';
-import { useEvents } from '../../../hooks/useEvents';
-import useAlgorithmStore from '../../../store/algorithm.store';
 import useLevelStore from '../../../store/level.store';
 import useScoreStore from '../../../store/score.store';
 import { ColorRect } from '../../../types/ColorRect.interface';
@@ -35,13 +33,7 @@ export interface StripPackingInteractiveHandle {
 
 const StripPackingInteractive = React.forwardRef<StripPackingInteractiveHandle, StripPackingInteractiveProps>(
   ({ layerRef, width, height, scrollableHeight, stripRects, setStripRects, snap, stripRectChangedCallback, staticInvLength }, ref) => {
-    // const [stripRects, setStripRects] = useState<ColorRect[]>([]);
     const setScore = useScoreStore(useCallback(state => state.setScore, []));
-    const algorithm = useAlgorithmStore(useCallback(({ algorithm }) => algorithm, []));
-    const [userScoreChanged, setUserScoreChanged] = useState(false);
-    const [algoScoreChanged, setAlgoScoreChanged] = useState(false);
-
-    const { onPlaceEvent } = useEvents(algorithm);
 
     const { level } = useLevelStore();
     const { user, algorithm: algoScore, setUsedGameAreaUser, setUsedRectsAreaUser, averageTimeUsed, usedRectsAreaUser } = useScoreStore();
@@ -58,21 +50,6 @@ const StripPackingInteractive = React.forwardRef<StripPackingInteractiveHandle, 
       setScore({ height: Math.round(score) }, 'user');
     }, [stripRects, height]);
 
-    useEffect(() => {
-      setUserScoreChanged(user.height != 0);
-    }, [user]);
-    useEffect(() => {
-      setAlgoScoreChanged(algoScore.height != 0);
-    }, [algoScore]);
-
-    useEffect(() => {
-      if (userScoreChanged && algoScoreChanged) {
-        onPlaceEvent(stripRects.length, staticInvLength);
-        setUserScoreChanged(false);
-        setAlgoScoreChanged(false);
-      }
-    }, [userScoreChanged, algoScoreChanged]);
-
     useImperativeHandle(ref, () => ({
       place: (r, { x, y }) => {
         const newRect = {
@@ -85,7 +62,6 @@ const StripPackingInteractive = React.forwardRef<StripPackingInteractiveHandle, 
       },
       reset: () => {
         setStripRects([]);
-        setScore({ height: 0 }, 'user');
       },
     }));
 

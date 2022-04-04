@@ -3,7 +3,7 @@ import { KonvaEventObject } from 'konva/lib/Node';
 import { Shape } from 'konva/lib/Shape';
 import { Vector2d } from 'konva/lib/types';
 import React from 'react';
-import { Layer, Group, Rect, Text } from 'react-konva';
+import { Layer, Rect, Text } from 'react-konva';
 import { ColorRect } from '../../../types/ColorRect.interface';
 import { Layer as KonvaLayer } from 'konva/lib/Layer';
 interface OnlineStripPackingInventoryProps {
