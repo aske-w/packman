@@ -7,6 +7,7 @@ import { Coordinate } from '../types/Coordinate.interface';
 import { RectangleConfig } from '../types/RectangleConfig.interface';
 import { intersects } from '../utils/intersects';
 import { Layer as KonvaLayer } from 'konva/lib/Layer';
+import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 
 interface UseSnapProps<T> {
   interactiveLayerRef: React.RefObject<KonvaLayer>;
@@ -29,6 +30,33 @@ export const useSnap = <T>({
   inventoryWidth,
   interactiveLayerRef,
 }: UseSnapProps<T>) => {
+  const [disabled, setDisabled] = useState(false);
+  /**
+   * Alt for windows, Option for mac
+   */
+  const altOrOptionPressed = useCallback((e: KeyboardEvent) => {
+    if (e.key === "Alt") {
+      console.log("alt pressed");
+      setDisabled(true);
+    }
+  }, []);
+  const altOrOptionReleased = useCallback((e: KeyboardEvent) => {
+    if(e.key === "Alt")
+      console.log("alt released");
+      setDisabled(false);
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener("keydown", altOrOptionPressed, false);
+    document.addEventListener("keyup", altOrOptionReleased, false);
+    
+    return () => {
+      console.log("running key events cleanup function");
+      document.removeEventListener("keydown", altOrOptionPressed, false);
+      document.removeEventListener("keyup", altOrOptionReleased, false);
+    };
+  }, []);
+
   const snap = (destination: ColorRect<RectangleConfig>[], target: Shape, overrideXY?: Coordinate) => {
     let intersectsAny = false;
     let { x: targetX, y: targetY, height: targetHeight, width: targetWidth, name: targetName } = target.getAttrs();
@@ -45,6 +73,43 @@ export const useSnap = <T>({
     let xDist: number | undefined;
     let yDist: number | undefined;
 
+    
+
+    if(disabled) {
+      destination.forEach(f => {
+        const { name } = f;
+        if (name == targetName) return;
+  
+        if (
+          intersects(f, {
+            x: targetX,
+            y: targetY,
+            height: targetHeight,
+            width: targetWidth,
+          }) ||
+          targetX < 0 || // outside strip's left boundary
+          targetX + targetWidth > stripWidth || // right side
+          targetY < 0 || // top
+          targetY + targetHeight > scrollableHeight // bottom
+        ) {
+          intersectsAny = true;
+        }
+      });
+
+      target.setAbsolutePosition({ x: cx, y: cy + stripScrollOffset });
+      if (intersectsAny || targetX < 0 || targetY < 0 || targetY > scrollableHeight) {
+        //overlap while dragging
+        target.setAttr('fill', RECT_OVERLAP_COLOR);
+      } else {
+        //no overlap while dragging
+        let color = inventory.find((r, i) => inventoryFilterFunc(r, target, i))?.fill;
+        if (color) {
+          target.setAttr('fill', color.substring(0, 7) + '80');
+        }
+      }
+      return;
+    }
+
     if (stripWidth - SNAPPING_THRESHOLD < targetX + targetWidth && stripWidth + SNAPPING_THRESHOLD > targetX + targetWidth) {
       // Snap target's right side to strip's right side
       cx = stripWidth - targetWidth - STROKE_WIDTH / 2;
@@ -54,6 +119,8 @@ export const useSnap = <T>({
     }
 
     if (0 + SNAPPING_THRESHOLD > targetY) {
+
+      console.log("hjesas");
       // Snap target's top to the top of the strip
       if (stripWidth - SNAPPING_THRESHOLD < targetX + targetWidth && stripWidth + SNAPPING_THRESHOLD > targetX + targetWidth) {
         //this is necessary to properly snap in the bottom right corner of the strip when dragging from inventory
@@ -62,7 +129,7 @@ export const useSnap = <T>({
       } else {
         cy = 0;
       }
-    } else if (scrollableHeight < targetY + targetHeight + STROKE_WIDTH / 2) {
+    } else if (scrollableHeight < targetY + targetHeight + STROKE_WIDTH / 2 + SNAPPING_THRESHOLD) {
       // Snap target's bottom to the bottom of the strip
       if (stripWidth - SNAPPING_THRESHOLD < targetX + targetWidth && stripWidth + SNAPPING_THRESHOLD > targetX + targetWidth) {
         //this is necessary to properly snap in the bottom right corner of the strip when dragging from inventory
@@ -151,8 +218,10 @@ export const useSnap = <T>({
       return rect;
     });
     const stripScrollOffset = interactiveLayerRef.current?.y()!;
-    const adjustedY = clamp(y + inventoryLayer.current?.y()! - stripScrollOffset, 0, scrollableHeight);
+    // clamping to prevent placing target outside of the game
+    const adjustedY = clamp(y + inventoryLayer.current?.y()! - stripScrollOffset, 0, scrollableHeight - target.height());
     const adjustedX = clamp(x + stripWidth, 0, stripWidth + inventoryWidth);
+    // console.log({x, y}, { x: adjustedX, y: adjustedY }, {scrollableHeight});
     snap(newDestination, target, { x: adjustedX, y: adjustedY });
   };
 
