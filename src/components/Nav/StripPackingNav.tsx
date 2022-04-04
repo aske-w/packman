@@ -52,13 +52,13 @@ const StripPackingNav: React.FC<StripPackingNavProps> = ({}) => {
       />
       <div className="flex flex-row items-center justify-between space-x-10 text-white">
         <div className="user-score">
-          <Score primary={`Height: ${score.user.height}`} secondary="user" />
+          <Score primary={`Score: ${score.user.height}`} secondary="You" />
         </div>
         <div className="algorithm-score">
-          <Score primary={`Height: ${score.algorithm.height}`} secondary="algorithm" />
+          <Score primary={`Score: ${score.algorithm.height}`} secondary="Algorithm" />
         </div>
         <div className="rects-left">
-          <Score primary={`Rects left: ${score.rectanglesLeft}`} />
+          <Score primary={`Items left: ${score.rectanglesLeft}`} />
         </div>
 
         {algorithm && (

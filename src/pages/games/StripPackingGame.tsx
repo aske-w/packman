@@ -14,6 +14,7 @@ import StripPackingInteractive, { StripPackingInteractiveHandle } from '../../co
 import StripPackingNav from '../../components/Nav/StripPackingNav';
 import TimeBar from '../../components/TimeBar';
 import { ALGO_MOVE_ANIMATION_DURATION, NAV_HEIGHT, PADDING, SCROLLBAR_WIDTH } from '../../config/canvasConfig';
+import { useEvents } from '../../hooks/useEvents';
 import { defaultScrollHandler, useKonvaWheelHandler } from '../../hooks/useKonvaWheelHandler';
 import { useOnGameStart } from '../../hooks/useOnGameStart';
 import { useRestartStripPacking } from '../../hooks/useRestartStripPacking';
@@ -156,9 +157,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
       /**
        * Let inventory compress before animating
        */
-      sleep(ALGO_MOVE_ANIMATION_DURATION * 500).then(() => {
-        algoRef.current?.place(placedRect, newRectIdx);
-      });
+      sleep(ALGO_MOVE_ANIMATION_DURATION * 500).then(() => algoRef.current?.place(placedRect, newRectIdx));
     }
 
     return true;

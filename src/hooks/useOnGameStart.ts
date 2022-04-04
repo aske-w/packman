@@ -11,7 +11,6 @@ export const useOnGameStart = <T extends Algorithm>(gameMode: Gamemodes, initAlg
     useCallback(({ setAlgorithm, algorithm }) => ({ setAlgorithm, algorithm: algorithm || initAlgorithm }), [initAlgorithm])
   );
 
-  useEvents(algorithm);
   useEffect(() => {
     setAlgorithm(initAlgorithm);
     setCurrentGame(gameMode);

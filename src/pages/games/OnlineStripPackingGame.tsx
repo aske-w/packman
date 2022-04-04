@@ -17,6 +17,7 @@ import OnlineStripPackingInventory from '../../components/games/onlineStripPacki
 import OnlineStripPackingNav from '../../components/Nav/OnlineStripPackingNav';
 import TimeBar from '../../components/TimeBar';
 import { NAV_HEIGHT, PADDING, SCROLLBAR_WIDTH } from '../../config/canvasConfig';
+import { useEvents } from '../../hooks/useEvents';
 import { defaultScrollHandler, useKonvaWheelHandler } from '../../hooks/useKonvaWheelHandler';
 import { useOnGameStart } from '../../hooks/useOnGameStart';
 import { useOnlineStripPackingInventory } from '../../hooks/useOnlineStripPackingInventory';

@@ -11,7 +11,7 @@ const HighlightDonutChart: React.FC<HighlightDonutChartProps> = ({ wins, losses 
     <PieChart
       className="max-h-64"
       label={({ x, y, dx, dy, dataEntry }) => (
-        <g x={x} y={y} dx={dx} dy={dy}>
+        <g x={x} y={y} dx={dx} dy={dy} key={dataEntry.value}>
           <text x={x} y={y} dx={dx} dy={dy} dominantBaseline="central" textAnchor="middle" className="text-sm fill-slate-200">
             {dataEntry.value}
           </text>
