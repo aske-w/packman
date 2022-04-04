@@ -26,8 +26,8 @@ const TimeBar: React.FC<TimeBarProps> = ({ targetFPS = 60, startColor = green, e
   // let loop: NodeJS.Timer
   const [loop, setLoop] = useState<NodeJS.Timer>();
   const [clientWidth, setClientWidth] = useState(0);
-  const [percentTimeLeftWhenRestarted, setPercentTimeLeftWhenRestarted] = useState<number[] | undefined>();
-  const [restartCount, setRestartCount] = useState<number | undefined>();
+  const [percentTimeLeftWhenRestarted, setPercentTimeLeftWhenRestarted] = useState<number[]>();
+  const [restartCount, setRestartCount] = useState<number>();
   const currWidth = useRef(0);
   // const [gameOver, setGameOver] = useState(false);
   const { blur: isGameOverModalShowing } = useGameEndStore();
