@@ -45,30 +45,24 @@ const OnlineStripPackingInteractive = React.forwardRef<OnlineStripPackingInterac
     const permission = useLevelStore(useCallback(state => state.getPermission(), []));
 
     useEffect(() => {
-      console.log({ height, offset: layerRef.current!.y(), scrollableHeight });
-
-      console.log({ rects: stripRects?.[0] });
-
       const _height = stripRects.reduce((maxY, r) => Math.max(maxY, Math.round(Math.abs(scrollableHeight - r.y) - height)), 0);
       setScore({ height: _height }, 'user');
     }, [stripRects, height]);
 
-    // useEffect(() => {
-    //   setUserScoreChanged(user.height != 0);
-    // }, [user]);
-    // useEffect(() => {
-    //   setAlgoScoreChanged(algoScore.height != 0);
-    // }, [algoScore]);
+    useEffect(() => {
+      setUserScoreChanged(user.height != 0);
+    }, [user]);
+    useEffect(() => {
+      setAlgoScoreChanged(algoScore.height != 0);
+    }, [algoScore]);
 
-    useEffect(() => onPlaceEvent(stripRects.length, staticInvLength), [stripRects.length, staticInvLength]);
-
-    // useEffect(() => {
-    //   if (userScoreChanged && algoScoreChanged) {
-    //     onPlaceEvent(stripRects.length, staticInvLength);
-    //     setUserScoreChanged(false);
-    //     setAlgoScoreChanged(false);
-    //   }
-    // }, [userScoreChanged, algoScoreChanged]);
+    useEffect(() => {
+      if (userScoreChanged && algoScoreChanged) {
+        onPlaceEvent(stripRects.length, staticInvLength);
+        setUserScoreChanged(false);
+        setAlgoScoreChanged(false);
+      }
+    }, [userScoreChanged, algoScoreChanged]);
 
     useImperativeHandle(ref, () => ({
       place: (r, { x, y }) => {

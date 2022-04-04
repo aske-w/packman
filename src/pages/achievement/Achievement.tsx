@@ -7,6 +7,7 @@ import DefaultNav from '../../components/Nav/DefaultNav';
 import { NAV_HEIGHT } from '../../config/canvasConfig';
 import Tabs from '../../components/Tabs/Tabs';
 import { PieChart } from 'react-minimal-pie-chart';
+import HighlightDonutChart from './components/HighlightDonutChart';
 
 interface AchievementProps {}
 
@@ -80,34 +81,7 @@ const Achievement: React.FC<AchievementProps> = ({}) => {
 
           {/* Highlights */}
           <div className="w-4/12 flex items-center justify-center">
-            <PieChart
-              className="max-h-64"
-              label={({ x, y, dx, dy, dataEntry }) => (
-                <g x={x} y={y} dx={dx} dy={dy}>
-                  <text x={x} y={y} dx={dx} dy={dy} dominantBaseline="central" textAnchor="middle" className="text-sm fill-slate-200">
-                    {dataEntry.value}
-                  </text>
-                  <text
-                    x={x}
-                    y={y + 10}
-                    dx={dx}
-                    dy={dy}
-                    dominantBaseline="central"
-                    textAnchor="middle"
-                    style={{ fontSize: 5 }}
-                    className="fill-slate-300"
-                  >
-                    {dataEntry.title}
-                  </text>
-                </g>
-              )}
-              data={[
-                { title: 'Wins', value: totalWins, color: '#059669' },
-                { title: 'Losses', value: totalLosses, color: '#dc2626' },
-              ]}
-              lineWidth={15}
-              rounded
-            />
+            <HighlightDonutChart wins={totalWins} losses={totalLosses} />
           </div>
         </div>
         {/* Badge section */}

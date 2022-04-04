@@ -14,6 +14,7 @@ import OnlineStripPackingInteractive, {
 } from '../../components/games/onlineStripPacking/OnlineStripPackingInteractive';
 import OnlineStripPackingInventory from '../../components/games/onlineStripPacking/OnlineStripPackingInventory';
 import OnlineStripPackingNav from '../../components/Nav/OnlineStripPackingNav';
+import TimeBar from '../../components/TimeBar';
 import { NAV_HEIGHT, PADDING, SCROLLBAR_WIDTH } from '../../config/canvasConfig';
 import { defaultScrollHandler, useKonvaWheelHandler } from '../../hooks/useKonvaWheelHandler';
 import { useOnGameStart } from '../../hooks/useOnGameStart';
@@ -143,6 +144,7 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
   return (
     <div className="w-full h-full">
       <GameEndModal />
+      <TimeBar />
       <OnlineStripPackingNav />
 
       <Stage className="flex justify-center h-full max-w-screen-xl mx-auto " onWheel={handleWheel} width={totalGameWidth} height={gameHeight}>

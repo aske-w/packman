@@ -19,7 +19,6 @@ import { useOnGameStart } from '../../hooks/useOnGameStart';
 import { useRestartStripPacking } from '../../hooks/useRestartStripPacking';
 import { useSnap } from '../../hooks/useSnap';
 import { useWindowSize } from '../../hooks/useWindowSize';
-import useAlgorithmStore from '../../store/algorithm.store';
 import useScoreStore from '../../store/score.store';
 import { ColorRect } from '../../types/ColorRect.interface';
 import { Gamemodes } from '../../types/enums/Gamemodes.enum';
@@ -40,6 +39,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   const gameHeight = wHeight - NAV_HEIGHT;
 
   const { algorithm } = useOnGameStart<PackingAlgorithmEnum>(Gamemodes.STRIP_PACKING, PackingAlgorithmEnum.NEXT_FIT_DECREASING_HEIGHT);
+
   const setRectanglesLeft = useScoreStore(useCallback(({ setRectanglesLeft }) => setRectanglesLeft, []));
 
   const [stripRects, setStripRects] = useState<ColorRect[]>([]);
