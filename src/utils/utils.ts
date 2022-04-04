@@ -1,4 +1,4 @@
-import { LevelList, Levels } from '../types/Levels.enum';
+import { LevelList, Levels } from '../types/enums/Levels.enum';
 import { getMultiplier } from './timeMultiplier';
 
 export const LOCAL_STORAGE_PREFIX = 'learn_packing_';
