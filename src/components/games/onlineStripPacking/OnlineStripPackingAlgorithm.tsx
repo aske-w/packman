@@ -58,11 +58,8 @@ const OnlineStripPackingAlgorithm = React.forwardRef<OnlineStripPackingAlgorithm
     useImperativeHandle(ref, () => ({
       place(r) {
         return new Promise(res => {
-          const placement = algorithm.place(r) as ColorRect; //TODO maybe fix?;
-          console.log(placement.y, r.y - gameHeight);
-          console.log(layerRef.current!.y(), r.y + scrollableHeight);
+          const placement = algorithm.place(r) as ColorRect;
           const newItem = { ...placement, prevX: r.x - inventoryWidth, prevY: r.y - layerRef.current!.y() };
-          console.log(newItem);
           setItems(old => [...old, newItem]);
 
           const y = Math.round(placement.y * -1);
