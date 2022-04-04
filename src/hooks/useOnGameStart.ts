@@ -3,6 +3,7 @@ import { Gamemodes } from '../types/enums/Gamemodes.enum';
 import { useCallback, useEffect } from 'react';
 import useGameStore from '../store/game.store';
 import useAlgorithmStore from '../store/algorithm.store';
+import { useEvents } from './useEvents';
 
 export const useOnGameStart = <T extends Algorithm>(gameMode: Gamemodes, initAlgorithm: T) => {
   const { setCurrentGame, setHasFinished } = useGameStore();
@@ -10,6 +11,7 @@ export const useOnGameStart = <T extends Algorithm>(gameMode: Gamemodes, initAlg
     useCallback(({ setAlgorithm, algorithm }) => ({ setAlgorithm, algorithm: algorithm || initAlgorithm }), [initAlgorithm])
   );
 
+  useEvents(algorithm);
   useEffect(() => {
     setAlgorithm(initAlgorithm);
     setCurrentGame(gameMode);

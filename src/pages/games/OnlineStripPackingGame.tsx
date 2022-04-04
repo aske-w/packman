@@ -32,7 +32,8 @@ import { OnlineStripPackingAlgorithmEnum } from '../../types/enums/OnlineStripPa
 import { Rectangle } from '../../types/Rectangle.interface';
 import { intersects } from '../../utils/intersects';
 interface OnlineStripPackingGameProps {}
-const NUM_ITEMS = 20;
+const NUM_ITEMS = 5;
+
 const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
   const { width: wWidth, height: wHeight } = useWindowSize();
   const totalGameWidth = Math.min(wWidth, 1280);

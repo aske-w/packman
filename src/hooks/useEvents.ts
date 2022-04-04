@@ -8,7 +8,11 @@ import { Events } from '../types/enums/Events.enum';
 export const useEvents = (algo: Algorithm | null) => {
   const level = useLevelStore(useCallback(({ level }) => level, []));
   const { setEvent, event } = useEventStore(useCallback(({ setEvent, event }) => ({ setEvent, event }), []));
-  const { user: userScore, algo: algoScore } = useScoreStore(useCallback(state => ({ user: state.user.height, algo: state.algorithm.height }), []));
+  const {
+    user: userScore,
+    algo: algoScore,
+    rectanglesLeft,
+  } = useScoreStore(useCallback(state => ({ rectanglesLeft: state.rectanglesLeft, user: state.user.height, algo: state.algorithm.height }), []));
 
   const onPlaceEvent = useCallback(
     (interactiveLength: number, staticInvLength: number) => {
@@ -20,6 +24,24 @@ export const useEvents = (algo: Algorithm | null) => {
     },
     [setEvent, userScore, algoScore]
   );
+  /**
+   * Stops the game when it is done
+   */
+  useEffect(() => {
+    console.log({ rectanglesLeft, userScore, algoScore });
+
+    if (rectanglesLeft === 0 && userScore === 0 && algoScore === 0) return;
+
+    if (rectanglesLeft === 0) {
+      if (userScore >= algoScore) {
+        setEvent(Events.FINISHED);
+      } else {
+        setEvent(Events.GAME_OVER);
+      }
+    } else {
+      setEvent(Events.RECT_PLACED);
+    }
+  }, [rectanglesLeft, userScore, algoScore]);
 
   return { onPlaceEvent, setEvent, event };
 };
