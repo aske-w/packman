@@ -13,7 +13,6 @@ import { Events } from '../types/Events.enum';
 interface BadgesProps {}
 
 export const BadgeContainer: React.FC<BadgesProps> = ({}) => {
-  
   const { event } = useEventStore(useCallback(({ event, setEvent }) => ({ event, setEvent }), []));
   // const { addGameResult } = useAchievementStore();
   const currentGame = useGameStore(useCallback(state => state.currentGame, []));
@@ -21,8 +20,6 @@ export const BadgeContainer: React.FC<BadgesProps> = ({}) => {
   const level = useLevelStore(useCallback(state => state.level, []));
   const addGameResult = useAchievementStore(useCallback(state => state.addGameResult, []));
   const user = useScoreStore(useCallback(state => state.user, []));
-
-  
 
   useEffect(() => {
     switch (event) {

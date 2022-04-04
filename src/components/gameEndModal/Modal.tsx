@@ -7,15 +7,18 @@ import Confetti from 'react-confetti';
 import { Link } from 'react-router-dom';
 import { createSemanticDiagnosticsBuilderProgram } from 'typescript';
 import { useAutoPlace } from '../../hooks/useAutoPlace';
+import useAchievementStore from '../../store/achievement.store';
 import useAlgorithmStore from '../../store/algorithm.store';
 import useEventStore from '../../store/event.store';
+import useGameStore from '../../store/game.store';
 import useGameEndStore from '../../store/gameEnd.store';
 import useLevelStore from '../../store/level.store';
 import useScoreStore from '../../store/score.store';
 import { Events } from '../../types/Events.enum';
 import { GameEndModalTitles } from '../../types/GameEndModalTitles.enum';
-import { Levels } from '../../types/Levels.enum';
+import { LevelList, Levels } from '../../types/Levels.enum';
 import { PackingAlgorithms } from '../../types/PackingAlgorithm.interface';
+import { getMultiplier } from '../../utils/timeMultiplier';
 import { getYearMonthDay } from '../../utils/utils';
 import Button from './Button';
 import GameEndModalItem from './Item';
@@ -31,6 +34,10 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
   const { level } = useLevelStore();
   const { algorithm } = useAlgorithmStore();
   const { getPersonalBest, lastPlayed, setLastPlayed } = useScoreStore();
+  const { gameResults } = useAchievementStore();
+  const { currentGame: gamemode } = useGameStore();
+
+  const prevBest = gameResults.find(gr => gr.algorithm == algorithm && gr.gamemode == gamemode && gr.level == level);
 
   useEffect(() => {
     switch (event) {
@@ -38,11 +45,13 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
         setTitle(GameEndModalTitles.GAME_OVER);
         setTitleTextColor('text-red-500');
         setBlur(true);
+        // calcPoints();
         return () => setLastPlayed();
       case Events.FINISHED:
         setTitle(GameEndModalTitles.FINISHED);
         setTitleTextColor('text-green-500');
         setBlur(true);
+        // calcPoints();
         return () => setLastPlayed();
     }
   }, [event]);
@@ -106,7 +115,7 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
                         <span>First game of the day</span>
                       </li>
                     ) : undefined}
-                    {userScore < algoScore ? (
+                    {userScore >= algoScore ? (
                       <li className="flex justify-start flex-row bg-zinc-500 bg rounded px-2 pb-1 pt-2 hover:scale-105 transition-all">
                         <CheckIcon className="h-4 pr-1 text-green-500" />
                         <span>Beat the algorithm</span>
@@ -117,7 +126,7 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
                         <span>Beat by the algorithm</span>
                       </li>
                     )}
-                    {userScore < (getPersonalBest(algorithm, level)?.height ?? userScore + 1) ? (
+                    {userScore > (getPersonalBest(algorithm, level)?.height ?? userScore + 1) ? (
                       <li className="flex justify-start flex-row bg-zinc-500 bg rounded px-2 pb-1 pt-2 hover:scale-105 transition-all">
                         <CheckIcon className="h-4 pr-1 text-green-500" />
                         <span>New personal best</span>
@@ -126,9 +135,9 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
                   </ul>
                 </div>
                 <div className="w-3/4 m-auto text-white">
-                  <GameEndModalItem name="Your score" value={userScore} />
-                  <GameEndModalItem name="Personal best" value={getPersonalBest(algorithm, level)?.height ?? userScore} />
-                  <GameEndModalItem name="Algorithm score" value={algoScore} />
+                  <GameEndModalItem name="Your score" value={userScore.toFixed(0)} />
+                  <GameEndModalItem name="Personal best" value={(prevBest?.score ?? userScore).toFixed(0)} />
+                  <GameEndModalItem name="Algorithm score" value={algoScore.toFixed(0)} />
                   <GameEndModalItem name="Level" value={level} />
                   <GameEndModalItem name="Algorithm" value={algorithm} />
                   <div className="flex justify-between pt-3">

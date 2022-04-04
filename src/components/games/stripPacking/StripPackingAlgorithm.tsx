@@ -13,6 +13,10 @@ import { RectangleConfig } from '../../../types/RectangleConfig.interface';
 import { Layer as KonvaLayer } from 'konva/lib/Layer';
 import { ALGO_MOVE_ANIMATION_DURATION as ALGO_ENTER_ANIMATION_DURATION } from '../../../config/canvasConfig';
 import { Sleators } from '../../../algorithms/strip/Sleators';
+import { getMultiplier } from '../../../utils/timeMultiplier';
+import { LevelList, Levels } from '../../../types/Levels.enum';
+import useLevelStore from '../../../store/level.store';
+import { calculateScore } from '../../../utils/utils';
 
 const { BEST_FIT_DECREASING_HEIGHT, NEXT_FIT_DECREASING_HEIGHT, FIRST_FIT_DECREASING_HEIGHT, SIZE_ALTERNATING_STACK, SLEATORS } = PackingAlgorithms;
 
@@ -41,19 +45,20 @@ const StripPackingAlgorithm = React.forwardRef<StripPackingAlgorithmHandle, Stri
     const [algo, setAlgo] = useState<PackingAlgorithm<RectangleConfig, RectangleConfig, any> | null>(null);
 
     const [stripRects, setStripRects] = useState<ColorRect<RectangleConfig & PrevPos>[]>([]);
-
     const [order, setOrder] = useState(0);
-
+    const { level } = useLevelStore();
     const setScore = useScoreStore(useCallback(state => state.setScore, []));
+    const { averageTimeUsed, usedGameAreaAlgo, usedRectsAreaAlgo, setUsedGameAreaAlgo, setUsedRectsAreaAlgo } = useScoreStore();
 
     useEffect(() => {
       const _height = stripRects.reduce((maxY, r) => Math.max(maxY, Math.round(height - r.y)), 0);
-      setScore(
-        {
-          height: _height,
-        },
-        'algorithm'
-      );
+      setUsedGameAreaAlgo(_height * width);
+      if (_height === 0) {
+        setScore({ height: 0 }, 'algorithm');
+        return;
+      }
+      const score = calculateScore(level, usedRectsAreaAlgo!, _height * width, averageTimeUsed);
+      setScore({ height: score }, 'algorithm');
     }, [stripRects, height]);
 
     const getAlgo = (algorithm: PackingAlgorithms) => {
@@ -119,7 +124,7 @@ const StripPackingAlgorithm = React.forwardRef<StripPackingAlgorithmHandle, Stri
           prevX: inventoryRect.x - inventoryWidth, // substract the inventory width (its relative to the strip)
           prevY: inventoryRect.y - scrollOffset,
         };
-
+        setUsedRectsAreaAlgo(stripRects.reduce((prev, curr) => curr.height * curr.width + prev, newRect.height * newRect.width));
         setStripRects(prev => [...prev, newRect]);
         const rOrder = order;
         setOrder(old => old + 1);

@@ -3,7 +3,4 @@ export enum Gamemodes {
   STRIP_PACKING = 'Strip Packing',
 }
 
-export const ALL_GAMEMODES = [
-  Gamemodes.BIN_PACKING,
-  Gamemodes.STRIP_PACKING
-]
+export const ALL_GAMEMODES = [Gamemodes.BIN_PACKING, Gamemodes.STRIP_PACKING];

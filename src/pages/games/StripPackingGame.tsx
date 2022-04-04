@@ -93,7 +93,10 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   const algorithmLayerRef = useRef<KonvaLayer>(null);
 
   const resetFuncs = [
-    () => setStartingInventory(generateInventory(inventoryWidth, NUM_ITEMS)),
+    () => {
+      const newInv = generateInventory(inventoryWidth, NUM_ITEMS);
+      setStartingInventory(newInv);
+    },
     () => setInventoryChanged(true),
     interactiveRef.current?.reset,
     algoRef.current?.reset,
@@ -101,9 +104,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
 
   useRestartStripPacking(resetFuncs, algorithm);
 
-  const stripRectChangedCallback = () => {
-    
-  }
+  const stripRectChangedCallback = () => {};
 
   /**
    * Pos is absolute position in the canvas
@@ -131,30 +132,30 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
         x: pos.x,
         y: pos.y - gameHeight - interactiveScrollOffset,
       };
-      
+
       interactiveRef.current?.place(rect, placement);
       const res = algoRef.current?.next();
       if (!res) return false;
       const [placedRect, order, recIdx] = res;
       const inv = [...startingInventory];
       const interactiveIdx = inv.findIndex(r => r.name === rectName);
-      
+
       inv[interactiveIdx].removed = true;
       inv[recIdx].order = order;
-      
+
       // Pushes currently placed block at the back of the inventory lust
       pushItemToBack(inv, interactiveIdx);
-      
+
       let newRectIdx = 0;
       const compressedInv = compressInventory(inv, inventoryWidth, (rect, i) => rect.name === placedRect.name && (newRectIdx = i));
-      
+
       const interactiveInventory = compressedInv.filter(r => !r.removed);
       setRenderInventory(interactiveInventory);
       setRectanglesLeft(renderInventory.length - 1);
-      
+
       // give the order of placement to the starting state
       setStartingInventory(compressedInv);
-      
+
       /**
        * Let inventory compress before animating
        */

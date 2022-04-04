@@ -8,7 +8,6 @@ import { sleep } from '../utils/utils';
 import { checkAchievements } from '../utils/achievementChecker';
 import { promptBadge } from '../components/Badges';
 
-
 /**
  * Game mode | algorithm | level | loses | wins
  */
@@ -57,7 +56,7 @@ const useAchievementStore = create<AchievementStore>(
             } else {
               gameResults[index].loses++;
             }
-            if (gameResults[index].score > score) {
+            if (gameResults[index].score < score) {
               gameResults[index].score = score;
               gameResults[index].date = new Date(Date.now()).toString();
             }
@@ -78,16 +77,16 @@ const useAchievementStore = create<AchievementStore>(
             }
             gameResults.push(newData);
           }
-          
+
           const newAchievements = checkAchievements(gameResults).filter(a => !state.badges.some(b => b.title == a.title));
           newAchievements.forEach(na => promptBadge(na.title));
-          
+
           const res = {
             ...state,
             gameResults: gameResults,
-            badges: [...state.badges, ...newAchievements]
+            badges: [...state.badges, ...newAchievements],
           };
-          
+
           return res;
         }),
       setBadges: (badge, date, text) =>
@@ -107,7 +106,5 @@ const useAchievementStore = create<AchievementStore>(
     })
   )
 );
-
-
 
 export default useAchievementStore;
