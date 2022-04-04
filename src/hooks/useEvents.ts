@@ -32,8 +32,6 @@ export const useEvents = (algo: Algorithm | null) => {
    * Stops the game when it is done
    */
   useEffect(() => {
-    console.log({ rectanglesLeft, userScore, algoScore });
-
     if (rectanglesLeft === 0 && userScore === 0 && algoScore === 0) return;
 
     if (rectanglesLeft === 0) {
