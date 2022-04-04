@@ -37,7 +37,7 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
   const { gameResults } = useAchievementStore();
   const { currentGame: gamemode } = useGameStore();
 
-  const prevBest = gameResults.find(gr => gr.algorithm == algorithm && gr.gamemode == gamemode && gr.level == level)
+  const prevBest = gameResults.find(gr => gr.algorithm == algorithm && gr.gamemode == gamemode && gr.level == level);
 
   useEffect(() => {
     switch (event) {
@@ -61,7 +61,6 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
     setTitle(undefined);
     setEvent(event);
   };
-
 
   return (
     <div>

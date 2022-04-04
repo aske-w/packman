@@ -78,7 +78,6 @@ const useScoreStore = create<ScoreState>((set, get) => ({
       },
     })),
   getPersonalBest: (algo: PackingAlgorithms, level: Levels) => get().personalBest?.[algo]?.[level],
-  
 }));
 
 export default useScoreStore;
