@@ -6,7 +6,7 @@ import { DimensionsWithConfig } from '../../../types/DimensionsWithConfig.type';
 import { ColorRect } from '../../../types/ColorRect.interface';
 import { RectangleExPos } from '../../../types/RectangleExPos.type';
 
-export class NextFitShelf<T extends Record<string, any> = Record<string, any>> implements OnlineStripPacking<T> {
+export class FirstFitShelf<T extends Record<string, any> = Record<string, any>> implements OnlineStripPacking<T> {
   /**
    *
    */
@@ -51,7 +51,7 @@ export class NextFitShelf<T extends Record<string, any> = Record<string, any>> i
     const rect = this.normalize(_rect);
 
     const shelfHeight = this.getShelfHeight(rect.height);
-    for (let i = this.shelves.length - 1; i >= 0; i--) {
+    for (let i = 0; i < this.shelves.length; i++) {
       const shelf = this.shelves[i];
       // find shelf with appropiate height
       if (shelf.height === shelfHeight) {

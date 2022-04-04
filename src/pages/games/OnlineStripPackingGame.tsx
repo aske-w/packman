@@ -4,6 +4,7 @@ import { Rect as KonvaRect } from 'konva/lib/shapes/Rect';
 import { Vector2d } from 'konva/lib/types';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Layer, Rect, Stage } from 'react-konva';
+
 import ScrollBar from '../../components/canvas/ScrollBar';
 import GameEndModal from '../../components/gameEndModal/Modal';
 import OnlineStripPackingAlgorithm, {
@@ -28,7 +29,7 @@ import { OnlineStripPackingAlgorithmEnum } from '../../types/enums/OnlineStripPa
 import { Rectangle } from '../../types/Rectangle.interface';
 import { intersects } from '../../utils/intersects';
 interface OnlineStripPackingGameProps {}
-
+const NUM_ITEMS = 20;
 const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
   const { width: wWidth, height: wHeight } = useWindowSize();
   const totalGameWidth = Math.min(wWidth, 1280);
@@ -44,7 +45,7 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
     inventoryWidth,
     inventoryHeight: gameHeight,
     placedRects,
-    inventorySize: 5,
+    inventorySize: NUM_ITEMS,
   });
 
   useEffect(() => setRectanglesLeft(inventory.length - placedRects.length), [inventory, placedRects]);
@@ -52,6 +53,11 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
     Gamemodes.ONLINE_STRIP_PACKING,
     OnlineStripPackingAlgorithmEnum.NEXT_FIT_SHELF
   );
+
+  /**
+   * Number betweeen 0 and 1. Used in the FFS and NFS algorithms
+   */
+  const [r, setR] = useState(0.75);
 
   const interactiveLayerRef = useRef<KonvaLayer>(null);
   const interactiveScrollBarRef = useRef<KonvaRect>(null);
@@ -77,7 +83,7 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
 
   const resetFuncs = [() => setStripRects([]), resetInventory, interactiveHandle.current?.reset, algorithmHandle.current?.reset];
 
-  useRestartStripPacking(resetFuncs, algorithm);
+  const resetter = useRestartStripPacking(resetFuncs, algorithm, { r });
 
   /**
    * Pos is absolute position in the canvas
@@ -140,10 +146,19 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
     ],
   });
 
+  useEffect(() => {
+    resetter();
+  }, [r]);
+
   return (
     <div className="w-full h-full">
       <GameEndModal />
-      <OnlineStripPackingNav />
+      <OnlineStripPackingNav
+        r={r}
+        setR={_r => {
+          setR(_r);
+        }}
+      />
 
       <Stage className="flex justify-center h-full max-w-screen-xl mx-auto " onWheel={handleWheel} width={totalGameWidth} height={gameHeight}>
         <Layer>
@@ -179,6 +194,7 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
           x={colWidth + inventoryWidth}
           layerRef={algorithmLayerRef}
           gameHeight={gameHeight}
+          r={r}
           width={colWidth}
           ref={algorithmHandle}
           scrollableHeight={scrollableHeight}
