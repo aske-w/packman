@@ -8,6 +8,7 @@ import NFDHArticle from './algorithm-articles/NFDHArticle';
 import SleatorsArticle from './algorithm-articles/SleatorsArticle';
 import SASArticle from './algorithm-articles/SASArticle';
 import { PackingAlgorithmEnum } from '../../../types/enums/OfflineStripPackingAlgorithm.enum';
+import SleatorsOptimizedArticle from './algorithm-articles/SleatorsOptimizedArticle';
 
 interface TeachAlgoModalProps {
   visible: boolean;
@@ -26,6 +27,8 @@ const TeachAlgoModal: React.FC<TeachAlgoModalProps> = ({ algorithm, onClose, vis
         return <BFDHArticle />;
       case PackingAlgorithmEnum.SLEATORS:
         return <SleatorsArticle />;
+      case PackingAlgorithmEnum.SLEATORS_OPTIMIZED:
+        return <SleatorsOptimizedArticle />;
       case PackingAlgorithmEnum.SIZE_ALTERNATING_STACK:
         return <SASArticle />;
       default:

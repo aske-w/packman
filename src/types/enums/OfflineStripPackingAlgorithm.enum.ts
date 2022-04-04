@@ -4,6 +4,7 @@ export enum PackingAlgorithmEnum {
   BEST_FIT_DECREASING_HEIGHT = 'Best Fit Decreasing Height',
   SIZE_ALTERNATING_STACK = 'Size Alternating Stack',
   SLEATORS = 'Sleators',
+  SLEATORS_OPTIMIZED = 'Sleators Optimized',
 }
 
 export const ALL_PACKING_ALGORITHMS = [
@@ -12,4 +13,5 @@ export const ALL_PACKING_ALGORITHMS = [
   PackingAlgorithmEnum.BEST_FIT_DECREASING_HEIGHT,
   PackingAlgorithmEnum.SIZE_ALTERNATING_STACK,
   PackingAlgorithmEnum.SLEATORS,
+  PackingAlgorithmEnum.SLEATORS_OPTIMIZED,
 ];
