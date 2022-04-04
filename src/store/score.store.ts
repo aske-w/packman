@@ -19,7 +19,6 @@ const LAST_PLAYED_PREFIX = LOCAL_STORAGE_PREFIX + 'last_played';
 export type ScoreState = Record<Player, Score> & {
   setScore(score: Score, player: Player): void;
   setRectanglesLeft(rectangles: number): void;
-  setEndScore(algo: PackingAlgorithms, level: Levels): void;
   getPersonalBest(algo: PackingAlgorithms, level: Levels): Score | undefined;
   setLastPlayed(): void;
   // Percentage
@@ -79,22 +78,7 @@ const useScoreStore = create<ScoreState>((set, get) => ({
       },
     })),
   getPersonalBest: (algo: PackingAlgorithms, level: Levels) => get().personalBest?.[algo]?.[level],
-  setEndScore: (algo: PackingAlgorithms, level: Levels) =>
-    set(state => {
-      const prevScore = state.getPersonalBest(algo, level);
-      const currScore = state.user;
-
-      if (!prevScore || currScore.height > prevScore.height) {
-        const levelScore = state.personalBest?.[algo] || { [Levels.BEGINNER]: undefined, [Levels.NOVICE]: undefined, [Levels.EXPERT]: undefined };
-
-        const newPersonalBest: MappedScore = { ...state.personalBest, [algo]: { ...levelScore, [level]: { ...currScore } } };
-        window.localStorage.setItem(SCORE_PREFIX, JSON.stringify(newPersonalBest));
-
-        return { ...state, personalBest: newPersonalBest };
-      }
-
-      return state;
-    }),
+  
 }));
 
 export default useScoreStore;

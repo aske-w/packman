@@ -7,8 +7,10 @@ import Confetti from 'react-confetti';
 import { Link } from 'react-router-dom';
 import { createSemanticDiagnosticsBuilderProgram } from 'typescript';
 import { useAutoPlace } from '../../hooks/useAutoPlace';
+import useAchievementStore from '../../store/achievement.store';
 import useAlgorithmStore from '../../store/algorithm.store';
 import useEventStore from '../../store/event.store';
+import useGameStore from '../../store/game.store';
 import useGameEndStore from '../../store/gameEnd.store';
 import useLevelStore from '../../store/level.store';
 import useScoreStore from '../../store/score.store';
@@ -32,6 +34,10 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
   const { level } = useLevelStore();
   const { algorithm } = useAlgorithmStore();
   const { getPersonalBest, lastPlayed, setLastPlayed } = useScoreStore();
+  const { gameResults } = useAchievementStore();
+  const { currentGame: gamemode } = useGameStore();
+
+  const prevBest = gameResults.find(gr => gr.algorithm == algorithm && gr.gamemode == gamemode && gr.level == level)
 
   useEffect(() => {
     switch (event) {
@@ -55,6 +61,7 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
     setTitle(undefined);
     setEvent(event);
   };
+
 
   return (
     <div>
@@ -130,7 +137,7 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
                 </div>
                 <div className="w-3/4 m-auto text-white">
                   <GameEndModalItem name="Your score" value={userScore.toFixed(0)} />
-                  <GameEndModalItem name="Personal best" value={(getPersonalBest(algorithm, level)?.height ?? userScore).toFixed(0)} />
+                  <GameEndModalItem name="Personal best" value={(prevBest?.score ?? userScore).toFixed(0)} />
                   <GameEndModalItem name="Algorithm score" value={algoScore.toFixed(0)} />
                   <GameEndModalItem name="Level" value={level} />
                   <GameEndModalItem name="Algorithm" value={algorithm} />
