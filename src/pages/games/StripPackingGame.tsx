@@ -61,7 +61,6 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
 
   const returnIfFinished = useGameEnded();
 
-
   useEffect(() => {
     if (inventoryChanged) {
       setRenderInventory([...startingInventory]);
@@ -69,8 +68,6 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
       setRectanglesLeft(0);
     }
   }, [startingInventory, inventoryChanged]);
-
-  
 
   const scrollableHeight = gameHeight * 2;
   const algoRef = useRef<StripPackingAlgorithmHandle>(null);
@@ -112,13 +109,11 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
 
   const stripRectChangedCallback = () => {}; // TODO figure out if this is needed?
 
-
   /**
    * Pos is absolute position in the canvas
    */
   const onDraggedToStrip = (rectName: string, pos: Vector2d): boolean => {
-    if(returnIfFinished())
-      return false;
+    if (returnIfFinished()) return false;
     const rIdx = renderInventory.findIndex(r => r.name === rectName);
 
     if (rIdx !== -1) {

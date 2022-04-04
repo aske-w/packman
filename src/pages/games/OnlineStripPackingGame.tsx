@@ -87,14 +87,13 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
   const resetFuncs = [() => setStripRects([]), resetInventory, interactiveHandle.current?.reset, algorithmHandle.current?.reset];
 
   const resetter = useRestartStripPacking(resetFuncs, algorithm, { r });
-  const returnIfFinished = useGameEnded(); 
+  const returnIfFinished = useGameEnded();
 
   /**
    * Pos is absolute position in the canvas
    */
   const onDraggedToStrip = (rectName: string, pos: Vector2d): boolean => {
-    if(returnIfFinished())
-      return false;
+    if (returnIfFinished()) return false;
     const rIdx = visibleInventory.findIndex(r => r.name === rectName);
 
     if (rIdx !== -1) {

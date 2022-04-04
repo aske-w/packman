@@ -12,9 +12,8 @@ export const useEvents = (algo: Algorithm | null) => {
 
   const onPlaceEvent = useCallback(
     (interactiveLength: number, staticInvLength: number) => {
-      if(event === Events.GAME_OVER || event === Events.FINISHED) 
-        return; 
-      
+      if (event === Events.GAME_OVER || event === Events.FINISHED) return;
+
       if (interactiveLength !== staticInvLength) {
         setEvent(Events.RECT_PLACED);
       }

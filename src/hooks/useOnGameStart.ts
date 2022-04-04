@@ -13,7 +13,7 @@ export const useOnGameStart = <T extends Algorithm>(gameMode: Gamemodes, initAlg
   useEffect(() => {
     setAlgorithm(initAlgorithm);
     setCurrentGame(gameMode);
-    setHasFinished(false)
+    setHasFinished(false);
     return () => setAlgorithm(null);
   }, []);
 

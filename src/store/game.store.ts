@@ -10,7 +10,7 @@ interface GameState {
 
 const useGameStore = create<GameState>(set => ({
   hasFinished: false,
-  setHasFinished: (hasFinished: boolean) => set(state => ({...state, hasFinished: hasFinished})),
+  setHasFinished: (hasFinished: boolean) => set(state => ({ ...state, hasFinished: hasFinished })),
   currentGame: undefined,
   setCurrentGame: (game: Gamemodes) => set(state => ({ ...state, currentGame: game })),
 }));
