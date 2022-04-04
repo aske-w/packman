@@ -1,5 +1,6 @@
 import React, { RefObject, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
-import { Layer, Rect } from 'react-konva';
+import { KonvaNodeEvents, Layer, Rect } from 'react-konva';
+import { Rect as KonvaRect } from 'konva/lib/shapes/Rect';
 import { Layer as KonvaLayer } from 'konva/lib/Layer';
 import { NextFitShelf } from '../../../algorithms/strip/online/NextFitShelf';
 
@@ -9,6 +10,10 @@ import { OnlineStripPackingAlgorithmEnum } from '../../../types/enums/OnlineStri
 import { OnlineStripPacking } from '../../../types/OnlineStripPackingAlgorithm.interface';
 import useScoreStore from '../../../store/score.store';
 import { FirstFitShelf } from '../../../algorithms/strip/online/FirstFitShelf';
+import { IRect } from 'konva/lib/types';
+import { RectangleConfig } from '../../../types/RectangleConfig.interface';
+import Konva from 'konva';
+import { RectConfig } from 'konva/lib/shapes/Rect';
 
 interface OnlineStripPackingAlgorithmProps {
   gameHeight: number;
@@ -17,18 +22,21 @@ interface OnlineStripPackingAlgorithmProps {
   algorithm: OnlineStripPackingAlgorithmEnum;
   scrollableHeight: number;
   x: number;
+  inventoryWidth: number;
   r: number;
 }
+type PrevPos = { prevX: number; prevY: number };
+const ENTER_ANIMATION_DURATION_SECONDS = 0.5;
 
 export interface OnlineStripPackingAlgorithmHandle {
-  place: (r: RectangleExPos) => void;
+  place: (r: IRect) => Promise<void>;
   reset(ctx: { r: number }): void;
 }
 
 const OnlineStripPackingAlgorithm = React.forwardRef<OnlineStripPackingAlgorithmHandle, OnlineStripPackingAlgorithmProps>(
-  ({ gameHeight, layerRef, width, scrollableHeight, algorithm: selectedAlgorithm, x }, ref) => {
+  ({ gameHeight, layerRef, width, scrollableHeight, algorithm: selectedAlgorithm, x, inventoryWidth }, ref) => {
     const [algorithm, setAlgorithm] = useState<OnlineStripPacking>(new NextFitShelf({ height: gameHeight, width }, 0.8));
-    const [items, setItems] = useState<ColorRect[]>([]);
+    const [items, setItems] = useState<ColorRect<RectangleConfig & PrevPos>[]>([]);
     const scoreHeight = useRef(0);
     const setScore = useScoreStore(useCallback(state => state.setScore, []));
 
@@ -50,15 +58,18 @@ const OnlineStripPackingAlgorithm = React.forwardRef<OnlineStripPackingAlgorithm
 
     useImperativeHandle(ref, () => ({
       place(r) {
-        const placement = algorithm.place(r) as ColorRect; //TODO maybe fix?;
+        return new Promise(res => {
+          const placement = algorithm.place(r) as ColorRect;
+          const newItem = { ...placement, prevX: r.x - inventoryWidth, prevY: r.y - layerRef.current!.y() };
+          setItems(old => [...old, newItem]);
 
-        setItems(old => [...old, placement]);
-
-        const y = Math.round(placement.y * -1);
-        if (y > scoreHeight.current) {
-          scoreHeight.current = y;
-          setScore({ height: y }, 'algorithm');
-        }
+          const y = Math.round(placement.y * -1);
+          if (y > scoreHeight.current) {
+            scoreHeight.current = y;
+            setScore({ height: y }, 'algorithm');
+          }
+          setTimeout(res, ENTER_ANIMATION_DURATION_SECONDS * 1000);
+        });
       },
       reset,
     }));
@@ -66,7 +77,7 @@ const OnlineStripPackingAlgorithm = React.forwardRef<OnlineStripPackingAlgorithm
     return (
       <Layer x={x} y={-(scrollableHeight - gameHeight)} ref={layerRef}>
         {items.map(r => (
-          <Rect {...r} y={r.y + scrollableHeight} key={r.name} />
+          <MyRect {...r} y={r.y + scrollableHeight} key={r.name} />
         ))}
       </Layer>
     );
@@ -74,3 +85,18 @@ const OnlineStripPackingAlgorithm = React.forwardRef<OnlineStripPackingAlgorithm
 );
 
 export default OnlineStripPackingAlgorithm;
+
+const MyRect: React.FC<PrevPos & RectConfig & KonvaNodeEvents> = ({ x, y, prevX, prevY, ...props }) => {
+  const ref = useRef<KonvaRect>(null);
+  useEffect(() => {
+    new Konva.Tween({
+      node: ref.current!,
+      duration: ENTER_ANIMATION_DURATION_SECONDS,
+      x,
+      y,
+      easing: Konva.Easings.StrongEaseInOut,
+    }).play();
+  }, [x, y]);
+
+  return <Rect ref={ref} x={prevX} y={prevY} stroke={'rgba(0,0,0,0.2)'} strokeWidth={1} {...props}></Rect>;
+};
