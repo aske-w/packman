@@ -4,8 +4,10 @@ import { CheckIcon, RefreshIcon, XIcon } from '@heroicons/react/solid';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import Confetti from 'react-confetti';
 import { Link } from 'react-router-dom';
+import useAchievementStore from '../../store/achievement.store';
 import useAlgorithmStore from '../../store/algorithm.store';
 import useEventStore from '../../store/event.store';
+import useGameStore from '../../store/game.store';
 import useGameEndStore from '../../store/gameEnd.store';
 import useLevelStore from '../../store/level.store';
 import useScoreStore from '../../store/score.store';
@@ -26,6 +28,10 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
   const { level } = useLevelStore();
   const { algorithm } = useAlgorithmStore();
   const { getPersonalBest, lastPlayed, setLastPlayed } = useScoreStore();
+  const { gameResults } = useAchievementStore();
+  const { currentGame: gamemode } = useGameStore();
+
+  const prevBest = gameResults.find(gr => gr.algorithm == algorithm && gr.gamemode == gamemode && gr.level == level);
 
   useEffect(() => {
     switch (event) {
@@ -33,11 +39,13 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
         setTitle(GameEndModalTitle.GAME_OVER);
         setTitleTextColor('text-red-500');
         setBlur(true);
+        // calcPoints();
         return () => setLastPlayed();
       case Events.FINISHED:
         setTitle(GameEndModalTitle.FINISHED);
         setTitleTextColor('text-green-500');
         setBlur(true);
+        // calcPoints();
         return () => setLastPlayed();
     }
   }, [event]);
@@ -114,7 +122,7 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
                         <span>Beat by the algorithm</span>
                       </li>
                     )}
-                    {userScore < (getPersonalBest(algorithm, level)?.height ?? userScore + 1) ? (
+                    {userScore > (getPersonalBest(algorithm, level)?.height ?? userScore + 1) ? (
                       <li className="flex flex-row justify-start px-2 pt-2 pb-1 transition-all rounded bg-zinc-500 bg hover:scale-105">
                         <CheckIcon className="h-4 pr-1 text-green-500" />
                         <span>New personal best</span>
@@ -123,9 +131,9 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
                   </ul>
                 </div>
                 <div className="w-3/4 m-auto text-white">
-                  <GameEndModalItem name="Your score" value={userScore} />
-                  <GameEndModalItem name="Personal best" value={getPersonalBest(algorithm, level)?.height ?? userScore} />
-                  <GameEndModalItem name="Algorithm score" value={algoScore} />
+                  <GameEndModalItem name="Your score" value={userScore.toFixed(0)} />
+                  <GameEndModalItem name="Personal best" value={(prevBest?.score ?? userScore).toFixed(0)} />
+                  <GameEndModalItem name="Algorithm score" value={algoScore.toFixed(0)} />
                   <GameEndModalItem name="Level" value={level} />
                   <GameEndModalItem name="Algorithm" value={algorithm} />
                   <div className="flex justify-between pt-3">

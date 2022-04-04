@@ -90,7 +90,10 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   });
 
   const resetFuncs = [
-    () => setStartingInventory(generateInventory(inventoryWidth, NUM_ITEMS)),
+    () => {
+      const newInv = generateInventory(inventoryWidth, NUM_ITEMS);
+      setStartingInventory(newInv);
+    },
     () => setInventoryChanged(true),
     interactiveRef.current?.reset,
     algoRef.current?.reset,

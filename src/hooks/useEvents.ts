@@ -8,13 +8,12 @@ import { Events } from '../types/enums/Events.enum';
 export const useEvents = (algo: Algorithm | null) => {
   const level = useLevelStore(useCallback(({ level }) => level, []));
   const { setEvent, event } = useEventStore(useCallback(({ setEvent, event }) => ({ setEvent, event }), []));
-  const { setEndScore } = useScoreStore(useCallback(({ setEndScore }) => ({ setEndScore }), []));
   const { user: userScore, algo: algoScore } = useScoreStore(useCallback(state => ({ user: state.user.height, algo: state.algorithm.height }), []));
 
   const onPlaceEvent = useCallback(
     (interactiveLength: number, staticInvLength: number) => {
       if (interactiveLength === staticInvLength) {
-        if (userScore <= algoScore) {
+        if (userScore >= algoScore) {
           setEvent(Events.FINISHED);
         } else {
           setEvent(Events.GAME_OVER);
@@ -25,12 +24,6 @@ export const useEvents = (algo: Algorithm | null) => {
     },
     [setEvent, userScore, algoScore]
   );
-
-  useEffect(() => {
-    if (event === Events.FINISHED && algo) {
-      setEndScore(algo, level);
-    }
-  }, [event, level]);
 
   return { onPlaceEvent, setEvent, event };
 };

@@ -1,5 +1,4 @@
-import { useEffect } from 'react';
-import useAchievementStore, { AchievementLocalstorage, BadgesLocalStorage } from '../store/achievement.store';
+import { AchievementLocalstorage, BadgesLocalStorage } from '../store/achievement.store';
 import { Badges } from '../types/enums/Badges.enum';
 import { ALL_BIN_PACKING_ALGORITHMS } from '../types/enums/BinPackingAlgorithm.enum';
 import { ALL_GAMEMODES, Gamemodes } from '../types/enums/Gamemodes.enum';

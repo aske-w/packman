@@ -2,7 +2,9 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { NAV_HEIGHT } from '../config/canvasConfig';
 import useEventStore from '../store/event.store';
 import useLevelStore from '../store/level.store';
+import useScoreStore from '../store/score.store';
 import { Events } from '../types/enums/Events.enum';
+import { Levels } from '../types/enums/Levels.enum';
 import { RGBColor } from '../types/RGBColor.interface';
 
 interface TimeBarProps {
@@ -22,9 +24,12 @@ const TimeBar: React.FC<TimeBarProps> = ({ targetFPS = 60, startColor = green, e
 
   const [loop, setLoop] = useState<NodeJS.Timer>();
   const [clientWidth, setClientWidth] = useState(0);
+  const [percentTimeLeftWhenRestarted, setPercentTimeLeftWhenRestarted] = useState<number[]>();
+  const [restartCount, setRestartCount] = useState<number>();
   const currWidth = useRef(0);
 
   const { event, setEvent } = useEventStore(useCallback(({ setEvent, event }) => ({ setEvent, event }), []));
+  const { averageTimeUsed, setAverageTimeUsed } = useScoreStore();
   const permission = useLevelStore(useCallback(state => state.getPermission(), []));
 
   const duration = permission?.time ?? 1;
@@ -33,6 +38,7 @@ const TimeBar: React.FC<TimeBarProps> = ({ targetFPS = 60, startColor = green, e
   const redChange = (endColor.red - startColor.red) / ((duration * 1000) / frameTime);
   const greenChange = (endColor.green - startColor.green) / ((duration * 1000) / frameTime);
   const blueChange = (endColor.blue - startColor.blue) / ((duration * 1000) / frameTime);
+  const { level } = useLevelStore();
 
   // reset timer to initial state without starting
   const reset = (color = startColor) => {
@@ -43,16 +49,43 @@ const TimeBar: React.FC<TimeBarProps> = ({ targetFPS = 60, startColor = green, e
   };
 
   const finish = (color?: RGBColor) => {
+    const avgTimeUsed =
+      percentTimeLeftWhenRestarted!.reduce((prev, curr) => prev + curr, (currWidth.current / clientWidth) * 100) / (restartCount! + 1);
+    setAverageTimeUsed(avgTimeUsed);
+    setPercentTimeLeftWhenRestarted(undefined);
+    setRestartCount(undefined);
     clearInterval(loop!);
     currWidth.current = clientWidth;
     color && (barRef.current!.style.backgroundColor = `rgb(${color.red}, ${color.green}, ${color.blue})`);
   };
 
+  const avg = useCallback(() => {
+    if (level == Levels.BEGINNER) console.log('avg && beginner');
+    if (restartCount == undefined) {
+      setRestartCount(0);
+    } else {
+      setRestartCount(restartCount + 1);
+    }
+    if (percentTimeLeftWhenRestarted == undefined) {
+      setPercentTimeLeftWhenRestarted([]);
+    } else {
+      setPercentTimeLeftWhenRestarted([...percentTimeLeftWhenRestarted!, (currWidth.current / clientWidth) * 100]);
+      setAverageTimeUsed(
+        [...percentTimeLeftWhenRestarted!, (currWidth.current / clientWidth) * 100].reduce(
+          (prev, curr) => prev + curr,
+          (currWidth.current / clientWidth) * 100
+        ) /
+          (restartCount! + 1)
+      );
+    }
+  }, [clientWidth, percentTimeLeftWhenRestarted, currWidth]);
+
   // reset timer to initial state and start immediately, i.e. when a user places a rectangle within sufficient time.
   const restart = () => {
+    avg();
+    clearInterval(loop!);
     currWidth.current = clientWidth;
     barRef.current!.style.backgroundColor = `rgb(${startColor.red}, ${startColor.green}, ${startColor.blue})`;
-    clearInterval(loop!);
   };
 
   useEffect(() => {
@@ -65,7 +98,6 @@ const TimeBar: React.FC<TimeBarProps> = ({ targetFPS = 60, startColor = green, e
 
   useEffect(() => {
     if (clientWidth == 0 || permission?.time === undefined) return;
-
     switch (event) {
       case Events.FINISHED:
         finish();
@@ -114,7 +146,7 @@ const TimeBar: React.FC<TimeBarProps> = ({ targetFPS = 60, startColor = green, e
     () =>
       permission.time ? (
         <div style={{ top: NAV_HEIGHT }} className={`w-full h-2 absolute z-10 overflow-hidden`}>
-          <div className="h-full w-full">
+          <div className="w-full h-full">
             <div ref={barRef} className="h-full"></div>
           </div>
         </div>

@@ -56,7 +56,7 @@ const useAchievementStore = create<AchievementStore>(
             } else {
               gameResults[index].loses++;
             }
-            if (gameResults[index].score > score) {
+            if (gameResults[index].score < score) {
               gameResults[index].score = score;
               gameResults[index].date = new Date().toString();
             }

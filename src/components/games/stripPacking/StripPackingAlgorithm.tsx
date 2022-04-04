@@ -1,4 +1,5 @@
 import Konva from 'konva';
+import { Layer as KonvaLayer } from 'konva/lib/Layer';
 import { Rect as KonvaRect, RectConfig } from 'konva/lib/shapes/Rect';
 import React, { RefObject, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { KonvaNodeEvents, Layer, Rect } from 'react-konva';
@@ -6,14 +7,15 @@ import { BestFitDecreasingHeight } from '../../../algorithms/strip/BestFitDecrea
 import { FirstFitDecreasingHeight } from '../../../algorithms/strip/FirstFitDecreasingHeight';
 import { NextFitDecreasingHeight } from '../../../algorithms/strip/NextFitDecreasingHeight';
 import { SizeAlternatingStack } from '../../../algorithms/strip/SizeAlternatingStack';
+import { Sleators } from '../../../algorithms/strip/Sleators';
+import { ALGO_MOVE_ANIMATION_DURATION as ALGO_ENTER_ANIMATION_DURATION } from '../../../config/canvasConfig';
+import useLevelStore from '../../../store/level.store';
 import useScoreStore from '../../../store/score.store';
 import { ColorRect } from '../../../types/ColorRect.interface';
+import { PackingAlgorithmEnum } from '../../../types/enums/OfflineStripPackingAlgorithm.enum';
 import { PackingAlgorithm } from '../../../types/PackingAlgorithm.interface';
 import { RectangleConfig } from '../../../types/RectangleConfig.interface';
-import { Layer as KonvaLayer } from 'konva/lib/Layer';
-import { ALGO_MOVE_ANIMATION_DURATION as ALGO_ENTER_ANIMATION_DURATION } from '../../../config/canvasConfig';
-import { Sleators } from '../../../algorithms/strip/Sleators';
-import { PackingAlgorithmEnum } from '../../../types/enums/OfflineStripPackingAlgorithm.enum';
+import { calculateScore } from '../../../utils/utils';
 
 const { BEST_FIT_DECREASING_HEIGHT, NEXT_FIT_DECREASING_HEIGHT, FIRST_FIT_DECREASING_HEIGHT, SIZE_ALTERNATING_STACK, SLEATORS } =
   PackingAlgorithmEnum;
@@ -43,19 +45,20 @@ const StripPackingAlgorithm = React.forwardRef<StripPackingAlgorithmHandle, Stri
     const [algo, setAlgo] = useState<PackingAlgorithm<RectangleConfig, RectangleConfig, any> | null>(null);
 
     const [stripRects, setStripRects] = useState<ColorRect<RectangleConfig & PrevPos>[]>([]);
-
     const [order, setOrder] = useState(0);
-
+    const { level } = useLevelStore();
     const setScore = useScoreStore(useCallback(state => state.setScore, []));
+    const { averageTimeUsed, usedGameAreaAlgo, usedRectsAreaAlgo, setUsedGameAreaAlgo, setUsedRectsAreaAlgo } = useScoreStore();
 
     useEffect(() => {
       const _height = stripRects.reduce((maxY, r) => Math.max(maxY, Math.round(height - r.y)), 0);
-      setScore(
-        {
-          height: _height,
-        },
-        'algorithm'
-      );
+      setUsedGameAreaAlgo(_height * width);
+      if (_height === 0) {
+        setScore({ height: 0 }, 'algorithm');
+        return;
+      }
+      const score = calculateScore(level, usedRectsAreaAlgo!, _height * width, averageTimeUsed);
+      setScore({ height: Math.round(score) }, 'algorithm');
     }, [stripRects, height]);
 
     const getAlgo = (algorithm: PackingAlgorithmEnum) => {
@@ -121,7 +124,7 @@ const StripPackingAlgorithm = React.forwardRef<StripPackingAlgorithmHandle, Stri
           prevX: inventoryRect.x - inventoryWidth, // substract the inventory width (its relative to the strip)
           prevY: inventoryRect.y - scrollOffset,
         };
-
+        setUsedRectsAreaAlgo(stripRects.reduce((prev, curr) => curr.height * curr.width + prev, newRect.height * newRect.width));
         setStripRects(prev => [...prev, newRect]);
         const rOrder = order;
         setOrder(old => old + 1);

@@ -1,20 +1,21 @@
-import React, { RefObject, useCallback, useEffect, useImperativeHandle, useState } from 'react';
-import { Layer, Rect } from 'react-konva';
-import { ColorRect } from '../../../types/ColorRect.interface';
-import { Layer as KonvaLayer } from 'konva/lib/Layer';
-import { STROKE_WIDTH } from '../../../config/canvasConfig';
-import { Vector2d } from 'konva/lib/types';
-import useScoreStore from '../../../store/score.store';
+import produce from 'immer';
 import { Group } from 'konva/lib/Group';
-import { Coordinate } from '../../../types/Coordinate.interface';
+import { Layer as KonvaLayer } from 'konva/lib/Layer';
 import { KonvaEventObject } from 'konva/lib/Node';
 import { Shape } from 'konva/lib/Shape';
-import { intersects } from '../../../utils/intersects';
-import { RectangleConfig } from '../../../types/RectangleConfig.interface';
-import useLevelStore from '../../../store/level.store';
+import { Vector2d } from 'konva/lib/types';
+import React, { RefObject, useCallback, useEffect, useImperativeHandle, useState } from 'react';
+import { Layer, Rect } from 'react-konva';
+import { STROKE_WIDTH } from '../../../config/canvasConfig';
 import { useEvents } from '../../../hooks/useEvents';
 import useAlgorithmStore from '../../../store/algorithm.store';
-import produce from 'immer';
+import useLevelStore from '../../../store/level.store';
+import useScoreStore from '../../../store/score.store';
+import { ColorRect } from '../../../types/ColorRect.interface';
+import { Coordinate } from '../../../types/Coordinate.interface';
+import { RectangleConfig } from '../../../types/RectangleConfig.interface';
+import { intersects } from '../../../utils/intersects';
+import { calculateScore } from '../../../utils/utils';
 interface StripPackingInteractiveProps {
   height: number;
   width: number;
@@ -33,7 +34,7 @@ export interface StripPackingInteractiveHandle {
 }
 
 const StripPackingInteractive = React.forwardRef<StripPackingInteractiveHandle, StripPackingInteractiveProps>(
-  ({ layerRef, height, scrollableHeight, stripRects, setStripRects, snap, stripRectChangedCallback, staticInvLength }, ref) => {
+  ({ layerRef, width, height, scrollableHeight, stripRects, setStripRects, snap, stripRectChangedCallback, staticInvLength }, ref) => {
     // const [stripRects, setStripRects] = useState<ColorRect[]>([]);
     const setScore = useScoreStore(useCallback(state => state.setScore, []));
     const algorithm = useAlgorithmStore(useCallback(({ algorithm }) => algorithm, []));
@@ -42,12 +43,19 @@ const StripPackingInteractive = React.forwardRef<StripPackingInteractiveHandle, 
 
     const { onPlaceEvent } = useEvents(algorithm);
 
-    const { user, algorithm: algoScore } = useScoreStore();
+    const { level } = useLevelStore();
+    const { user, algorithm: algoScore, setUsedGameAreaUser, setUsedRectsAreaUser, averageTimeUsed, usedRectsAreaUser } = useScoreStore();
     const permission = useLevelStore(useCallback(state => state.getPermission(), []));
 
     useEffect(() => {
       const _height = stripRects.reduce((maxY, r) => Math.max(maxY, Math.round(Math.abs(scrollableHeight - r.y) - height)), 0);
-      setScore({ height: _height }, 'user');
+      setUsedGameAreaUser(_height * width);
+      if (_height === 0) {
+        setScore({ height: 0 }, 'algorithm');
+        return;
+      }
+      const score = calculateScore(level, usedRectsAreaUser!, _height * width, averageTimeUsed);
+      setScore({ height: Math.round(score) }, 'user');
     }, [stripRects, height]);
 
     useEffect(() => {
@@ -72,7 +80,7 @@ const StripPackingInteractive = React.forwardRef<StripPackingInteractiveHandle, 
           x,
           y,
         };
-
+        setUsedRectsAreaUser(stripRects.reduce((prev, curr) => curr.height * curr.width + prev, newRect.height * newRect.width));
         setStripRects(old => [...old, newRect]);
       },
       reset: () => {
