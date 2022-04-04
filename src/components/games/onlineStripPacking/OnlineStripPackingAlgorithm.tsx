@@ -8,6 +8,7 @@ import { RectangleExPos } from '../../../types/RectangleExPos.type';
 import { OnlineStripPackingAlgorithmEnum } from '../../../types/enums/OnlineStripPackingAlgorithm.enum';
 import { OnlineStripPacking } from '../../../types/OnlineStripPackingAlgorithm.interface';
 import useScoreStore from '../../../store/score.store';
+import { FirstFitShelf } from '../../../algorithms/strip/online/FirstFitShelf';
 
 interface OnlineStripPackingAlgorithmProps {
   gameHeight: number;
@@ -16,11 +17,12 @@ interface OnlineStripPackingAlgorithmProps {
   algorithm: OnlineStripPackingAlgorithmEnum;
   scrollableHeight: number;
   x: number;
+  r: number;
 }
 
 export interface OnlineStripPackingAlgorithmHandle {
   place: (r: RectangleExPos) => void;
-  reset(): void;
+  reset(ctx: { r: number }): void;
 }
 
 const OnlineStripPackingAlgorithm = React.forwardRef<OnlineStripPackingAlgorithmHandle, OnlineStripPackingAlgorithmProps>(
@@ -30,17 +32,20 @@ const OnlineStripPackingAlgorithm = React.forwardRef<OnlineStripPackingAlgorithm
     const scoreHeight = useRef(0);
     const setScore = useScoreStore(useCallback(state => state.setScore, []));
 
-    const reset = useCallback(() => {
+    const reset = ({ r }: { r: number }) => {
       setItems([]);
       switch (selectedAlgorithm) {
         case OnlineStripPackingAlgorithmEnum.NEXT_FIT_SHELF:
-          setAlgorithm(new NextFitShelf({ height: gameHeight, width }, 0.5));
+          setAlgorithm(new NextFitShelf({ height: gameHeight, width }, r));
+          break;
+        case OnlineStripPackingAlgorithmEnum.FIRST_FIT_SHELF:
+          setAlgorithm(new FirstFitShelf({ height: gameHeight, width }, r));
           break;
 
         default:
           throw Error('Unkown algorithm: ' + selectedAlgorithm);
       }
-    }, [selectedAlgorithm]);
+    };
 
     useImperativeHandle(ref, () => ({
       place(r) {

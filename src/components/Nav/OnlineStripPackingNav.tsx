@@ -1,5 +1,6 @@
 import { QuestionMarkCircleIcon } from '@heroicons/react/solid';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
+import ReactTooltip from 'react-tooltip';
 import { NAV_HEIGHT } from '../../config/canvasConfig';
 import useAlgorithmStore from '../../store/algorithm.store';
 import useGameEndStore from '../../store/gameEnd.store';
@@ -11,9 +12,12 @@ import LevelSelect from '../select/LevelSelect';
 import Select from '../select/Select';
 import DefaultNav from './DefaultNav';
 
-interface OnlineStripPackingNavProps {}
+interface OnlineStripPackingNavProps {
+  r: number;
+  setR: (r: number) => void;
+}
 
-const OnlineStripPackingNav: React.FC<OnlineStripPackingNavProps> = ({}) => {
+const OnlineStripPackingNav: React.FC<OnlineStripPackingNavProps> = ({ r, setR }) => {
   const { blur: showModal } = useGameEndStore();
   const { setIntroOpen } = useHelpStore();
   const { setAlgorithm, algorithm } = useAlgorithmStore(
@@ -29,6 +33,10 @@ const OnlineStripPackingNav: React.FC<OnlineStripPackingNavProps> = ({}) => {
       []
     )
   );
+
+  useEffect(() => {
+    ReactTooltip.rebuild();
+  });
 
   return (
     <DefaultNav height={NAV_HEIGHT}>
@@ -48,6 +56,17 @@ const OnlineStripPackingNav: React.FC<OnlineStripPackingNavProps> = ({}) => {
           options={ALL_ONLINE_STRIP_PACKING_ALGORITHMS}
           value={algorithm}
           onChange={setAlgorithm}
+        />
+        <input
+          defaultValue={r}
+          data-tip="R: A value between 0 and 1. Determines the threshold for which items should go on the same shelf"
+          className="w-20 px-2 py-1 font-bold text-white bg-gray-700 rounded focus:outline-none"
+          onBlur={({ target: { value } }) => {
+            const valueAsNumber = Number.parseFloat(value);
+            if (Number.isFinite(valueAsNumber) && !Number.isNaN(valueAsNumber) && valueAsNumber > 0 && valueAsNumber < 1) {
+              setR(valueAsNumber);
+            }
+          }}
         />
         <LevelSelect />
         <button onClick={() => setIntroOpen(true)}>

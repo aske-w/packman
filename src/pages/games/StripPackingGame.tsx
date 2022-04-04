@@ -96,7 +96,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
     algoRef.current?.reset,
   ];
 
-  useRestartStripPacking(resetFuncs, algorithm);
+  useRestartStripPacking(resetFuncs, algorithm, {});
 
   const stripRectChangedCallback = () => {}; // TODO figure out if this is needed?
 
@@ -199,7 +199,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   });
 
   return (
-    <div className="h-full w-full ">
+    <div className="w-full h-full ">
       <StripPackingNav />
       <StripPackingGameIntroModal />
       <TimeBar />
