@@ -5,7 +5,7 @@ import useGameStore from '../store/game.store';
 import useAlgorithmStore from '../store/algorithm.store';
 
 export const useOnGameStart = <T extends Algorithm>(gameMode: Gamemodes, initAlgorithm: T) => {
-  const { setCurrentGame } = useGameStore();
+  const { setCurrentGame, setHasFinished } = useGameStore();
   const { setAlgorithm, algorithm } = useAlgorithmStore(
     useCallback(({ setAlgorithm, algorithm }) => ({ setAlgorithm, algorithm: algorithm || initAlgorithm }), [initAlgorithm])
   );
@@ -13,7 +13,7 @@ export const useOnGameStart = <T extends Algorithm>(gameMode: Gamemodes, initAlg
   useEffect(() => {
     setAlgorithm(initAlgorithm);
     setCurrentGame(gameMode);
-
+    setHasFinished(false)
     return () => setAlgorithm(null);
   }, []);
 
