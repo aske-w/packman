@@ -5,7 +5,7 @@ import { RECT_OVERLAP_COLOR, SNAPPING_THRESHOLD, STROKE_WIDTH } from '../config/
 import { ColorRect } from '../types/ColorRect.interface';
 import { Coordinate } from '../types/Coordinate.interface';
 import { RectangleConfig } from '../types/RectangleConfig.interface';
-import { intersects } from '../utils/intersects';
+import { intersects, overlapsAxis } from '../utils/intersects';
 import { Layer as KonvaLayer } from 'konva/lib/Layer';
 import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 
@@ -36,22 +36,18 @@ export const useSnap = <T>({
    */
   const altOrOptionPressed = useCallback((e: KeyboardEvent) => {
     if (e.key === "Alt") {
-      console.log("alt pressed");
       setDisabled(true);
     }
   }, []);
   const altOrOptionReleased = useCallback((e: KeyboardEvent) => {
     if(e.key === "Alt")
-      console.log("alt released");
       setDisabled(false);
   }, []);
 
   useEffect(() => {
     document.addEventListener("keydown", altOrOptionPressed, false);
     document.addEventListener("keyup", altOrOptionReleased, false);
-    
     return () => {
-      console.log("running key events cleanup function");
       document.removeEventListener("keydown", altOrOptionPressed, false);
       document.removeEventListener("keyup", altOrOptionReleased, false);
     };
@@ -73,27 +69,28 @@ export const useSnap = <T>({
     let xDist: number | undefined;
     let yDist: number | undefined;
 
-    
-
     if(disabled) {
-      destination.forEach(f => {
-        const { name } = f;
-        if (name == targetName) return;
-  
-        if (
-          intersects(f, {
-            x: targetX,
-            y: targetY,
-            height: targetHeight,
-            width: targetWidth,
-          }) ||
-          targetX < 0 || // outside strip's left boundary
-          targetY < 0 || // top
-          targetY + targetHeight > scrollableHeight // bottom
-        ) {
-          intersectsAny = true;
-        }
-      });
+      // check for intersection between target and boundary of strip and inventy
+      if(overlapsAxis(targetX, targetX + targetWidth, stripWidth, stripWidth))
+        intersectsAny = true;
+      else 
+        destination.forEach(f => {
+          const { name } = f;
+          if (name == targetName) return;
+          if (
+            intersects(f, {
+              x: targetX,
+              y: targetY,
+              height: targetHeight,
+              width: targetWidth,
+            }) ||
+            targetX < 0 || // outside strip's left boundary
+            targetY < 0 || // top
+            targetY + targetHeight > scrollableHeight // bottom
+          ) {
+            intersectsAny = true;
+          }
+        });
 
       target.setAbsolutePosition({ x: cx, y: cy + stripScrollOffset });
       if (intersectsAny || targetX < 0 || targetY < 0 || targetY > scrollableHeight) {
