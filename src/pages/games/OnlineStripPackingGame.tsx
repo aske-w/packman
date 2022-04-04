@@ -89,7 +89,7 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
   /**
    * Pos is absolute position in the canvas
    */
-  const onDraggedToStrip = (rectName: string, pos: Vector2d): boolean => {
+  const onDraggedToStrip = async (rectName: string, pos: Vector2d): Promise<boolean> => {
     const rIdx = visibleInventory.findIndex(r => r.name === rectName);
 
     if (rIdx !== -1) {
@@ -113,8 +113,8 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
         y: pos.y - gameHeight - interactiveScrollOffset,
       };
 
+      await algorithmHandle.current?.place(rect);
       interactiveHandle.current?.place(rect, placement);
-      algorithmHandle.current?.place(rect);
     }
 
     return true;
@@ -193,6 +193,7 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
         />
 
         <OnlineStripPackingAlgorithm
+          inventoryWidth={inventoryWidth}
           x={colWidth + inventoryWidth}
           layerRef={algorithmLayerRef}
           gameHeight={gameHeight}

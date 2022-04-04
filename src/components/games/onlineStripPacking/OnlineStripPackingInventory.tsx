@@ -11,12 +11,12 @@ interface OnlineStripPackingInventoryProps {
   visibleInventory: ColorRect[];
   entireInventory: { name: string; fill: string }[];
   snap: (target: Shape) => void;
-  onDraggedToStrip: (rectName: string, pos: Vector2d) => boolean;
+  onDraggedToStrip: (rectName: string, pos: Vector2d) => Promise<boolean>;
 }
 
 const OnlineStripPackingInventory = React.forwardRef<KonvaLayer, OnlineStripPackingInventoryProps>(
   ({ visibleInventory, x: interactiveWidth, onDraggedToStrip, snap, entireInventory }, ref) => {
-    const handleDragEnd = (evt: KonvaEventObject<DragEvent>) => {
+    const handleDragEnd = async (evt: KonvaEventObject<DragEvent>) => {
       const rect = evt.target;
       const { name, width } = rect.getAttrs();
 
@@ -26,7 +26,7 @@ const OnlineStripPackingInventory = React.forwardRef<KonvaLayer, OnlineStripPack
       const inStripArea = dropX + width < interactiveWidth;
 
       if (inStripArea) {
-        const success = onDraggedToStrip(name, { x: dropX, y: dropY });
+        const success = await onDraggedToStrip(name, { x: dropX, y: dropY });
         if (success) return;
       }
       // restore normal color
@@ -51,6 +51,7 @@ const OnlineStripPackingInventory = React.forwardRef<KonvaLayer, OnlineStripPack
       <Layer ref={ref} x={interactiveWidth}>
         {visibleInventory.map((r, i) => (
           <React.Fragment key={r.name}>
+            <Rect {...r} opacity={0.5} />
             <Rect {...r} onDragEnd={handleDragEnd} onDragMove={handleDragMove} draggable />
             <Text fontSize={20} {...r} listening={false} fill="black" text={`${i}`} />
           </React.Fragment>
