@@ -7,9 +7,6 @@ import { ColorRect } from '../../../types/ColorRect.interface';
 import { RectangleExPos } from '../../../types/RectangleExPos.type';
 
 export class NextFitShelf<T extends Record<string, any> = Record<string, any>> implements OnlineStripPacking<T> {
-  /**
-   *
-   */
   constructor(readonly gameSize: Dimensions, readonly r: number, readonly debug = false) {}
 
   private denormalize(rect: ColorRect<T>): ColorRect<T> {
