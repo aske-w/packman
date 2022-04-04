@@ -2,11 +2,12 @@ import Konva from 'konva';
 import React, { useState } from 'react';
 import Bin from '../../components/playground/Bin';
 import BinPackingSidebar from '../../components/Sidebar/BinPackingSidebar';
-import { genId } from '../../config/canvasConfig';
+import { genId, NAV_HEIGHT } from '../../config/canvasConfig';
 import { useBinPackingAlgorithm } from '../../hooks/useBinPackingAlgorithm';
-import { BinPackingAlgorithms } from '../../types/BinPackingAlgorithm.interface';
+import { BinPackingAlgorithm } from '../../types/enums/BinPackingAlgorithm.enum';
 import { ColorRect } from '../../types/ColorRect.interface';
 import { Dimensions } from '../../types/Dimensions.interface';
+import PlaygroundNav from '../../components/Nav/PlaygroundNav';
 
 interface BinPackingPlaygroundProps {}
 const width = Math.floor(window.innerWidth * 0.2);
@@ -19,7 +20,7 @@ const BinPackingPlayground: React.FC<BinPackingPlaygroundProps> = ({}) => {
     height,
   });
 
-  const [algorithm, setAlgorithm] = useState(BinPackingAlgorithms.HYBRID_FIRST_FIT);
+  const [algorithm, setAlgorithm] = useState(BinPackingAlgorithm.HYBRID_FIRST_FIT);
   const { start, place, isFinished, algoState, pause, reset } = useBinPackingAlgorithm(binDimensions, algorithm);
 
   const placeNext = () => {
@@ -51,34 +52,41 @@ const BinPackingPlayground: React.FC<BinPackingPlaygroundProps> = ({}) => {
     }
   };
   const [bins, setBins] = useState<ColorRect[][]>([[]]);
-  // console.log(JSON.stringify(bins, null, 1));
 
   return (
-    <div className="flex w-full h-full ">
-      <BinPackingSidebar
-        {...{
-          algoState,
-          isFinished,
-          algorithm,
-          setAlgorithm,
-          start,
-          pause,
-          reset: () => {
-            setBins([[]]);
-            reset();
-          },
-          placeNext,
-          setDimensionsStorage,
-          dimensionsStorage,
-          setBinDimensions,
-          binDimensions,
-        }}
-      />
-      <div className="inline-flex items-center justify-center overflow-y-auto custom-scrollbar">
-        <div className="flex justify-start items-start flex-wrap h-full flex-shrink-0 gap-5 p-5 w-[calc(100vw-360px)]">
-          {bins.map((bin, i) => (
-            <Bin key={i} height={binDimensions.height} width={binDimensions.width} items={bin} />
-          ))}
+    <div
+      style={{
+        height: `calc(100% - ${NAV_HEIGHT}px)`,
+        width: '100%',
+      }}
+    >
+      <PlaygroundNav />
+      <div className="flex w-full h-full ">
+        <BinPackingSidebar
+          {...{
+            algoState,
+            isFinished,
+            algorithm,
+            setAlgorithm,
+            start,
+            pause,
+            reset: () => {
+              setBins([[]]);
+              reset();
+            },
+            placeNext,
+            setDimensionsStorage,
+            dimensionsStorage,
+            setBinDimensions,
+            binDimensions,
+          }}
+        />
+        <div className="inline-flex items-center justify-center overflow-y-auto custom-scrollbar">
+          <div className="flex justify-start items-start flex-wrap h-full flex-shrink-0 gap-5 p-5 w-[calc(100vw-360px)]">
+            {bins.map((bin, i) => (
+              <Bin key={i} height={binDimensions.height} width={binDimensions.width} items={bin} />
+            ))}
+          </div>
         </div>
       </div>
     </div>

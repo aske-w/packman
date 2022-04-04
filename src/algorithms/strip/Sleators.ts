@@ -7,7 +7,7 @@ import { RectangleConfig } from '../../types/RectangleConfig.interface';
 import { Shelf } from '../../types/Shelf.interface';
 
 type Side = `${'left' | 'right'}Shelf`;
-export class Sleators<T = RectangleConfig> implements PackingAlgorithm<T> {
+export class Sleators<T extends Record<string, any> = RectangleConfig> implements PackingAlgorithm<T> {
   private widest: DimensionsWithConfig<T>[] = [];
   private data: DimensionsWithConfig<T>[] = [];
   private lastPlaced: IRect = { height: 0, width: 0, x: 0, y: 0 };

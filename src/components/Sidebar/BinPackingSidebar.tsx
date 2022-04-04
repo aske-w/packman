@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useAutoPlace } from '../../hooks/useAutoPlace';
 import { AlgoStates } from '../../hooks/usePackingAlgorithms';
 import { useToggle } from '../../hooks/useToggle';
-import { ALL_BIN_PACKING_ALGORITHMS, BinPackingAlgorithms } from '../../types/BinPackingAlgorithm.interface';
+import { ALL_BIN_PACKING_ALGORITHMS, BinPackingAlgorithm } from '../../types/enums/BinPackingAlgorithm.enum';
 import { Dimensions } from '../../types/Dimensions.interface';
 import { generateData } from '../../utils/generateData';
 import Select from '../select/Select';
@@ -17,7 +17,7 @@ import SideBarSection from './SideBarSection';
 import classNames from 'classnames';
 import LinkIcon from '@heroicons/react/solid/LinkIcon';
 
-interface BinPackingSidebarProps<T = BinPackingAlgorithms> {
+interface BinPackingSidebarProps<T = BinPackingAlgorithm> {
   setAlgorithm: React.Dispatch<React.SetStateAction<T>>;
   algorithm: T;
 
@@ -56,7 +56,7 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
   return (
     <Sidebar className="inline-flex flex-col overflow-hidden">
       <SideBarSection title="Algorithms">
-        <Select<BinPackingAlgorithms>
+        <Select<BinPackingAlgorithm>
           className="text-base font-thin text-white w-72"
           options={ALL_BIN_PACKING_ALGORITHMS}
           onChange={setAlgorithm}

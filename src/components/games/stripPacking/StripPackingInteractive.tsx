@@ -1,20 +1,20 @@
-import React, { RefObject, useCallback, useEffect, useImperativeHandle, useState } from 'react';
-import { Layer, Rect } from 'react-konva';
-import { ColorRect } from '../../../types/ColorRect.interface';
-import { Layer as KonvaLayer } from 'konva/lib/Layer';
-import { STROKE_WIDTH } from '../../../config/canvasConfig';
-import { Vector2d } from 'konva/lib/types';
-import useScoreStore from '../../../store/score.store';
+import produce from 'immer';
 import { Group } from 'konva/lib/Group';
-import { Coordinate } from '../../../types/Coordinate.interface';
+import { Layer as KonvaLayer } from 'konva/lib/Layer';
 import { KonvaEventObject } from 'konva/lib/Node';
 import { Shape } from 'konva/lib/Shape';
-import { intersects } from '../../../utils/intersects';
-import { RectangleConfig } from '../../../types/RectangleConfig.interface';
-import useLevelStore from '../../../store/level.store';
+import { Vector2d } from 'konva/lib/types';
+import React, { RefObject, useCallback, useEffect, useImperativeHandle, useState } from 'react';
+import { Layer, Rect } from 'react-konva';
+import { STROKE_WIDTH } from '../../../config/canvasConfig';
 import { useEvents } from '../../../hooks/useEvents';
 import useAlgorithmStore from '../../../store/algorithm.store';
-import { Events } from '../../../types/Events.enum';
+import useLevelStore from '../../../store/level.store';
+import useScoreStore from '../../../store/score.store';
+import { ColorRect } from '../../../types/ColorRect.interface';
+import { Coordinate } from '../../../types/Coordinate.interface';
+import { RectangleConfig } from '../../../types/RectangleConfig.interface';
+import { intersects } from '../../../utils/intersects';
 import { calculateScore } from '../../../utils/utils';
 interface StripPackingInteractiveProps {
   height: number;
@@ -41,21 +41,21 @@ const StripPackingInteractive = React.forwardRef<StripPackingInteractiveHandle, 
     const [userScoreChanged, setUserScoreChanged] = useState(false);
     const [algoScoreChanged, setAlgoScoreChanged] = useState(false);
 
-    const { onPlaceEvent, event } = useEvents(algorithm);
+    const { onPlaceEvent } = useEvents(algorithm);
 
     const { level } = useLevelStore();
     const { user, algorithm: algoScore, setUsedGameAreaUser, setUsedRectsAreaUser, averageTimeUsed, usedRectsAreaUser } = useScoreStore();
     const permission = useLevelStore(useCallback(state => state.getPermission(), []));
 
     useEffect(() => {
-      const _height = stripRects.reduce((maxY, r) => Math.max(maxY, Math.round(height - r.y)), 0);
+      const _height = stripRects.reduce((maxY, r) => Math.max(maxY, Math.round(Math.abs(scrollableHeight - r.y) - height)), 0);
       setUsedGameAreaUser(_height * width);
       if (_height === 0) {
         setScore({ height: 0 }, 'algorithm');
         return;
       }
       const score = calculateScore(level, usedRectsAreaUser!, _height * width, averageTimeUsed);
-      setScore({ height: score }, 'user');
+      setScore({ height: Math.round(score) }, 'user');
     }, [stripRects, height]);
 
     useEffect(() => {
@@ -89,11 +89,11 @@ const StripPackingInteractive = React.forwardRef<StripPackingInteractiveHandle, 
       },
     }));
 
-    let lastPos: Coordinate;
+    const [lastPos, setLastPos] = useState<Coordinate | null>(null);
 
     const handleStripDragStart = (e: KonvaEventObject<DragEvent>) => {
       const { x, y } = e.target.getAttrs();
-      lastPos = { x, y };
+      setLastPos({ x, y });
     };
 
     const handleStripDragEnd = (e: KonvaEventObject<DragEvent>) => {
@@ -105,13 +105,23 @@ const StripPackingInteractive = React.forwardRef<StripPackingInteractiveHandle, 
         var _r = layerRef.current?.children?.find(x => x.getAttr('name') == r.name);
         if (_r == undefined) return;
 
-        if (intersects(target.getAttrs(), _r.getAttrs()))
+        if (intersects(target.getAttrs(), _r.getAttrs()) && lastPos)
           target.setAbsolutePosition({
             x: lastPos.x,
             y: lastPos.y + scrollOffset,
           });
       });
       target.fill(stripRects.find(r => r.name == target.getAttr('name'))!.fill.substring(0, 7) + 'ff');
+
+      setStripRects(
+        produce(draft => {
+          const pos = e.target.getAbsolutePosition();
+          const idx = draft.findIndex(sr => sr.name === target.name());
+          const y = pos.y - height - layerRef.current!.y();
+          draft[idx].x = pos.x;
+          draft[idx].y = y;
+        })
+      );
     };
 
     const handleDragMove = (e: KonvaEventObject<DragEvent>) => {

@@ -1,4 +1,5 @@
 import Konva from 'konva';
+import { Layer as KonvaLayer } from 'konva/lib/Layer';
 import { Rect as KonvaRect, RectConfig } from 'konva/lib/shapes/Rect';
 import React, { RefObject, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { KonvaNodeEvents, Layer, Rect } from 'react-konva';
@@ -6,19 +7,18 @@ import { BestFitDecreasingHeight } from '../../../algorithms/strip/BestFitDecrea
 import { FirstFitDecreasingHeight } from '../../../algorithms/strip/FirstFitDecreasingHeight';
 import { NextFitDecreasingHeight } from '../../../algorithms/strip/NextFitDecreasingHeight';
 import { SizeAlternatingStack } from '../../../algorithms/strip/SizeAlternatingStack';
+import { Sleators } from '../../../algorithms/strip/Sleators';
+import { ALGO_MOVE_ANIMATION_DURATION as ALGO_ENTER_ANIMATION_DURATION } from '../../../config/canvasConfig';
+import useLevelStore from '../../../store/level.store';
 import useScoreStore from '../../../store/score.store';
 import { ColorRect } from '../../../types/ColorRect.interface';
-import { PackingAlgorithm, PackingAlgorithms } from '../../../types/PackingAlgorithm.interface';
+import { PackingAlgorithmEnum } from '../../../types/enums/OfflineStripPackingAlgorithm.enum';
+import { PackingAlgorithm } from '../../../types/PackingAlgorithm.interface';
 import { RectangleConfig } from '../../../types/RectangleConfig.interface';
-import { Layer as KonvaLayer } from 'konva/lib/Layer';
-import { ALGO_MOVE_ANIMATION_DURATION as ALGO_ENTER_ANIMATION_DURATION } from '../../../config/canvasConfig';
-import { Sleators } from '../../../algorithms/strip/Sleators';
-import { getMultiplier } from '../../../utils/timeMultiplier';
-import { LevelList, Levels } from '../../../types/Levels.enum';
-import useLevelStore from '../../../store/level.store';
 import { calculateScore } from '../../../utils/utils';
 
-const { BEST_FIT_DECREASING_HEIGHT, NEXT_FIT_DECREASING_HEIGHT, FIRST_FIT_DECREASING_HEIGHT, SIZE_ALTERNATING_STACK, SLEATORS } = PackingAlgorithms;
+const { BEST_FIT_DECREASING_HEIGHT, NEXT_FIT_DECREASING_HEIGHT, FIRST_FIT_DECREASING_HEIGHT, SIZE_ALTERNATING_STACK, SLEATORS } =
+  PackingAlgorithmEnum;
 
 type PrevPos = { prevX: number; prevY: number };
 
@@ -26,7 +26,7 @@ interface StripPackingAlgorithmProps {
   x: number;
   height: number;
   width: number;
-  algorithm: PackingAlgorithms;
+  algorithm: PackingAlgorithmEnum;
   layerRef: RefObject<KonvaLayer>;
   inventory: ReadonlyArray<ColorRect<RectangleConfig>>;
   inventoryWidth: number;
@@ -58,10 +58,10 @@ const StripPackingAlgorithm = React.forwardRef<StripPackingAlgorithmHandle, Stri
         return;
       }
       const score = calculateScore(level, usedRectsAreaAlgo!, _height * width, averageTimeUsed);
-      setScore({ height: score }, 'algorithm');
+      setScore({ height: Math.round(score) }, 'algorithm');
     }, [stripRects, height]);
 
-    const getAlgo = (algorithm: PackingAlgorithms) => {
+    const getAlgo = (algorithm: PackingAlgorithmEnum) => {
       const size = { width, height };
       // algorithms change the array, we cannot allow that
       const invCopy = [...inventory];

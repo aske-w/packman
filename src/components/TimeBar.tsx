@@ -1,13 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { NAV_HEIGHT } from '../config/canvasConfig';
 import useEventStore from '../store/event.store';
-import useGameEndStore from '../store/gameEnd.store';
 import useLevelStore from '../store/level.store';
 import useScoreStore from '../store/score.store';
-import { Events } from '../types/Events.enum';
-import { Levels } from '../types/Levels.enum';
+import { Events } from '../types/enums/Events.enum';
+import { Levels } from '../types/enums/Levels.enum';
 import { RGBColor } from '../types/RGBColor.interface';
-import { calculateScore } from '../utils/utils';
 
 interface TimeBarProps {
   /**
@@ -23,14 +21,13 @@ const green: RGBColor = { /* tailwind bg-green-400 */ red: 74, green: 222, blue:
 
 const TimeBar: React.FC<TimeBarProps> = ({ targetFPS = 60, startColor = green, endColor = red }) => {
   const barRef = useRef<HTMLDivElement>(null);
-  // let loop: NodeJS.Timer
+
   const [loop, setLoop] = useState<NodeJS.Timer>();
   const [clientWidth, setClientWidth] = useState(0);
   const [percentTimeLeftWhenRestarted, setPercentTimeLeftWhenRestarted] = useState<number[]>();
   const [restartCount, setRestartCount] = useState<number>();
   const currWidth = useRef(0);
-  // const [gameOver, setGameOver] = useState(false);
-  const { blur: isGameOverModalShowing } = useGameEndStore();
+
   const { event, setEvent } = useEventStore(useCallback(({ setEvent, event }) => ({ setEvent, event }), []));
   const { averageTimeUsed, setAverageTimeUsed } = useScoreStore();
   const permission = useLevelStore(useCallback(state => state.getPermission(), []));
@@ -149,13 +146,11 @@ const TimeBar: React.FC<TimeBarProps> = ({ targetFPS = 60, startColor = green, e
     () =>
       permission.time ? (
         <div style={{ top: NAV_HEIGHT }} className={`w-full h-2 absolute z-10 overflow-hidden`}>
-          <div className="h-full w-full">
+          <div className="w-full h-full">
             <div ref={barRef} className="h-full"></div>
           </div>
         </div>
-      ) : (
-        <></>
-      ),
+      ) : null,
     [barRef, permission]
   );
 };

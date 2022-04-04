@@ -1,18 +1,18 @@
 import { useCallback, useEffect } from 'react';
 import useEventStore from '../store/event.store';
 import useLevelStore from '../store/level.store';
-import { Events } from '../types/Events.enum';
-import { PackingAlgorithms } from '../types/PackingAlgorithm.interface';
+import { Events } from '../types/enums/Events.enum';
+import { Algorithm } from '../types/enums/AllAlgorithms.enum';
 
-type Cb = () => void;
+type Cb<T> = (t: T) => void;
 
-export const useRestartStripPacking = (cbs: (Cb | undefined)[], algorithm: PackingAlgorithms) => {
+export const useRestartStripPacking = <T extends Record<string, any> | undefined>(cbs: (Cb<T> | undefined)[], algorithm: Algorithm, context: T) => {
   const { setEvent, event } = useEventStore(useCallback(({ setEvent, event }) => ({ setEvent, event }), []));
   const level = useLevelStore(useCallback(({ level }) => level, []));
 
   const reset = () => {
     setEvent(Events.IDLE);
-    cbs.forEach(cb => cb?.());
+    cbs.forEach(cb => cb?.(context));
   };
 
   useEffect(() => {
@@ -29,4 +29,6 @@ export const useRestartStripPacking = (cbs: (Cb | undefined)[], algorithm: Packi
   useEffect(() => {
     reset();
   }, [algorithm, level]);
+
+  return reset;
 };

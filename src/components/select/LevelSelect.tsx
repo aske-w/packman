@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import useLevelStore from '../../store/level.store';
-import { LevelList, Levels } from '../../types/Levels.enum';
+import { LevelList, Levels } from '../../types/enums/Levels.enum';
 import Select from './Select';
 
 interface LevelSelectProps {}

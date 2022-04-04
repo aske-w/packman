@@ -6,7 +6,7 @@ import { PackingAlgorithm } from '../../types/PackingAlgorithm.interface';
 import { RectangleConfig } from '../../types/RectangleConfig.interface';
 import { Shelf } from '../../types/Shelf.interface';
 type Side = 'left' | 'right';
-export class SleatorsOptimized<T = RectangleConfig> implements PackingAlgorithm<T> {
+export class SleatorsOptimized<T extends Record<string, any> = RectangleConfig> implements PackingAlgorithm<T> {
   widest: DimensionsWithConfig<T>[] = [];
   data: DimensionsWithConfig<T>[] = [];
   lastPlaced: IRect = { height: 0, width: 0, x: 0, y: 0 };
@@ -55,9 +55,9 @@ export class SleatorsOptimized<T = RectangleConfig> implements PackingAlgorithm<
       if (nextRect.width <= this.bottomShelfRemainingWidth) {
         // can still place
         const x = this.gameSize.width - this.bottomShelfRemainingWidth;
-        console.log('rw', this.bottomShelfRemainingWidth);
+
         this.bottomShelfRemainingWidth -= nextRect.width;
-        console.log('rw after', this.bottomShelfRemainingWidth);
+
         const halfWidth = this.gameSize.width / 2;
 
         if (this.rightShelf.bottomY === 0 && x <= halfWidth && x + nextRect.width > halfWidth) {
@@ -76,21 +76,14 @@ export class SleatorsOptimized<T = RectangleConfig> implements PackingAlgorithm<
     }
     // real packing.
     // always do the lowest side first.
-    console.log({
-      left: this.leftShelf.bottomY + this.leftShelf.height,
-      right: this.rightShelf.bottomY + this.rightShelf.height,
-      bool: this.rightInitialized,
-    });
 
     let [shelf, xOffset] =
       this.leftShelf.bottomY - this.leftShelf.height >= this.rightShelf.bottomY - this.rightShelf.height
         ? [this.leftShelf, 0]
         : [this.rightShelf, this.gameSize.width / 2];
     let side: Side = xOffset === 0 ? 'left' : 'right';
-    console.log(xOffset === 0 ? 'left' : 'right');
 
     if (nextRect.width <= shelf.remainingWidth) {
-      console.log('currentshelf', shelf);
       // can place on the shelf
       if (shelf.height === 0) {
         // first time we access
@@ -106,7 +99,6 @@ export class SleatorsOptimized<T = RectangleConfig> implements PackingAlgorithm<
     }
 
     // new shelf
-    console.log('saving', side, 'shelf');
     this[`${side}Shelf`] = {
       bottomY: shelf.bottomY - shelf.height,
       remainingWidth: this.gameSize.width / 2 - nextRect.width,
@@ -125,7 +117,6 @@ export class SleatorsOptimized<T = RectangleConfig> implements PackingAlgorithm<
     const y = this.lastPlaced.y - next.height;
     if (this.widest.length === 0) {
       this.h0 = y;
-      console.log('h0', this.h0);
     }
 
     const values = {

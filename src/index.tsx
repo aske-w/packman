@@ -6,6 +6,8 @@ import App from './App';
 import './index.css';
 import Achievement from './pages/achievement/Achievement';
 import BinPackingGame from './pages/games/BinPackingGame';
+import OnlineBinPackingGame from './pages/games/OnlineBinPackingGame';
+import OnlineStripPackingGame from './pages/games/OnlineStripPackingGame';
 import StripPackingGame from './pages/games/StripPackingGame';
 import Home from './pages/Home';
 import BinPackingPlayground from './pages/playground/BinPackingPlayground';
@@ -27,6 +29,7 @@ ReactDOM.render(
           <Route path={pathKey.GAME} element={<Outlet />}>
             <Route path={pathKey.STRIP} element={<StripPackingGame />} />
             <Route path={pathKey.BIN} element={<BinPackingGame />} />
+            <Route path={pathKey.ONLINE_STRIP} element={<OnlineStripPackingGame />} />
           </Route>
           <Route path={pathKey.ACHIEVEMENTS} element={<Achievement />} />
         </Route>

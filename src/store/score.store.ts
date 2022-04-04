@@ -1,6 +1,7 @@
 import create from 'zustand';
-import { Levels } from '../types/Levels.enum';
-import { PackingAlgorithms } from '../types/PackingAlgorithm.interface';
+import { Algorithm } from '../types/enums/AllAlgorithms.enum';
+import { Levels } from '../types/enums/Levels.enum';
+import { devtools } from 'zustand/middleware';
 import { getLocalStorage, getYearMonthDay, LOCAL_STORAGE_PREFIX } from '../utils/utils';
 
 export interface Score {
@@ -19,7 +20,7 @@ const LAST_PLAYED_PREFIX = LOCAL_STORAGE_PREFIX + 'last_played';
 export type ScoreState = Record<Player, Score> & {
   setScore(score: Score, player: Player): void;
   setRectanglesLeft(rectangles: number): void;
-  getPersonalBest(algo: PackingAlgorithms, level: Levels): Score | undefined;
+  getPersonalBest(algo: Algorithm, level: Levels): Score | undefined;
   setLastPlayed(): void;
   // Percentage
   averageTimeUsed: number | undefined;
@@ -77,7 +78,7 @@ const useScoreStore = create<ScoreState>((set, get) => ({
         ...payload,
       },
     })),
-  getPersonalBest: (algo: PackingAlgorithms, level: Levels) => get().personalBest?.[algo]?.[level],
+  getPersonalBest: (algo: Algorithm, level: Levels) => get().personalBest?.[algo]?.[level],
 }));
 
 export default useScoreStore;

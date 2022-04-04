@@ -10,10 +10,17 @@ import BinInventory from '../../components/games/bin-packing/BinInventory';
 import { NAV_HEIGHT, PADDING, SCROLLBAR_WIDTH } from '../../config/canvasConfig';
 import { defaultScrollHandler, useKonvaWheelHandler } from '../../hooks/useKonvaWheelHandler';
 import { useWindowSize } from '../../hooks/useWindowSize';
-import { BinPackingAlgorithms } from '../../types/BinPackingAlgorithm.interface';
+import { BinPackingAlgorithm } from '../../types/enums/BinPackingAlgorithm.enum';
 import { ColorRect } from '../../types/ColorRect.interface';
 import { generateInventory } from '../../utils/generateData';
-import { Gamemodes } from '../../types/Gamemodes.enum';
+import { Gamemodes } from '../../types/enums/Gamemodes.enum';
+import useGameStore from '../../store/game.store';
+import Konva from 'konva';
+import { Shape, ShapeConfig } from 'konva/lib/Shape';
+import { Stage as KonvaStage } from 'konva/lib/Stage';
+import { Dimensions } from '../../types/Dimensions.interface';
+import { compressBinPackingInv } from '../../utils/binPacking';
+import { BinPackingRect } from '../../types/BinPackingRect.interface';
 
 interface BinPackingGameProps {}
 const NUM_ITEMS = 10;
@@ -36,13 +43,20 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
   const interactiveScrollBarRef = useRef<KonvaRect>(null);
   const interactiveLayer = useRef<KonvaLayer>(null);
   const interactiveScrollableHeight = binAreaHeight * 2;
+  // algorithm scroll
+  const algorithmScrollbarRef = useRef<KonvaRect>(null);
+  const algorithmLayerRef = useRef<KonvaLayer>(null);
+  const algorithmScrollableHeight = binAreaHeight * 2;
+
   // algorithm handle
   const algorithm = useRef<BinAlgorithmHandle>(null);
-  const [staticInventory, setStaticInventory] = useState(generateInventory(inventoryWidth, NUM_ITEMS));
+  const [staticInventory, setStaticInventory] = useState<BinPackingRect[]>(generateInventory(inventoryWidth, NUM_ITEMS));
   const [inventoryChanged, setInventoryChanged] = useState(true);
+  const { setCurrentGame } = useGameStore();
+  const algorithmStartY = binAreaHeight + PADDING;
 
-  // const { setCurrentGame } = useGameState();
-  // setCurrentGame(Gamemodes.BIN_PACKING);
+  useEffect(() => setCurrentGame(Gamemodes.BIN_PACKING), []);
+
   /**
    * This is the inventory, used for rendering the draggable rects. Whenever an
    * item is placed in a bin, it's removed from this array
@@ -51,30 +65,72 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
   const [bins, setBins] = useState<Record<number, ColorRect[]>>({});
   const [binLayout, setBinLayout] = useState<IRect[]>([]);
 
-  const findBin = (pos: Vector2d) => {
-    return binLayout.findIndex(({ height, width, x, y }) => {
-      const rectX = pos.x - inventoryWidth;
-      const fitsX = rectX > x && rectX < x + width;
-      const fitsY = pos.y > y && pos.y < y + height;
-      return fitsX && fitsY;
+  const findBin = (dropPos: Vector2d, rect: Dimensions & Vector2d) => {
+    return binLayout.findIndex(({ height: binHeight, width: binWidth, x: binX, y: binY }) => {
+      // Check if the drop position is within the bin
+      const binX2 = binX + binWidth;
+      const binY2 = binY + binHeight;
+      const rectX = dropPos.x;
+      const rectY = dropPos.y;
+      const rectX2 = dropPos.x + rect.width;
+      const rectY2 = dropPos.y + rect.height;
+
+      const fitsX1 = rectX >= binX;
+      const fitsX2 = rectX2 <= binX2;
+      const fitsY1 = rectY >= binY;
+      const fitsY2 = rectY2 <= binY2;
+
+      return fitsX1 && fitsX2 && fitsY1 && fitsY2;
     });
   };
 
-  const handleDraggedToBin = (name: string, pos: Vector2d) => {
+  const handleDraggedToBin = (evt: Shape<ShapeConfig> | KonvaStage, startPos: Vector2d) => {
+    const { name, ...evtRect } = evt.getAttrs() as Dimensions & Vector2d & { name: string };
     const offset = interactiveLayer.current!.y();
+    const dropPos = evt.getAbsolutePosition();
     // take the offset into account
-    pos.y -= offset;
+    dropPos.y -= offset;
 
-    const bin = findBin(pos);
-    const { x, y } = pos;
+    const bin = findBin({ x: dropPos.x - inventoryWidth, y: dropPos.y }, evtRect);
+
+    // Animate it back
+    if (bin === -1) {
+      return new Konva.Tween({
+        x: startPos.x,
+        y: startPos.y,
+        node: evt,
+        duration: 0.4,
+        easing: Konva.Easings.EaseOut,
+      }).play();
+    }
+
     const rect = renderInventory.find(r => r.name === name);
+
     if (!rect) return;
+
+    const { x, y } = dropPos;
     setBins(old => ({
       ...old,
       [bin]: (old[bin] ?? []).concat({ ...rect, x, y }),
     }));
-    setRenderInventory(old => old.filter(r => r.name !== name));
-    algorithm.current?.place();
+    // setRenderInventory(old => old.filter(r => r.name !== name));
+
+    const res = algorithm.current?.next();
+    if (!res) return false;
+    const [placedRect, order, recIdx] = res;
+
+    //  compress inventory
+    compressBinPackingInv({
+      placedRectIdx: recIdx,
+      order,
+      rectName: rect.name,
+      inventoryWidth,
+      placedRectName: placedRect.name,
+      staticInventory,
+      setStaticInventory: rects => setStaticInventory(rects),
+      setRenderInventory: rects => setRenderInventory(rects),
+      onCompress: idx => algorithm.current?.place(placedRect, idx),
+    });
   };
 
   useEffect(() => {
@@ -111,6 +167,20 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
         scrollBarRef: interactiveScrollBarRef,
         scrollableHeight: interactiveScrollableHeight,
       }),
+      // algorithm
+      defaultScrollHandler({
+        activeArea: {
+          minX: inventoryWidth,
+          maxX: wWidth,
+          minY: binAreaHeight,
+          maxY: binAreaHeight * 2,
+        },
+        startY: algorithmStartY,
+        visibleHeight: binAreaHeight,
+        layerRef: algorithmLayerRef,
+        scrollBarRef: algorithmScrollbarRef,
+        scrollableHeight: algorithmScrollableHeight,
+      }),
     ],
   });
 
@@ -141,11 +211,12 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
           <Rect fill="#444" x={inventoryWidth} y={binAreaHeight} width={binAreaWidth} height={binAreaHeight} />
         </Layer>
         <BinAlgorithm
+          layerRef={algorithmLayerRef}
           getInventoryScrollOffset={() => -inventoryLayer.current?.y()!}
           staticInventory={staticInventory}
           binLayout={binLayout}
           data={staticInventory}
-          selectedAlgorithm={BinPackingAlgorithms.HYBRID_FIRST_FIT}
+          selectedAlgorithm={BinPackingAlgorithm.HYBRID_FIRST_FIT}
           binSize={binSize}
           ref={algorithm}
           dimensions={{
@@ -182,6 +253,18 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
             gameHeight={binAreaHeight}
             onYChanged={newY => interactiveLayer.current?.y(newY)}
           />
+          <ScrollBar
+            key="algo scroll bar"
+            startPosition="bottom"
+            ref={algorithmScrollbarRef}
+            scrollableHeight={algorithmScrollableHeight}
+            x={inventoryWidth + binAreaWidth - PADDING - SCROLLBAR_WIDTH}
+            y={algorithmStartY}
+            gameHeight={binAreaHeight}
+            onYChanged={newY => {
+              algorithmLayerRef.current?.y(binAreaHeight - newY);
+            }}
+          />
         </Layer>
       </Stage>
     </div>
@@ -189,6 +272,3 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
 };
 
 export default BinPackingGame;
-// function useGameState(): { setCurrentGame: any } {
-//   throw new Error('Function not implemented.');
-// }

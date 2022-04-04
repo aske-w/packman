@@ -53,7 +53,6 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(({ width, rects }, handle) 
   };
 
   const setBottomRef = useCallback((node: HTMLDivElement) => {
-    console.log('node: ', node);
     if (node) {
       node.scrollIntoView();
     }

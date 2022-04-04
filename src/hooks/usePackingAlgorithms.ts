@@ -1,19 +1,21 @@
 import { useCallback, useRef, useState } from 'react';
-import { Dimensions } from '../types/Dimensions.interface';
-import { NextFitDecreasingHeight } from '../algorithms/strip/NextFitDecreasingHeight';
-import { PackingAlgorithm, PackingAlgorithms } from '../types/PackingAlgorithm.interface';
-import { useStats } from './useStats';
-import { FirstFitDecreasingHeight } from '../algorithms/strip/FirstFitDecreasingHeight';
 import { BestFitDecreasingHeight } from '../algorithms/strip/BestFitDecreasingHeight';
+import { FirstFitDecreasingHeight } from '../algorithms/strip/FirstFitDecreasingHeight';
+import { NextFitDecreasingHeight } from '../algorithms/strip/NextFitDecreasingHeight';
 import { SizeAlternatingStack } from '../algorithms/strip/SizeAlternatingStack';
-import { DimensionsWithConfig } from '../types/DimensionsWithConfig.type';
 import { Sleators } from '../algorithms/strip/Sleators';
+import { SleatorsOptimized } from '../algorithms/strip/SleatorsOptimized';
+import { DimensionsWithConfig } from '../types/DimensionsWithConfig.type';
+import { PackingAlgorithmEnum } from '../types/enums/OfflineStripPackingAlgorithm.enum';
+import { PackingAlgorithm } from '../types/PackingAlgorithm.interface';
+import { useStats } from './useStats';
 
-const { BEST_FIT_DECREASING_HEIGHT, NEXT_FIT_DECREASING_HEIGHT, FIRST_FIT_DECREASING_HEIGHT, SIZE_ALTERNATING_STACK, SLEATORS } = PackingAlgorithms;
+const { BEST_FIT_DECREASING_HEIGHT, NEXT_FIT_DECREASING_HEIGHT, FIRST_FIT_DECREASING_HEIGHT, SIZE_ALTERNATING_STACK, SLEATORS, SLEATORS_OPTIMIZED } =
+  PackingAlgorithmEnum;
 
 export type AlgoStates = 'RUNNING' | 'STOPPED' | 'PAUSED';
 
-export const usePackingAlgorithms = (width: number, selectedAlgorithm: PackingAlgorithms) => {
+export const usePackingAlgorithms = (width: number, selectedAlgorithm: PackingAlgorithmEnum) => {
   const { addArea, getStats } = useStats(width);
   const [algoState, setAlgoState] = useState<AlgoStates>('STOPPED');
   const [isFinished, setIsFinished] = useState(true);
@@ -68,6 +70,9 @@ export const usePackingAlgorithms = (width: number, selectedAlgorithm: PackingAl
           break;
         case SLEATORS:
           algorithm.current = new Sleators<{}>(size).load(data);
+          break;
+        case SLEATORS_OPTIMIZED:
+          algorithm.current = new SleatorsOptimized<{}>(size).load(data);
           break;
 
         default:

@@ -1,14 +1,13 @@
-import { PackingAlgorithms } from '../types/PackingAlgorithm.interface';
 import create from 'zustand';
-
+import { Algorithm } from '../types/enums/AllAlgorithms.enum';
 export interface AlgorithmState {
-  algorithm: PackingAlgorithms;
-  setAlgorithm: (algorithm: PackingAlgorithms) => void;
+  readonly algorithm: Algorithm | null;
+  setAlgorithm: (algorithm: Algorithm | null) => void;
 }
 
-const useAlgorithmStore = create<AlgorithmState>(set => ({
-  algorithm: PackingAlgorithms.NEXT_FIT_DECREASING_HEIGHT,
-  setAlgorithm: (algorithm: PackingAlgorithms) => set(state => ({ ...state, algorithm })),
+const useAlgorithmStore = create<AlgorithmState>((set, get) => ({
+  algorithm: null,
+  setAlgorithm: (algorithm: Algorithm | null) => set(state => ({ ...state, algorithm })),
 }));
 
 export default useAlgorithmStore;
