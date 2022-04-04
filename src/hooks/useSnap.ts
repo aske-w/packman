@@ -35,21 +35,20 @@ export const useSnap = <T>({
    * Alt for windows, Option for mac
    */
   const altOrOptionPressed = useCallback((e: KeyboardEvent) => {
-    if (e.key === "Alt") {
+    if (e.key === 'Alt') {
       setDisabled(true);
     }
   }, []);
   const altOrOptionReleased = useCallback((e: KeyboardEvent) => {
-    if(e.key === "Alt")
-      setDisabled(false);
+    if (e.key === 'Alt') setDisabled(false);
   }, []);
 
   useEffect(() => {
-    document.addEventListener("keydown", altOrOptionPressed, false);
-    document.addEventListener("keyup", altOrOptionReleased, false);
+    document.addEventListener('keydown', altOrOptionPressed, false);
+    document.addEventListener('keyup', altOrOptionReleased, false);
     return () => {
-      document.removeEventListener("keydown", altOrOptionPressed, false);
-      document.removeEventListener("keyup", altOrOptionReleased, false);
+      document.removeEventListener('keydown', altOrOptionPressed, false);
+      document.removeEventListener('keyup', altOrOptionReleased, false);
     };
   }, []);
 
@@ -69,11 +68,10 @@ export const useSnap = <T>({
     let xDist: number | undefined;
     let yDist: number | undefined;
 
-    if(disabled) {
+    if (disabled) {
       // check for intersection between target and boundary of strip and inventy
-      if(overlapsAxis(targetX, targetX + targetWidth, stripWidth, stripWidth))
-        intersectsAny = true;
-      else 
+      if (overlapsAxis(targetX, targetX + targetWidth, stripWidth, stripWidth)) intersectsAny = true;
+      else
         destination.forEach(f => {
           const { name } = f;
           if (name == targetName) return;
