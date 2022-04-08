@@ -2,6 +2,7 @@ import { FormEvent, useRef, useState } from 'react';
 import RectInput from './RectInput';
 import React from 'react';
 import { TrashIcon } from '@heroicons/react/outline';
+import { CheckCircleIcon } from '@heroicons/react/solid';
 import { Dimensions } from '../types/Dimensions.interface';
 import Card from './Card';
 
@@ -67,9 +68,14 @@ const BoxInput: React.FC<BoxInputProps> = ({ dimensionsStorage, setDimensionsSto
           <form action="" onSubmit={handleFormSubmit} className="flex flex-row items-center w-full space-x-6">
             <RectInput value={width} onChange={e => setWidth(e.target.value)} reference={inputRef} disabled={disabled} sec="w"></RectInput>
             <RectInput value={height} onChange={e => setHeight(e.target.value)} disabled={disabled} sec="h"></RectInput>
-            <div className="w-12" />
-            {/* <TrashIcon className="text-gray-200 w-14" /> */}
-            <button type="submit" className="hidden" disabled={disabled}></button>
+
+            <button
+              className="text-white hover:text-green-200 disabled:text-gray-700"
+              type="submit"
+              disabled={disabled || width.length === 0 || height.length === 0}
+            >
+              <CheckCircleIcon className="w-6 h-6 " />
+            </button>
           </form>
           {rectangles.map((r, index) => (
             <div key={index} className="flex flex-row items-center w-full space-x-6">
