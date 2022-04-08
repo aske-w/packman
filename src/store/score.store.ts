@@ -2,10 +2,17 @@ import create from 'zustand';
 import { Algorithm } from '../types/enums/AllAlgorithms.enum';
 import { Levels } from '../types/enums/Levels.enum';
 import { devtools } from 'zustand/middleware';
-import { getLocalStorage, getYearMonthDay, LOCAL_STORAGE_PREFIX } from '../utils/utils';
+import { calculateScore, getLocalStorage, getYearMonthDay, LOCAL_STORAGE_PREFIX } from '../utils/utils';
 
 export interface Score {
   height: number;
+}
+
+interface ScorePayload {
+  level: Levels;
+  usedRectsArea: number;
+  usedGameArea: number;
+  averageTimeUsed: number | undefined;
 }
 
 interface PersistedScore extends Score {}
@@ -18,7 +25,7 @@ const SCORE_PREFIX = LOCAL_STORAGE_PREFIX + 'score';
 const LAST_PLAYED_PREFIX = LOCAL_STORAGE_PREFIX + 'last_played';
 
 export type ScoreState = Record<Player, Score> & {
-  setScore(score: Score, player: Player): void;
+  setScore(score: ScorePayload | number, player: Player): void;
   setRectanglesLeft(rectangles: number): void;
   getPersonalBest(algo: Algorithm, level: Levels): Score | undefined;
   setLastPlayed(): void;
@@ -76,7 +83,8 @@ const useScoreStore = create<ScoreState>((set, get) => ({
     set(state => ({
       ...state,
       [player]: {
-        ...payload,
+        height:
+          typeof payload === 'number' ? payload : calculateScore(payload.level, payload.usedRectsArea, payload.usedGameArea, payload.averageTimeUsed),
       },
     })),
   getPersonalBest: (algo: Algorithm, level: Levels) => get().personalBest?.[algo]?.[level],

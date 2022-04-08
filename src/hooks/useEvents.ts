@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import useEventStore from '../store/event.store';
 import useScoreStore from '../store/score.store';
 import { Events } from '../types/enums/Events.enum';

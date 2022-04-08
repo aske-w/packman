@@ -195,6 +195,7 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
         />
 
         <OnlineStripPackingAlgorithm
+          stripRects={stripRects}
           inventoryWidth={inventoryWidth}
           x={colWidth + inventoryWidth}
           layerRef={algorithmLayerRef}

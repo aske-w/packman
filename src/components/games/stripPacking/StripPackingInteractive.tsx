@@ -14,7 +14,6 @@ import { ColorRect } from '../../../types/ColorRect.interface';
 import { Coordinate } from '../../../types/Coordinate.interface';
 import { RectangleConfig } from '../../../types/RectangleConfig.interface';
 import { intersects } from '../../../utils/intersects';
-import { calculateScore } from '../../../utils/utils';
 interface StripPackingInteractiveProps {
   height: number;
   width: number;
@@ -36,20 +35,22 @@ const StripPackingInteractive = React.forwardRef<StripPackingInteractiveHandle, 
   ({ layerRef, width, height, scrollableHeight, stripRects, setStripRects, snap, stripRectChangedCallback, staticInvLength }, ref) => {
     const setScore = useScoreStore(useCallback(state => state.setScore, []));
 
-    const { level } = useLevelStore();
-    const { user, algorithm: algoScore, setUsedGameAreaUser, setUsedRectsAreaUser, averageTimeUsed, usedRectsAreaUser } = useScoreStore();
+    const level = useLevelStore(useCallback(state => state.level, []));
+    const { setUsedGameAreaUser, setUsedRectsAreaUser, averageTimeUsed, usedRectsAreaUser } = useScoreStore();
     const permission = useLevelStore(useCallback(state => state.getPermission(), []));
     const { dispatchEventOnPlace } = useEvents();
 
     useEffect(() => {
       const _height = stripRects.reduce((maxY, r) => Math.max(maxY, Math.round(Math.abs(scrollableHeight - r.y) - height)), 0);
+      console.log({ _height });
+
       setUsedGameAreaUser(_height * width);
       if (_height === 0) {
-        setScore({ height: 0 }, 'algorithm');
+        setScore(0, 'user');
         return;
       }
-      const score = calculateScore(level, usedRectsAreaUser!, _height * width, averageTimeUsed);
-      setScore({ height: Math.round(score) }, 'user');
+
+      setScore({ level, usedRectsArea: usedRectsAreaUser!, usedGameArea: _height * width, averageTimeUsed }, 'user');
     }, [stripRects, height]);
 
     useImperativeHandle(ref, () => ({

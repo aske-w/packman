@@ -32,14 +32,25 @@ export interface OnlineStripPackingInteractiveHandle {
 }
 
 const OnlineStripPackingInteractive = React.forwardRef<OnlineStripPackingInteractiveHandle, OnlineStripPackingInteractiveProps>(
-  ({ layerRef, height, scrollableHeight, stripRects, setStripRects, snap, stripRectChangedCallback, staticInvLength }, ref) => {
+  ({ layerRef, height, scrollableHeight, stripRects, setStripRects, snap, width, stripRectChangedCallback, staticInvLength }, ref) => {
     const setScore = useScoreStore(useCallback(state => state.setScore, []));
+    const level = useLevelStore(useCallback(state => state.level, []));
+    const { setUsedGameAreaUser, setUsedRectsAreaUser, averageTimeUsed, usedRectsAreaUser } = useScoreStore();
     const permission = useLevelStore(useCallback(state => state.getPermission(), []));
     const { dispatchEventOnPlace } = useEvents();
 
     useEffect(() => {
       const _height = stripRects.reduce((maxY, r) => Math.max(maxY, Math.round(Math.abs(scrollableHeight - r.y) - height)), 0);
-      setScore({ height: _height }, 'user');
+      setUsedGameAreaUser(_height * width);
+
+      if (_height === 0) {
+        setScore(0, 'user');
+        return;
+      }
+
+      console.log({ usedRectsAreaUser });
+
+      setScore({ level, usedRectsArea: usedRectsAreaUser!, usedGameArea: _height * width, averageTimeUsed }, 'user');
     }, [stripRects, height]);
 
     useImperativeHandle(ref, () => ({
@@ -50,6 +61,7 @@ const OnlineStripPackingInteractive = React.forwardRef<OnlineStripPackingInterac
           y,
         };
 
+        setUsedRectsAreaUser(stripRects.reduce((prev, curr) => curr.height * curr.width + prev, newRect.height * newRect.width));
         setStripRects(old => [...old, newRect]);
         dispatchEventOnPlace();
       },
