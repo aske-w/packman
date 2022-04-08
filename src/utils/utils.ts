@@ -19,5 +19,5 @@ export const calculateScore = (level: Levels, usedRectsArea: number, usedGameAre
   const n = LevelList.indexOf(level);
   const levelModifier = 1 - decrementInterval * (levelsCount - n - 1);
   const areaRatio = usedRectsArea / usedGameArea / 1.2;
-  return areaRatio * levelModifier * timeMultiplier * 1000;
+  return Math.round(areaRatio * levelModifier * timeMultiplier * 1000);
 };

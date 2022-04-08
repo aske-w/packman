@@ -15,7 +15,6 @@ import { ColorRect } from '../../../types/ColorRect.interface';
 import { PackingAlgorithmEnum } from '../../../types/enums/OfflineStripPackingAlgorithm.enum';
 import { PackingAlgorithm } from '../../../types/PackingAlgorithm.interface';
 import { RectangleConfig } from '../../../types/RectangleConfig.interface';
-import { calculateScore } from '../../../utils/utils';
 
 const { BEST_FIT_DECREASING_HEIGHT, NEXT_FIT_DECREASING_HEIGHT, FIRST_FIT_DECREASING_HEIGHT, SIZE_ALTERNATING_STACK, SLEATORS } =
   PackingAlgorithmEnum;
@@ -46,19 +45,19 @@ const StripPackingAlgorithm = React.forwardRef<StripPackingAlgorithmHandle, Stri
 
     const [stripRects, setStripRects] = useState<ColorRect<RectangleConfig & PrevPos>[]>([]);
     const [order, setOrder] = useState(0);
-    const { level } = useLevelStore();
+    const level = useLevelStore(useCallback(state => state.level, []));
     const setScore = useScoreStore(useCallback(state => state.setScore, []));
-    const { averageTimeUsed, usedGameAreaAlgo, usedRectsAreaAlgo, setUsedGameAreaAlgo, setUsedRectsAreaAlgo } = useScoreStore();
+    const { averageTimeUsed, usedRectsAreaAlgo, setUsedGameAreaAlgo, setUsedRectsAreaAlgo } = useScoreStore();
 
     useEffect(() => {
       const _height = stripRects.reduce((maxY, r) => Math.max(maxY, Math.round(height - r.y)), 0);
       setUsedGameAreaAlgo(_height * width);
       if (_height === 0) {
-        setScore({ height: 0 }, 'algorithm');
+        setScore(0, 'algorithm');
         return;
       }
-      const score = calculateScore(level, usedRectsAreaAlgo!, _height * width, averageTimeUsed);
-      setScore({ height: Math.round(score) }, 'algorithm');
+
+      setScore({ level, usedRectsArea: usedRectsAreaAlgo!, usedGameArea: _height * width, averageTimeUsed }, 'algorithm');
     }, [stripRects, height]);
 
     const getAlgo = (algorithm: PackingAlgorithmEnum) => {
@@ -103,7 +102,7 @@ const StripPackingAlgorithm = React.forwardRef<StripPackingAlgorithmHandle, Stri
       const algo = getAlgo(algorithm);
       setAlgo(algo);
       setStripRects([]);
-      setScore({ height: 0 }, 'algorithm');
+      setScore(0, 'algorithm');
     }, [inventory, algorithm]);
 
     const reset = useCallback(() => {

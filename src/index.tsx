@@ -6,7 +6,6 @@ import App from './App';
 import './index.css';
 import Achievement from './pages/achievement/Achievement';
 import BinPackingGame from './pages/games/BinPackingGame';
-import OnlineBinPackingGame from './pages/games/OnlineBinPackingGame';
 import OnlineStripPackingGame from './pages/games/OnlineStripPackingGame';
 import StripPackingGame from './pages/games/StripPackingGame';
 import Home from './pages/Home';

@@ -20,7 +20,7 @@ import GameEndModalItem from './Item';
 interface GameEndModalProps {}
 
 const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
-  const [title, setTitle] = useState<GameEndModalTitle | undefined>();
+  const [title, setTitle] = useState<GameEndModalTitle | ''>('');
   const [titleTextColor, setTitleTextColor] = useState<string | undefined>();
   const { event, setEvent } = useEventStore(useCallback(({ event, setEvent }) => ({ event, setEvent }), []));
   const { blur, setBlur } = useGameEndStore();
@@ -52,7 +52,7 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
 
   const reset = (event = Events.IDLE) => {
     setBlur(false);
-    setTitle(undefined);
+    setTitle('');
     setEvent(event);
   };
 
@@ -60,9 +60,9 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
 
   return (
     <div>
-      <Transition appear show={title !== undefined} as={Fragment}>
+      <Transition appear show={!!title.length} as={Fragment}>
         <Dialog as="div" className="fixed inset-0 z-10 overflow-y-auto" onClose={() => {}}>
-          <Confetti recycle={false} run={title !== undefined && title == GameEndModalTitle.FINISHED} />
+          <Confetti recycle={false} run={title === GameEndModalTitle.FINISHED} />
           <Dialog.Overlay className="fixed inset-0 bg-black opacity-30" />
           <div className="min-h-screen px-4 text-center">
             <Transition.Child
@@ -111,7 +111,7 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
                         <span>First game of the day</span>
                       </li>
                     ) : undefined}
-                    {userScore < algoScore ? (
+                    {/* {userScore < algoScore ? (
                       <li className="flex flex-row justify-start px-2 pt-2 pb-1 transition-all rounded bg-zinc-500 bg hover:scale-105">
                         <CheckIcon className="h-4 pr-1 text-green-500" />
                         <span>Beat the algorithm</span>
@@ -121,7 +121,7 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
                         <XIcon className="h-4 pr-1 text-red-500" />
                         <span>Beat by the algorithm</span>
                       </li>
-                    )}
+                    )} */}
                     {userScore > (getPersonalBest(algorithm, level)?.height ?? userScore + 1) ? (
                       <li className="flex flex-row justify-start px-2 pt-2 pb-1 transition-all rounded bg-zinc-500 bg hover:scale-105">
                         <CheckIcon className="h-4 pr-1 text-green-500" />

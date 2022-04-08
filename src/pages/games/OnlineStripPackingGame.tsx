@@ -24,7 +24,6 @@ import { useOnlineStripPackingInventory } from '../../hooks/useOnlineStripPackin
 import { useRestartStripPacking } from '../../hooks/useRestartStripPacking';
 import { useSnap } from '../../hooks/useSnap';
 import { useWindowSize } from '../../hooks/useWindowSize';
-import useGameEndStore from '../../store/gameEnd.store';
 import useScoreStore from '../../store/score.store';
 import { ColorRect } from '../../types/ColorRect.interface';
 import { Gamemodes } from '../../types/enums/Gamemodes.enum';
@@ -199,6 +198,7 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
         />
 
         <OnlineStripPackingAlgorithm
+          stripRects={stripRects}
           inventoryWidth={inventoryWidth}
           x={colWidth + inventoryWidth}
           layerRef={algorithmLayerRef}

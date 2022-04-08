@@ -3,9 +3,7 @@ import { KonvaNodeEvents, Layer, Rect } from 'react-konva';
 import { Rect as KonvaRect } from 'konva/lib/shapes/Rect';
 import { Layer as KonvaLayer } from 'konva/lib/Layer';
 import { NextFitShelf } from '../../../algorithms/strip/online/NextFitShelf';
-
 import { ColorRect } from '../../../types/ColorRect.interface';
-import { RectangleExPos } from '../../../types/RectangleExPos.type';
 import { OnlineStripPackingAlgorithmEnum } from '../../../types/enums/OnlineStripPackingAlgorithm.enum';
 import { OnlineStripPacking } from '../../../types/OnlineStripPackingAlgorithm.interface';
 import useScoreStore from '../../../store/score.store';
@@ -14,6 +12,7 @@ import { IRect } from 'konva/lib/types';
 import { RectangleConfig } from '../../../types/RectangleConfig.interface';
 import Konva from 'konva';
 import { RectConfig } from 'konva/lib/shapes/Rect';
+import useLevelStore from '../../../store/level.store';
 
 interface OnlineStripPackingAlgorithmProps {
   gameHeight: number;
@@ -23,6 +22,7 @@ interface OnlineStripPackingAlgorithmProps {
   scrollableHeight: number;
   x: number;
   inventoryWidth: number;
+  stripRects: ColorRect<RectangleConfig>[];
   r: number;
 }
 type PrevPos = { prevX: number; prevY: number };
@@ -34,10 +34,12 @@ export interface OnlineStripPackingAlgorithmHandle {
 }
 
 const OnlineStripPackingAlgorithm = React.forwardRef<OnlineStripPackingAlgorithmHandle, OnlineStripPackingAlgorithmProps>(
-  ({ gameHeight, layerRef, width, scrollableHeight, algorithm: selectedAlgorithm, x, inventoryWidth }, ref) => {
+  ({ gameHeight, stripRects, layerRef, width, scrollableHeight, algorithm: selectedAlgorithm, x, inventoryWidth }, ref) => {
     const [algorithm, setAlgorithm] = useState<OnlineStripPacking>(new NextFitShelf({ height: gameHeight, width }, 0.8));
     const [items, setItems] = useState<ColorRect<RectangleConfig & PrevPos>[]>([]);
     const scoreHeight = useRef(0);
+    const level = useLevelStore(useCallback(state => state.level, []));
+    const { averageTimeUsed, usedRectsAreaAlgo, setUsedGameAreaAlgo, setUsedRectsAreaAlgo } = useScoreStore();
     const setScore = useScoreStore(useCallback(state => state.setScore, []));
 
     const reset = ({ r }: { r: number }) => {
@@ -56,18 +58,31 @@ const OnlineStripPackingAlgorithm = React.forwardRef<OnlineStripPackingAlgorithm
       }
     };
 
+    useEffect(() => {
+      setUsedGameAreaAlgo(scoreHeight.current * width);
+
+      if (scoreHeight.current === 0) {
+        setScore(0, 'algorithm');
+        return;
+      }
+
+      setScore({ level, usedRectsArea: usedRectsAreaAlgo!, usedGameArea: scoreHeight.current * width, averageTimeUsed }, 'algorithm');
+    }, [stripRects, scoreHeight.current]);
+
     useImperativeHandle(ref, () => ({
       place(r) {
         return new Promise(res => {
           const placement = algorithm.place(r) as ColorRect;
           const newItem = { ...placement, prevX: r.x - inventoryWidth, prevY: r.y - layerRef.current!.y() };
           setItems(old => [...old, newItem]);
+          setUsedRectsAreaAlgo(stripRects.reduce((prev, curr) => curr.height * curr.width + prev, newItem.height * newItem.width));
 
           const y = Math.round(placement.y * -1);
           if (y > scoreHeight.current) {
             scoreHeight.current = y;
-            setScore({ height: y }, 'algorithm');
+            setUsedGameAreaAlgo(y * width);
           }
+
           setTimeout(res, ENTER_ANIMATION_DURATION_SECONDS * 1000);
         });
       },
