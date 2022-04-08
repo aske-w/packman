@@ -51,18 +51,26 @@ export const defaultScrollHandler: ScrollHandler =
       const dy = deltaY;
       const oldY = layer.y();
 
+      // console.log({dy});
+
       // TODO fix
-      const minY = startY || -(scrollableHeight - visibleHeight);
-      const maxY = startY ? startY + (scrollableHeight - visibleHeight) : 0;
+      // const minY = startY || -(scrollableHeight - visibleHeight);
+      // const maxY = startY ? startY + (scrollableHeight - visibleHeight) : 0;
+      const minY = -(scrollableHeight - visibleHeight) + startY;
+      const maxY = 0 + startY;
       const availableHeight = visibleHeight - PADDING * 2 - SCROLLBAR_HEIGHT;
 
       const y = Math.max(minY, Math.min(oldY - dy, maxY));
 
+      // console.log({y}, {minY}, {oldY}, {dy}, {maxY});
+
       layer.y(y);
 
-      const vy = (y / (-scrollableHeight + visibleHeight)) * availableHeight + PADDING;
+      const vy = ((y - startY) / (-scrollableHeight + visibleHeight)) * availableHeight + PADDING;
+      
+      // console.log({y}, {scrollableHeight}, {visibleHeight}, {availableHeight}, {PADDING}, {vy});
 
-      scrollBarRef.current?.y(vy);
+      scrollBarRef.current?.y(vy + startY);
 
       return;
     }
