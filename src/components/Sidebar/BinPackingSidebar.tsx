@@ -16,7 +16,7 @@ import SideBarItem from './SidebarItem';
 import SideBarSection from './SideBarSection';
 import classNames from 'classnames';
 import LinkIcon from '@heroicons/react/solid/LinkIcon';
-import TeachAlgoModal from '../playground/strip/TeachAlgoModal';
+import TeachAlgoModal from '../playground/TeachAlgoModal';
 import { AcademicCapIcon } from '@heroicons/react/solid';
 
 interface BinPackingSidebarProps<T = BinPackingAlgorithm> {

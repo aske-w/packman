@@ -5,7 +5,7 @@ import { Stage as KonvaStage } from 'konva/lib/Stage';
 import { IRect } from 'konva/lib/types';
 import React, { useEffect, useRef, useState } from 'react';
 import { KonvaNodeEvents, Label, Layer, Rect, Stage, Tag, Text } from 'react-konva';
-import { ColorRect } from '../../types/ColorRect.interface';
+import { ColorRect } from '../../../types/ColorRect.interface';
 
 interface BinProps {
   width: number;

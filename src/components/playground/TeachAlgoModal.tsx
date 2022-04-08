@@ -1,17 +1,18 @@
 import { Dialog, Transition } from '@headlessui/react';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 
-import { Algorithm } from '../../../types/enums/AllAlgorithms.enum';
-import { BinPackingAlgorithm } from '../../../types/enums/BinPackingAlgorithm.enum';
-import { PackingAlgorithmEnum } from '../../../types/enums/OfflineStripPackingAlgorithm.enum';
-import FiniteFirstFitArticle from '../bin/algorithm-articles/FiniteFirstFitArticle';
-import FiniteNextFitArticle from '../bin/algorithm-articles/FiniteNextFitArticle';
-import BFDHArticle from './algorithm-articles/BFDHArticle';
-import FFDHArticle from './algorithm-articles/FFDHArticle';
-import NFDHArticle from './algorithm-articles/NFDHArticle';
-import SASArticle from './algorithm-articles/SASArticle';
-import SleatorsArticle from './algorithm-articles/SleatorsArticle';
-import SleatorsOptimizedArticle from './algorithm-articles/SleatorsOptimizedArticle';
+import { Algorithm } from '../../types/enums/AllAlgorithms.enum';
+import { BinPackingAlgorithm } from '../../types/enums/BinPackingAlgorithm.enum';
+import { PackingAlgorithmEnum } from '../../types/enums/OfflineStripPackingAlgorithm.enum';
+import FiniteFirstFitArticle from './bin/algorithm-articles/FiniteFirstFitArticle';
+import FiniteNextFitArticle from './bin/algorithm-articles/FiniteNextFitArticle';
+import HybridFirstFitArticle from './bin/algorithm-articles/HybridFirstFitArticle';
+import BFDHArticle from './strip/algorithm-articles/BFDHArticle';
+import FFDHArticle from './strip/algorithm-articles/FFDHArticle';
+import NFDHArticle from './strip/algorithm-articles/NFDHArticle';
+import SASArticle from './strip/algorithm-articles/SASArticle';
+import SleatorsArticle from './strip/algorithm-articles/SleatorsArticle';
+import SleatorsOptimizedArticle from './strip/algorithm-articles/SleatorsOptimizedArticle';
 
 interface TeachAlgoModalProps {
   visible: boolean;
@@ -38,6 +39,8 @@ const TeachAlgoModal: React.FC<TeachAlgoModalProps> = ({ algorithm, onClose, vis
         return <FiniteNextFitArticle />;
       case BinPackingAlgorithm.FINITE_FIRST_FIT:
         return <FiniteFirstFitArticle />;
+      case BinPackingAlgorithm.HYBRID_FIRST_FIT:
+        return <HybridFirstFitArticle />;
       default:
         return null;
     }
