@@ -45,8 +45,8 @@ const FiniteNextFitArticle: React.FC<FiniteNextFitArticleProps> = ({}) => {
       <h4>Execution</h4>
       <p>With the sorted data we now take the tallest item from the input. This is placed in the bottom left of the first bin.</p>
       <p>
-        The next item is then placed to the right of it. This continues until no more items fit in the bin. Then a new bin is opened and the item is
-        placed to the left in that.
+        The next item is then placed to the right of it. When there is no more space on the same level a new one is created above. If there is not
+        enough vertical space, then a new bin is opened and the item is placed to the left in that.
       </p>
       <p>This is repeated until the entire input is packed</p>
       <div className="flex flex-col items-center">

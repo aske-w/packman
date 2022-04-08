@@ -4,6 +4,7 @@ import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { Algorithm } from '../../../types/enums/AllAlgorithms.enum';
 import { BinPackingAlgorithm } from '../../../types/enums/BinPackingAlgorithm.enum';
 import { PackingAlgorithmEnum } from '../../../types/enums/OfflineStripPackingAlgorithm.enum';
+import FiniteFirstFitArticle from '../bin/algorithm-articles/FiniteFirstFitArticle';
 import FiniteNextFitArticle from '../bin/algorithm-articles/FiniteNextFitArticle';
 import BFDHArticle from './algorithm-articles/BFDHArticle';
 import FFDHArticle from './algorithm-articles/FFDHArticle';
@@ -35,6 +36,8 @@ const TeachAlgoModal: React.FC<TeachAlgoModalProps> = ({ algorithm, onClose, vis
         return <SASArticle />;
       case BinPackingAlgorithm.FINITE_NEXT_FIT:
         return <FiniteNextFitArticle />;
+      case BinPackingAlgorithm.FINITE_FIRST_FIT:
+        return <FiniteFirstFitArticle />;
       default:
         return null;
     }
