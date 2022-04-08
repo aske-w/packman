@@ -1,7 +1,7 @@
 import { Layer as KonvaLayer } from 'konva/lib/Layer';
 import { Rect as KonvaRect } from 'konva/lib/shapes/Rect';
 import { IRect, Vector2d } from 'konva/lib/types';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Layer, Rect, Stage } from 'react-konva';
 import ScrollBar from '../../components/canvas/ScrollBar';
 import BinAlgorithm, { BinAlgorithmHandle } from '../../components/games/bin-packing/BinAlgorithm';
@@ -14,7 +14,6 @@ import { BinPackingAlgorithm } from '../../types/enums/BinPackingAlgorithm.enum'
 import { ColorRect } from '../../types/ColorRect.interface';
 import { generateInventory } from '../../utils/generateData';
 import { Gamemodes } from '../../types/enums/Gamemodes.enum';
-import Konva from 'konva';
 import { Shape, ShapeConfig } from 'konva/lib/Shape';
 import { Stage as KonvaStage } from 'konva/lib/Stage';
 import { Dimensions } from '../../types/Dimensions.interface';
@@ -119,6 +118,7 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
     const offset = interactiveLayer.current!.y();
     const dropPos = evt.getAbsolutePosition();
     const interactiveScrollOffset = interactiveLayer.current?.y()!;
+    const inventoryScrollOffset = inventoryLayer.current?.y()!;
     // take the offset into account
     dropPos.y -= offset;
 
@@ -126,11 +126,11 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
 
     const rect = renderInventory.find(r => r.name === name);
 
-    if (!rect) return false;
+    if (!rect || bin === -1) return false;
 
     const rectToPlace = {
       x: -1 * (inventoryWidth - evtRect.x),
-      y: -interactiveScrollOffset + evtRect.y,
+      y: -interactiveScrollOffset + evtRect.y + inventoryScrollOffset,
       width: rect.width,
       height: rect.height,
     };
@@ -146,9 +146,10 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
       return intersects(attrs, rectToPlace);
     });
 
-    console.log({ intersectAny });
-
-    if (intersectAny || rect.x < 0 || rect.x > inventoryWidth || rect.y < 0 || rect.y > interactiveScrollableHeight) return false;
+    // Collosion dection
+    if (intersectAny || rectToPlace.x < 0 || rectToPlace.x > inventoryWidth || rectToPlace.y < 0 || rectToPlace.y > interactiveScrollableHeight) {
+      return false;
+    }
 
     const { x, y } = dropPos;
     setBins(old => ({
