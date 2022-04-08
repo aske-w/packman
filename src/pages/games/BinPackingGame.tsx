@@ -14,13 +14,15 @@ import { BinPackingAlgorithm } from '../../types/enums/BinPackingAlgorithm.enum'
 import { ColorRect } from '../../types/ColorRect.interface';
 import { generateInventory } from '../../utils/generateData';
 import { Gamemodes } from '../../types/enums/Gamemodes.enum';
-import useGameStore from '../../store/game.store';
 import Konva from 'konva';
 import { Shape, ShapeConfig } from 'konva/lib/Shape';
 import { Stage as KonvaStage } from 'konva/lib/Stage';
 import { Dimensions } from '../../types/Dimensions.interface';
 import { compressBinPackingInv } from '../../utils/binPacking';
 import { BinPackingRect } from '../../types/BinPackingRect.interface';
+import BinPackingNav from '../../components/Nav/BinPackingNav';
+import { useOnGameStart } from '../../hooks/useOnGameStart';
+import { useRestartStripPacking } from '../../hooks/useRestartStripPacking';
 
 interface BinPackingGameProps {}
 const NUM_ITEMS = 10;
@@ -49,13 +51,11 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
   const algorithmScrollableHeight = binAreaHeight * 2;
 
   // algorithm handle
-  const algorithm = useRef<BinAlgorithmHandle>(null);
+  const algorithmHandle = useRef<BinAlgorithmHandle>(null);
   const [staticInventory, setStaticInventory] = useState<BinPackingRect[]>(generateInventory(inventoryWidth, NUM_ITEMS));
-  const [inventoryChanged, setInventoryChanged] = useState(true);
-  const { setCurrentGame } = useGameStore();
   const algorithmStartY = binAreaHeight + PADDING;
 
-  useEffect(() => setCurrentGame(Gamemodes.BIN_PACKING), []);
+  const { algorithm } = useOnGameStart<BinPackingAlgorithm>(Gamemodes.BIN_PACKING, BinPackingAlgorithm.HYBRID_FIRST_FIT);
 
   /**
    * This is the inventory, used for rendering the draggable rects. Whenever an
@@ -64,6 +64,21 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
   const [renderInventory, setRenderInventory] = useState<ColorRect[]>([]);
   const [bins, setBins] = useState<Record<number, ColorRect[]>>({});
   const [binLayout, setBinLayout] = useState<IRect[]>([]);
+
+  /**
+   * Reset when algorithm or level changes
+   */
+  const resetFuncs = [
+    () => {
+      const newInv = generateInventory<BinPackingRect>(inventoryWidth, NUM_ITEMS);
+      setRenderInventory([...newInv]);
+      setStaticInventory([...newInv]);
+      setBins([]);
+    },
+    algorithmHandle.current?.reset,
+  ];
+
+  useRestartStripPacking(resetFuncs, algorithm, {});
 
   const findBin = (dropPos: Vector2d, rect: Dimensions & Vector2d) => {
     return binLayout.findIndex(({ height: binHeight, width: binWidth, x: binX, y: binY }) => {
@@ -115,7 +130,7 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
     }));
     // setRenderInventory(old => old.filter(r => r.name !== name));
 
-    const res = algorithm.current?.next();
+    const res = algorithmHandle.current?.next();
     if (!res) return false;
     const [placedRect, order, recIdx] = res;
 
@@ -129,17 +144,9 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
       staticInventory,
       setStaticInventory: rects => setStaticInventory(rects),
       setRenderInventory: rects => setRenderInventory(rects),
-      onCompress: idx => algorithm.current?.place(placedRect, idx),
+      onCompress: idx => algorithmHandle.current?.place(placedRect, idx),
     });
   };
-
-  useEffect(() => {
-    if (inventoryChanged) {
-      setRenderInventory([...staticInventory]);
-      setInventoryChanged(false);
-      // setRectanglesLeft(0);
-    }
-  }, [staticInventory, inventoryChanged]);
 
   const handleWheel = useKonvaWheelHandler({
     handlers: [
@@ -186,6 +193,7 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
 
   return (
     <div className="w-full">
+      <BinPackingNav />
       <Stage onWheel={handleWheel} width={wWidth} height={gameHeight}>
         <Layer>
           {/* Inventory BG */}
@@ -218,7 +226,7 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
           data={staticInventory}
           selectedAlgorithm={BinPackingAlgorithm.HYBRID_FIRST_FIT}
           binSize={binSize}
-          ref={algorithm}
+          ref={algorithmHandle}
           dimensions={{
             width: binAreaWidth,
             height: binAreaHeight,

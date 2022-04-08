@@ -1,22 +1,19 @@
-import { QuestionMarkCircleIcon } from '@heroicons/react/solid';
-import React, { useCallback, useEffect } from 'react';
-import ReactTooltip from 'react-tooltip';
+import { QuestionMarkCircleIcon } from '@heroicons/react/outline';
+import React, { useCallback } from 'react';
 import { NAV_HEIGHT } from '../../config/canvasConfig';
 import useAlgorithmStore from '../../store/algorithm.store';
 import useHelpStore from '../../store/help.store';
 import useScoreStore from '../../store/score.store';
-import { ALL_ONLINE_STRIP_PACKING_ALGORITHMS, OnlineStripPackingAlgorithmEnum } from '../../types/enums/OnlineStripPackingAlgorithm.enum';
+import { ALL_BIN_PACKING_ALGORITHMS } from '../../types/enums/BinPackingAlgorithm.enum';
+import { OnlineStripPackingAlgorithmEnum, ALL_ONLINE_STRIP_PACKING_ALGORITHMS } from '../../types/enums/OnlineStripPackingAlgorithm.enum';
 import Score from '../Score';
 import LevelSelect from '../select/LevelSelect';
 import Select from '../select/Select';
 import DefaultNav from './DefaultNav';
 
-interface OnlineStripPackingNavProps {
-  r: number;
-  setR: (r: number) => void;
-}
+interface BinPackingNavProps {}
 
-const OnlineStripPackingNav: React.FC<OnlineStripPackingNavProps> = ({ r, setR }) => {
+const BinPackingNav: React.FC<BinPackingNavProps> = ({}) => {
   const { setIntroOpen } = useHelpStore();
   const { setAlgorithm, algorithm } = useAlgorithmStore(
     useCallback(({ setAlgorithm, algorithm }) => ({ setAlgorithm, algorithm: algorithm || OnlineStripPackingAlgorithmEnum.NEXT_FIT_SHELF }), [])
@@ -31,10 +28,6 @@ const OnlineStripPackingNav: React.FC<OnlineStripPackingNavProps> = ({ r, setR }
       []
     )
   );
-
-  useEffect(() => {
-    ReactTooltip.rebuild();
-  });
 
   return (
     <DefaultNav height={NAV_HEIGHT}>
@@ -51,20 +44,9 @@ const OnlineStripPackingNav: React.FC<OnlineStripPackingNavProps> = ({ r, setR }
 
         <Select
           className="text-base font-thin w-72 algorithm-select"
-          options={ALL_ONLINE_STRIP_PACKING_ALGORITHMS}
+          options={ALL_BIN_PACKING_ALGORITHMS}
           value={algorithm}
           onChange={setAlgorithm}
-        />
-        <input
-          defaultValue={r}
-          data-tip="R: A value between 0 and 1. Determines the threshold for which items should go on the same shelf"
-          className="w-20 px-2 py-1 font-bold text-white bg-gray-700 rounded focus:outline-none"
-          onBlur={({ target: { value } }) => {
-            const valueAsNumber = Number.parseFloat(value);
-            if (Number.isFinite(valueAsNumber) && !Number.isNaN(valueAsNumber) && valueAsNumber > 0 && valueAsNumber < 1) {
-              setR(valueAsNumber);
-            }
-          }}
         />
         <LevelSelect />
         <button onClick={() => setIntroOpen(true)}>
@@ -75,4 +57,4 @@ const OnlineStripPackingNav: React.FC<OnlineStripPackingNavProps> = ({ r, setR }
   );
 };
 
-export default OnlineStripPackingNav;
+export default BinPackingNav;

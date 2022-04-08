@@ -44,6 +44,7 @@ export const compressBinPackingInv = ({
   const compressedInv = compressInventory(inv, inventoryWidth, (rect, i) => rect.name === placedRectName && (newRectIdx = i));
 
   const interactiveInventory = compressedInv.filter(r => !r.removed);
+
   setRenderInventory(interactiveInventory);
   //   setRectanglesLeft(renderInventory.length - 1);
 

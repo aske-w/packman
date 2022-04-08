@@ -28,6 +28,7 @@ interface BinAlgorithmProps {
 export interface BinAlgorithmHandle {
   next(): [ColorRect<BinPackingAlgoRect>, number, number] | undefined;
   place: (inventoryRect: ColorRect<BinPackingAlgoRect>, idx: number) => void;
+  reset(): void;
 }
 
 const PADDING = 30;
@@ -38,13 +39,16 @@ const BinAlgorithm = forwardRef<BinAlgorithmHandle, BinAlgorithmProps>(
     const [order, setOrder] = useState(0);
 
     useImperativeHandle(ref, () => ({
+      reset: () => {
+        setOrder(0);
+        setPlaced([]);
+      },
       next: () => {
         if (algorithm.current?.isFinished()) return;
         const rect = algorithm.current?.place();
         if (!rect) return;
 
         const idx = inventory.findIndex(r => r.name === rect.name)!;
-        // Todo fix this
 
         return [rect, order, idx];
       },
@@ -84,9 +88,16 @@ const BinAlgorithm = forwardRef<BinAlgorithmHandle, BinAlgorithmProps>(
           break;
       }
     };
+
+    const [prevInventory, setPrevInventory] = useState('');
+
     useEffect(() => {
+      const newInv = JSON.stringify(inventory.map(({ name }) => name).sort());
+      // only reset if the names (ids) changes
+      if (prevInventory === newInv) return;
+      setPrevInventory(newInv);
       start([...data]);
-    }, [selectedAlgorithm]);
+    }, [selectedAlgorithm, data]);
 
     return (
       <Layer y={offset.y} x={offset.x} ref={layerRef}>
