@@ -32,7 +32,7 @@ import { intersects } from '../../utils/intersects';
 import { sleep } from '../../utils/utils';
 
 interface StripPackingGameProps {}
-const NUM_ITEMS = 5;
+const NUM_ITEMS = 50;
 const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   const { width: wWidth, height: wHeight } = useWindowSize();
   const stripWidth = wWidth * 0.2;

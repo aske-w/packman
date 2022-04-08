@@ -23,6 +23,9 @@ import { BinPackingRect } from '../../types/BinPackingRect.interface';
 import BinPackingNav from '../../components/Nav/BinPackingNav';
 import { useOnGameStart } from '../../hooks/useOnGameStart';
 import { useRestartStripPacking } from '../../hooks/useRestartStripPacking';
+import { useSnap } from '../../hooks/useSnap';
+import { Group as KonvaGroup } from 'konva/lib/Group';
+import { intersects } from '../../utils/intersects';
 
 interface BinPackingGameProps {}
 const NUM_ITEMS = 10;
@@ -80,6 +83,18 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
 
   useRestartStripPacking(resetFuncs, algorithm, {});
 
+  // Snapping
+  const { snapInventory, snapInteractive } = useSnap({
+    inventory: staticInventory,
+    inventoryWidth,
+    stripWidth: inventoryWidth,
+    gameHeight,
+    inventoryLayer,
+    interactiveLayerRef: interactiveLayer,
+    inventoryFilterFunc: (r, target) => r.name == target.name(),
+    scrollableHeight: interactiveScrollableHeight,
+  });
+
   const findBin = (dropPos: Vector2d, rect: Dimensions & Vector2d) => {
     return binLayout.findIndex(({ height: binHeight, width: binWidth, x: binX, y: binY }) => {
       // Check if the drop position is within the bin
@@ -99,29 +114,41 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
     });
   };
 
-  const handleDraggedToBin = (evt: Shape<ShapeConfig> | KonvaStage, startPos: Vector2d) => {
+  const handleDraggedToBin = (evt: Shape<ShapeConfig> | KonvaStage, startPos: Vector2d): boolean => {
     const { name, ...evtRect } = evt.getAttrs() as Dimensions & Vector2d & { name: string };
     const offset = interactiveLayer.current!.y();
     const dropPos = evt.getAbsolutePosition();
+    const interactiveScrollOffset = interactiveLayer.current?.y()!;
     // take the offset into account
     dropPos.y -= offset;
 
     const bin = findBin({ x: dropPos.x - inventoryWidth, y: dropPos.y }, evtRect);
 
-    // Animate it back
-    if (bin === -1) {
-      return new Konva.Tween({
-        x: startPos.x,
-        y: startPos.y,
-        node: evt,
-        duration: 0.4,
-        easing: Konva.Easings.EaseOut,
-      }).play();
-    }
-
     const rect = renderInventory.find(r => r.name === name);
 
-    if (!rect) return;
+    if (!rect) return false;
+
+    const rectToPlace = {
+      x: -1 * (inventoryWidth - evtRect.x),
+      y: -interactiveScrollOffset + evtRect.y,
+      width: rect.width,
+      height: rect.height,
+    };
+
+    const interactiveRects = interactiveLayer.current?.children;
+    const intersectAny = interactiveRects?.some(ir => {
+      const attrs = ir.getAttrs();
+
+      if (attrs.id && (attrs.id as string).substring(0, 3) === 'bin') {
+        return false;
+      }
+
+      return intersects(attrs, rectToPlace);
+    });
+
+    console.log({ intersectAny });
+
+    if (intersectAny || rect.x < 0 || rect.x > inventoryWidth || rect.y < 0 || rect.y > interactiveScrollableHeight) return false;
 
     const { x, y } = dropPos;
     setBins(old => ({
@@ -146,6 +173,8 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
       setRenderInventory: rects => setRenderInventory(rects),
       onCompress: idx => algorithmHandle.current?.place(placedRect, idx),
     });
+
+    return true;
   };
 
   const handleWheel = useKonvaWheelHandler({
@@ -205,6 +234,7 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
         </Layer>
         <BinInteractive
           binSize={binSize}
+          snap={snapInteractive}
           onBinLayout={setBinLayout}
           bins={bins}
           ref={interactiveLayer}
@@ -240,6 +270,7 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
           onDraggedToBin={handleDraggedToBin}
           renderInventory={renderInventory}
           staticInventory={staticInventory}
+          snap={target => snapInventory(interactiveLayer.current?.children as KonvaGroup[], target)}
         />
 
         <Layer>

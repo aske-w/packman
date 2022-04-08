@@ -14,7 +14,8 @@ interface BinInventoryProps {
   renderInventory: ColorRect[];
   inventoryWidth: number;
   gameHeight: number;
-  onDraggedToBin: (rect: Shape<ShapeConfig> | Stage, pos: Vector2d) => void;
+  onDraggedToBin: (rect: Shape<ShapeConfig> | Stage, pos: Vector2d) => boolean;
+  snap: (target: Shape) => void;
 }
 
 const BinInventory = forwardRef<KonvaLayer, BinInventoryProps>(
@@ -29,7 +30,7 @@ const BinInventory = forwardRef<KonvaLayer, BinInventoryProps>(
       const inBinArea = dropX + width > inventoryWidth;
 
       if (inBinArea) {
-        return onDraggedToBin(rect, { x, y });
+        if (onDraggedToBin(rect, { x, y })) return;
       }
 
       // animate back to starting position
