@@ -17,7 +17,7 @@ import OnlineStripPackingInventory from '../../components/games/onlineStripPacki
 import OnlineStripPackingNav from '../../components/Nav/OnlineStripPackingNav';
 import TimeBar from '../../components/TimeBar';
 import { NAV_HEIGHT, PADDING, SCROLLBAR_WIDTH } from '../../config/canvasConfig';
-import { useEvents } from '../../hooks/useEvents';
+import { useGameEnded } from '../../hooks/useGameEnded';
 import { defaultScrollHandler, useKonvaWheelHandler } from '../../hooks/useKonvaWheelHandler';
 import { useOnGameStart } from '../../hooks/useOnGameStart';
 import { useOnlineStripPackingInventory } from '../../hooks/useOnlineStripPackingInventory';
@@ -87,11 +87,14 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
   const resetFuncs = [() => setStripRects([]), resetInventory, interactiveHandle.current?.reset, algorithmHandle.current?.reset];
 
   const resetter = useRestartStripPacking(resetFuncs, algorithm, { r });
+  const returnIfFinished = useGameEnded();
 
   /**
    * Pos is absolute position in the canvas
    */
   const onDraggedToStrip = async (rectName: string, pos: Vector2d): Promise<boolean> => {
+    if (returnIfFinished()) return false;
+
     const rIdx = visibleInventory.findIndex(r => r.name === rectName);
 
     if (rIdx !== -1) {

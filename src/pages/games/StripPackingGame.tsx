@@ -14,7 +14,7 @@ import StripPackingInteractive, { StripPackingInteractiveHandle } from '../../co
 import StripPackingNav from '../../components/Nav/StripPackingNav';
 import TimeBar from '../../components/TimeBar';
 import { ALGO_MOVE_ANIMATION_DURATION, NAV_HEIGHT, PADDING, SCROLLBAR_WIDTH } from '../../config/canvasConfig';
-import { useEvents } from '../../hooks/useEvents';
+import { useGameEnded } from '../../hooks/useGameEnded';
 import { defaultScrollHandler, useKonvaWheelHandler } from '../../hooks/useKonvaWheelHandler';
 import { useOnGameStart } from '../../hooks/useOnGameStart';
 import { useRestartStripPacking } from '../../hooks/useRestartStripPacking';
@@ -49,12 +49,13 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
    */
   const [startingInventory, setStartingInventory] = useState<ColorRect<RectangleConfig & { order?: number; removed?: boolean }>[]>(() => []);
   const [inventoryChanged, setInventoryChanged] = useState(true);
-
   /**
    * This is the inventory, used for rendering the draggable rects. Whenever an
    * item is placed in the strip, it's removed from this array
    */
   const [renderInventory, setRenderInventory] = useState<ColorRect<RectangleConfig>[]>([]);
+
+  const returnIfFinished = useGameEnded();
 
   useEffect(() => {
     if (inventoryChanged) {
@@ -108,6 +109,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
    * Pos is absolute position in the canvas
    */
   const onDraggedToStrip = (rectName: string, pos: Vector2d): boolean => {
+    if (returnIfFinished()) return false;
     const rIdx = renderInventory.findIndex(r => r.name === rectName);
 
     if (rIdx !== -1) {
