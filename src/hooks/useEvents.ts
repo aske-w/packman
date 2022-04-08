@@ -16,13 +16,9 @@ export const useEvents = (algo: Algorithm | null) => {
 
   const onPlaceEvent = useCallback(
     (interactiveLength: number, staticInvLength: number) => {
-      if (interactiveLength === staticInvLength) {
-        if (userScore >= algoScore) {
-          setEvent(Events.FINISHED);
-        } else {
-          setEvent(Events.GAME_OVER);
-        }
-      } else {
+      if (event === Events.GAME_OVER || event === Events.FINISHED) return;
+
+      if (interactiveLength !== staticInvLength) {
         setEvent(Events.RECT_PLACED);
       }
     },
