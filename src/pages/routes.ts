@@ -15,4 +15,5 @@ export const pathName = {
   BIN_GAME: `/game/${pathKey.BIN}`,
   ONLINE_STRIP_GAME: `/game/${pathKey.ONLINE_STRIP}`,
   ACHIEVEMENTS: '/achievements',
+  ABOUT: '/', // TODO
 };
