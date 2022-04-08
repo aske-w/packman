@@ -1,9 +1,12 @@
 import { STROKE_WIDTH } from '../config/canvasConfig';
 import { Rectangle } from '../types/Rectangle.interface';
 
-// for x axis: p1 is the leftmost x and p2 is the rightmost x of one element. p3 is the leftmost x and p4 is the rightmost x of another element
-// for y axis: p1 is the uppermost y and p2 is the lowermost y of one element. p3 is the uppermost y and p4 is the lowermost y of another element
-const overlapsAxis = (p1: number, p2: number, p3: number, p4: number, threshold = 0) => {
+/**
+ *  For x axis: p1 is the leftmost x and p2 is the rightmost x of one element. p3 is the leftmost x and p4 is the rightmost x of another element.
+ *
+ *  For y axis: p1 is the uppermost y and p2 is the lowermost y of one element. p3 is the uppermost y and p4 is the lowermost y of another element.
+ */
+export const overlapsAxis = (p1: number, p2: number, p3: number, p4: number, threshold = 0) => {
   return (
     (p3 >= p1 - threshold && p3 <= p2 + threshold) ||
     (p4 >= p1 - threshold && p4 <= p2 + threshold) ||
