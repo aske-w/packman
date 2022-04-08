@@ -19,7 +19,7 @@ interface BinInventoryProps {
 }
 
 const BinInventory = forwardRef<KonvaLayer, BinInventoryProps>(
-  ({ staticInventory, renderInventory, gameHeight, inventoryWidth, onDraggedToBin }, ref) => {
+  ({ staticInventory, renderInventory, gameHeight, inventoryWidth, onDraggedToBin, snap }, ref) => {
     const handleDragEnd = (evt: KonvaEventObject<DragEvent>) => {
       const rect = evt.target;
       const { name, width } = rect.getAttrs();
@@ -43,6 +43,13 @@ const BinInventory = forwardRef<KonvaLayer, BinInventoryProps>(
       }).play();
     };
 
+    const handleDragMove = (e: KonvaEventObject<DragEvent>) => {
+      const rect = e.target as Shape;
+      rect.moveToTop();
+      rect.setAttr('fill', rect.getAttr('fill').substring(0, 7) + '80');
+      snap(rect);
+    };
+
     return (
       <Layer x={0} y={0} ref={ref} name="INVENTORY_LAYER">
         {staticInventory.map((r, i) => {
@@ -56,6 +63,7 @@ const BinInventory = forwardRef<KonvaLayer, BinInventoryProps>(
               // onMouseMove={() => enableTooltip(rect)}
               // onMouseOut={() => disableTooltip()}
               draggable
+              handleDragMove={handleDragMove}
               strokeWidth={1}
               stroke={'orange'}
               // y={scrollableInventoryHeight + r.y}

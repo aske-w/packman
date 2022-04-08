@@ -17,7 +17,7 @@ import { Gamemodes } from '../../types/enums/Gamemodes.enum';
 import { Shape, ShapeConfig } from 'konva/lib/Shape';
 import { Stage as KonvaStage } from 'konva/lib/Stage';
 import { Dimensions } from '../../types/Dimensions.interface';
-import { compressBinPackingInv } from '../../utils/binPacking';
+import { compressBinPackingInv, getLocalInteractiveX, isBin } from '../../utils/binPacking';
 import { BinPackingRect } from '../../types/BinPackingRect.interface';
 import BinPackingNav from '../../components/Nav/BinPackingNav';
 import { useOnGameStart } from '../../hooks/useOnGameStart';
@@ -85,8 +85,8 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
   // Snapping
   const { snapInventory, snapInteractive } = useSnap({
     inventory: staticInventory,
-    inventoryWidth,
-    stripWidth: inventoryWidth,
+    inventoryWidth: inventoryWidth,
+    stripWidth: binAreaWidth,
     gameHeight,
     inventoryLayer,
     interactiveLayerRef: interactiveLayer,
@@ -129,7 +129,7 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
     if (!rect || bin === -1) return false;
 
     const rectToPlace = {
-      x: -1 * (inventoryWidth - evtRect.x),
+      x: getLocalInteractiveX(inventoryWidth, evtRect.x),
       y: -interactiveScrollOffset + evtRect.y + inventoryScrollOffset,
       width: rect.width,
       height: rect.height,
@@ -139,7 +139,7 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
     const intersectAny = interactiveRects?.some(ir => {
       const attrs = ir.getAttrs();
 
-      if (attrs.id && (attrs.id as string).substring(0, 3) === 'bin') {
+      if (attrs.id && isBin(attrs.id)) {
         return false;
       }
 
@@ -235,7 +235,15 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
         </Layer>
         <BinInteractive
           binSize={binSize}
-          snap={snapInteractive}
+          snap={(group, target) => {
+            const offset = inventoryWidth;
+            const interactiveScrollOffset = interactiveLayer.current?.y()!;
+            const inventoryScrollOffset = inventoryLayer.current?.y()!;
+
+            console.log({ interactiveScrollOffset, inventoryScrollOffset });
+
+            return snapInteractive(group, target, offset);
+          }}
           onBinLayout={setBinLayout}
           bins={bins}
           ref={interactiveLayer}

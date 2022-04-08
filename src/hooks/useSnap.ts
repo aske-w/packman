@@ -8,6 +8,7 @@ import { RectangleConfig } from '../types/RectangleConfig.interface';
 import { intersects, overlapsAxis } from '../utils/intersects';
 import { Layer as KonvaLayer } from 'konva/lib/Layer';
 import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
+import { isBin } from '../utils/binPacking';
 
 interface UseSnapProps<T> {
   interactiveLayerRef: React.RefObject<KonvaLayer>;
@@ -52,7 +53,7 @@ export const useSnap = <T>({
     };
   }, []);
 
-  const snap = (destination: ColorRect<RectangleConfig>[], target: Shape, overrideXY?: Coordinate) => {
+  const snap = (destination: ColorRect<RectangleConfig>[], target: Shape, overrideXY?: Coordinate, offsetX = 0) => {
     let intersectsAny = false;
     let { x: targetX, y: targetY, height: targetHeight, width: targetWidth, name: targetName } = target.getAttrs();
     target.moveToTop();
@@ -62,6 +63,10 @@ export const useSnap = <T>({
       targetX = overrideXY.x;
       targetY = overrideXY.y;
     }
+
+    targetX = targetX + offsetX;
+
+    // targetX = targetX + inventoryWidth;
 
     let cx = targetX;
     let cy = targetY;
@@ -74,7 +79,7 @@ export const useSnap = <T>({
       else
         destination.forEach(f => {
           const { name } = f;
-          if (name == targetName) return;
+          if (name == targetName || isBin((f as any)?.id)) return;
           if (
             intersects(f, {
               x: targetX,
@@ -132,10 +137,26 @@ export const useSnap = <T>({
       }
     }
 
-    destination.forEach(f => {
-      const { name, x, y, height, width } = f;
+    destination.forEach(rect => {
+      const f = { ...rect, x: rect.x + offsetX };
+      let { name, x, y, height, width } = f;
+      console.log('name: ', name);
 
-      if (name == targetName) return;
+      if (name == targetName || isBin((f as any)?.id)) return;
+
+      // console.log({ targetX, targetY, targetHeight, targetWidth, x, y, height, width });
+      console.log(
+        'RES: ',
+        intersects(
+          { ...f, x },
+          {
+            x: targetX,
+            y: targetY,
+            height: targetHeight,
+            width: targetWidth,
+          }
+        )
+      );
 
       if (
         intersects(f, {
@@ -217,7 +238,7 @@ export const useSnap = <T>({
     snap(newDestination, target, { x: adjustedX, y: adjustedY });
   };
 
-  const snapInteractive = (destination: Group[], target: Shape) => {
+  const snapInteractive = (destination: Group[], target: Shape, offsetX?: number) => {
     const newDestination = destination.map(g => {
       const rect: ColorRect<RectangleConfig> = g.getAttrs();
       return rect;
@@ -225,7 +246,7 @@ export const useSnap = <T>({
 
     target.setAttr('x', clamp(target.getAttr('x'), 0, stripWidth - target.getAttr('width')));
     target.setAttr('y', clamp(target.getAttr('y'), 0, scrollableHeight - target.getAttr('height')));
-    snap(newDestination, target);
+    snap(newDestination, target, undefined, offsetX);
   };
 
   return { snapInventory, snapInteractive };
