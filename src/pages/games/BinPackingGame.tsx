@@ -84,7 +84,7 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
   useRestartStripPacking(resetFuncs, algorithm, {});
 
   // Snapping
-  const { snapInventory, snapInteractive } = useSnap({
+  const { snapBinInventory, snapInteractive } = useSnap({
     inventory: staticInventory,
     inventoryWidth: inventoryWidth,
     stripWidth: binAreaWidth,
@@ -259,7 +259,10 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
           onDraggedToBin={handleDraggedToBin}
           renderInventory={renderInventory}
           staticInventory={staticInventory}
-          snap={target => snapInventory(interactiveLayer.current?.children as KonvaGroup[], target)}
+          snap={target => {
+            const offsetX = inventoryWidth;
+            snapBinInventory(interactiveLayer.current?.children as KonvaGroup[], target);
+          }}
         />
 
         <Layer>

@@ -157,7 +157,7 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
   }, [r]);
 
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full overflow-x-hidden">
       <GameEndModal />
       <TimeBar />
       <OnlineStripPackingNav

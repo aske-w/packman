@@ -45,6 +45,7 @@ const BinInventory = forwardRef<KonvaLayer, BinInventoryProps>(
 
     const handleDragMove = (e: KonvaEventObject<DragEvent>) => {
       const rect = e.target as Shape;
+
       rect.moveToTop();
       rect.setAttr('fill', rect.getAttr('fill').substring(0, 7) + '80');
       snap(rect);
@@ -63,10 +64,10 @@ const BinInventory = forwardRef<KonvaLayer, BinInventoryProps>(
               // onMouseMove={() => enableTooltip(rect)}
               // onMouseOut={() => disableTooltip()}
               draggable
-              handleDragMove={handleDragMove}
               strokeWidth={1}
               stroke={'orange'}
               // y={scrollableInventoryHeight + r.y}
+              onDragMove={handleDragMove}
               onDragEnd={handleDragEnd}
               id={`INVENTORY_RECT`}
             />

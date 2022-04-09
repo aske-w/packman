@@ -135,7 +135,16 @@ const BinInteractive = forwardRef<KonvaLayer, BinInteractiveProps>(
         {renderedBins.map((b, i) => {
           return (
             <Fragment key={i + '_text'}>
+              {/* BIN */}
               <Rect {...b} fill={'#eee'} opacity={0.5} id={`bin_${i}`} />
+              {/* Top border */}
+              <Rect {...{ ...b, y: b.y - 1, height: 1 }} fill="transparent" stroke="transparent" strokeWidth={1} id={`border_top${i}`} />
+              {/* Left border */}
+              <Rect {...{ ...b, x: b.x - 1, width: 1 }} fill="transparent" stroke="transparent" strokeWidth={1} id={`border_left${i}`} />
+              {/* Bottom border */}
+              <Rect {...{ ...b, y: b.y + b.height, height: 1 }} fill="transparent" stroke="transparent" strokeWidth={1} id={`border_bottom${i}`} />
+              {/* Right border */}
+              <Rect {...{ ...b, x: b.x + b.width, width: 1 }} fill="transparent" stroke="transparent" strokeWidth={1} id={`border_right${i}`} />
               <Text text={i.toString()} x={b.x} y={b.y - 24} fontSize={24} />
               {bins[i]?.map(r => (
                 <Rect
