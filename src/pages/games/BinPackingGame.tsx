@@ -25,6 +25,7 @@ import { useRestartStripPacking } from '../../hooks/useRestartStripPacking';
 import { useSnap } from '../../hooks/useSnap';
 import { Group as KonvaGroup } from 'konva/lib/Group';
 import { intersects } from '../../utils/intersects';
+import { Bin } from '../../types/Bin.interface';
 
 interface BinPackingGameProps {}
 const NUM_ITEMS = 10;
@@ -64,7 +65,7 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
    * item is placed in a bin, it's removed from this array
    */
   const [renderInventory, setRenderInventory] = useState<ColorRect[]>([]);
-  const [bins, setBins] = useState<Record<number, ColorRect[]>>({});
+  const [bins, setBins] = useState<Bin>({});
   const [binLayout, setBinLayout] = useState<IRect[]>([]);
 
   /**
@@ -75,7 +76,7 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
       const newInv = generateInventory<BinPackingRect>(inventoryWidth, NUM_ITEMS);
       setRenderInventory([...newInv]);
       setStaticInventory([...newInv]);
-      setBins([]);
+      setBins({});
     },
     algorithmHandle.current?.reset,
   ];
@@ -90,7 +91,9 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
     gameHeight,
     inventoryLayer,
     interactiveLayerRef: interactiveLayer,
-    inventoryFilterFunc: (r, target) => r.name == target.name(),
+    inventoryFilterFunc: (r, target) => {
+      return r.name == target.name();
+    },
     scrollableHeight: interactiveScrollableHeight,
   });
 
@@ -237,15 +240,11 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
           binSize={binSize}
           snap={(group, target) => {
             const offset = inventoryWidth;
-            const interactiveScrollOffset = interactiveLayer.current?.y()!;
-            const inventoryScrollOffset = inventoryLayer.current?.y()!;
-
-            console.log({ interactiveScrollOffset, inventoryScrollOffset });
-
             return snapInteractive(group, target, offset);
           }}
           onBinLayout={setBinLayout}
           bins={bins}
+          setBins={setBins}
           ref={interactiveLayer}
           dimensions={{
             width: binAreaWidth,

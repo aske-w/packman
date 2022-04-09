@@ -140,23 +140,8 @@ export const useSnap = <T>({
     destination.forEach(rect => {
       const f = { ...rect, x: rect.x + offsetX };
       let { name, x, y, height, width } = f;
-      console.log('name: ', name);
 
       if (name == targetName || isBin((f as any)?.id)) return;
-
-      // console.log({ targetX, targetY, targetHeight, targetWidth, x, y, height, width });
-      console.log(
-        'RES: ',
-        intersects(
-          { ...f, x },
-          {
-            x: targetX,
-            y: targetY,
-            height: targetHeight,
-            width: targetWidth,
-          }
-        )
-      );
 
       if (
         intersects(f, {
