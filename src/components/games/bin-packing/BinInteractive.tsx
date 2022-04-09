@@ -14,6 +14,7 @@ import { intersects } from '../../../utils/intersects';
 import produce from 'immer';
 import { Coordinate } from '../../../types/Coordinate.interface';
 import { Bin } from '../../../types/Bin.interface';
+import { findBin } from '../../../utils/binPacking';
 
 interface BinInteractiveProps {
   offset: Vector2d;
@@ -71,6 +72,20 @@ const BinInteractive = forwardRef<KonvaLayer, BinInteractiveProps>(
     const handleDragEnd = (e: KonvaEventObject<DragEvent>) => {
       const target = e.target as Shape;
       const scrollOffset = layerRef.current?.y()!;
+
+      // Check if is placing outside a bin
+      const { x, y } = target.getAbsolutePosition();
+      const dropPos = {
+        y: -scrollOffset + y,
+        x: x - offset.x,
+      };
+      if (findBin(renderedBins, dropPos, target.getAttrs()) === -1 && lastPos) {
+        target.setAbsolutePosition({
+          x: lastPos.x + offset.x,
+          y: lastPos.y + scrollOffset,
+        });
+        return;
+      }
 
       Object.keys(bins).forEach((binId, i) => {
         bins[binId].forEach(r => {

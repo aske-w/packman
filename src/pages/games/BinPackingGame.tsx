@@ -17,7 +17,7 @@ import { Gamemodes } from '../../types/enums/Gamemodes.enum';
 import { Shape, ShapeConfig } from 'konva/lib/Shape';
 import { Stage as KonvaStage } from 'konva/lib/Stage';
 import { Dimensions } from '../../types/Dimensions.interface';
-import { compressBinPackingInv, getLocalInteractiveX, isBin } from '../../utils/binPacking';
+import { compressBinPackingInv, findBin, getLocalInteractiveX, isBin } from '../../utils/binPacking';
 import { BinPackingRect } from '../../types/BinPackingRect.interface';
 import BinPackingNav from '../../components/Nav/BinPackingNav';
 import { useOnGameStart } from '../../hooks/useOnGameStart';
@@ -97,25 +97,6 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
     scrollableHeight: interactiveScrollableHeight,
   });
 
-  const findBin = (dropPos: Vector2d, rect: Dimensions & Vector2d) => {
-    return binLayout.findIndex(({ height: binHeight, width: binWidth, x: binX, y: binY }) => {
-      // Check if the drop position is within the bin
-      const binX2 = binX + binWidth;
-      const binY2 = binY + binHeight;
-      const rectX = dropPos.x;
-      const rectY = dropPos.y;
-      const rectX2 = dropPos.x + rect.width;
-      const rectY2 = dropPos.y + rect.height;
-
-      const fitsX1 = rectX >= binX;
-      const fitsX2 = rectX2 <= binX2;
-      const fitsY1 = rectY >= binY;
-      const fitsY2 = rectY2 <= binY2;
-
-      return fitsX1 && fitsX2 && fitsY1 && fitsY2;
-    });
-  };
-
   const handleDraggedToBin = (evt: Shape<ShapeConfig> | KonvaStage, startPos: Vector2d): boolean => {
     const { name, ...evtRect } = evt.getAttrs() as Dimensions & Vector2d & { name: string };
     const offset = interactiveLayer.current!.y();
@@ -125,7 +106,7 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
     // take the offset into account
     dropPos.y -= offset;
 
-    const bin = findBin({ x: dropPos.x - inventoryWidth, y: dropPos.y }, evtRect);
+    const bin = findBin(binLayout, { x: dropPos.x - inventoryWidth, y: dropPos.y }, evtRect);
 
     const rect = renderInventory.find(r => r.name === name);
 
