@@ -54,7 +54,7 @@ export const useSnap = <T>({
     };
   }, []);
 
-  const snap = (destination: ColorRect<RectangleConfig>[], target: Shape, overrideXY?: Coordinate, offsetX = 0) => {
+  const snap = (destination: ColorRect<RectangleConfig>[], target: Shape, overrideXY?: Coordinate) => {
     let intersectsAny = false;
     let { x: targetX, y: targetY, height: targetHeight, width: targetWidth, name: targetName } = target.getAttrs();
     target.moveToTop();
@@ -64,10 +64,6 @@ export const useSnap = <T>({
       targetX = overrideXY.x;
       targetY = overrideXY.y;
     }
-
-    targetX = targetX + offsetX;
-
-    // targetX = targetX + inventoryWidth;
 
     let cx = targetX;
     let cy = targetY;
@@ -139,7 +135,7 @@ export const useSnap = <T>({
     }
 
     destination.forEach(rect => {
-      const f = { ...rect, x: rect.x + offsetX };
+      const f = { ...rect, x: rect.x };
       let { name, x, y, height, width } = f;
 
       if (name == targetName || isBin((f as any)?.id)) return;
@@ -204,7 +200,7 @@ export const useSnap = <T>({
     }
   };
 
-  const snapInv = (destination: ColorRect<RectangleConfig>[], target: Shape, binLayouts: IRect[], overrideXY?: Coordinate, offsetX = 0) => {
+  const snapBin = (destination: ColorRect<RectangleConfig>[], target: Shape, binLayouts: IRect[], overrideXY?: Coordinate, offsetX = 0) => {
     let intersectsAny = false;
     let { x: targetX, y: targetY, height: targetHeight, width: targetWidth, name: targetName } = target.getAttrs();
     target.moveToTop();
@@ -214,10 +210,6 @@ export const useSnap = <T>({
       targetX = overrideXY.x;
       targetY = overrideXY.y;
     }
-
-    // targetX = targetX + offsetX;
-
-    // targetX = targetX + inventoryWidth;
 
     let cx = targetX;
     let cy = targetY;
@@ -396,10 +388,10 @@ export const useSnap = <T>({
     const adjustedY = clamp(y + inventoryLayer.current?.y()! - stripScrollOffset, 0, scrollableHeight - target.height());
     const adjustedX = clamp(x, inventoryWidth, stripWidth + inventoryWidth - width);
     // console.log({ x, y }, { x: adjustedX, y: adjustedY }, { inventoryWidth, stripWidth, upper: stripWidth + inventoryWidth });
-    snapInv(newDestination, target, binLayouts, { x: adjustedX, y: adjustedY }, inventoryWidth);
+    snapBin(newDestination, target, binLayouts, { x: adjustedX, y: adjustedY }, inventoryWidth);
   };
 
-  const snapInteractive = (destination: Group[], target: Shape, offsetX?: number) => {
+  const snapInteractive = (destination: Group[], target: Shape) => {
     const newDestination = destination.map(g => {
       const rect: ColorRect<RectangleConfig> = g.getAttrs();
       return rect;
@@ -407,8 +399,19 @@ export const useSnap = <T>({
 
     target.setAttr('x', clamp(target.getAttr('x'), 0, stripWidth - target.getAttr('width')));
     target.setAttr('y', clamp(target.getAttr('y'), 0, scrollableHeight - target.getAttr('height')));
-    snap(newDestination, target, undefined, offsetX);
+    snap(newDestination, target, undefined);
   };
 
-  return { snapInventory, snapBinInventory, snapInteractive };
+  const snapBinInteractive = (destination: Group[], target: Shape, binLayouts: IRect[]) => {
+    const newDestination = destination.map(g => {
+      const rect: ColorRect<RectangleConfig> = g.getAttrs();
+      return rect;
+    });
+
+    target.setAttr('x', clamp(target.getAttr('x'), 0, stripWidth - target.getAttr('width')));
+    target.setAttr('y', clamp(target.getAttr('y'), 0, scrollableHeight - target.getAttr('height')));
+    snapBin(newDestination, target, binLayouts, { y: target.getAttr('y'), x: target.getAttr('x') + inventoryWidth }, inventoryWidth);
+  };
+
+  return { snapInventory, snapBinInteractive, snapBinInventory, snapInteractive };
 };
