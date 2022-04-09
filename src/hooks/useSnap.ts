@@ -7,7 +7,7 @@ import { Coordinate } from '../types/Coordinate.interface';
 import { RectangleConfig } from '../types/RectangleConfig.interface';
 import { intersects, overlapsAxis } from '../utils/intersects';
 import { Layer as KonvaLayer } from 'konva/lib/Layer';
-import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { findBin, isBin } from '../utils/binPacking';
 import { IRect } from 'konva/lib/types';
 

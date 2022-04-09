@@ -34,6 +34,7 @@ const BinInteractive = forwardRef<KonvaLayer, BinInteractiveProps>(
     const binsPrRow = Math.floor(dimensions.width / (binDim.width + PADDING));
     const numBins = Object.values(bins).length;
     const layerRef = useCombinedRefs(ref);
+
     const calcBinLayout = () => {
       let x = 0;
       const b: IRect[] = [];

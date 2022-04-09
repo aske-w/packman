@@ -1,7 +1,7 @@
 import { Layer as KonvaLayer } from 'konva/lib/Layer';
 import { Rect as KonvaRect } from 'konva/lib/shapes/Rect';
 import { IRect, Vector2d } from 'konva/lib/types';
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Layer, Rect, Stage } from 'react-konva';
 import ScrollBar from '../../components/canvas/ScrollBar';
 import BinAlgorithm, { BinAlgorithmHandle } from '../../components/games/bin-packing/BinAlgorithm';
@@ -26,6 +26,11 @@ import { useSnap } from '../../hooks/useSnap';
 import { Group as KonvaGroup } from 'konva/lib/Group';
 import { intersects } from '../../utils/intersects';
 import { Bin } from '../../types/Bin.interface';
+import TimeBar from '../../components/TimeBar';
+import { useEvents } from '../../hooks/useEvents';
+import useScoreStore from '../../store/score.store';
+import GameEndModal from '../../components/gameEndModal/Modal';
+import { useGameEnded } from '../../hooks/useGameEnded';
 
 interface BinPackingGameProps {}
 const NUM_ITEMS = 10;
@@ -97,7 +102,14 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
     scrollableHeight: interactiveScrollableHeight,
   });
 
+  const { dispatchEventOnPlace } = useEvents();
+  const setRectanglesLeft = useScoreStore(useCallback(({ setRectanglesLeft }) => setRectanglesLeft, []));
+  const returnIfFinished = useGameEnded();
+  useEffect(() => setRectanglesLeft(renderInventory.length), [renderInventory.length]);
+
   const handleDraggedToBin = (evt: Shape<ShapeConfig> | KonvaStage, startPos: Vector2d): boolean => {
+    if (returnIfFinished()) return false;
+
     const { name, ...evtRect } = evt.getAttrs() as Dimensions & Vector2d & { name: string };
     const offset = interactiveLayer.current!.y();
     const dropPos = evt.getAbsolutePosition();
@@ -159,6 +171,8 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
       onCompress: idx => algorithmHandle.current?.place(placedRect, idx),
     });
 
+    dispatchEventOnPlace();
+
     return true;
   };
 
@@ -208,6 +222,8 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
   return (
     <div className="w-full">
       <BinPackingNav />
+      <GameEndModal />
+      <TimeBar />
       <Stage onWheel={handleWheel} width={wWidth} height={gameHeight}>
         <Layer>
           {/* Inventory BG */}
