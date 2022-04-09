@@ -67,7 +67,7 @@ export function isBin(id: string | undefined) {
   return id && id.substring(0, 3) === 'bin';
 }
 
-export const findBin = (binLayout: IRect[], dropPos: Vector2d, rect: Dimensions & Vector2d) => {
+export const findBin = (binLayout: IRect[], dropPos: Vector2d, rect: Dimensions) => {
   return binLayout.findIndex(({ height: binHeight, width: binWidth, x: binX, y: binY }) => {
     // Check if the drop position is within the bin
     const binX2 = binX + binWidth;

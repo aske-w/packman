@@ -8,7 +8,8 @@ import { RectangleConfig } from '../types/RectangleConfig.interface';
 import { intersects, overlapsAxis } from '../utils/intersects';
 import { Layer as KonvaLayer } from 'konva/lib/Layer';
 import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
-import { isBin } from '../utils/binPacking';
+import { findBin, isBin } from '../utils/binPacking';
+import { IRect } from 'konva/lib/types';
 
 interface UseSnapProps<T> {
   interactiveLayerRef: React.RefObject<KonvaLayer>;
@@ -203,7 +204,7 @@ export const useSnap = <T>({
     }
   };
 
-  const snapInv = (destination: ColorRect<RectangleConfig>[], target: Shape, overrideXY?: Coordinate, offsetX = 0) => {
+  const snapInv = (destination: ColorRect<RectangleConfig>[], target: Shape, binLayouts: IRect[], overrideXY?: Coordinate, offsetX = 0) => {
     let intersectsAny = false;
     let { x: targetX, y: targetY, height: targetHeight, width: targetWidth, name: targetName } = target.getAttrs();
     target.moveToTop();
@@ -341,8 +342,11 @@ export const useSnap = <T>({
       }
     });
 
+    // Mark rect red if outside bin.
+    const isOutsideBin = findBin(binLayouts, { x: cx - inventoryWidth, y: cy }, { width: targetWidth, height: targetHeight }) === -1;
+
     target.setAbsolutePosition({ x: cx, y: cy + stripScrollOffset });
-    if (intersectsAny || targetX < 0 || targetY < 0 || targetY > scrollableHeight) {
+    if (intersectsAny || targetX < 0 || targetY < 0 || targetY > scrollableHeight || isOutsideBin) {
       //overlap while dragging
       target.setAttr('fill', RECT_OVERLAP_COLOR);
     } else {
@@ -374,8 +378,8 @@ export const useSnap = <T>({
     snap(newDestination, target, { x: adjustedX, y: adjustedY });
   };
 
-  const snapBinInventory = (destination: Group[], target: Shape) => {
-    const { x, y, width } = target.getAttrs();
+  const snapBinInventory = (destination: Group[], target: Shape, binLayouts: IRect[]) => {
+    const { x, y, width, height }: IRect = target.getAttrs();
 
     // don't try to snap if target is still in the inventory
     if (inventoryWidth - x > SNAPPING_THRESHOLD) {
@@ -392,7 +396,7 @@ export const useSnap = <T>({
     const adjustedY = clamp(y + inventoryLayer.current?.y()! - stripScrollOffset, 0, scrollableHeight - target.height());
     const adjustedX = clamp(x, inventoryWidth, stripWidth + inventoryWidth - width);
     // console.log({ x, y }, { x: adjustedX, y: adjustedY }, { inventoryWidth, stripWidth, upper: stripWidth + inventoryWidth });
-    snapInv(newDestination, target, { x: adjustedX, y: adjustedY }, inventoryWidth);
+    snapInv(newDestination, target, binLayouts, { x: adjustedX, y: adjustedY }, inventoryWidth);
   };
 
   const snapInteractive = (destination: Group[], target: Shape, offsetX?: number) => {

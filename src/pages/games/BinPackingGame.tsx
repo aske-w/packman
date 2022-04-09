@@ -261,7 +261,7 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
           staticInventory={staticInventory}
           snap={target => {
             const offsetX = inventoryWidth;
-            snapBinInventory(interactiveLayer.current?.children as KonvaGroup[], target);
+            snapBinInventory(interactiveLayer.current?.children as KonvaGroup[], target, binLayout);
           }}
         />
 
