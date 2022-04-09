@@ -218,18 +218,25 @@ export const useSnap = <T>({
 
     if (disabled) {
       // check for intersection between target and boundary of strip and inventy
-      if (overlapsAxis(targetX, targetX + targetWidth, stripWidth, stripWidth)) intersectsAny = true;
+      if (overlapsAxis(targetX, targetX + targetWidth, inventoryWidth, inventoryWidth)) intersectsAny = true;
       else
-        destination.forEach(f => {
+        destination.forEach(rect => {
+          const f = { ...rect, x: rect.x + offsetX };
           const { name } = f;
+
           if (name == targetName || isBin((f as any)?.id)) return;
+
+          // Bin borders or frames are used for snapping the bins boundaries. When overlapping these should not be marked red
+          const isBinFrame = ((f as any)?.id as string)?.includes('border');
+
           if (
-            intersects(f, {
-              x: targetX,
-              y: targetY,
-              height: targetHeight,
-              width: targetWidth,
-            }) ||
+            (!isBinFrame &&
+              intersects(f, {
+                x: targetX,
+                y: targetY,
+                height: targetHeight,
+                width: targetWidth,
+              })) ||
             targetX < 0 || // outside strip's left boundary
             targetY < 0 || // top
             targetY + targetHeight > scrollableHeight // bottom
@@ -238,8 +245,10 @@ export const useSnap = <T>({
           }
         });
 
+      const isOutsideBin = findBin(binLayouts, { x: cx - inventoryWidth, y: cy }, { width: targetWidth, height: targetHeight }) === -1;
+
       target.setAbsolutePosition({ x: cx, y: cy + stripScrollOffset });
-      if (intersectsAny || targetX < 0 || targetY < 0 || targetY > scrollableHeight) {
+      if (intersectsAny || targetX < 0 || targetY < 0 || targetY > scrollableHeight || isOutsideBin) {
         //overlap while dragging
         target.setAttr('fill', RECT_OVERLAP_COLOR);
       } else {
@@ -371,7 +380,7 @@ export const useSnap = <T>({
   };
 
   const snapBinInventory = (destination: Group[], target: Shape, binLayouts: IRect[]) => {
-    const { x, y, width, height }: IRect = target.getAttrs();
+    const { x, y, width }: IRect = target.getAttrs();
 
     // don't try to snap if target is still in the inventory
     if (inventoryWidth - x > SNAPPING_THRESHOLD) {
