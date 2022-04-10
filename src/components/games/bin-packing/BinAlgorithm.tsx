@@ -1,7 +1,7 @@
 import Konva from 'konva';
 import { Layer as KonvaLayer } from 'konva/lib/Layer';
 import { IRect, Vector2d } from 'konva/lib/types';
-import { forwardRef, Fragment, RefObject, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import { forwardRef, Fragment, RefObject, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { Rect as KonvaRect, RectConfig } from 'konva/lib/shapes/Rect';
 import { KonvaNodeEvents, Layer, Rect, Text } from 'react-konva';
 import FiniteFirstFit from '../../../algorithms/bin/offline/FiniteFirstFit';
@@ -13,6 +13,9 @@ import { Dimensions } from '../../../types/Dimensions.interface';
 import { DimensionsWithConfig } from '../../../types/DimensionsWithConfig.type';
 import { PackingAlgorithm } from '../../../types/PackingAlgorithm.interface';
 import { BinPackingAlgoRect, PlacedBinPackingAlgoRect, PrevPos } from '../../../types/BinPackingRect.interface';
+import useScoreStore from '../../../store/score.store';
+import useLevelStore from '../../../store/level.store';
+import { Bin } from '../../../types/Bin.interface';
 interface BinAlgorithmProps {
   offset: Vector2d;
   dimensions: Dimensions;
@@ -35,13 +38,16 @@ const PADDING = 30;
 const { FINITE_FIRST_FIT, FINITE_NEXT_FIT, HYBRID_FIRST_FIT } = BinPackingAlgorithm;
 const BinAlgorithm = forwardRef<BinAlgorithmHandle, BinAlgorithmProps>(
   ({ offset, layerRef, dimensions, data, selectedAlgorithm, binSize, binLayout, staticInventory: inventory, getInventoryScrollOffset }, ref) => {
-    const [placed, setPlaced] = useState<PlacedBinPackingAlgoRect[]>([]);
+    const [bins, setBins] = useState<Record<string, PlacedBinPackingAlgoRect[]>>({});
     const [order, setOrder] = useState(0);
+
+    const setBinScore = useScoreStore(useCallback(state => state.setBinScore, []));
+    const level = useLevelStore(useCallback(state => state.level, []));
 
     useImperativeHandle(ref, () => ({
       reset: () => {
         setOrder(0);
-        setPlaced([]);
+        setBins({});
       },
       next: () => {
         if (algorithm.current?.isFinished()) return;
@@ -63,7 +69,17 @@ const BinAlgorithm = forwardRef<BinAlgorithmHandle, BinAlgorithmProps>(
           prevY: inventoryRect.y - scrollOffset - offset.y,
         };
 
-        setPlaced(p => p.concat(newRect));
+        setBins(prevBins => {
+          const bins = binLayout.reduce((acc, _, i) => {
+            if (newRect.binId === i) {
+              return { ...acc, [i]: (prevBins?.[i] || []).concat(newRect) };
+            }
+
+            return acc;
+          }, prevBins);
+
+          return bins;
+        });
         setOrder(old => old + 1);
       },
     }));
@@ -99,10 +115,21 @@ const BinAlgorithm = forwardRef<BinAlgorithmHandle, BinAlgorithmProps>(
       start([...data]);
     }, [selectedAlgorithm, data]);
 
+    useEffect(() => {
+      setBinScore(
+        {
+          binLayouts: binLayout,
+          bins,
+          level,
+        },
+        'algorithm'
+      );
+    }, [bins, binLayout, level]);
+
     return (
       <Layer y={offset.y} x={offset.x} ref={layerRef}>
         {binLayout.map((b, i) => {
-          const binRects = placed.filter(({ binId }) => binId === i);
+          const binRects = bins[i];
 
           return (
             <Fragment key={i}>

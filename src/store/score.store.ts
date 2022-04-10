@@ -2,7 +2,7 @@ import create from 'zustand';
 import { Algorithm } from '../types/enums/AllAlgorithms.enum';
 import { Levels } from '../types/enums/Levels.enum';
 import { devtools } from 'zustand/middleware';
-import { calculateScore, getLocalStorage, getYearMonthDay, LOCAL_STORAGE_PREFIX } from '../utils/utils';
+import { calculateBinScore, CalculateBinScore, calculateStripScore, getLocalStorage, getYearMonthDay, LOCAL_STORAGE_PREFIX } from '../utils/utils';
 
 export interface Score {
   height: number;
@@ -26,6 +26,7 @@ const LAST_PLAYED_PREFIX = LOCAL_STORAGE_PREFIX + 'last_played';
 
 export type ScoreState = Record<Player, Score> & {
   setScore(score: ScorePayload | number, player: Player): void;
+  setBinScore: (payload: Omit<CalculateBinScore, 'averageTimeUsed'>, player: Player) => void;
   setRectanglesLeft(rectangles: number): void;
   getPersonalBest(algo: Algorithm, level: Levels): Score | undefined;
   setLastPlayed(): void;
@@ -84,9 +85,13 @@ const useScoreStore = create<ScoreState>((set, get) => ({
       ...state,
       [player]: {
         height:
-          typeof payload === 'number' ? payload : calculateScore(payload.level, payload.usedRectsArea, payload.usedGameArea, payload.averageTimeUsed),
+          typeof payload === 'number'
+            ? payload
+            : calculateStripScore(payload.level, payload.usedRectsArea, payload.usedGameArea, payload.averageTimeUsed),
       },
     })),
+  setBinScore: (payload, player) =>
+    set(state => ({ ...state, [player]: { height: calculateBinScore({ ...payload, averageTimeUsed: state.averageTimeUsed }) } })),
   getPersonalBest: (algo: Algorithm, level: Levels) => get().personalBest?.[algo]?.[level],
   resetScore: () =>
     set(state => {

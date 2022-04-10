@@ -1,7 +1,7 @@
 import { Layer as KonvaLayer } from 'konva/lib/Layer';
 import { Shape } from 'konva/lib/Shape';
 import { IRect, Vector2d } from 'konva/lib/types';
-import { forwardRef, Fragment, useEffect, useState } from 'react';
+import { forwardRef, Fragment, useCallback, useEffect, useState } from 'react';
 import { Layer, Rect, Text } from 'react-konva';
 import { Group } from 'konva/lib/Group';
 import { ColorRect } from '../../../types/ColorRect.interface';
@@ -15,6 +15,8 @@ import produce from 'immer';
 import { Coordinate } from '../../../types/Coordinate.interface';
 import { Bin } from '../../../types/Bin.interface';
 import { findBin } from '../../../utils/binPacking';
+import useScoreStore from '../../../store/score.store';
+import useLevelStore from '../../../store/level.store';
 
 interface BinInteractiveProps {
   offset: Vector2d;
@@ -30,6 +32,8 @@ const PADDING = 30;
 
 const BinInteractive = forwardRef<KonvaLayer, BinInteractiveProps>(
   ({ setBins, offset, dimensions, bins, onBinLayout, snap, binSize: binDim }, ref) => {
+    const setBinScore = useScoreStore(useCallback(state => state.setBinScore, []));
+    const level = useLevelStore(useCallback(state => state.level, []));
     const rowHeight = binDim.height + PADDING;
     const binsPrRow = Math.floor(dimensions.width / (binDim.width + PADDING));
     const numBins = Object.values(bins).length;
@@ -56,6 +60,10 @@ const BinInteractive = forwardRef<KonvaLayer, BinInteractiveProps>(
     useEffect(() => {
       setRenderedBins(calcBinLayout);
     }, [numBins]);
+
+    useEffect(() => {
+      setBinScore({ binLayouts: renderedBins, bins, level }, 'user');
+    }, [renderedBins, bins, level]);
 
     const handleDragMove = (e: KonvaEventObject<DragEvent>) => {
       const target = e.target as Shape;

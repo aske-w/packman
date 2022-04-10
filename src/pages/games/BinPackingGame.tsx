@@ -118,11 +118,11 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
     // take the offset into account
     dropPos.y -= offset;
 
-    const bin = findBin(binLayout, { x: dropPos.x - inventoryWidth, y: dropPos.y }, evtRect);
+    const binId = findBin(binLayout, { x: dropPos.x - inventoryWidth, y: dropPos.y }, evtRect);
 
     const rect = renderInventory.find(r => r.name === name);
 
-    if (!rect || bin === -1) return false;
+    if (!rect || binId === -1) return false;
 
     const rectToPlace = {
       x: getLocalInteractiveX(inventoryWidth, evtRect.x),
@@ -150,7 +150,7 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
     const { x, y } = dropPos;
     setBins(old => ({
       ...old,
-      [bin]: (old[bin] ?? []).concat({ ...rect, x, y }),
+      [binId]: (old[binId] ?? []).concat({ ...rect, x, y }),
     }));
     // setRenderInventory(old => old.filter(r => r.name !== name));
 
