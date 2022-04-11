@@ -33,7 +33,7 @@ import GameEndModal from '../../components/gameEndModal/Modal';
 import { useGameEnded } from '../../hooks/useGameEnded';
 
 interface BinPackingGameProps {}
-const NUM_ITEMS = 2;
+const NUM_ITEMS = 10;
 // bin dimensions
 const binSize = {
   height: 300,
