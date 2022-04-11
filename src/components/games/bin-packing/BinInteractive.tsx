@@ -17,7 +17,6 @@ import { Bin } from '../../../types/Bin.interface';
 import { BIN_PADDING, calcBinLayout, findBin } from '../../../utils/binPacking';
 import useScoreStore from '../../../store/score.store';
 import useLevelStore from '../../../store/level.store';
-import { SCROLLABLE_HEIGHT, SCROLLBAR_HEIGHT, SCROLLBAR_WIDTH } from '../../../config/canvasConfig';
 
 interface BinInteractiveProps {
   offset: Vector2d;
@@ -48,6 +47,10 @@ const BinInteractive = forwardRef<KonvaLayer, BinInteractiveProps>(
     useEffect(() => {
       setRenderedBins(getBinLayout);
     }, [numBins]);
+
+    useEffect(() => {
+      setBinScore({ binLayouts: renderedBins, bins, level }, 'user');
+    }, [renderedBins, bins, level]);
 
     const handleDragMove = (e: KonvaEventObject<DragEvent>) => {
       const target = e.target as Shape;
