@@ -15,9 +15,7 @@ interface ScorePayload {
   averageTimeUsed: number | undefined;
 }
 
-interface PersistedScore extends Score {}
-
-type MappedScore = Record<string, Record<Levels, PersistedScore | undefined>>;
+type MappedScore = Record<Algorithm, Record<Levels, number> | undefined>;
 
 type Player = 'user' | 'algorithm';
 
@@ -28,7 +26,6 @@ export type ScoreState = Record<Player, Score> & {
   setScore(score: ScorePayload | number, player: Player): void;
   setBinScore: (payload: Omit<CalculateBinScore, 'averageTimeUsed'>, player: Player) => void;
   setRectanglesLeft(rectangles: number): void;
-  getPersonalBest(algo: Algorithm, level: Levels): Score | undefined;
   setLastPlayed(): void;
   // Percentage
   averageTimeUsed: number | undefined;
@@ -47,7 +44,6 @@ export type ScoreState = Record<Player, Score> & {
   setUsedGameAreaAlgo(avg: number | undefined): void;
   rectanglesLeft: number;
   lastPlayed: Date | undefined;
-  readonly personalBest: MappedScore | undefined;
   resetScore(): void;
 };
 
@@ -66,7 +62,6 @@ const useScoreStore = create<ScoreState>((set, get) => ({
   setAverageTimeUsed: (avg: number) => set(state => ({ ...state, averageTimeUsed: avg })),
   algorithm: initScore(),
   user: initScore(),
-  personalBest: getLocalStorage<MappedScore>(SCORE_PREFIX),
   lastPlayed: (function () {
     const savedTime = getLocalStorage<string>(LAST_PLAYED_PREFIX);
     if (!savedTime) return;
@@ -81,18 +76,20 @@ const useScoreStore = create<ScoreState>((set, get) => ({
     }),
   setRectanglesLeft: (rectangles: number) => set(state => ({ ...state, rectanglesLeft: rectangles })),
   setScore: (payload, player) =>
-    set(state => ({
-      ...state,
-      [player]: {
-        height:
-          typeof payload === 'number'
-            ? payload
-            : calculateStripScore(payload.level, payload.usedRectsArea, payload.usedGameArea, payload.averageTimeUsed),
-      },
-    })),
+    set(state => {
+      const score =
+        typeof payload === 'number'
+          ? payload
+          : calculateStripScore(payload.level, payload.usedRectsArea, payload.usedGameArea, payload.averageTimeUsed);
+      return {
+        ...state,
+        [player]: {
+          height: score,
+        },
+      };
+    }),
   setBinScore: (payload, player) =>
     set(state => ({ ...state, [player]: { height: calculateBinScore({ ...payload, averageTimeUsed: state.averageTimeUsed }) } })),
-  getPersonalBest: (algo: Algorithm, level: Levels) => get().personalBest?.[algo]?.[level],
   resetScore: () =>
     set(state => {
       return { ...state, user: { height: 0 }, algorithm: { height: 0 } };

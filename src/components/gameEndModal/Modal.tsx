@@ -27,7 +27,7 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
   const { user: userScore, algo: algoScore } = useScoreStore(useCallback(state => ({ user: state.user.height, algo: state.algorithm.height }), []));
   const { level } = useLevelStore();
   const { algorithm } = useAlgorithmStore();
-  const { getPersonalBest, lastPlayed, setLastPlayed } = useScoreStore();
+  const { lastPlayed, setLastPlayed } = useScoreStore();
   const { gameResults } = useAchievementStore();
   const { currentGame: gamemode } = useGameStore();
 
@@ -122,7 +122,7 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
                         <span>Beat by the algorithm</span>
                       </li>
                     )} */}
-                    {userScore > (getPersonalBest(algorithm, level)?.height ?? userScore + 1) ? (
+                    {userScore >= (prevBest?.score ?? 0) ? (
                       <li className="flex flex-row justify-start px-2 pt-2 pb-1 transition-all rounded bg-zinc-500 bg hover:scale-105">
                         <CheckIcon className="h-4 pr-1 text-green-500" />
                         <span>New personal best</span>
