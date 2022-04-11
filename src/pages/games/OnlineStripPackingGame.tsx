@@ -74,7 +74,7 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
 
   // Snapping
   const { snapInventory, snapInteractive } = useSnap({
-    inventory: inventory,
+    inventory,
     inventoryWidth,
     stripWidth: colWidth,
     gameHeight,

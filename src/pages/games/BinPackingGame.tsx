@@ -14,13 +14,24 @@ import { BinPackingAlgorithm } from '../../types/enums/BinPackingAlgorithm.enum'
 import { ColorRect } from '../../types/ColorRect.interface';
 import { generateInventory } from '../../utils/generateData';
 import { Gamemodes } from '../../types/enums/Gamemodes.enum';
-import useGameStore from '../../store/game.store';
-import Konva from 'konva';
 import { Shape, ShapeConfig } from 'konva/lib/Shape';
 import { Stage as KonvaStage } from 'konva/lib/Stage';
 import { Dimensions } from '../../types/Dimensions.interface';
-import { compressBinPackingInv } from '../../utils/binPacking';
+import { compressBinPackingInv, findBin, isBin } from '../../utils/binPacking';
 import { BinPackingRect } from '../../types/BinPackingRect.interface';
+import BinPackingNav from '../../components/Nav/BinPackingNav';
+import { useOnGameStart } from '../../hooks/useOnGameStart';
+import { useRestartStripPacking } from '../../hooks/useRestartStripPacking';
+import { useSnap } from '../../hooks/useSnap';
+import { Group as KonvaGroup } from 'konva/lib/Group';
+import { intersects } from '../../utils/intersects';
+import { Bin } from '../../types/Bin.interface';
+import TimeBar from '../../components/TimeBar';
+import { useEvents } from '../../hooks/useEvents';
+import useScoreStore from '../../store/score.store';
+import GameEndModal from '../../components/gameEndModal/Modal';
+import { useGameEnded } from '../../hooks/useGameEnded';
+import BinPackingGameIntroModal from '../../components/games/bin-packing/BinPackingGameIntroModal';
 import SidewaysScrollBar from '../../components/canvas/SidewaysScrollBar';
 import { useSetSidewaysScrollbar } from '../../hooks/useSetSidewaysScrollbar';
 
@@ -53,21 +64,31 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
   const [scrollableWidth, setScrollableWidth] = useState(initialBinAreaWidth);
 
   // algorithm handle
-  const algorithm = useRef<BinAlgorithmHandle>(null);
+  const algorithmHandle = useRef<BinAlgorithmHandle>(null);
   const [staticInventory, setStaticInventory] = useState<BinPackingRect[]>(generateInventory(inventoryWidth, NUM_ITEMS));
-  const [inventoryChanged, setInventoryChanged] = useState(true);
-  const { setCurrentGame } = useGameStore();
 
-  useEffect(() => setCurrentGame(Gamemodes.BIN_PACKING), []);
+  const { algorithm } = useOnGameStart<BinPackingAlgorithm>(Gamemodes.BIN_PACKING, BinPackingAlgorithm.HYBRID_FIRST_FIT);
 
   /**
    * This is the inventory, used for rendering the draggable rects. Whenever an
    * item is placed in a bin, it's removed from this array
    */
   const [renderInventory, setRenderInventory] = useState<ColorRect[]>([]);
-  const [bins, setBins] = useState<Record<number, ColorRect[]>>({});
+  const [bins, setBins] = useState<Bin>({});
   const [binLayout, setBinLayout] = useState<IRect[]>([]);
 
+  /**
+   * Reset when algorithm or level changes
+   */
+  const resetFuncs = [
+    () => {
+      const newInv = generateInventory<BinPackingRect>(inventoryWidth, NUM_ITEMS);
+      setRenderInventory([...newInv]);
+      setStaticInventory([...newInv]);
+      setBins({});
+    },
+    algorithmHandle.current?.reset,
+  ];
   useSetSidewaysScrollbar(scrollableWidth, interactiveLayer, binAreaWidth, inventoryWidth, interactiveScrollBarRef);
   useSetSidewaysScrollbar(scrollableWidth, algorithmLayerRef, binAreaWidth, inventoryWidth, algorithmScrollbarRef);
 
@@ -83,7 +104,6 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
     const x = Math.max(minX, Math.min(oldX, maxX));
 
     const vx = ((x - inventoryWidth) / (-scrollableWidth + binAreaWidth)) * availableWidth + PADDING;
-    console.log({ vx });
     interactiveScrollBarRef.current?.x(vx + inventoryWidth);
   }, [scrollableWidth]);
 
@@ -94,56 +114,75 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
     setScrollableWidth(newWidth);
   }, [bins]);
 
-  const findBin = (dropPos: Vector2d, rect: Dimensions & Vector2d) => {
-    return binLayout.findIndex(({ height: binHeight, width: binWidth, x: binX, y: binY }) => {
-      // Check if the drop position is within the bin
-      const binX2 = binX + binWidth;
-      const binY2 = binY + binHeight;
-      const rectX = dropPos.x;
-      const rectY = dropPos.y;
-      const rectX2 = dropPos.x + rect.width;
-      const rectY2 = dropPos.y + rect.height;
+  useRestartStripPacking(resetFuncs, algorithm, {});
 
-      const fitsX1 = rectX >= binX;
-      const fitsX2 = rectX2 <= binX2;
-      const fitsY1 = rectY >= binY;
-      const fitsY2 = rectY2 <= binY2;
+  // Snapping
+  const { snapBinInventory, snapBinInteractive } = useSnap({
+    inventory: staticInventory,
+    inventoryWidth: inventoryWidth,
+    stripWidth: binAreaWidth,
+    gameHeight: binAreaHeight,
+    scrollableWidth,
+    inventoryLayer,
+    interactiveLayerRef: interactiveLayer,
+    inventoryFilterFunc: (r, target) => {
+      return r.name == target.name();
+    },
+    scrollableHeight: 0,
+  });
 
-      return fitsX1 && fitsX2 && fitsY1 && fitsY2;
-    });
-  };
+  const { dispatchEventOnPlace } = useEvents();
+  const setRectanglesLeft = useScoreStore(useCallback(({ setRectanglesLeft }) => setRectanglesLeft, []));
+  const returnIfFinished = useGameEnded();
+  useEffect(() => setRectanglesLeft(renderInventory.length), [renderInventory.length]);
 
-  const handleDraggedToBin = (evt: Shape<ShapeConfig> | KonvaStage, startPos: Vector2d) => {
+  const handleDraggedToBin = (evt: Shape<ShapeConfig> | KonvaStage, startPos: Vector2d): boolean => {
+    if (returnIfFinished()) return false;
+
     const { name, ...evtRect } = evt.getAttrs() as Dimensions & Vector2d & { name: string };
     const offset = interactiveLayer.current!.x();
     const dropPos = evt.getAbsolutePosition();
+    const interactiveScrollOffset = interactiveLayer.current?.y()!;
+    const inventoryScrollOffset = inventoryLayer.current?.y()!;
     // take the offset into account
     const relativeDropX = dropPos.x - offset;
 
-    const bin = findBin({ x: relativeDropX, y: dropPos.y }, evtRect);
-
-    // Animate it back
-    if (bin === -1) {
-      return new Konva.Tween({
-        x: startPos.x,
-        y: startPos.y,
-        node: evt,
-        duration: 0.4,
-        easing: Konva.Easings.EaseOut,
-      }).play();
-    }
+    const binId = findBin(binLayout, { x: relativeDropX, y: dropPos.y }, evtRect);
 
     const rect = renderInventory.find(r => r.name === name);
 
-    if (!rect) return;
+    if (!rect || binId === -1) return false;
+
+    const rectToPlace = {
+      x: relativeDropX,
+      y: evtRect.y + inventoryScrollOffset,
+      width: rect.width,
+      height: rect.height,
+    };
+
+    const interactiveRects = interactiveLayer.current?.children;
+    const intersectAny = interactiveRects?.some(ir => {
+      const attrs = ir.getAttrs();
+
+      if (attrs.id && isBin(attrs.id)) {
+        return false;
+      }
+
+      return intersects(attrs, rectToPlace);
+    });
+
+    // Collosion dection
+    if (intersectAny) {
+      return false;
+    }
 
     const { x, y } = dropPos;
     setBins(old => ({
       ...old,
-      [bin]: (old[bin] ?? []).concat({ ...rect, x: relativeDropX + inventoryWidth, y }),
+      [binId]: (old[binId] ?? []).concat({ ...rect, x: relativeDropX + inventoryWidth, y }),
     }));
 
-    const res = algorithm.current?.next();
+    const res = algorithmHandle.current?.next();
     if (!res) return false;
     const [placedRect, order, recIdx] = res;
 
@@ -157,17 +196,13 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
       staticInventory,
       setStaticInventory: rects => setStaticInventory(rects),
       setRenderInventory: rects => setRenderInventory(rects),
-      onCompress: idx => algorithm.current?.place(placedRect, idx),
+      onCompress: idx => algorithmHandle.current?.place(placedRect, idx),
     });
-  };
 
-  useEffect(() => {
-    if (inventoryChanged) {
-      setRenderInventory([...staticInventory]);
-      setInventoryChanged(false);
-      // setRectanglesLeft(0);
-    }
-  }, [staticInventory, inventoryChanged]);
+    dispatchEventOnPlace();
+
+    return true;
+  };
 
   const handleWheel = useKonvaWheelHandler({
     handlers: [
@@ -215,6 +250,10 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
 
   return (
     <div className="w-full">
+      <BinPackingNav />
+      <GameEndModal />
+      <BinPackingGameIntroModal />
+      <TimeBar />
       <Stage onWheel={handleWheel} width={wWidth} height={gameHeight}>
         <Layer>
           {/* Algorithm BG */}
@@ -224,14 +263,16 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
         </Layer>
         <BinInteractive
           binSize={binSize}
+          snap={(group, target) => snapBinInteractive(group, target, binLayout)}
           onBinLayout={setBinLayout}
           bins={bins}
+          setBins={setBins}
           ref={interactiveLayer}
           dimensions={{
             width: binAreaWidth,
             height: binAreaHeight,
           }}
-          offset={{ x: inventoryWidth, y: 0 }}
+          layerOffset={{ x: inventoryWidth, y: 0 }}
         />
         <Layer>
           <Rect fill="#444" x={inventoryWidth} y={binAreaHeight} width={binAreaWidth} height={binAreaHeight} />
@@ -240,11 +281,10 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
           layerRef={algorithmLayerRef}
           getInventoryScrollOffset={() => -inventoryLayer.current?.y()!}
           staticInventory={staticInventory}
-          binLayout={binLayout}
           data={staticInventory}
           selectedAlgorithm={BinPackingAlgorithm.HYBRID_FIRST_FIT}
           binSize={binSize}
-          ref={algorithm}
+          ref={algorithmHandle}
           dimensions={{
             width: binAreaWidth,
             height: binAreaHeight,
@@ -262,6 +302,7 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
           onDraggedToBin={handleDraggedToBin}
           renderInventory={renderInventory}
           staticInventory={staticInventory}
+          snap={target => snapBinInventory(interactiveLayer.current?.children as KonvaGroup[], target, binLayout)}
         />
 
         <Layer>

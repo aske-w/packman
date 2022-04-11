@@ -16,7 +16,6 @@ export const useRestartStripPacking = <T extends Record<string, any> | undefined
     setEvent(Events.IDLE);
     cbs.forEach(cb => cb?.(context));
   };
-
   useEffect(() => {
     switch (event) {
       case Events.RESTART:

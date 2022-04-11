@@ -1,13 +1,24 @@
 import create from 'zustand';
+import { persist } from './middleware/persist.middleware';
 
 export interface HelpState {
   setIntroOpen: (open: boolean) => void;
   introOpen: boolean;
+  dontShowAgain: boolean;
+  setShowMsgAgain: () => void;
 }
 
-const useHelpStore = create<HelpState>(set => ({
-  introOpen: true,
-  setIntroOpen: open => set(state => ({ ...state, introOpen: open })),
-}));
+const useHelpStore = create<HelpState>(
+  persist({ key: 'helpstore', allowlist: ['dontShowAgain'] }, (set, get) => ({
+    introOpen: get()?.dontShowAgain || false,
+    setIntroOpen: open => set(state => ({ ...state, introOpen: open })),
+    dontShowAgain: false,
+    setShowMsgAgain: () =>
+      set(state => ({
+        ...state,
+        dontShowAgain: !state.dontShowAgain,
+      })),
+  }))
+);
 
 export default useHelpStore;

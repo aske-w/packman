@@ -1,10 +1,14 @@
-import { Dialog, Transition } from '@headlessui/react';
+import { Transition, Dialog } from '@headlessui/react';
 import { QuestionMarkCircleIcon } from '@heroicons/react/solid';
-import { Fragment } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import useHelpStore from '../../../store/help.store';
+import { Gamemodes } from '../../../types/Gamemodes.enum';
 
-export default function StripPackingGameIntroModal() {
-  const { introOpen, setIntroOpen, dontShowAgain, setShowMsgAgain } = useHelpStore();
+interface BinPackingGameIntroModalProps {}
+
+const BinPackingGameIntroModal: React.FC<BinPackingGameIntroModalProps> = ({}) => {
+  const { introOpen, setIntroOpen, setShowMsgAgain, dontShowAgain } = useHelpStore();
+
   return (
     <>
       <Transition appear show={introOpen} as={Fragment}>
@@ -38,35 +42,38 @@ export default function StripPackingGameIntroModal() {
             >
               <div className="inline-block w-full max-w-2xl p-6 my-8 overflow-hidden prose text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl max-h-[40rem] overflow-y-auto">
                 <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
-                  Welcome to Strip Packing
+                  Welcome to Bin Packing
                 </Dialog.Title>
                 <div className="mt-2 ">
                   <h4>Objective</h4>
                   <p className="">
-                    In this game mode your objective is to get the highest possible score. This is done by packing the rectangles in the
+                    In this game mode your objective is to get the highest possible score by packing the least amount of bins and packing the bins as
+                    densly as possible in the
                     <b>
-                      <em> left </em>
+                      <em> top right </em>
                     </b>
                     strip.
                   </p>
-                  <p>
-                    To get a good score you need to achieve the minimal possible height. Your are competing against an algorithm. It has the same
-                    objective as you.
-                  </p>
+                  <p>Your are competing against an algorithm. It has the same objective as you.</p>
                   <h4>Inventory</h4>
                   <p className="">
-                    In the middle of the screen you see your inventory. This is all the rectangles that you have yet to pack. To pack one of these
-                    simply drag it to your strip.
+                    The left part of your is your inventory. This is all the rectangles that you have yet to pack. To pack one of these simply drag it
+                    to your strip.
+                  </p>
+                  <p>
+                    Each rectangle will be given a number when the algorithm packs. The number indicates which rectangles the algorithm has choosen
+                    and in which order.
                   </p>
                   <h4>Algorithm</h4>
                   <p className="">
-                    In the right hand side of the screen you can see another strip. This is the strip where the algorithm packs its rectangles. The
-                    algorithm has the same inventory as you do.
+                    In the bottom right corner of your screen you can see another strip. This is the strip where the algorithm packs its rectangles.
+                    The algorithm has the same inventory as you do.
                   </p>
                   <p>
                     After you have placed a rectangle the algorithm will do the same. The numbers that appear in the inventory is the order of which
                     the algorithm has selected the rectangles.
                   </p>
+
                   <p className="italic">
                     You can always open this again by clicking
                     <QuestionMarkCircleIcon className="inline w-5 h-5 mx-2 text-gray-800" />
@@ -99,4 +106,6 @@ export default function StripPackingGameIntroModal() {
       </Transition>
     </>
   );
-}
+};
+
+export default BinPackingGameIntroModal;

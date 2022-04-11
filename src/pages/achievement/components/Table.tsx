@@ -32,7 +32,7 @@ const Table: React.FC<TableProps> = ({ className, headers, rows }) => {
                   return (
                     <tr key={i} className={'bg-main ' + border}>
                       {_rows.map((row, j) => {
-                        return <Row key={row.text} text={row.text} />;
+                        return <Row key={j} text={row.text} />;
                       })}
                     </tr>
                   );

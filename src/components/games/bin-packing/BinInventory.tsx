@@ -14,23 +14,27 @@ interface BinInventoryProps {
   renderInventory: ColorRect[];
   inventoryWidth: number;
   gameHeight: number;
-  onDraggedToBin: (rect: Shape<ShapeConfig> | Stage, pos: Vector2d) => void;
+  onDraggedToBin: (rect: Shape<ShapeConfig> | Stage, pos: Vector2d) => boolean;
+  snap: (target: Shape) => void;
 }
 
 const BinInventory = forwardRef<KonvaLayer, BinInventoryProps>(
-  ({ staticInventory, renderInventory, gameHeight, inventoryWidth, onDraggedToBin }, ref) => {
+  ({ staticInventory, renderInventory, gameHeight, inventoryWidth, onDraggedToBin, snap }, ref) => {
     const handleDragEnd = (evt: KonvaEventObject<DragEvent>) => {
       const rect = evt.target;
       const { name, width } = rect.getAttrs();
 
       const { x: dropX } = rect.getAbsolutePosition();
-      const { x: x, y: y } = renderInventory.find(r => r.name === name)!;
+      const { x: x, y: y, fill } = renderInventory.find(r => r.name === name)!;
 
       const inBinArea = dropX + width > inventoryWidth;
 
       if (inBinArea) {
-        return onDraggedToBin(rect, { x, y });
+        if (onDraggedToBin(rect, { x, y })) return;
       }
+
+      // Set back original color
+      rect.setAttr('fill', fill);
 
       // animate back to starting position
       new Konva.Tween({
@@ -42,13 +46,32 @@ const BinInventory = forwardRef<KonvaLayer, BinInventoryProps>(
       }).play();
     };
 
+    const handleDragMove = (e: KonvaEventObject<DragEvent>) => {
+      const rect = e.target as Shape;
+
+      rect.moveToTop();
+      rect.setAttr('fill', rect.getAttr('fill').substring(0, 7) + '80');
+      snap(rect);
+    };
+
     return (
       <Layer x={0} y={0} ref={ref} name="INVENTORY_LAYER">
         {staticInventory.map((r, i) => {
           return <Rect key={r.name + 'ghost'} {...r} fill="transparent" strokeWidth={1} stroke="orange" id={`INVENTORY_GHOST_RECT`} />;
         })}
         {renderInventory.map((r, i) => {
-          return <Rect key={r.name} {...r} draggable strokeWidth={1} stroke={'dodgerblue'} onDragEnd={handleDragEnd} id={`INVENTORY_RECT`} />;
+          return (
+            <Rect
+              key={r.name}
+              {...r}
+              stroke={'dodgerblue'}
+              strokeWidth={1}
+              draggable
+              onDragMove={handleDragMove}
+              onDragEnd={handleDragEnd}
+              id={`INVENTORY_RECT`}
+            />
+          );
         })}
         {staticInventory.map((r, i) => {
           return typeof r.order === 'number' ? (
