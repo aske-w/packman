@@ -23,8 +23,8 @@ const BinInteractive = forwardRef<KonvaLayer, BinInteractiveProps>(({ offset, di
     const b: IRect[] = [];
 
     for (let i = 0; i < numBins + 1; i++) {
-      x = (i % binsPrRow) * (binDim.width + PADDING) + PADDING;
-      let rowNum = Math.floor(i / binsPrRow);
+      x = (i) * (binDim.width + PADDING) + PADDING;
+      let rowNum = Math.floor(0);
 
       b.push({
         ...binDim,

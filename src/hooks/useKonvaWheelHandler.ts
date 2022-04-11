@@ -14,8 +14,18 @@ interface WheelHandlerParams {
   activeArea: { minX: number; maxX: number; minY?: number; maxY?: number };
 }
 
+interface SidewaysParams {
+  layerRef: RefObject<KonvaLayer>;
+  scrollBarRef: RefObject<KonvaRect>;
+  scrollableWidth: number;
+  visibleWidth: number;
+  startX?: number;
+  activeArea: { minX: number; maxX: number; minY?: number; maxY?: number };
+}
+
 type InitializedScrollHandler = (e: (KonvaEventObject<WheelEvent> & KonvaWheelEvent)['evt']) => void;
 type ScrollHandler = (params: WheelHandlerParams) => InitializedScrollHandler;
+type SidewaysScrollHandler = (params: SidewaysParams) => InitializedScrollHandler;
 interface UseKonvaWheelHandlerParams {
   handlers: InitializedScrollHandler[];
 }
@@ -75,3 +85,44 @@ export const defaultScrollHandler: ScrollHandler =
       return;
     }
   };
+
+export const sidewaysScrollHandler: SidewaysScrollHandler = 
+  ({ layerRef, startX = 0, visibleWidth, scrollBarRef, scrollableWidth, activeArea }) => e => {
+    const { layerX, layerY, deltaX } = e;
+
+    const isActiveX = layerX > activeArea.minX && layerX < activeArea.maxX;
+    let isActiveY = true;
+
+    if (isNumber(activeArea.minY) && isNumber(activeArea.maxY)) {
+      isActiveY = layerY > activeArea.minY && layerY < activeArea.maxY;
+    }
+
+    if (isActiveX && isActiveY) {
+      const layer = layerRef.current!;
+      const dx = deltaX;
+      const oldX = layer.x();
+
+      // console.log({dy});
+
+      // TODO fix
+      // const minY = startY || -(scrollableHeight - visibleHeight);
+      // const maxY = startY ? startY + (scrollableHeight - visibleHeight) : 0;
+      const minX = -(scrollableWidth - visibleWidth) + startX;
+      const maxX = 0 + startX;
+      const availableWidth = visibleWidth - PADDING * 2 - SCROLLBAR_HEIGHT;
+
+      const x = Math.max(minX, Math.min(oldX - dx, maxX));
+
+      // console.log({y}, {minY}, {oldY}, {dy}, {maxY});
+
+      layer.x(x);
+
+      const vx = ((x - startX) / (-scrollableWidth + visibleWidth)) * availableWidth + PADDING;
+      
+      // console.log({y}, {scrollableHeight}, {visibleHeight}, {availableHeight}, {PADDING}, {vy});
+
+      scrollBarRef.current?.x(vx + startX);
+
+      return;
+    }
+};
