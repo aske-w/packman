@@ -18,6 +18,7 @@ import classNames from 'classnames';
 import LinkIcon from '@heroicons/react/solid/LinkIcon';
 import TeachAlgoModal from '../playground/TeachAlgoModal';
 import { AcademicCapIcon } from '@heroicons/react/solid';
+import ReactTooltip from 'react-tooltip';
 
 interface BinPackingSidebarProps<T = BinPackingAlgorithm> {
   setAlgorithm: React.Dispatch<React.SetStateAction<T>>;
@@ -55,9 +56,14 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
   const [genNum, setGenNum] = useState(100);
   const [previousData, setPreviousData] = useState<Dimensions[]>([]);
   const [teachingOpen, setTeachingOpen] = useState(false);
+  const [dimensionsLinked, setDimensionsLinked] = useState(false);
   const makeRndData = () => {
     setDimensionsStorage(generateData(genNum, 100, 10));
   };
+  useEffect(() => {
+    ReactTooltip.rebuild();
+  });
+
   useEffect(() => {
     makeRndData();
   }, []);
@@ -120,33 +126,41 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
           <RectInput
             disabled={isStarted}
             value={binDimensions.width}
-            onChange={({ target: { value } }) =>
-              setBinDimensions(old => ({
-                ...old,
-                width: value ? Number.parseInt(value) : 0,
-              }))
-            }
+            onChange={({ target: { value } }) => {
+              const width = Number.parseInt(value || '1');
+              setBinDimensions(old => {
+                const ratio = old.height / old.width;
+                return {
+                  width,
+                  height: Math.round(dimensionsLinked ? width * ratio : old.height),
+                };
+              });
+            }}
             className="w-4/12 px-3 select-none"
             sec="w"
           />
           <RectInput
             value={binDimensions.height}
-            onChange={({ target: { value } }) =>
-              setBinDimensions(old => ({
-                ...old,
-                height: value ? Number.parseInt(value) : 0,
-              }))
-            }
+            onChange={({ target: { value } }) => {
+              const height = Number.parseInt(value || '1');
+              setBinDimensions(old => {
+                const ratio = old.width / old.height;
+                return {
+                  height,
+                  width: Math.round(dimensionsLinked ? height * ratio : old.width),
+                };
+              });
+            }}
             className="w-4/12 px-3 select-none"
             sec="h"
             disabled={isStarted}
           />
 
           <LinkIcon
-            className="h-5 text-gray-200 cursor-pointer hover:text-gray-400"
+            data-tip="Link dimensions"
+            className={classNames('h-5  cursor-pointer hover:text-gray-200 focus:outline-none', dimensionsLinked ? 'text-white' : 'text-gray-500')}
             onClick={() => {
-              const dimensions = Math.max(binDimensions.height, binDimensions.width);
-              setBinDimensions({ width: dimensions, height: dimensions });
+              setDimensionsLinked(old => !old);
             }}
           />
         </div>
@@ -191,7 +205,6 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
       <SideBarSection title={'Data set (' + dimensionsStorage.length + ')'} className="flex flex-col p-0 overflow-hidden">
         <BoxInput dimensionsStorage={dimensionsStorage} setDimensionsStorage={setDimensionsStorage} disabled={algoState === 'RUNNING'}></BoxInput>
       </SideBarSection>
-      {/* <Actions {...props} /> */}
     </Sidebar>
   );
 };
