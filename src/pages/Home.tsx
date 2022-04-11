@@ -62,21 +62,22 @@ const AnimatedLogo = () => {
 
 const Home: React.FC<HomeProps> = ({}) => {
   return (
-    <div className="w-screen p-10 bg-gradient-to-b from-gray-700 to-gray-800 backdrop-blur backdrop-filter">
-      <div className="flex flex-col items-center justify-start w-full">
-        <div className="flex items-center space-x-4">
-          <AnimatedLogo />
-          {/* <img src={Logo} alt="logo" className="w-20 h-20" /> */}
-          <h1 className="text-6xl font-extrabold tracking-wide text-white">
-            Packman <span className="text-sm font-normal tracking-normal">by Learnpacking.com</span>
-          </h1>
+    <div className="w-full h-full min-h-screen p-10 bg-gradient-to-b from-gray-700 to-gray-800 backdrop-blur backdrop-filter">
+      <div className="flex justify-center">
+        <div className="flex flex-col items-start justify-center ">
+          <div className="flex items-center justify-start space-x-4">
+            <AnimatedLogo />
+            <h1 className="text-6xl font-extrabold tracking-wide text-white">
+              Packman <span className="text-sm font-normal tracking-normal">by Learnpacking.com</span>
+            </h1>
+          </div>
+          <p className="max-w-xl mt-5 text-lg font-medium text-white ">
+            Welcome to Packman! Here you can challenge yourself within the world of two-dimensional packing. Learn about the different algorithms in
+            the playgrounds and take your newfound knowledge with you and beat the algorithms.
+          </p>
         </div>
-        <p className="max-w-xl mt-5 text-lg font-medium text-white">
-          Welcome to Packman! Here you can challenge yourself within the world of two-dimensional packing. Learn about the different algorithms in the
-          playgrounds and take your newfound knowledge with you and beat the algorithms.
-        </p>
       </div>
-      <div className="flex items-start justify-around mt-12">
+      <div className="flex flex-col items-center justify-around mt-12 md:items-start md:flex-row">
         <div className="flex flex-col space-y-12">
           <div className="flex flex-col space-y-6">
             <h2 className="text-2xl font-bold text-white">Playground</h2>
@@ -112,7 +113,7 @@ const Home: React.FC<HomeProps> = ({}) => {
             </Link>
           </div>
         </div>
-        <div className="flex flex-col space-y-6">
+        <div className="flex flex-col mt-6 space-y-6 md:mt-0">
           <h2 className="text-2xl font-bold text-white">Games</h2>
           <p className="!mt-0 text-sm font-light text-gray-100">Test your skills</p>
 
