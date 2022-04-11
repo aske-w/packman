@@ -1,13 +1,13 @@
 import { Layer as KonvaLayer } from 'konva/lib/Layer';
 import { Rect as KonvaRect } from 'konva/lib/shapes/Rect';
 import { IRect, Vector2d } from 'konva/lib/types';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Layer, Rect, Stage } from 'react-konva';
 import ScrollBar from '../../components/canvas/ScrollBar';
 import BinAlgorithm, { BinAlgorithmHandle } from '../../components/games/bin-packing/BinAlgorithm';
 import BinInteractive from '../../components/games/bin-packing/BinInteractive';
 import BinInventory from '../../components/games/bin-packing/BinInventory';
-import { NAV_HEIGHT, PADDING, SCROLLBAR_WIDTH } from '../../config/canvasConfig';
+import { NAV_HEIGHT, PADDING, SCROLLBAR_HEIGHT, SCROLLBAR_WIDTH } from '../../config/canvasConfig';
 import { defaultScrollHandler, sidewaysScrollHandler, useKonvaWheelHandler } from '../../hooks/useKonvaWheelHandler';
 import { useWindowSize } from '../../hooks/useWindowSize';
 import { BinPackingAlgorithm } from '../../types/enums/BinPackingAlgorithm.enum';
@@ -22,6 +22,7 @@ import { Dimensions } from '../../types/Dimensions.interface';
 import { compressBinPackingInv } from '../../utils/binPacking';
 import { BinPackingRect } from '../../types/BinPackingRect.interface';
 import SidewaysScrollBar from '../../components/canvas/SidewaysScrollBar';
+import { useSetSidewaysScrollbar } from '../../hooks/useSetSidewaysScrollbar';
 
 interface BinPackingGameProps {}
 const NUM_ITEMS = 10;
@@ -44,7 +45,9 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
   const interactiveScrollBarRef = useRef<KonvaRect>(null);
   const interactiveLayer = useRef<KonvaLayer>(null);
   const interactiveScrollableHeight = binAreaHeight * 2;
-  const interactiveScrollableWidth = binAreaWidth * 2;
+  // const interactiveScrollableWidth = binAreaWidth * 10;
+  const initialInteractiveWidth = binAreaWidth * 2
+  const [interactiveScrollableWidth, setInteractiveScrollableWidth] = useState(initialInteractiveWidth);
   // algorithm scroll
   const algorithmScrollbarRef = useRef<KonvaRect>(null);
   const algorithmLayerRef = useRef<KonvaLayer>(null);
@@ -59,6 +62,7 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
 
   useEffect(() => setCurrentGame(Gamemodes.BIN_PACKING), []);
 
+  
   /**
    * This is the inventory, used for rendering the draggable rects. Whenever an
    * item is placed in a bin, it's removed from this array
@@ -66,6 +70,33 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
   const [renderInventory, setRenderInventory] = useState<ColorRect[]>([]);
   const [bins, setBins] = useState<Record<number, ColorRect[]>>({});
   const [binLayout, setBinLayout] = useState<IRect[]>([]);
+
+  useSetSidewaysScrollbar(interactiveScrollableWidth, interactiveLayer, binAreaWidth, inventoryWidth, interactiveScrollBarRef)
+
+  useEffect(() => {
+    const layer = interactiveLayer.current!;
+    const oldX = layer.x();
+
+    // TODO fix
+    const minX = -(interactiveScrollableWidth - binAreaWidth) + inventoryWidth;
+    const maxX = 0 + inventoryWidth;
+    const availableWidth = binAreaWidth - PADDING * 2 - SCROLLBAR_HEIGHT;
+
+    const x = Math.max(minX, Math.min(oldX, maxX));
+
+    // layer.x(x);
+
+    const vx = ((x - inventoryWidth) / (-interactiveScrollableWidth + binAreaWidth)) * availableWidth + PADDING;
+    console.log({vx});
+    interactiveScrollBarRef.current?.x(vx + inventoryWidth);
+  }, [interactiveScrollableWidth]);
+
+  useEffect(() => {
+    const numBins = Object.values(bins).length + 2;
+    const binWidthSum = numBins * (binSize.width + 30) + 30
+    const newWidth = Math.max(binWidthSum, initialInteractiveWidth);
+    setInteractiveScrollableWidth(newWidth);
+  }, [bins]);
 
   const findBin = (dropPos: Vector2d, rect: Dimensions & Vector2d) => {
     return binLayout.findIndex(({ height: binHeight, width: binWidth, x: binX, y: binY }) => {
@@ -91,8 +122,7 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
     const offset = interactiveLayer.current!.x();
     const dropPos = evt.getAbsolutePosition();
     // take the offset into account
-    const relativeDropX = dropPos.x - offset
-    console.log({dropPos});
+    const relativeDropX = dropPos.x - offset;
     
     const bin = findBin({ x: relativeDropX, y: dropPos.y }, evtRect);
 

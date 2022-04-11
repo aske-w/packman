@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useEffect, useState } from 'react';
 import { Rect } from 'react-konva';
 import { GAME_HEIGHT, GAME_WIDTH, PADDING, SCROLLBAR_HEIGHT, SCROLLBAR_WIDTH } from '../../config/canvasConfig';
 import { Rect as KonvaRect } from 'konva/lib/shapes/Rect';
@@ -31,7 +31,7 @@ const SidewaysScrollBar = forwardRef<KonvaRect, SidewaysScrollBarProps>(
         cornerRadius={5}
         dragBoundFunc={function (pos) {
           pos.y = y;
-          pos.x = Math.max(Math.min(pos.x, startX + gameWidth - this.width() - PADDING - PADDING), startX + PADDING);
+          pos.x = Math.max(Math.min(pos.x, startX + gameWidth - this.width() - PADDING - PADDING), startX);
           
           return pos;
         }}
@@ -39,7 +39,7 @@ const SidewaysScrollBar = forwardRef<KonvaRect, SidewaysScrollBarProps>(
           const horizontalBar = e.target;
           // delta in %
           const availableWidth = gameWidth - PADDING * 2 - horizontalBar.width();
-          var delta = (horizontalBar.x() - PADDING - startX) / availableWidth;
+          var delta = (horizontalBar.x() - startX) / availableWidth;
 
           const newX = -(scrollableWidth - gameWidth) * delta;
           

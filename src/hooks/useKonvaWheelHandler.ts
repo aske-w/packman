@@ -2,7 +2,7 @@ import { KonvaEventObject } from 'konva/lib/Node';
 import { Layer as KonvaLayer } from 'konva/lib/Layer';
 import { Rect as KonvaRect } from 'konva/lib/shapes/Rect';
 import { KonvaWheelEvent, PADDING, SCROLLBAR_HEIGHT } from '../config/canvasConfig';
-import { useCallback, RefObject } from 'react';
+import { useCallback, RefObject, useEffect } from 'react';
 import { isNumber } from 'lodash';
 
 interface WheelHandlerParams {
@@ -89,7 +89,7 @@ export const defaultScrollHandler: ScrollHandler =
 export const sidewaysScrollHandler: SidewaysScrollHandler = 
   ({ layerRef, startX = 0, visibleWidth, scrollBarRef, scrollableWidth, activeArea }) => e => {
     const { layerX, layerY, deltaX } = e;
-
+    
     const isActiveX = layerX > activeArea.minX && layerX < activeArea.maxX;
     let isActiveY = true;
 
