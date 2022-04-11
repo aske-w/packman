@@ -57,56 +57,20 @@ const Inventory = React.forwardRef<KonvaLayer, InventoryProps>(
       snap(rect);
     };
 
-    // const [tooltip, setTooltip] = useState<Partial<TextConfig>>({
-    //   text: '',
-    //   x: 0,
-    //   y: 0,
-    //   visible: false,
-    // });
-    // const enableTooltip = (rect: Rectangle) => {
-    //   var mousePos = ref?.();
-    //   if (!mousePos) return;
-    //   setTooltip({
-    //     text: `Width: ${rect.width}, height: ${rect.height}`,
-    //     x: mousePos.x,
-    //     y: mousePos.y,
-    //     visible: true,
-    //   });
-    // };
-    // const disableTooltip = () => {
-    //   setTooltip({
-    //     visible: false,
-    //   });
-    // };
-
-    // const getTooltipPos = (x: number) => {
-    //   const threshold = 100;
-    //   const closeToLeft = x < threshold;
-    //   const closeToRight = size.width - x < threshold;
-    //   if (!closeToLeft && !closeToRight) {
-    //     return 'down';
-    //   }
-    //   if (closeToLeft) return 'left';
-    //   if (closeToRight) return 'right';
-    // };
-
     return (
       <>
         <Layer x={stripWidth} y={0} ref={ref} name="INVENTORY_LAYER">
           {staticInventory.map((r, i) => {
-            return <Rect key={r.name + 'ghost'} {...r} opacity={0.2} strokeWidth={1} id={`INVENTORY_GHOST_RECT`} />;
+            return <Rect key={r.name + 'ghost'} {...r} fill="transparent" stroke={'orange'} strokeWidth={1} id={`INVENTORY_GHOST_RECT`} />;
           })}
           {dynamicInventory.map((r, i) => {
             return (
               <Rect
                 key={r.name}
                 {...r}
-                // onMouseMove={() => enableTooltip(rect)}
-                // onMouseOut={() => disableTooltip()}
                 draggable
                 strokeWidth={1}
-                stroke={'orange'}
-                // y={scrollableInventoryHeight + r.y}
+                stroke={'dodgerblue'}
                 onDragEnd={handleDragEnd}
                 onDragMove={handleDragMove}
                 id={`INVENTORY_RECT`}

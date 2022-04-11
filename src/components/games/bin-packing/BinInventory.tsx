@@ -57,19 +57,15 @@ const BinInventory = forwardRef<KonvaLayer, BinInventoryProps>(
     return (
       <Layer x={0} y={0} ref={ref} name="INVENTORY_LAYER">
         {staticInventory.map((r, i) => {
-          return <Rect key={r.name + 'ghost'} {...r} opacity={0.2} strokeWidth={1} id={`INVENTORY_GHOST_RECT`} />;
+          return <Rect key={r.name + 'ghost'} {...r} fill="transparent" strokeWidth={1} stroke="orange" id={`INVENTORY_GHOST_RECT`} />;
         })}
         {renderInventory.map((r, i) => {
           return (
             <Rect
               key={r.name}
               {...r}
-              // onMouseMove={() => enableTooltip(rect)}
-              // onMouseOut={() => disableTooltip()}
-              draggable
+              stroke={'dodgerblue'}
               strokeWidth={1}
-              stroke={'orange'}
-              // y={scrollableInventoryHeight + r.y}
               onDragMove={handleDragMove}
               onDragEnd={handleDragEnd}
               id={`INVENTORY_RECT`}

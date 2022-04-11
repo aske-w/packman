@@ -22,12 +22,14 @@ export const useOnlineStripPackingInventory = ({
 }: UseOnlineStripPackingInventoryParams) => {
   const [visibleInventorySize, setVisibleInventorySize] = useState(5);
   const level = useLevelStore(useCallback(({ level }) => level, []));
-  const [inventory, setInventory] = useState(() =>
-    generateData(inventorySize, inventoryWidth * 0.6, 10).map(r => ({ ...r, fill: Konva.Util.getRandomColor(), name: nanoid() }))
-  );
+
+  const createInventory = useCallback(() => {
+    return generateData(inventorySize, inventoryWidth * 0.8, 30).map(r => ({ ...r, fill: Konva.Util.getRandomColor(), name: nanoid() }));
+  }, [inventorySize, inventoryWidth]);
+  const [inventory, setInventory] = useState(createInventory);
 
   useEffect(() => {
-    setInventory(generateData(inventorySize, inventoryWidth * 0.6, 10).map(r => ({ ...r, fill: Konva.Util.getRandomColor(), name: nanoid() })));
+    setInventory(createInventory);
   }, [inventorySize, inventoryWidth]);
 
   const compressInventory = useCallback(() => {
@@ -82,7 +84,7 @@ export const useOnlineStripPackingInventory = ({
   const [visibleInventory, setVisibileInventory] = useState(compressInventory);
 
   const resetInventory = useCallback(() => {
-    setInventory(generateData(inventorySize, inventoryWidth * 0.6, 10).map(r => ({ ...r, fill: Konva.Util.getRandomColor(), name: nanoid() })));
+    setInventory(createInventory);
     setVisibileInventory([]);
   }, [inventorySize, inventoryWidth]);
 
