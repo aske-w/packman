@@ -47,10 +47,6 @@ const BinInteractive = forwardRef<KonvaLayer, BinInteractiveProps>(
       setRenderedBins(getBinLayout);
     }, [numBins]);
 
-    useEffect(() => {
-      setBinScore({ binLayouts: renderedBins, bins, level }, 'user');
-    }, [renderedBins, bins, level]);
-
     const handleDragMove = (e: KonvaEventObject<DragEvent>) => {
       const target = e.target as Shape;
       target.moveToTop();
