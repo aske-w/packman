@@ -14,7 +14,7 @@ import BoxInput from '../BoxInput';
 import RectInput from '../RectInput';
 import { generateData } from '../../utils/generateData';
 import Sidebar from './Sidebar';
-import TeachAlgoModal from '../playground/strip/TeachAlgoModal';
+import TeachAlgoModal from '../playground/TeachAlgoModal';
 import { AcademicCapIcon } from '@heroicons/react/solid';
 
 interface SidebarProps {

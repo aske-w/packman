@@ -1,19 +1,23 @@
-import { Transition, Dialog } from '@headlessui/react';
-import { QuestionMarkCircleIcon } from '@heroicons/react/solid';
-import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react';
+import { Dialog, Transition } from '@headlessui/react';
+import React, { Fragment, useEffect, useMemo, useState } from 'react';
 
-import BFDHArticle from './algorithm-articles/BFDHArticle';
-import FFDHArticle from './algorithm-articles/FFDHArticle';
-import NFDHArticle from './algorithm-articles/NFDHArticle';
-import SleatorsArticle from './algorithm-articles/SleatorsArticle';
-import SASArticle from './algorithm-articles/SASArticle';
-import { PackingAlgorithmEnum } from '../../../types/enums/OfflineStripPackingAlgorithm.enum';
-import SleatorsOptimizedArticle from './algorithm-articles/SleatorsOptimizedArticle';
+import { Algorithm } from '../../types/enums/AllAlgorithms.enum';
+import { BinPackingAlgorithm } from '../../types/enums/BinPackingAlgorithm.enum';
+import { PackingAlgorithmEnum } from '../../types/enums/OfflineStripPackingAlgorithm.enum';
+import FiniteFirstFitArticle from './bin/algorithm-articles/FiniteFirstFitArticle';
+import FiniteNextFitArticle from './bin/algorithm-articles/FiniteNextFitArticle';
+import HybridFirstFitArticle from './bin/algorithm-articles/HybridFirstFitArticle';
+import BFDHArticle from './strip/algorithm-articles/BFDHArticle';
+import FFDHArticle from './strip/algorithm-articles/FFDHArticle';
+import NFDHArticle from './strip/algorithm-articles/NFDHArticle';
+import SASArticle from './strip/algorithm-articles/SASArticle';
+import SleatorsArticle from './strip/algorithm-articles/SleatorsArticle';
+import SleatorsOptimizedArticle from './strip/algorithm-articles/SleatorsOptimizedArticle';
 
 interface TeachAlgoModalProps {
   visible: boolean;
   onClose: () => void;
-  algorithm: PackingAlgorithmEnum;
+  algorithm: Algorithm;
 }
 
 const TeachAlgoModal: React.FC<TeachAlgoModalProps> = ({ algorithm, onClose, visible }) => {
@@ -31,6 +35,12 @@ const TeachAlgoModal: React.FC<TeachAlgoModalProps> = ({ algorithm, onClose, vis
         return <SleatorsOptimizedArticle />;
       case PackingAlgorithmEnum.SIZE_ALTERNATING_STACK:
         return <SASArticle />;
+      case BinPackingAlgorithm.FINITE_NEXT_FIT:
+        return <FiniteNextFitArticle />;
+      case BinPackingAlgorithm.FINITE_FIRST_FIT:
+        return <FiniteFirstFitArticle />;
+      case BinPackingAlgorithm.HYBRID_FIRST_FIT:
+        return <HybridFirstFitArticle />;
       default:
         return null;
     }
@@ -78,7 +88,7 @@ const TeachAlgoModal: React.FC<TeachAlgoModalProps> = ({ algorithm, onClose, vis
             >
               <div className="inline-block w-full max-w-4xl p-6 my-8 overflow-hidden prose text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl max-h-[40rem] overflow-y-auto">
                 <div ref={setTop} />
-                <Dialog.Title className="text-lg font-medium leading-6 text-gray-900">{algorithm}</Dialog.Title>
+                <Dialog.Title className="mt-2 text-lg font-medium text-gray-900">{algorithm}</Dialog.Title>
                 <div className="mt-2 ">{article}</div>
                 <div className="flex justify-end mt-4">
                   <button

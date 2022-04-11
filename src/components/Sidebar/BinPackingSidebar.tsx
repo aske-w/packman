@@ -16,6 +16,8 @@ import SideBarItem from './SidebarItem';
 import SideBarSection from './SideBarSection';
 import classNames from 'classnames';
 import LinkIcon from '@heroicons/react/solid/LinkIcon';
+import TeachAlgoModal from '../playground/TeachAlgoModal';
+import { AcademicCapIcon } from '@heroicons/react/solid';
 
 interface BinPackingSidebarProps<T = BinPackingAlgorithm> {
   setAlgorithm: React.Dispatch<React.SetStateAction<T>>;
@@ -52,17 +54,25 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
   const isStarted = algoState === 'RUNNING' || algoState === 'PAUSED';
   const [genNum, setGenNum] = useState(100);
   const [previousData, setPreviousData] = useState<Dimensions[]>([]);
+  const [teachingOpen, setTeachingOpen] = useState(false);
 
   return (
     <Sidebar className="inline-flex flex-col overflow-hidden">
+      <TeachAlgoModal algorithm={algorithm} visible={teachingOpen} onClose={() => setTeachingOpen(false)} />
+
       <SideBarSection title="Algorithms">
-        <Select<BinPackingAlgorithm>
-          className="text-base font-thin text-white w-72"
-          options={ALL_BIN_PACKING_ALGORITHMS}
-          onChange={setAlgorithm}
-          value={algorithm}
-          disabled={false}
-        />
+        <div className="flex flex-row items-center justify-between">
+          <Select<BinPackingAlgorithm>
+            className="text-base font-thin text-white w-72"
+            options={ALL_BIN_PACKING_ALGORITHMS}
+            onChange={setAlgorithm}
+            value={algorithm}
+            disabled={false}
+          />
+          <button onClick={() => setTeachingOpen(true)}>
+            <AcademicCapIcon className="w-8 h-8 text-white" />
+          </button>
+        </div>
       </SideBarSection>
       <SideBarSection title="Actions panel">
         <SideBarItem
@@ -94,14 +104,14 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
         />
 
         {checked && (
-          <div className="flex flex-row space-x-20 items-center">
+          <div className="flex flex-row items-center space-x-20">
             <RangeSlider progress={speed} onChange={updateSpeed} hideTooltip />
             <RectInput value={speed} className="w-4/12 px-3 select-none" sec="%" readonly />
           </div>
         )}
       </SideBarSection>
       <SideBarSection className={classNames({ 'opacity-50': algoState === 'RUNNING' })} title="Bin dimensions">
-        <div className="flex flex-row space-x-4 items-center">
+        <div className="flex flex-row items-center space-x-4">
           <RectInput
             disabled={isStarted}
             value={binDimensions.width}
@@ -128,7 +138,7 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
           />
 
           <LinkIcon
-            className="h-5 text-gray-200 hover:text-gray-400 cursor-pointer"
+            className="h-5 text-gray-200 cursor-pointer hover:text-gray-400"
             onClick={() => {
               const dimensions = Math.max(binDimensions.height, binDimensions.width);
               setBinDimensions({ width: dimensions, height: dimensions });

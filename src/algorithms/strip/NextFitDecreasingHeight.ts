@@ -5,7 +5,7 @@ import { DimensionsWithConfig } from '../../types/DimensionsWithConfig.type';
 import { Shelf } from '../../types/Shelf.interface';
 import { RectangleConfig } from '../../types/RectangleConfig.interface';
 
-export class NextFitDecreasingHeight<T = RectangleConfig> implements PackingAlgorithm<T> {
+export class NextFitDecreasingHeight<T extends Record<string, any> = RectangleConfig> implements PackingAlgorithm<T> {
   data: DimensionsWithConfig<T>[] = [];
   shelf: Shelf;
   constructor(readonly gameSize: Dimensions) {

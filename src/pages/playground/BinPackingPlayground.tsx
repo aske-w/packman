@@ -1,6 +1,6 @@
 import Konva from 'konva';
 import React, { useState } from 'react';
-import Bin from '../../components/playground/Bin';
+import Bin from '../../components/playground/bin/Bin';
 import BinPackingSidebar from '../../components/Sidebar/BinPackingSidebar';
 import { genId, NAV_HEIGHT } from '../../config/canvasConfig';
 import { useBinPackingAlgorithm } from '../../hooks/useBinPackingAlgorithm';
