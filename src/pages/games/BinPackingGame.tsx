@@ -23,7 +23,7 @@ import { compressBinPackingInv } from '../../utils/binPacking';
 import { BinPackingRect } from '../../types/BinPackingRect.interface';
 
 interface BinPackingGameProps {}
-const NUM_ITEMS = 10;
+const NUM_ITEMS = 25;
 // bin dimensions
 const binSize = {
   height: 300,
