@@ -56,7 +56,7 @@ const BinPackingPlayground: React.FC<BinPackingPlaygroundProps> = ({}) => {
   return (
     <div
       style={{
-        height: `calc(100% - ${NAV_HEIGHT}px)`,
+        height: `calc(100vh - ${NAV_HEIGHT}px)`,
         width: '100%',
       }}
     >

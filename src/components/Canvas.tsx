@@ -96,42 +96,26 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(({ width, rects }, handle) 
                 {...rect}
                 y={rect.y + HEIGHT}
                 fill={rect.color}
-              ></MyRect>
+              />
             );
           })}
         </Layer>
         <Layer>
-          <Label
-            {...{
-              x: (tooltip.x || 0) + 10,
-              y: (tooltip.y || 0) + 10,
-              visible: tooltip.visible,
-            }}
-          >
+          <Label x={tooltip.x ?? 0} y={tooltip.y ?? 0} visible={tooltip.visible}>
             <Tag
-              {...{
-                fill: 'black',
-                pointerDirection: getTooltipPos(tooltip.x!),
-                pointerWidth: 10,
-                pointerHeight: 10,
-                lineJoin: 'round',
-                shadowColor: 'black',
-                cornerRadius: 10,
-                shadowBlur: 10,
-                shadowOffsetX: 10,
-                shadowOffsetY: 10,
-                shadowOpacity: 0.5,
-              }}
+              fill={'black'}
+              pointerDirection={getTooltipPos(tooltip.x!)}
+              pointerWidth={10}
+              pointerHeight={10}
+              lineJoin={'round'}
+              shadowColor={'black'}
+              cornerRadius={10}
+              shadowBlur={10}
+              shadowOffsetX={10}
+              shadowOffsetY={10}
+              shadowOpacity={0.5}
             />
-            <Text
-              {...{
-                fontFamily: 'Arial',
-                fontSize: 12,
-                padding: 5,
-                fill: 'white',
-                text: tooltip.text,
-              }}
-            ></Text>
+            <Text fontFamily={'Arial'} fontSize={12} padding={5} fill={'white'} text={tooltip.text} />
           </Label>
         </Layer>
       </Stage>
@@ -161,21 +145,7 @@ const MyRect: React.FC<RectConfig & KonvaNodeEvents> = ({
     }).play();
   }, [x, y]);
 
-  return (
-    <Rect
-      ref={ref}
-      x={0}
-      y={800}
-      opacity={0}
-      stroke={'rgba(0,0,0,0.2)'}
-      strokeWidth={1}
-      scaleX={3}
-      scaleY={3}
-      rotation={45}
-      draggable
-      {...props}
-    ></Rect>
-  );
+  return <Rect ref={ref} x={0} y={800} opacity={0} stroke={'rgba(0,0,0,0.2)'} strokeWidth={1} scaleX={3} scaleY={3} rotation={45} {...props} />;
 };
 
 export default Canvas;

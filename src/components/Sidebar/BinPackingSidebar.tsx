@@ -55,7 +55,12 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
   const [genNum, setGenNum] = useState(100);
   const [previousData, setPreviousData] = useState<Dimensions[]>([]);
   const [teachingOpen, setTeachingOpen] = useState(false);
-
+  const makeRndData = () => {
+    setDimensionsStorage(generateData(genNum, 100, 10));
+  };
+  useEffect(() => {
+    makeRndData();
+  }, []);
   return (
     <Sidebar className="inline-flex flex-col overflow-hidden">
       <TeachAlgoModal algorithm={algorithm} visible={teachingOpen} onClose={() => setTeachingOpen(false)} />
@@ -158,7 +163,7 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
                 disabled={isStarted}
               />
               <button
-                onClick={() => setDimensionsStorage(generateData(genNum, 100, 10))}
+                onClick={makeRndData}
                 className={`px-2 py-1 font-medium text-white rounded shadow bg-blue-700 ${isStarted ? 'opacity-60' : 'hover:bg-blue-800'}`}
                 disabled={isStarted}
               >
@@ -183,7 +188,7 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
         />
       </SideBarSection>
 
-      <SideBarSection title={'Manuel data set (' + dimensionsStorage.length + ')'} className="flex flex-col p-0 overflow-hidden">
+      <SideBarSection title={'Data set (' + dimensionsStorage.length + ')'} className="flex flex-col p-0 overflow-hidden">
         <BoxInput dimensionsStorage={dimensionsStorage} setDimensionsStorage={setDimensionsStorage} disabled={algoState === 'RUNNING'}></BoxInput>
       </SideBarSection>
       {/* <Actions {...props} /> */}

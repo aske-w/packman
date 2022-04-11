@@ -19,7 +19,6 @@ export const usePackingAlgorithms = (width: number, selectedAlgorithm: PackingAl
   const { addArea, getStats } = useStats(width);
   const [algoState, setAlgoState] = useState<AlgoStates>('STOPPED');
   const [isFinished, setIsFinished] = useState(true);
-  // TODO better typings than any :)
   const algorithm = useRef<PackingAlgorithm<{}, {}, any>>(new NextFitDecreasingHeight({ width, height: 0 }));
 
   const reset = useCallback(() => {
