@@ -422,7 +422,7 @@ export const useSnap = <T>({
     });
 
     target.setAttr('x', clamp(target.getAttr('x'), 0, stripWidth - target.getAttr('width')));
-    target.setAttr('y', clamp(target.getAttr('y'), 0, scrollableHeight - target.getAttr('height')));
+    target.setAttr('y', clamp(target.getAttr('y'), 0, gameHeight - target.getAttr('height')));
     snapBin(newDestination, target, binLayouts, { y: target.getAttr('y'), x: target.getAttr('x') + inventoryWidth }, inventoryWidth);
   };
 
