@@ -48,8 +48,6 @@ const OnlineStripPackingInteractive = React.forwardRef<OnlineStripPackingInterac
         return;
       }
 
-      console.log({ usedRectsAreaUser });
-
       setScore({ level, usedRectsArea: usedRectsAreaUser!, usedGameArea: _height * width, averageTimeUsed }, 'user');
     }, [stripRects, height]);
 

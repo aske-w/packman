@@ -157,24 +157,19 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
   }, [r]);
 
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full bg-gradient-to-b from-gray-600 to-gray-500">
       <GameEndModal />
       <TimeBar />
-      <OnlineStripPackingNav
-        r={r}
-        setR={_r => {
-          setR(_r);
-        }}
-      />
+      <OnlineStripPackingNav r={r} setR={setR} />
 
       <Stage className="flex justify-center h-full max-w-screen-xl mx-auto " onWheel={handleWheel} width={totalGameWidth} height={gameHeight}>
         <Layer>
           {/* Interactive BG */}
-          <Rect fill="#666" x={0} width={colWidth} height={gameHeight} />
+          <Rect fill="#333" x={0} width={colWidth} height={gameHeight} />
           {/* Inventory BG */}
           <Rect fill="#555" x={colWidth} width={inventoryWidth} height={gameHeight} />
           {/* Algorithm BG */}
-          <Rect fill="#444" x={colWidth + inventoryWidth} width={colWidth} height={gameHeight} />
+          <Rect fill="#333" x={colWidth + inventoryWidth} width={colWidth} height={gameHeight} />
         </Layer>
 
         <OnlineStripPackingInteractive

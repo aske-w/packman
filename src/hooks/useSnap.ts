@@ -213,7 +213,7 @@ export const useSnap = <T>({
     // clamping to prevent placing target outside of the game
     const adjustedY = clamp(y + inventoryLayer.current?.y()! - stripScrollOffset, 0, scrollableHeight - target.height());
     const adjustedX = clamp(x + stripWidth, 0, stripWidth + inventoryWidth);
-    // console.log({x, y}, { x: adjustedX, y: adjustedY }, {scrollableHeight});
+
     snap(newDestination, target, { x: adjustedX, y: adjustedY });
   };
 
