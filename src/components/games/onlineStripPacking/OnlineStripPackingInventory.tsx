@@ -52,8 +52,7 @@ const OnlineStripPackingInventory = React.forwardRef<KonvaLayer, OnlineStripPack
         {visibleInventory.map((r, i) => (
           <React.Fragment key={r.name}>
             <Rect {...r} opacity={0.5} />
-            <Rect {...r} onDragEnd={handleDragEnd} onDragMove={handleDragMove} draggable />
-            <Text fontSize={20} {...r} listening={false} fill="black" text={`${i}`} />
+            <Rect {...r} onDragEnd={handleDragEnd} stroke="rgba(0,0,0,0.3)" strokeWidth={1} onDragMove={handleDragMove} draggable />
           </React.Fragment>
         ))}
       </Layer>
