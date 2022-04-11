@@ -66,6 +66,7 @@ const BinInventory = forwardRef<KonvaLayer, BinInventoryProps>(
               {...r}
               stroke={'dodgerblue'}
               strokeWidth={1}
+              draggable
               onDragMove={handleDragMove}
               onDragEnd={handleDragEnd}
               id={`INVENTORY_RECT`}

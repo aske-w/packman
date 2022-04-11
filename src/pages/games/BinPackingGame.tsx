@@ -272,7 +272,7 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
             width: binAreaWidth,
             height: binAreaHeight,
           }}
-          offset={{ x: inventoryWidth, y: 0 }}
+          layerOffset={{ x: inventoryWidth, y: 0 }}
         />
         <Layer>
           <Rect fill="#444" x={inventoryWidth} y={binAreaHeight} width={binAreaWidth} height={binAreaHeight} />

@@ -19,7 +19,7 @@ import useScoreStore from '../../../store/score.store';
 import useLevelStore from '../../../store/level.store';
 
 interface BinInteractiveProps {
-  offset: Vector2d;
+  layerOffset: Vector2d;
   dimensions: Dimensions;
   bins: Bin;
   binSize: Dimensions;
@@ -29,14 +29,14 @@ interface BinInteractiveProps {
 }
 
 const BinInteractive = forwardRef<KonvaLayer, BinInteractiveProps>(
-  ({ setBins, offset, dimensions, bins, onBinLayout, snap, binSize: binDim }, ref) => {
+  ({ setBins, layerOffset, dimensions, bins, onBinLayout, snap, binSize: binDim }, ref) => {
     const setBinScore = useScoreStore(useCallback(state => state.setBinScore, []));
     const level = useLevelStore(useCallback(state => state.level, []));
     const rowHeight = binDim.height + BIN_PADDING;
     const binsPrRow = Math.floor(dimensions.width / (binDim.width + BIN_PADDING));
     const numBins = Object.values(bins).length;
     const layerRef = useCombinedRefs(ref);
-    const offsetX = layerRef.current?.x() ?? 0;
+    const scrollOffsetX = layerRef.current?.x() ?? 0;
 
     const getBinLayout = () => {
       const b = calcBinLayout(numBins, binsPrRow, binDim, rowHeight);
@@ -74,7 +74,7 @@ const BinInteractive = forwardRef<KonvaLayer, BinInteractiveProps>(
 
       const dropPos = {
         y,
-        x: x - offsetX,
+        x: x - scrollOffsetX,
       };
 
       const idx = findBin(renderedBins, dropPos, target.getAttrs());
@@ -88,7 +88,7 @@ const BinInteractive = forwardRef<KonvaLayer, BinInteractiveProps>(
         }, '');
         target.setAttr('fill', fill);
         target.setAbsolutePosition({
-          x: lastPos.x + offsetX,
+          x: lastPos.x + scrollOffsetX,
           y: lastPos.y,
         });
         return;
@@ -103,7 +103,7 @@ const BinInteractive = forwardRef<KonvaLayer, BinInteractiveProps>(
 
           if (intersects(target.getAttrs(), _r.getAttrs()) && lastPos)
             target.setAbsolutePosition({
-              x: lastPos.x + offsetX,
+              x: lastPos.x + scrollOffsetX,
               y: lastPos.y + scrollOffset,
             });
         });
@@ -130,7 +130,7 @@ const BinInteractive = forwardRef<KonvaLayer, BinInteractiveProps>(
           produce(bin => {
             const pos = e.target.getAbsolutePosition();
             const y = pos.y - layerRef.current!.y();
-            bin[binIdx][rectIdx].x = pos.x - offsetX + offset.x;
+            bin[binIdx][rectIdx].x = pos.x - scrollOffsetX + layerOffset.x;
             bin[binIdx][rectIdx].y = y;
           })
         );
@@ -138,7 +138,7 @@ const BinInteractive = forwardRef<KonvaLayer, BinInteractiveProps>(
     };
 
     return (
-      <Layer ref={layerRef} x={offset.x} y={0}>
+      <Layer ref={layerRef} x={layerOffset.x} y={0}>
         {renderedBins.map((b, i) => {
           return (
             <Fragment key={i + '_text'}>
@@ -161,7 +161,7 @@ const BinInteractive = forwardRef<KonvaLayer, BinInteractiveProps>(
                   {...r}
                   key={r.name}
                   draggable
-                  x={r.x - offset.x}
+                  x={r.x - layerOffset.x}
                 />
               ))}
             </Fragment>
