@@ -42,7 +42,7 @@ const StripPackingInteractive = React.forwardRef<StripPackingInteractiveHandle, 
 
     useEffect(() => {
       const _height = stripRects.reduce((maxY, r) => Math.max(maxY, Math.round(Math.abs(scrollableHeight - r.y) - height)), 0);
-      console.log({ _height });
+
 
       setUsedGameAreaUser(_height * width);
       if (_height === 0) {

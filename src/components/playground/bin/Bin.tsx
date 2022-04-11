@@ -116,19 +116,5 @@ const MyRect: React.FC<RectConfig & KonvaNodeEvents> = ({
     }).play();
   }, [x, y]);
 
-  return (
-    <Rect
-      ref={ref}
-      x={0}
-      y={800}
-      opacity={0}
-      stroke={'rgba(0,0,0,0.2)'}
-      strokeWidth={1}
-      scaleX={3}
-      scaleY={3}
-      rotation={45}
-      draggable
-      {...props}
-    ></Rect>
-  );
+  return <Rect ref={ref} x={0} y={800} opacity={0} stroke={'rgba(0,0,0,0.2)'} strokeWidth={1} scaleX={3} scaleY={3} rotation={45} {...props}></Rect>;
 };
