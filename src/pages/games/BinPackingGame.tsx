@@ -31,6 +31,7 @@ import { useEvents } from '../../hooks/useEvents';
 import useScoreStore from '../../store/score.store';
 import GameEndModal from '../../components/gameEndModal/Modal';
 import { useGameEnded } from '../../hooks/useGameEnded';
+import BinPackingGameIntroModal from '../../components/games/bin-packing/BinPackingGameIntroModal';
 
 interface BinPackingGameProps {}
 const NUM_ITEMS = 10;
@@ -223,6 +224,7 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
     <div className="w-full">
       <BinPackingNav />
       <GameEndModal />
+      <BinPackingGameIntroModal />
       <TimeBar />
       <Stage onWheel={handleWheel} width={wWidth} height={gameHeight}>
         <Layer>
