@@ -33,7 +33,7 @@ export enum Badges {
   COMPLETE_ALL_ALGORITHMS_EXPERT_BIN_PACKING = 'Won against all bin packing algorithms on expert difficulty',
 
   // Strip packing badges
-  COMPETED_AGAINST_ALL_ALGORITHMS_STRIP_PACKING = 'Competed against all bin packing algorithms',
+  COMPETED_AGAINST_ALL_ALGORITHMS_STRIP_PACKING = 'Competed against all strip packing algorithms',
   WON_AGAINST_ANY_ALGORITHM_STRIP_PACKING = 'Scored better than any algorithm in strip packing',
   WON_AGAINST_ALL_ALGORITHM_STRIP_PACKING = 'Scored better than all algorithms in strip packing',
   LOSE_AGAINST_ANY_ALGORITHM_STRIP_PACKING = 'Scored worse than any algorithm in strip packing',
@@ -57,3 +57,5 @@ export enum Badges {
    */
   CERTIFIED_EXPERT = 'Certified expert',
 }
+
+export const ALL_BADGES = Object.values(Badges);
