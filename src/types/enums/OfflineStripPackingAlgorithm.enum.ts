@@ -8,8 +8,8 @@ export enum PackingAlgorithmEnum {
 }
 
 export const ALL_PACKING_ALGORITHMS = [
-  PackingAlgorithmEnum.FIRST_FIT_DECREASING_HEIGHT,
   PackingAlgorithmEnum.NEXT_FIT_DECREASING_HEIGHT,
+  PackingAlgorithmEnum.FIRST_FIT_DECREASING_HEIGHT,
   PackingAlgorithmEnum.BEST_FIT_DECREASING_HEIGHT,
   PackingAlgorithmEnum.SIZE_ALTERNATING_STACK,
   PackingAlgorithmEnum.SLEATORS,
