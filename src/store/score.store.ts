@@ -1,8 +1,6 @@
 import create from 'zustand';
-import { Algorithm } from '../types/enums/AllAlgorithms.enum';
 import { Levels } from '../types/enums/Levels.enum';
-import { devtools } from 'zustand/middleware';
-import { calculateBinScore, CalculateBinScore, calculateStripScore, getLocalStorage, getYearMonthDay, LOCAL_STORAGE_PREFIX } from '../utils/utils';
+import { calculateBinScore, CalculateBinScore, calculateStripScore, getLocalStorage, LOCAL_STORAGE_PREFIX } from '../utils/utils';
 
 export interface Score {
   height: number;
@@ -15,11 +13,8 @@ interface ScorePayload {
   averageTimeUsed: number | undefined;
 }
 
-type MappedScore = Record<Algorithm, Record<Levels, number> | undefined>;
-
 type Player = 'user' | 'algorithm';
 
-const SCORE_PREFIX = LOCAL_STORAGE_PREFIX + 'score';
 const LAST_PLAYED_PREFIX = LOCAL_STORAGE_PREFIX + 'last_played';
 
 export type ScoreState = Record<Player, Score> & {

@@ -1,6 +1,6 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { ArrowLeftIcon, BadgeCheckIcon } from '@heroicons/react/outline';
-import { CheckIcon, RefreshIcon, XIcon } from '@heroicons/react/solid';
+import { CheckIcon, RefreshIcon } from '@heroicons/react/solid';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import Confetti from 'react-confetti';
 import { Link } from 'react-router-dom';
@@ -23,7 +23,7 @@ const GameEndModal: React.FC<GameEndModalProps> = ({}) => {
   const [title, setTitle] = useState<GameEndModalTitle | ''>('');
   const [titleTextColor, setTitleTextColor] = useState<string | undefined>();
   const { event, setEvent } = useEventStore(useCallback(({ event, setEvent }) => ({ event, setEvent }), []));
-  const { blur, setBlur } = useGameEndStore();
+  const { setBlur } = useGameEndStore();
   const { user: userScore, algo: algoScore } = useScoreStore(useCallback(state => ({ user: state.user.height, algo: state.algorithm.height }), []));
   const { level } = useLevelStore();
   const { algorithm } = useAlgorithmStore();
