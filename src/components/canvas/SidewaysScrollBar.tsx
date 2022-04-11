@@ -32,7 +32,7 @@ const SidewaysScrollBar = forwardRef<KonvaRect, SidewaysScrollBarProps>(
         dragBoundFunc={function (pos) {
           pos.y = y;
           pos.x = Math.max(Math.min(pos.x, startX + gameWidth - this.width() - PADDING - PADDING), startX);
-          
+
           return pos;
         }}
         onDragMove={function (this: Konva.Layer, e) {
@@ -42,7 +42,7 @@ const SidewaysScrollBar = forwardRef<KonvaRect, SidewaysScrollBarProps>(
           var delta = (horizontalBar.x() - startX) / availableWidth;
 
           const newX = -(scrollableWidth - gameWidth) * delta;
-          
+
           onXChanged(newX);
         }}
       />

@@ -47,9 +47,9 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
   // algorithm scroll
   const algorithmScrollbarRef = useRef<KonvaRect>(null);
   const algorithmLayerRef = useRef<KonvaLayer>(null);
-  
+
   // shared scroll
-  const initialBinAreaWidth = binAreaWidth * 2
+  const initialBinAreaWidth = binAreaWidth * 2;
   const [scrollableWidth, setScrollableWidth] = useState(initialBinAreaWidth);
 
   // algorithm handle
@@ -60,7 +60,6 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
 
   useEffect(() => setCurrentGame(Gamemodes.BIN_PACKING), []);
 
-  
   /**
    * This is the inventory, used for rendering the draggable rects. Whenever an
    * item is placed in a bin, it's removed from this array
@@ -69,8 +68,8 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
   const [bins, setBins] = useState<Record<number, ColorRect[]>>({});
   const [binLayout, setBinLayout] = useState<IRect[]>([]);
 
-  useSetSidewaysScrollbar(scrollableWidth, interactiveLayer, binAreaWidth, inventoryWidth, interactiveScrollBarRef)
-  useSetSidewaysScrollbar(scrollableWidth, algorithmLayerRef, binAreaWidth, inventoryWidth, algorithmScrollbarRef)
+  useSetSidewaysScrollbar(scrollableWidth, interactiveLayer, binAreaWidth, inventoryWidth, interactiveScrollBarRef);
+  useSetSidewaysScrollbar(scrollableWidth, algorithmLayerRef, binAreaWidth, inventoryWidth, algorithmScrollbarRef);
 
   useEffect(() => {
     const layer = interactiveLayer.current!;
@@ -86,13 +85,13 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
     // layer.x(x);
 
     const vx = ((x - inventoryWidth) / (-scrollableWidth + binAreaWidth)) * availableWidth + PADDING;
-    console.log({vx});
+    console.log({ vx });
     interactiveScrollBarRef.current?.x(vx + inventoryWidth);
   }, [scrollableWidth]);
 
   useEffect(() => {
     const numBins = Object.values(bins).length + 2;
-    const binWidthSum = numBins * (binSize.width + 30) + 30
+    const binWidthSum = numBins * (binSize.width + 30) + 30;
     const newWidth = Math.max(binWidthSum, initialBinAreaWidth);
     setScrollableWidth(newWidth);
   }, [bins]);
@@ -122,7 +121,7 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
     const dropPos = evt.getAbsolutePosition();
     // take the offset into account
     const relativeDropX = dropPos.x - offset;
-    
+
     const bin = findBin({ x: relativeDropX, y: dropPos.y }, evtRect);
 
     // Animate it back
@@ -197,7 +196,7 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
         visibleWidth: binAreaWidth,
         layerRef: interactiveLayer,
         scrollBarRef: interactiveScrollBarRef,
-        scrollableWidth: scrollableWidth
+        scrollableWidth: scrollableWidth,
       }),
       // algorithm
       sidewaysScrollHandler({
@@ -288,7 +287,7 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
           />
           <SidewaysScrollBar
             key="algo scroll bar"
-            startPosition='left'
+            startPosition="left"
             ref={algorithmScrollbarRef}
             scrollableWidth={scrollableWidth}
             x={inventoryWidth + PADDING}

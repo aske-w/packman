@@ -77,7 +77,7 @@ export const defaultScrollHandler: ScrollHandler =
       layer.y(y);
 
       const vy = ((y - startY) / (-scrollableHeight + visibleHeight)) * availableHeight + PADDING;
-      
+
       // console.log({y}, {scrollableHeight}, {visibleHeight}, {availableHeight}, {PADDING}, {vy});
 
       scrollBarRef.current?.y(vy + startY);
@@ -86,10 +86,11 @@ export const defaultScrollHandler: ScrollHandler =
     }
   };
 
-export const sidewaysScrollHandler: SidewaysScrollHandler = 
-  ({ layerRef, startX = 0, visibleWidth, scrollBarRef, scrollableWidth, activeArea }) => e => {
+export const sidewaysScrollHandler: SidewaysScrollHandler =
+  ({ layerRef, startX = 0, visibleWidth, scrollBarRef, scrollableWidth, activeArea }) =>
+  e => {
     const { layerX, layerY, deltaX } = e;
-    
+
     const isActiveX = layerX > activeArea.minX && layerX < activeArea.maxX;
     let isActiveY = true;
 
@@ -117,4 +118,4 @@ export const sidewaysScrollHandler: SidewaysScrollHandler =
 
       return;
     }
-};
+  };
