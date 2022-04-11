@@ -32,6 +32,8 @@ export interface CalculateBinScore {
 }
 
 export const calculateBinScore = ({ bins, binLayouts, level, averageTimeUsed = 0 }: CalculateBinScore): number => {
+  if (binLayouts.length === 1) return 0;
+
   const timeMultiplier = getMultiplier(averageTimeUsed);
 
   // Calc used area and subtract from total area
@@ -39,7 +41,8 @@ export const calculateBinScore = ({ bins, binLayouts, level, averageTimeUsed = 0
     const usedArea = rects.reduce((acc, rect) => acc + rect.width * rect.height, 0);
     return acc + usedArea;
   }, 0);
-  const totalArea = binLayouts.reduce((acc, layout) => acc + layout.width * layout.height, 0);
+  // There will always be one extra bin with no rects. We remove that
+  const totalArea = binLayouts.slice(0, binLayouts.length).reduce((acc, layout) => acc + layout.width * layout.height, 0);
 
   const levelsCount = LevelList.length;
   const decrementInterval = 0.05;

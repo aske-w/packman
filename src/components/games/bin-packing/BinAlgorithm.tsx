@@ -15,14 +15,13 @@ import { PackingAlgorithm } from '../../../types/PackingAlgorithm.interface';
 import { BinPackingAlgoRect, PlacedBinPackingAlgoRect, PrevPos } from '../../../types/BinPackingRect.interface';
 import useScoreStore from '../../../store/score.store';
 import useLevelStore from '../../../store/level.store';
-import { Bin } from '../../../types/Bin.interface';
+import { BIN_PADDING, calcBinLayout } from '../../../utils/binPacking';
 interface BinAlgorithmProps {
   offset: Vector2d;
   dimensions: Dimensions;
   binSize: Dimensions;
   selectedAlgorithm: BinPackingAlgorithm;
   data: DimensionsWithConfig[];
-  binLayout: IRect[];
   layerRef: RefObject<KonvaLayer>;
   staticInventory: ColorRect[];
   getInventoryScrollOffset: () => number;
@@ -34,12 +33,13 @@ export interface BinAlgorithmHandle {
   reset(): void;
 }
 
-const PADDING = 30;
 const { FINITE_FIRST_FIT, FINITE_NEXT_FIT, HYBRID_FIRST_FIT } = BinPackingAlgorithm;
 const BinAlgorithm = forwardRef<BinAlgorithmHandle, BinAlgorithmProps>(
-  ({ offset, layerRef, dimensions, data, selectedAlgorithm, binSize, binLayout, staticInventory: inventory, getInventoryScrollOffset }, ref) => {
+  ({ offset, layerRef, dimensions, data, selectedAlgorithm, binSize, staticInventory: inventory, getInventoryScrollOffset }, ref) => {
     const [bins, setBins] = useState<Record<string, PlacedBinPackingAlgoRect[]>>({});
+    const [binLayout, setBinLayout] = useState<IRect[]>([]);
     const [order, setOrder] = useState(0);
+    const numBins = Object.values(bins).length;
 
     const setBinScore = useScoreStore(useCallback(state => state.setBinScore, []));
     const level = useLevelStore(useCallback(state => state.level, []));
@@ -72,7 +72,7 @@ const BinAlgorithm = forwardRef<BinAlgorithmHandle, BinAlgorithmProps>(
         setBins(prevBins => {
           const bins = binLayout.reduce((acc, _, i) => {
             if (newRect.binId === i) {
-              return { ...acc, [i]: (prevBins?.[i] || []).concat(newRect) };
+              return { ...acc, [i]: (prevBins?.[i] ?? []).concat(newRect) };
             }
 
             return acc;
@@ -114,6 +114,15 @@ const BinAlgorithm = forwardRef<BinAlgorithmHandle, BinAlgorithmProps>(
       setPrevInventory(newInv);
       start([...data]);
     }, [selectedAlgorithm, data]);
+
+    useEffect(() => {
+      const numBins = Object.keys(bins).length;
+      const rowHeight = binSize.height + BIN_PADDING;
+      const binsPrRow = Math.floor(dimensions.width / (binSize.width + BIN_PADDING));
+      // const isNewBin = bins[newRect.binId] === undefined;
+      const binLayouts = calcBinLayout(numBins, binsPrRow, binSize, rowHeight);
+      setBinLayout(binLayouts);
+    }, [numBins]);
 
     useEffect(() => {
       setBinScore(

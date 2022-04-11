@@ -33,7 +33,7 @@ import GameEndModal from '../../components/gameEndModal/Modal';
 import { useGameEnded } from '../../hooks/useGameEnded';
 
 interface BinPackingGameProps {}
-const NUM_ITEMS = 10;
+const NUM_ITEMS = 2;
 // bin dimensions
 const binSize = {
   height: 300,
@@ -254,7 +254,6 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
           layerRef={algorithmLayerRef}
           getInventoryScrollOffset={() => -inventoryLayer.current?.y()!}
           staticInventory={staticInventory}
-          binLayout={binLayout}
           data={staticInventory}
           selectedAlgorithm={BinPackingAlgorithm.HYBRID_FIRST_FIT}
           binSize={binSize}

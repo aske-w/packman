@@ -14,7 +14,7 @@ import { intersects } from '../../../utils/intersects';
 import produce from 'immer';
 import { Coordinate } from '../../../types/Coordinate.interface';
 import { Bin } from '../../../types/Bin.interface';
-import { findBin } from '../../../utils/binPacking';
+import { BIN_PADDING, calcBinLayout, findBin } from '../../../utils/binPacking';
 import useScoreStore from '../../../store/score.store';
 import useLevelStore from '../../../store/level.store';
 
@@ -28,37 +28,23 @@ interface BinInteractiveProps {
   snap: (destination: GroupType[], target: Shape) => void;
 }
 
-const PADDING = 30;
-
 const BinInteractive = forwardRef<KonvaLayer, BinInteractiveProps>(
   ({ setBins, offset, dimensions, bins, onBinLayout, snap, binSize: binDim }, ref) => {
     const setBinScore = useScoreStore(useCallback(state => state.setBinScore, []));
     const level = useLevelStore(useCallback(state => state.level, []));
-    const rowHeight = binDim.height + PADDING;
-    const binsPrRow = Math.floor(dimensions.width / (binDim.width + PADDING));
+    const rowHeight = binDim.height + BIN_PADDING;
+    const binsPrRow = Math.floor(dimensions.width / (binDim.width + BIN_PADDING));
     const numBins = Object.values(bins).length;
     const layerRef = useCombinedRefs(ref);
 
-    const calcBinLayout = () => {
-      let x = 0;
-      const b: IRect[] = [];
-
-      for (let i = 0; i < numBins + 1; i++) {
-        x = (i % binsPrRow) * (binDim.width + PADDING) + PADDING;
-        let rowNum = Math.floor(i / binsPrRow);
-
-        b.push({
-          ...binDim,
-          x,
-          y: rowNum * rowHeight + PADDING,
-        });
-      }
+    const getBinLayout = () => {
+      const b = calcBinLayout(numBins, binsPrRow, binDim, rowHeight);
       onBinLayout(b);
       return b;
     };
-    const [renderedBins, setRenderedBins] = useState(calcBinLayout);
+    const [renderedBins, setRenderedBins] = useState(getBinLayout);
     useEffect(() => {
-      setRenderedBins(calcBinLayout);
+      setRenderedBins(getBinLayout);
     }, [numBins]);
 
     useEffect(() => {

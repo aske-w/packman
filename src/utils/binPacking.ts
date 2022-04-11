@@ -3,12 +3,11 @@ import { ALGO_MOVE_ANIMATION_DURATION } from '../config/canvasConfig';
 import { BinPackingRect } from '../types/BinPackingRect.interface';
 import { ColorRect } from '../types/ColorRect.interface';
 import { Dimensions } from '../types/Dimensions.interface';
-import { RectangleConfig } from '../types/RectangleConfig.interface';
 import { pushItemToBack } from './array';
 import { compressInventory } from './generateData';
 import { sleep } from './utils';
 
-type BinRect = ColorRect<RectangleConfig> & { removed?: boolean; order: number };
+export const BIN_PADDING = 30;
 
 interface CompressBinPackingInvProps {
   placedRectIdx: number;
@@ -84,4 +83,22 @@ export const findBin = (binLayout: IRect[], dropPos: Vector2d, rect: Dimensions)
 
     return fitsX1 && fitsX2 && fitsY1 && fitsY2;
   });
+};
+
+export const calcBinLayout = (numBins: number, binsPrRow: number, binDim: Dimensions, rowHeight: number) => {
+  let x = 0;
+  const b: IRect[] = [];
+
+  for (let i = 0; i < numBins + 1; i++) {
+    x = (i % binsPrRow) * (binDim.width + BIN_PADDING) + BIN_PADDING;
+    let rowNum = Math.floor(i / binsPrRow);
+
+    b.push({
+      ...binDim,
+      x,
+      y: rowNum * rowHeight + BIN_PADDING,
+    });
+  }
+
+  return b;
 };
