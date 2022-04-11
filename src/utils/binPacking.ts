@@ -58,10 +58,6 @@ export const compressBinPackingInv = ({
   sleep(ALGO_MOVE_ANIMATION_DURATION * 500).then(() => onCompress(newRectIdx));
 };
 
-export function getLocalInteractiveX(inventoryWidth: number, x: number) {
-  return -1 * (inventoryWidth - x);
-}
-
 export function isBin(id: string | undefined) {
   return id && id.substring(0, 3) === 'bin';
 }

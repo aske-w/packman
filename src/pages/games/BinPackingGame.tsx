@@ -17,7 +17,7 @@ import { Gamemodes } from '../../types/enums/Gamemodes.enum';
 import { Shape, ShapeConfig } from 'konva/lib/Shape';
 import { Stage as KonvaStage } from 'konva/lib/Stage';
 import { Dimensions } from '../../types/Dimensions.interface';
-import { compressBinPackingInv, findBin, getLocalInteractiveX, isBin } from '../../utils/binPacking';
+import { compressBinPackingInv, findBin, isBin } from '../../utils/binPacking';
 import { BinPackingRect } from '../../types/BinPackingRect.interface';
 import BinPackingNav from '../../components/Nav/BinPackingNav';
 import { useOnGameStart } from '../../hooks/useOnGameStart';
@@ -155,8 +155,8 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
     if (!rect || binId === -1) return false;
 
     const rectToPlace = {
-      x: getLocalInteractiveX(inventoryWidth, evtRect.x),
-      y: -interactiveScrollOffset + evtRect.y + inventoryScrollOffset,
+      x: relativeDropX,
+      y: evtRect.y + inventoryScrollOffset,
       width: rect.width,
       height: rect.height,
     };
@@ -180,7 +180,6 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
     const { x, y } = dropPos;
     setBins(old => ({
       ...old,
-
       [binId]: (old[binId] ?? []).concat({ ...rect, x: relativeDropX + inventoryWidth, y }),
     }));
 
