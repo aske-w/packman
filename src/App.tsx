@@ -10,7 +10,7 @@ const App: React.FC<AppProps> = ({}) => {
   const { blur: showModal } = useGameEndStore();
 
   return (
-    <div className={`${showModal ? 'blur' : ''} flex flex-col w-screen h-screen bg-canvas`}>
+    <div className={`${showModal ? 'blur' : ''} flex flex-col w-full min-h-screen bg-canvas`}>
       <PersistGate>
         <BadgeContainer />
         <Outlet />
