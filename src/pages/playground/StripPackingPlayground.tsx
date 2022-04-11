@@ -13,7 +13,7 @@ import PlaygroundNav from '../../components/Nav/PlaygroundNav';
 
 function StripPackingPlayground() {
   const [stripWidth, setStripWidth] = useState(400);
-  const [selectedAlgorithm, setSelectedAlgorithm] = useState<PackingAlgorithmEnum>(PackingAlgorithmEnum.SLEATORS);
+  const [selectedAlgorithm, setSelectedAlgorithm] = useState<PackingAlgorithmEnum>(PackingAlgorithmEnum.NEXT_FIT_DECREASING_HEIGHT);
   const { start, pause, place, algoState, isFinished, reset: resetAlgo } = usePackingAlgorithms(stripWidth, selectedAlgorithm);
 
   const placeNext = () => {

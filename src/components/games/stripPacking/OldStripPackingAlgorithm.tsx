@@ -136,12 +136,11 @@ const OldStripPackingAlgorithm = React.forwardRef<StripPackingAlgorithmCanvasHan
 
           const stripScrollOffset = stripLayer.current?.y()!;
 
-          console.log('before');
           // Scroll into view
           await new Promise<void>(resolve => {
             const layer = inventoryLayer.current!;
             const newY = prevY * -1 - height - PADDING;
-            console.log({ layerY: layer.y(), prevY, newY });
+
             new Konva.Tween({
               node: layer,
               onFinish: () => {
@@ -153,8 +152,6 @@ const OldStripPackingAlgorithm = React.forwardRef<StripPackingAlgorithmCanvasHan
               duration: ENTER_ANIMATION_DURATION_SECONDS * 5,
             }).play();
           });
-
-          console.log('after');
 
           // we need to set the prev values, so we can perform the enter animation
           setStripRects(prev => [

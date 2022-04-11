@@ -25,7 +25,6 @@ const BinPackingPlayground: React.FC<BinPackingPlaygroundProps> = ({}) => {
 
   const placeNext = () => {
     const rect = place();
-    console.log(rect);
 
     if (rect) {
       // update ui in sidebar
@@ -38,14 +37,11 @@ const BinPackingPlayground: React.FC<BinPackingPlaygroundProps> = ({}) => {
           }
         }
 
-        // console.log(JSON.stringify(tmp, null, 2));
-
         tmp[rect.binId].push({
           ...rect,
           fill: Konva.Util.getRandomColor(),
           name: genId(),
         });
-        // console.log('tmp', JSON.stringify(tmp));
 
         return tmp;
       });
@@ -56,7 +52,7 @@ const BinPackingPlayground: React.FC<BinPackingPlaygroundProps> = ({}) => {
   return (
     <div
       style={{
-        height: `calc(100% - ${NAV_HEIGHT}px)`,
+        height: `calc(100vh - ${NAV_HEIGHT}px)`,
         width: '100%',
       }}
     >

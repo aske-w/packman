@@ -6,6 +6,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Layer, Rect, Stage } from 'react-konva';
 import { Link } from 'react-router-dom';
 import { NextFitDecreasingHeight } from '../algorithms/strip/NextFitDecreasingHeight';
+import { useWindowSize } from '../hooks/useWindowSize';
 import { ColorRect } from '../types/ColorRect.interface';
 import { pathName } from './routes';
 interface HomeProps {}
@@ -69,7 +70,7 @@ const AnimatedLogo = () => {
 };
 
 const AnimatedBG = () => {
-  const { innerHeight: h, innerWidth: w } = window;
+  const { height: h, width: w } = useWindowSize();
   const rectangles = useMemo(() => {
     return Array.from({ length: 20 }).map((_, i) => {
       const height = Math.random() * h * 0.3;
@@ -87,7 +88,8 @@ const AnimatedBG = () => {
 
   const algo = useRef(new NextFitDecreasingHeight({ height: h, width: w }));
   useEffect(() => {
-    algo.current.load([...rectangles]);
+    setPlaced([]);
+    algo.current = new NextFitDecreasingHeight({ height: h, width: w }).load([...rectangles]);
     let timer: null | NodeJS.Timer;
     timer = setInterval(() => {
       if (algo.current.isFinished()) {
@@ -100,6 +102,11 @@ const AnimatedBG = () => {
 
       setPlaced(old => [...old, { ...rect, y: rect.y + h }]);
     }, 2000);
+    return () => {
+      if (timer) {
+        clearInterval(timer);
+      }
+    };
   }, [rectangles]);
   return (
     <Stage className="absolute inset-0 -z-10 blur-sm" width={window.innerWidth - 20} height={window.innerHeight}>

@@ -217,35 +217,6 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
             <Rect fill="#333" x={stripWidth} width={inventoryWidth} height={gameHeight} />
             {/* Algorithm canvas */}
             <Rect fill="#555" x={inventoryWidth + stripWidth} width={stripWidth} height={gameHeight} />
-            <ScrollBar
-              startPosition="top"
-              ref={inventoryScrollBarRef}
-              scrollableHeight={scrollableHeight}
-              x={stripWidth + inventoryWidth - PADDING - SCROLLBAR_WIDTH}
-              gameHeight={gameHeight}
-              onYChanged={newY => inventoryLayer.current?.y(newY)}
-            />
-            <ScrollBar
-              startPosition="bottom"
-              ref={interactiveScrollBarRef}
-              scrollableHeight={scrollableHeight}
-              x={stripWidth - PADDING - SCROLLBAR_WIDTH}
-              gameHeight={gameHeight}
-              onYChanged={newY => {
-                interactiveLayerRef.current?.y(newY);
-              }}
-            />
-            <ScrollBar
-              key="algo scrollbar"
-              startPosition="bottom"
-              ref={algorithmScrollbarRef}
-              scrollableHeight={scrollableHeight}
-              x={inventoryWidth + stripWidth * 2 - PADDING - SCROLLBAR_WIDTH}
-              gameHeight={gameHeight}
-              onYChanged={newY => {
-                algorithmLayerRef.current?.y(newY);
-              }}
-            />
           </Layer>
           <StripPackingInteractive
             scrollableHeight={scrollableHeight}
@@ -285,6 +256,38 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
             algorithm={algorithm}
             layerRef={algorithmLayerRef}
           />
+          <Layer>
+            {/* Scrollbars are in this layer so they are drawn above the rectangles */}
+            <ScrollBar
+              startPosition="top"
+              ref={inventoryScrollBarRef}
+              scrollableHeight={scrollableHeight}
+              x={stripWidth + inventoryWidth - PADDING - SCROLLBAR_WIDTH}
+              gameHeight={gameHeight}
+              onYChanged={newY => inventoryLayer.current?.y(newY)}
+            />
+            <ScrollBar
+              startPosition="bottom"
+              ref={interactiveScrollBarRef}
+              scrollableHeight={scrollableHeight}
+              x={stripWidth - PADDING - SCROLLBAR_WIDTH}
+              gameHeight={gameHeight}
+              onYChanged={newY => {
+                interactiveLayerRef.current?.y(newY);
+              }}
+            />
+            <ScrollBar
+              key="algo scrollbar"
+              startPosition="bottom"
+              ref={algorithmScrollbarRef}
+              scrollableHeight={scrollableHeight}
+              x={inventoryWidth + stripWidth * 2 - PADDING - SCROLLBAR_WIDTH}
+              gameHeight={gameHeight}
+              onYChanged={newY => {
+                algorithmLayerRef.current?.y(newY);
+              }}
+            />
+          </Layer>
         </Stage>
       </div>
     </div>
