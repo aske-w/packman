@@ -16,6 +16,7 @@ interface UseSnapProps<T> {
   inventoryLayer: React.RefObject<KonvaLayer>;
   stripWidth: number;
   scrollableHeight: number;
+  scrollableWidth?: number;
   inventoryWidth: number;
   gameHeight: number;
   inventory: (T & { fill: string })[];
@@ -31,6 +32,7 @@ export const useSnap = <T>({
   stripWidth,
   inventoryWidth,
   interactiveLayerRef,
+  scrollableWidth = 0,
 }: UseSnapProps<T>) => {
   const [disabled, setDisabled] = useState(false);
   /**
@@ -271,24 +273,24 @@ export const useSnap = <T>({
 
     if (0 + SNAPPING_THRESHOLD > targetY) {
       // Snap target's top to the top of the strip
-      if (stripWidth - SNAPPING_THRESHOLD < targetX + targetWidth && stripWidth + SNAPPING_THRESHOLD > targetX + targetWidth) {
+      if (stripWidth - SNAPPING_THRESHOLD < targetX + targetWidth && offsetX + stripWidth + SNAPPING_THRESHOLD > targetX + targetWidth) {
         //this is necessary to properly snap in the bottom right corner of the strip when dragging from inventory
         cy = 0;
         cx = stripWidth - targetWidth - STROKE_WIDTH / 2;
       } else {
         cy = 0;
       }
+    } else if (scrollableHeight < targetY + targetHeight + STROKE_WIDTH / 2 + SNAPPING_THRESHOLD) {
+      // Snap target's bottom to the bottom of the strip
+      if (stripWidth - SNAPPING_THRESHOLD < targetX + targetWidth && stripWidth + SNAPPING_THRESHOLD > targetX + targetWidth) {
+        //this is necessary to properly snap in the bottom right corner of the strip when dragging from inventory
+
+        cx = stripWidth - targetWidth - STROKE_WIDTH / 2;
+        // cy = gameHeight + -stripScrollOffset - targetHeight;
+      } else {
+        // cy = gameHeight + -stripScrollOffset - targetHeight;
+      }
     }
-    // else if (scrollableHeight < targetY + targetHeight + STROKE_WIDTH / 2 + SNAPPING_THRESHOLD) {
-    //   // Snap target's bottom to the bottom of the strip
-    //   if (stripWidth - SNAPPING_THRESHOLD < targetX + targetWidth && stripWidth + SNAPPING_THRESHOLD > targetX + targetWidth) {
-    //     //this is necessary to properly snap in the bottom right corner of the strip when dragging from inventory
-    //     cx = stripWidth - targetWidth - STROKE_WIDTH / 2;
-    //     cy = gameHeight + -stripScrollOffset - targetHeight;
-    //   } else {
-    //     cy = gameHeight + -stripScrollOffset - targetHeight;
-    //   }
-    // }
 
     destination.forEach(rect => {
       const f = { ...rect, x: rect.x + offsetX };
@@ -345,9 +347,9 @@ export const useSnap = <T>({
     });
 
     // Mark rect red if outside bin.
-    const isOutsideBin = findBin(binLayouts, { x: cx - inventoryWidth, y: cy }, { width: targetWidth, height: targetHeight }) === -1;
+    const isOutsideBin = findBin(binLayouts, { x: cx - offsetX, y: cy }, { width: targetWidth, height: targetHeight }) === -1;
 
-    target.setAbsolutePosition({ x: cx, y: cy + stripScrollOffset });
+    target.setAbsolutePosition({ x: cx, y: cy });
     if (intersectsAny || targetX < 0 || targetY < 0 || isOutsideBin) {
       //overlap while dragging
       target.setAttr('fill', RECT_OVERLAP_COLOR);
@@ -383,8 +385,6 @@ export const useSnap = <T>({
   const snapBinInventory = (destination: Group[], target: Shape, binLayouts: IRect[]) => {
     const { x, y, width }: IRect = target.getAttrs();
 
-    // console.log({ x, y, width });
-
     // don't try to snap if target is still in the inventory
     if (inventoryWidth - x > SNAPPING_THRESHOLD) {
       return;
@@ -399,9 +399,8 @@ export const useSnap = <T>({
     // clamping to prevent placing target outside of the game
     const adjustedY = clamp(y + inventoryLayer.current?.y()! - stripScrollOffset, 0, gameHeight - target.height());
     const adjustedX = clamp(x, inventoryWidth, stripWidth + inventoryWidth - width);
-    // console.log({ y: y + inventoryLayer.current?.y()!, lower: 0, upper: target.height() });
-    // console.log({ x, y }, { adjustedX, adjustedY }, { inventoryWidth, stripWidth, upper: stripWidth + inventoryWidth });
-    snapBin(newDestination, target, binLayouts, { x: adjustedX, y: adjustedY }, inventoryWidth);
+    const offsetX = interactiveLayerRef.current?.x() ?? 0;
+    snapBin(newDestination, target, binLayouts, { x: adjustedX, y: adjustedY }, offsetX);
   };
 
   const snapInteractive = (destination: Group[], target: Shape) => {
@@ -410,7 +409,7 @@ export const useSnap = <T>({
       return rect;
     });
 
-    target.setAttr('x', clamp(target.getAttr('x'), 0, stripWidth - target.getAttr('width')));
+    target.setAttr('x', clamp(target.getAttr('x'), 0, scrollableWidth + stripWidth - target.getAttr('width')));
     target.setAttr('y', clamp(target.getAttr('y'), 0, scrollableHeight - target.getAttr('height')));
     snap(newDestination, target, undefined);
   };
@@ -421,9 +420,10 @@ export const useSnap = <T>({
       return rect;
     });
 
-    target.setAttr('x', clamp(target.getAttr('x'), 0, stripWidth - target.getAttr('width')));
+    const offsetX = interactiveLayerRef.current?.x() ?? 0;
+    target.setAttr('x', clamp(target.getAttr('x'), 0, scrollableWidth - target.getAttr('width')));
     target.setAttr('y', clamp(target.getAttr('y'), 0, gameHeight - target.getAttr('height')));
-    snapBin(newDestination, target, binLayouts, { y: target.getAttr('y'), x: target.getAttr('x') + inventoryWidth }, inventoryWidth);
+    snapBin(newDestination, target, binLayouts, { y: target.getAttr('y'), x: target.getAttr('x') + offsetX }, offsetX);
   };
 
   return { snapInventory, snapBinInteractive, snapBinInventory, snapInteractive };

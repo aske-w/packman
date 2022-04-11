@@ -122,7 +122,7 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
     inventory: staticInventory,
     inventoryWidth: inventoryWidth,
     stripWidth: binAreaWidth,
-    gameHeight,
+    gameHeight: binAreaHeight,
     scrollableWidth,
     inventoryLayer,
     interactiveLayerRef: interactiveLayer,
