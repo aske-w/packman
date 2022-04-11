@@ -17,6 +17,7 @@ import { Bin } from '../../../types/Bin.interface';
 import { BIN_PADDING, calcBinLayout, findBin } from '../../../utils/binPacking';
 import useScoreStore from '../../../store/score.store';
 import useLevelStore from '../../../store/level.store';
+import { SCROLLABLE_HEIGHT, SCROLLBAR_HEIGHT, SCROLLBAR_WIDTH } from '../../../config/canvasConfig';
 
 interface BinInteractiveProps {
   offset: Vector2d;
@@ -36,6 +37,7 @@ const BinInteractive = forwardRef<KonvaLayer, BinInteractiveProps>(
     const binsPrRow = Math.floor(dimensions.width / (binDim.width + BIN_PADDING));
     const numBins = Object.values(bins).length;
     const layerRef = useCombinedRefs(ref);
+    const offsetX = layerRef.current?.x() ?? 0;
 
     const getBinLayout = () => {
       const b = calcBinLayout(numBins, binsPrRow, binDim, rowHeight);
@@ -66,14 +68,18 @@ const BinInteractive = forwardRef<KonvaLayer, BinInteractiveProps>(
 
       // Check if is placing outside a bin
       const { x, y } = target.getAbsolutePosition();
+
       const dropPos = {
-        y: -scrollOffset + y,
-        x: x - offset.x,
+        y,
+        x: x - offsetX,
       };
-      if (findBin(renderedBins, dropPos, target.getAttrs()) === -1 && lastPos) {
+
+      const idx = findBin(renderedBins, dropPos, target.getAttrs());
+
+      if (idx === -1 && lastPos) {
         target.setAbsolutePosition({
-          x: lastPos.x + offset.x,
-          y: lastPos.y + scrollOffset,
+          x: lastPos.x + offsetX,
+          y: lastPos.y,
         });
         return;
       }
@@ -87,7 +93,7 @@ const BinInteractive = forwardRef<KonvaLayer, BinInteractiveProps>(
 
           if (intersects(target.getAttrs(), _r.getAttrs()) && lastPos)
             target.setAbsolutePosition({
-              x: lastPos.x + offset.x,
+              x: lastPos.x + offsetX,
               y: lastPos.y + scrollOffset,
             });
         });
@@ -114,7 +120,7 @@ const BinInteractive = forwardRef<KonvaLayer, BinInteractiveProps>(
           produce(bin => {
             const pos = e.target.getAbsolutePosition();
             const y = pos.y - layerRef.current!.y();
-            bin[binIdx][rectIdx].x = pos.x;
+            bin[binIdx][rectIdx].x = pos.x - offsetX + offset.x;
             bin[binIdx][rectIdx].y = y;
           })
         );

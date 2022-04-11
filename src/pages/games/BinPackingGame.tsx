@@ -66,7 +66,6 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
   // algorithm handle
   const algorithmHandle = useRef<BinAlgorithmHandle>(null);
   const [staticInventory, setStaticInventory] = useState<BinPackingRect[]>(generateInventory(inventoryWidth, NUM_ITEMS));
-  const algorithmStartY = binAreaHeight + PADDING;
 
   const { algorithm } = useOnGameStart<BinPackingAlgorithm>(Gamemodes.BIN_PACKING, BinPackingAlgorithm.HYBRID_FIRST_FIT);
 
@@ -124,6 +123,7 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
     inventoryWidth: inventoryWidth,
     stripWidth: binAreaWidth,
     gameHeight,
+    scrollableWidth,
     inventoryLayer,
     interactiveLayerRef: interactiveLayer,
     inventoryFilterFunc: (r, target) => {

@@ -86,8 +86,8 @@ export const calcBinLayout = (numBins: number, binsPrRow: number, binDim: Dimens
   const b: IRect[] = [];
 
   for (let i = 0; i < numBins + 1; i++) {
-    x = (i % binsPrRow) * (binDim.width + BIN_PADDING) + BIN_PADDING;
-    let rowNum = Math.floor(i / binsPrRow);
+    x = i * (binDim.width + BIN_PADDING) + BIN_PADDING;
+    let rowNum = Math.floor(0);
 
     b.push({
       ...binDim,
