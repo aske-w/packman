@@ -15,7 +15,6 @@ export const useGameEnded = (): (() => boolean | undefined) => {
   }, [event]);
 
   return useCallback(() => {
-    console.log({ hasFinished });
     if (hasFinished && level !== Levels.BEGINNER) setHasFinished(false);
     return hasFinished && level !== Levels.BEGINNER;
   }, [hasFinished, level]);

@@ -16,6 +16,9 @@ import SideBarItem from './SidebarItem';
 import SideBarSection from './SideBarSection';
 import classNames from 'classnames';
 import LinkIcon from '@heroicons/react/solid/LinkIcon';
+import TeachAlgoModal from '../playground/TeachAlgoModal';
+import { AcademicCapIcon } from '@heroicons/react/solid';
+import ReactTooltip from 'react-tooltip';
 
 interface BinPackingSidebarProps<T = BinPackingAlgorithm> {
   setAlgorithm: React.Dispatch<React.SetStateAction<T>>;
@@ -52,17 +55,35 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
   const isStarted = algoState === 'RUNNING' || algoState === 'PAUSED';
   const [genNum, setGenNum] = useState(100);
   const [previousData, setPreviousData] = useState<Dimensions[]>([]);
+  const [teachingOpen, setTeachingOpen] = useState(false);
+  const [dimensionsLinked, setDimensionsLinked] = useState(false);
+  const makeRndData = () => {
+    setDimensionsStorage(generateData(genNum, 100, 10));
+  };
+  useEffect(() => {
+    ReactTooltip.rebuild();
+  });
 
+  useEffect(() => {
+    makeRndData();
+  }, []);
   return (
     <Sidebar className="inline-flex flex-col overflow-hidden">
+      <TeachAlgoModal algorithm={algorithm} visible={teachingOpen} onClose={() => setTeachingOpen(false)} />
+
       <SideBarSection title="Algorithms">
-        <Select<BinPackingAlgorithm>
-          className="text-base font-thin text-white w-72"
-          options={ALL_BIN_PACKING_ALGORITHMS}
-          onChange={setAlgorithm}
-          value={algorithm}
-          disabled={false}
-        />
+        <div className="flex flex-row items-center justify-between">
+          <Select<BinPackingAlgorithm>
+            className="text-base font-thin text-white w-72"
+            options={ALL_BIN_PACKING_ALGORITHMS}
+            onChange={setAlgorithm}
+            value={algorithm}
+            disabled={false}
+          />
+          <button onClick={() => setTeachingOpen(true)}>
+            <AcademicCapIcon className="w-8 h-8 text-white" />
+          </button>
+        </div>
       </SideBarSection>
       <SideBarSection title="Actions panel">
         <SideBarItem
@@ -94,44 +115,52 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
         />
 
         {checked && (
-          <div className="flex flex-row space-x-20 items-center">
+          <div className="flex flex-row items-center space-x-20">
             <RangeSlider progress={speed} onChange={updateSpeed} hideTooltip />
             <RectInput value={speed} className="w-4/12 px-3 select-none" sec="%" readonly />
           </div>
         )}
       </SideBarSection>
       <SideBarSection className={classNames({ 'opacity-50': algoState === 'RUNNING' })} title="Bin dimensions">
-        <div className="flex flex-row space-x-4 items-center">
+        <div className="flex flex-row items-center space-x-4">
           <RectInput
             disabled={isStarted}
             value={binDimensions.width}
-            onChange={({ target: { value } }) =>
-              setBinDimensions(old => ({
-                ...old,
-                width: value ? Number.parseInt(value) : 0,
-              }))
-            }
+            onChange={({ target: { value } }) => {
+              const width = Number.parseInt(value || '1');
+              setBinDimensions(old => {
+                const ratio = old.height / old.width;
+                return {
+                  width,
+                  height: Math.round(dimensionsLinked ? width * ratio : old.height),
+                };
+              });
+            }}
             className="w-4/12 px-3 select-none"
             sec="w"
           />
           <RectInput
             value={binDimensions.height}
-            onChange={({ target: { value } }) =>
-              setBinDimensions(old => ({
-                ...old,
-                height: value ? Number.parseInt(value) : 0,
-              }))
-            }
+            onChange={({ target: { value } }) => {
+              const height = Number.parseInt(value || '1');
+              setBinDimensions(old => {
+                const ratio = old.width / old.height;
+                return {
+                  height,
+                  width: Math.round(dimensionsLinked ? height * ratio : old.width),
+                };
+              });
+            }}
             className="w-4/12 px-3 select-none"
             sec="h"
             disabled={isStarted}
           />
 
           <LinkIcon
-            className="h-5 text-gray-200 hover:text-gray-400 cursor-pointer"
+            data-tip="Link dimensions"
+            className={classNames('h-5  cursor-pointer hover:text-gray-200 focus:outline-none', dimensionsLinked ? 'text-white' : 'text-gray-500')}
             onClick={() => {
-              const dimensions = Math.max(binDimensions.height, binDimensions.width);
-              setBinDimensions({ width: dimensions, height: dimensions });
+              setDimensionsLinked(old => !old);
             }}
           />
         </div>
@@ -148,7 +177,7 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
                 disabled={isStarted}
               />
               <button
-                onClick={() => setDimensionsStorage(generateData(genNum, 100, 10))}
+                onClick={makeRndData}
                 className={`px-2 py-1 font-medium text-white rounded shadow bg-blue-700 ${isStarted ? 'opacity-60' : 'hover:bg-blue-800'}`}
                 disabled={isStarted}
               >
@@ -173,10 +202,9 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
         />
       </SideBarSection>
 
-      <SideBarSection title={'Manuel data set (' + dimensionsStorage.length + ')'} className="flex flex-col p-0 overflow-hidden">
+      <SideBarSection title={'Data set (' + dimensionsStorage.length + ')'} className="flex flex-col p-0 overflow-hidden">
         <BoxInput dimensionsStorage={dimensionsStorage} setDimensionsStorage={setDimensionsStorage} disabled={algoState === 'RUNNING'}></BoxInput>
       </SideBarSection>
-      {/* <Actions {...props} /> */}
     </Sidebar>
   );
 };

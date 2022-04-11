@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAutoPlace } from '../../hooks/useAutoPlace';
 import { AlgoStates } from '../../hooks/usePackingAlgorithms';
 import { useToggle } from '../../hooks/useToggle';
@@ -14,7 +14,7 @@ import BoxInput from '../BoxInput';
 import RectInput from '../RectInput';
 import { generateData } from '../../utils/generateData';
 import Sidebar from './Sidebar';
-import TeachAlgoModal from '../playground/strip/TeachAlgoModal';
+import TeachAlgoModal from '../playground/TeachAlgoModal';
 import { AcademicCapIcon } from '@heroicons/react/solid';
 
 interface SidebarProps {
@@ -50,6 +50,12 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
   const [genNum, setGenNum] = useState(30);
   const [previousData, setPreviousData] = useState<Dimensions[]>([]);
   const [teachingOpen, setTeachingOpen] = useState(false);
+  const makeRndData = () => {
+    setDimensionsStorage(generateData(genNum, stripWidth * 0.52, 5));
+  };
+  useEffect(() => {
+    makeRndData();
+  }, []);
   return (
     <Sidebar className="inline-flex flex-col overflow-hidden">
       <TeachAlgoModal algorithm={selectedAlgorithm} visible={teachingOpen} onClose={() => setTeachingOpen(false)} />
@@ -132,7 +138,7 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
                 sec=""
               />
               <button
-                onClick={() => setDimensionsStorage(generateData(genNum, stripWidth * 0.52, 5))}
+                onClick={makeRndData}
                 className={`px-2 py-1 font-medium text-white rounded shadow bg-blue-700 ${isStarted ? 'opacity-60' : 'hover:bg-blue-800'}`}
                 disabled={isStarted}
               >
@@ -149,7 +155,7 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
             <div className="flex items-center space-x-5 justify-right">
               <button
                 className={`px-2 py-1 font-medium text-white rounded shadow bg-blue-700 ${isStarted ? 'opacity-60' : 'hover:bg-blue-800'}`}
-                onClick={() => setDimensionsStorage(r => previousData)}
+                onClick={() => setDimensionsStorage(previousData)}
               >
                 Reuse previous data
               </button>
@@ -158,10 +164,7 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
         />
       </SideBarSection>
 
-      <SideBarSection
-        title={'Manuel data set (' + dimensionsStorage.length + ')'}
-        className="flex flex-col p-0 overflow-hidden strip-playground-test-data"
-      >
+      <SideBarSection title={'Data set (' + dimensionsStorage.length + ')'} className="flex flex-col p-0 overflow-hidden strip-playground-test-data">
         <BoxInput dimensionsStorage={dimensionsStorage} setDimensionsStorage={setDimensionsStorage} disabled={algoState === 'RUNNING'}></BoxInput>
       </SideBarSection>
     </Sidebar>

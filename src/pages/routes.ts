@@ -5,6 +5,7 @@ export const pathKey = {
   BIN: 'bin',
   ONLINE_STRIP: 'online-strip',
   ACHIEVEMENTS: 'achievements',
+  ABOUT: 'about',
 };
 
 export const pathName = {
@@ -15,4 +16,5 @@ export const pathName = {
   BIN_GAME: `/game/${pathKey.BIN}`,
   ONLINE_STRIP_GAME: `/game/${pathKey.ONLINE_STRIP}`,
   ACHIEVEMENTS: '/achievements',
+  ABOUT: `${pathKey.ABOUT}`,
 };

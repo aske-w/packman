@@ -5,7 +5,7 @@ import { Stage as KonvaStage } from 'konva/lib/Stage';
 import { IRect } from 'konva/lib/types';
 import React, { useEffect, useRef, useState } from 'react';
 import { KonvaNodeEvents, Label, Layer, Rect, Stage, Tag, Text } from 'react-konva';
-import { ColorRect } from '../../types/ColorRect.interface';
+import { ColorRect } from '../../../types/ColorRect.interface';
 
 interface BinProps {
   width: number;
@@ -116,19 +116,5 @@ const MyRect: React.FC<RectConfig & KonvaNodeEvents> = ({
     }).play();
   }, [x, y]);
 
-  return (
-    <Rect
-      ref={ref}
-      x={0}
-      y={800}
-      opacity={0}
-      stroke={'rgba(0,0,0,0.2)'}
-      strokeWidth={1}
-      scaleX={3}
-      scaleY={3}
-      rotation={45}
-      draggable
-      {...props}
-    ></Rect>
-  );
+  return <Rect ref={ref} x={0} y={800} opacity={0} stroke={'rgba(0,0,0,0.2)'} strokeWidth={1} scaleX={3} scaleY={3} rotation={45} {...props}></Rect>;
 };
