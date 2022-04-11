@@ -153,7 +153,6 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
       ...old,
       [binId]: (old[binId] ?? []).concat({ ...rect, x, y }),
     }));
-    // setRenderInventory(old => old.filter(r => r.name !== name));
 
     const res = algorithmHandle.current?.next();
     if (!res) return false;

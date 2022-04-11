@@ -25,13 +25,16 @@ const BinInventory = forwardRef<KonvaLayer, BinInventoryProps>(
       const { name, width } = rect.getAttrs();
 
       const { x: dropX } = rect.getAbsolutePosition();
-      const { x: x, y: y } = renderInventory.find(r => r.name === name)!;
+      const { x: x, y: y, fill } = renderInventory.find(r => r.name === name)!;
 
       const inBinArea = dropX + width > inventoryWidth;
 
       if (inBinArea) {
         if (onDraggedToBin(rect, { x, y })) return;
       }
+
+      // Set back original color
+      rect.setAttr('fill', fill);
 
       // animate back to starting position
       new Konva.Tween({
