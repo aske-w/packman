@@ -25,7 +25,7 @@ export const useSetSidewaysScrollbar = (
     if (deltaX != undefined) layer.x(x);
 
     const vx = ((x - startX) / (-scrollableWidth + visibleWidth)) * availableWidth + PADDING;
-    console.log({ vx });
+
     scrollbarRef.current?.x(vx + startX);
   }, [scrollableWidth]);
 };

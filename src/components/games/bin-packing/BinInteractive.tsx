@@ -77,6 +77,13 @@ const BinInteractive = forwardRef<KonvaLayer, BinInteractiveProps>(
       const idx = findBin(renderedBins, dropPos, target.getAttrs());
 
       if (idx === -1 && lastPos) {
+        // Set fill to original color
+        const fill = Object.values(bins).reduce((acc, bin) => {
+          const rect = bin.find(r => r.name === target.name());
+          if (rect) return rect.fill;
+          return acc;
+        }, '');
+        target.setAttr('fill', fill);
         target.setAbsolutePosition({
           x: lastPos.x + offsetX,
           y: lastPos.y,

@@ -104,7 +104,6 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
     const x = Math.max(minX, Math.min(oldX, maxX));
 
     const vx = ((x - inventoryWidth) / (-scrollableWidth + binAreaWidth)) * availableWidth + PADDING;
-    console.log({ vx });
     interactiveScrollBarRef.current?.x(vx + inventoryWidth);
   }, [scrollableWidth]);
 
