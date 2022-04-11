@@ -144,7 +144,7 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
     });
 
     // Collosion dection
-    if (intersectAny || rectToPlace.x < 0 || rectToPlace.x > inventoryWidth || rectToPlace.y < 0 || rectToPlace.y > interactiveScrollableHeight) {
+    if (intersectAny) {
       return false;
     }
 
