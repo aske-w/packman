@@ -113,7 +113,7 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
         )}
       </SideBarSection>
 
-      <SideBarSection title="Bin dimensions">
+      <SideBarSection title="Strip size">
         <div className="flex flex-row space-x-4 strip-playground-dimensions">
           <RectInput
             disabled={isStarted}
