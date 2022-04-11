@@ -102,24 +102,16 @@ export const sidewaysScrollHandler: SidewaysScrollHandler =
       const dx = deltaX;
       const oldX = layer.x();
 
-      // console.log({dy});
-
       // TODO fix
-      // const minY = startY || -(scrollableHeight - visibleHeight);
-      // const maxY = startY ? startY + (scrollableHeight - visibleHeight) : 0;
       const minX = -(scrollableWidth - visibleWidth) + startX;
       const maxX = 0 + startX;
       const availableWidth = visibleWidth - PADDING * 2 - SCROLLBAR_HEIGHT;
 
       const x = Math.max(minX, Math.min(oldX - dx, maxX));
 
-      // console.log({y}, {minY}, {oldY}, {dy}, {maxY});
-
       layer.x(x);
 
       const vx = ((x - startX) / (-scrollableWidth + visibleWidth)) * availableWidth + PADDING;
-      
-      // console.log({y}, {scrollableHeight}, {visibleHeight}, {availableHeight}, {PADDING}, {vy});
 
       scrollBarRef.current?.x(vx + startX);
 

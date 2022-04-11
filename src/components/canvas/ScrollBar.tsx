@@ -42,7 +42,7 @@ const ScrollBar = forwardRef<KonvaRect, ScrollBarProps>(
           var delta = (verticalBar.y() - PADDING - startY) / availableHeight;
           
           const newY = -(scrollableHeight - gameHeight) * delta;
-
+          
           onYChanged(newY);
         }}
       />

@@ -21,6 +21,7 @@ import { Stage as KonvaStage } from 'konva/lib/Stage';
 import { Dimensions } from '../../types/Dimensions.interface';
 import { compressBinPackingInv } from '../../utils/binPacking';
 import { BinPackingRect } from '../../types/BinPackingRect.interface';
+import SidewaysScrollBar from '../../components/canvas/SidewaysScrollBar';
 
 interface BinPackingGameProps {}
 const NUM_ITEMS = 10;
@@ -91,6 +92,8 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
     const dropPos = evt.getAbsolutePosition();
     // take the offset into account
     const relativeDropX = dropPos.x - offset
+    console.log({dropPos});
+    
     const bin = findBin({ x: relativeDropX, y: dropPos.y }, evtRect);
 
     // Animate it back
@@ -257,14 +260,14 @@ const BinPackingGame: React.FC<BinPackingGameProps> = ({}) => {
             gameHeight={gameHeight}
             onYChanged={newY => inventoryLayer.current?.y(newY)}
           />
-          <ScrollBar
+          <SidewaysScrollBar
             key="interactive scroll bar"
-            startPosition="top"
             ref={interactiveScrollBarRef}
-            scrollableHeight={interactiveScrollableHeight}
-            x={inventoryWidth + binAreaWidth - PADDING - SCROLLBAR_WIDTH}
-            gameHeight={binAreaHeight}
-            onYChanged={newY => interactiveLayer.current?.y(newY)}
+            scrollableWidth={interactiveScrollableWidth}
+            y={binAreaHeight - PADDING - SCROLLBAR_WIDTH}
+            x={inventoryWidth + PADDING}
+            gameWidth={binAreaWidth}
+            onXChanged={(newX: number) => interactiveLayer.current?.x(newX + inventoryWidth)}
           />
           <ScrollBar
             key="algo scroll bar"
