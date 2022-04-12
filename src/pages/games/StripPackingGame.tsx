@@ -1,5 +1,6 @@
 import { Group } from 'konva/lib/Group';
 import { Layer as KonvaLayer } from 'konva/lib/Layer';
+import { Stage as KonvaStage } from 'konva/lib/Stage';
 import { Shape } from 'konva/lib/Shape';
 import { Rect as KonvaRect } from 'konva/lib/shapes/Rect';
 import { Vector2d } from 'konva/lib/types';
@@ -30,6 +31,7 @@ import { pushItemToBack } from '../../utils/array';
 import { compressInventory, generateInventory } from '../../utils/generateData';
 import { intersects } from '../../utils/intersects';
 import { sleep } from '../../utils/utils';
+import { useKeepOnMouse } from '../../hooks/useKeepOnMouse';
 
 interface StripPackingGameProps {}
 const NUM_ITEMS = 25;
@@ -79,6 +81,9 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   const algorithmScrollbarRef = useRef<KonvaRect>(null);
   const algorithmLayerRef = useRef<KonvaLayer>(null);
 
+  // Stage ref
+  const stageRef = useRef<KonvaStage>(null);
+
   // Snapping
   const { snapInventory, snapInteractive } = useSnap<ColorRect<RectangleConfig & { order?: number; removed?: boolean }>>({
     inventory: startingInventory,
@@ -102,8 +107,6 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   ];
 
   useRestartStripPacking(resetFuncs, algorithm, {});
-
-  const stripRectChangedCallback = () => {}; // TODO figure out if this is needed?
 
   /**
    * Pos is absolute position in the canvas
@@ -209,7 +212,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
       <TimeBar />
       <GameEndModal />
       <div className="flex items-center justify-between w-full">
-        <Stage onWheel={handleWheel} width={window.innerWidth} height={gameHeight}>
+        <Stage ref={stageRef} onWheel={handleWheel} width={window.innerWidth} height={gameHeight}>
           <Layer>
             {/* Strip canvas */}
             <Rect fill="#555" x={0} width={stripWidth} height={gameHeight} />
@@ -227,13 +230,13 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
             stripRects={stripRects}
             setStripRects={setStripRects}
             snap={snapInteractive}
-            stripRectChangedCallback={stripRectChangedCallback}
             staticInvLength={startingInventory.length}
           />
           <Inventory
             ref={inventoryLayer}
             staticInventory={startingInventory}
             dynamicInventory={renderInventory}
+            stageRef={stageRef.current!}
             // onDragging={(target: Shape) => trySnapOrColission(, target, interactiveLayerRef.current?.y()!)}
             snap={(target: Shape) => snapInventory(interactiveLayerRef.current?.children as Group[], target)}
             stripRects={stripRects}
