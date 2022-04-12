@@ -237,13 +237,10 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
             staticInventory={startingInventory}
             dynamicInventory={renderInventory}
             stageRef={stageRef.current!}
-            // onDragging={(target: Shape) => trySnapOrColission(, target, interactiveLayerRef.current?.y()!)}
             snap={(target: Shape) => snapInventory(interactiveLayerRef.current?.children as Group[], target)}
-            stripRects={stripRects}
             {...{
               onDraggedToStrip,
               stripWidth: stripWidth,
-              inventoryWidth: inventoryWidth,
               gameHeight,
             }}
           />

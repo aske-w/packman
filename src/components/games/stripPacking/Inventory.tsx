@@ -3,33 +3,23 @@ import { KonvaEventObject } from 'konva/lib/Node';
 import { Layer as KonvaLayer } from 'konva/lib/Layer';
 import React from 'react';
 import { Layer, Rect, Text } from 'react-konva';
-import { CanvasProps, INVENTORY_SIZE, RECT_OVERLAP_COLOR, SCROLLBAR_WIDTH } from '../../../config/canvasConfig';
 import { ColorRect } from '../../../types/ColorRect.interface';
-import { DimensionsWithConfig } from '../../../types/DimensionsWithConfig.type';
-import { RectangleConfig } from '../../../types/RectangleConfig.interface';
-import ScrollBar from '../../canvas/ScrollBar';
-import { PADDING } from '../../../config/canvasConfig';
 import { Vector2d } from 'konva/lib/types';
-import { Group } from 'konva/lib/Group';
 import { Shape } from 'konva/lib/Shape';
 import { useKeepOnMouse } from '../../../hooks/useKeepOnMouse';
 import { Stage as KonvaStage } from 'konva/lib/Stage';
 
 interface InventoryProps {
   stripWidth: number;
-  inventoryWidth: number;
-  gameHeight: number;
   dynamicInventory: ColorRect[];
   staticInventory: ReadonlyArray<ColorRect & { order?: number }>;
-  stripRects: ColorRect<RectangleConfig>[];
-  // snap: (source: ColorRect<RectangleConfig>[], target: Shape, destination?: ColorRect<RectangleConfig>[]) => void;
   snap: (target: Shape) => void;
   stageRef: KonvaStage;
   onDraggedToStrip: (rectName: string, pos: Vector2d) => boolean;
 }
 
 const Inventory = React.forwardRef<KonvaLayer, InventoryProps>(
-  ({ dynamicInventory, staticInventory, stripWidth: stripWidth, inventoryWidth, gameHeight, onDraggedToStrip, stageRef, stripRects, snap }, ref) => {
+  ({ dynamicInventory, staticInventory, stripWidth: stripWidth, onDraggedToStrip, stageRef, snap }, ref) => {
     const { dragEndMiddleWare } = useKeepOnMouse({ stageRef });
 
     const handleDragEnd = (ev: KonvaEventObject<DragEvent>) => {
