@@ -7,7 +7,6 @@ import { ColorRect } from '../../../types/ColorRect.interface';
 import { Vector2d } from 'konva/lib/types';
 import { Shape } from 'konva/lib/Shape';
 import { useKeepOnMouse } from '../../../hooks/useKeepOnMouse';
-import { Stage as KonvaStage } from 'konva/lib/Stage';
 
 interface InventoryProps {
   stripWidth: number;

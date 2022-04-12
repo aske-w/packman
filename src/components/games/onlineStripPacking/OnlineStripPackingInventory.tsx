@@ -6,6 +6,7 @@ import React from 'react';
 import { Layer, Rect, Text } from 'react-konva';
 import { ColorRect } from '../../../types/ColorRect.interface';
 import { Layer as KonvaLayer } from 'konva/lib/Layer';
+import { useKeepOnMouse } from '../../../hooks/useKeepOnMouse';
 interface OnlineStripPackingInventoryProps {
   x: number;
   visibleInventory: ColorRect[];
@@ -16,29 +17,41 @@ interface OnlineStripPackingInventoryProps {
 
 const OnlineStripPackingInventory = React.forwardRef<KonvaLayer, OnlineStripPackingInventoryProps>(
   ({ visibleInventory, x: interactiveWidth, onDraggedToStrip, snap, entireInventory }, ref) => {
-    const handleDragEnd = async (evt: KonvaEventObject<DragEvent>) => {
-      const rect = evt.target;
-      const { name, width } = rect.getAttrs();
+    const { dragEndMiddleWare } = useKeepOnMouse();
 
-      const { x: x, y: y } = visibleInventory.find(r => r.name === name)!;
-      const { x: dropX, y: dropY } = rect.getAbsolutePosition();
+    const handleDragEnd = async (ev: KonvaEventObject<DragEvent>) => {
+      dragEndMiddleWare(
+        ev,
+        async evt => {
+          const rect = evt.target;
+          const { name, width } = rect.getAttrs();
+          const { x: dropX, y: dropY } = rect.getAbsolutePosition();
 
-      const inStripArea = dropX + width < interactiveWidth;
+          const inStripArea = dropX + width < interactiveWidth;
 
-      if (inStripArea) {
-        const success = await onDraggedToStrip(name, { x: dropX, y: dropY });
-        if (success) return;
-      }
-      // restore normal color
-      rect.setAttr('fill', entireInventory.find(r => r.name == rect.name())!.fill);
-      // animate back to starting position
-      new Konva.Tween({
-        x,
-        y,
-        node: rect,
-        duration: 0.4,
-        easing: Konva.Easings.EaseOut,
-      }).play();
+          if (inStripArea) {
+            const success = await onDraggedToStrip(name, { x: dropX, y: dropY });
+            if (success) return true;
+          }
+
+          return false;
+        },
+        evt => {
+          const rect = evt.target;
+          const { name } = rect.getAttrs();
+          const { x: x, y: y } = visibleInventory.find(r => r.name === name)!;
+          // restore normal color
+          rect.setAttr('fill', entireInventory.find(r => r.name == rect.name())!.fill);
+          // animate back to starting position
+          new Konva.Tween({
+            x,
+            y,
+            node: rect,
+            duration: 0.4,
+            easing: Konva.Easings.EaseOut,
+          }).play();
+        }
+      );
     };
 
     const handleDragMove = (e: KonvaEventObject<DragEvent>) => {
