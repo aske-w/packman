@@ -1,18 +1,12 @@
-import { useCallback, useEffect, useState } from 'react';
-import { Stage as KonvaStage } from 'konva/lib/Stage';
+import { useCallback, useState } from 'react';
 import { KonvaEventObject } from 'konva/lib/Node';
 
-interface Props {
-  stageRef: KonvaStage;
-}
-
-export const useKeepOnMouse = ({ stageRef }: Props) => {
+export const useKeepOnMouse = () => {
   const [isDragging, setDragging] = useState(false);
 
   const dragEndMiddleWare = useCallback(
     (evt: KonvaEventObject<DragEvent>, cb: (evt: KonvaEventObject<DragEvent>) => boolean, onErr: (evt: KonvaEventObject<DragEvent>) => void) => {
       if (isDragging) {
-        console.log('isDragging');
         return;
       }
 
@@ -38,7 +32,7 @@ export const useKeepOnMouse = ({ stageRef }: Props) => {
         { once: true }
       );
     },
-    [stageRef, isDragging]
+    [isDragging]
   );
 
   return { dragEndMiddleWare };

@@ -31,7 +31,6 @@ import { pushItemToBack } from '../../utils/array';
 import { compressInventory, generateInventory } from '../../utils/generateData';
 import { intersects } from '../../utils/intersects';
 import { sleep } from '../../utils/utils';
-import { useKeepOnMouse } from '../../hooks/useKeepOnMouse';
 
 interface StripPackingGameProps {}
 const NUM_ITEMS = 25;
@@ -80,9 +79,6 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   // Algo layer scroll
   const algorithmScrollbarRef = useRef<KonvaRect>(null);
   const algorithmLayerRef = useRef<KonvaLayer>(null);
-
-  // Stage ref
-  const stageRef = useRef<KonvaStage>(null);
 
   // Snapping
   const { snapInventory, snapInteractive } = useSnap<ColorRect<RectangleConfig & { order?: number; removed?: boolean }>>({
@@ -212,7 +208,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
       <TimeBar />
       <GameEndModal />
       <div className="flex items-center justify-between w-full">
-        <Stage ref={stageRef} onWheel={handleWheel} width={window.innerWidth} height={gameHeight}>
+        <Stage onWheel={handleWheel} width={window.innerWidth} height={gameHeight}>
           <Layer>
             {/* Strip canvas */}
             <Rect fill="#555" x={0} width={stripWidth} height={gameHeight} />
@@ -236,7 +232,6 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
             ref={inventoryLayer}
             staticInventory={startingInventory}
             dynamicInventory={renderInventory}
-            stageRef={stageRef.current!}
             snap={(target: Shape) => snapInventory(interactiveLayerRef.current?.children as Group[], target)}
             {...{
               onDraggedToStrip,

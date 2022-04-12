@@ -14,13 +14,12 @@ interface InventoryProps {
   dynamicInventory: ColorRect[];
   staticInventory: ReadonlyArray<ColorRect & { order?: number }>;
   snap: (target: Shape) => void;
-  stageRef: KonvaStage;
   onDraggedToStrip: (rectName: string, pos: Vector2d) => boolean;
 }
 
 const Inventory = React.forwardRef<KonvaLayer, InventoryProps>(
-  ({ dynamicInventory, staticInventory, stripWidth: stripWidth, onDraggedToStrip, stageRef, snap }, ref) => {
-    const { dragEndMiddleWare } = useKeepOnMouse({ stageRef });
+  ({ dynamicInventory, staticInventory, stripWidth: stripWidth, onDraggedToStrip, snap }, ref) => {
+    const { dragEndMiddleWare } = useKeepOnMouse();
 
     const handleDragEnd = (ev: KonvaEventObject<DragEvent>) => {
       dragEndMiddleWare(
