@@ -1,13 +1,16 @@
 import { Dialog, Transition } from "@headlessui/react";
+import { CheckCircleIcon, SaveAsIcon, TrashIcon } from "@heroicons/react/outline";
+// import { Layer as LayerReference, LayerConfig } from "konva/lib/Layer";
 import { KonvaEventObject } from "konva/lib/Node";
 import { Vector2d } from "konva/lib/types";
 import React, { Fragment, useCallback, useEffect, useRef, useState } from "react";
-import { Layer, Rect, Stage } from "react-konva";
+import { KonvaNodeComponent, Layer, Rect, Stage } from "react-konva";
 import useInputDesignerStore from "../../store/inputDesigner.store";
 import { ColorRect } from "../../types/ColorRect.interface";
 import { Dimensions } from "../../types/Dimensions.interface";
 import { RectangleConfig } from "../../types/RectangleConfig.interface";
 import BoxInput from "../BoxInput"
+import RangeSlider from "../RangeSlider";
 
 interface InputDesignerModalProps {
   existingRects: Dimensions[]
@@ -31,38 +34,63 @@ const InputDesignerModal: React.FC<InputDesignerModalProps> = ({ existingRects, 
   const onDiscard = () => {
     onClose();
   }
-
-  
-  let startPosition: Vector2d | undefined;
+ 
+  const [dragStarted, setDragStarted] = useState(false);
+  const [startPosition, setStartPosition] = useState<Vector2d>();
+  const [currPosition, setCurrPosition] = useState<Vector2d>();
+  const [rect, setRect] = useState<ColorRect<RectangleConfig>>() 
+  const [scale, setScale] = useState(50);
 
   const onMouseDown = (e: KonvaEventObject<MouseEvent>) => {
-    // const {x, y} = e.target.getAttrs();
-    // console.log();
-    // console.log({x, y});
-    startPosition = e.currentTarget.getStage()!.getPointerPosition()!;
+    const pointerPos = e.target.getStage()!.getPointerPosition()!;
+    
+    //check if mouse is inside existing rect
+    if(rect != undefined) {
+      const x2 = rect.x + rect.width
+      const y2 = rect.y + rect.height
+      if(rect.x < pointerPos.x && pointerPos.x < x2 && rect.y < pointerPos.y && pointerPos.y < y2)
+        return;
+    }
+
+    setDragStarted(true);
+    setStartPosition(pointerPos);
+    setCurrPosition(pointerPos);
+    setRect({x: pointerPos.x, y: pointerPos.y, width: 0, height: 0, name: "userRect", fill: "#555"})
   }
   const onMouseUp = (e: KonvaEventObject<MouseEvent>) => {
-    // const {x, y} = e.target.getAttrs();
-    // console.log({x, y});
-    console.log({startPosition});
-    const endPosition = e.target.getStage()!.getPointerPosition()!;
-    rect.x = endPosition.x;
-    rect.y = endPosition.y;
-    setRect({...rect, x: endPosition.x, y: endPosition.y});
-    startPosition == undefined
+    setDragStarted(false);
+    clearPositions();
   }
   const onMouseMove = (e: KonvaEventObject<MouseEvent>) => {
-    if(startPosition == undefined)
+    if(!dragStarted) 
       return;
 
-    
-  }
+    const pointerPos = e.target.getStage()!.getPointerPosition()!;
+    setCurrPosition(pointerPos);
 
-  const [rect, setRect] = useState<ColorRect<RectangleConfig>>({width: 100, height: 100, name: "test", fill: "#555", x: 50, y: 50}) 
+    const width = -(startPosition!.x - pointerPos.x)
+    const height = -(startPosition!.y - pointerPos.y)
+
+    setRect({...rect!, width, height})
+  }
+  const clearPositions = () => {
+    setStartPosition(undefined);
+    setCurrPosition(undefined);
+  }
+  const clearUserRect = () => {
+    clearPositions();
+    setRect(undefined);
+  }
+  const saveUserRect = () => {
+    setNewDimensions(prevState => {
+      // put new dimensions at the top
+      return [{width: rect!.width * (scale * 2) / 100, height: rect!.height * (scale * 2) / 100}].concat(prevState);
+    });
+    clearUserRect();
+  }
   
   const [stage, setStage] = useState<HTMLDivElement>();
   const [stageWidth, setStageWidth] = useState(0);
-  // const stageRef = useRef<Stage>();
   const interactiveRef = useCallback((node: HTMLDivElement) => {
     if (node !== null) {
       setStage(node);
@@ -111,15 +139,20 @@ const InputDesignerModal: React.FC<InputDesignerModalProps> = ({ existingRects, 
                   </div>
                   <div className="w-3/5 text-white" ref={interactiveRef}>
                     <h3 className="mt-4 text-center text-white">Interactive</h3>
-                    <div className="flex justify-evenly">
-                      <span>
-                        Rect WxH: 0x0
-                      </span>
-                      <span>
-                        Scale: 100%
-                      </span>
+                    <div className="grid grid-cols-12 mb-3">
+                      <div className="col-span-6">
+                        Rect: {rect ? "Width: " + rect.width + ", height: " + rect.height : "None yet"}
+                      </div>
+                      <div className="col-span-3">
+                        Scale: {scale * 2}%
+                        <RangeSlider progress={scale} onChange={setScale} hideTooltip />
+                      </div>
+                      <div className="col-span-3 flex justify-end">
+                        <TrashIcon className="w-10 mr-3 hover:scale-110 hover:text-red-400 hover:cursor-pointer" onClick={clearUserRect}/>
+                        <CheckCircleIcon className="w-10 hover:scale-110 hover:text-green-400 hover:cursor-pointer" onClick={saveUserRect}/>
+                      </div>
                     </div>
-                    <Stage height={300} width={stageWidth} className="bg-gray-200 max-w-full" onMouseDown={onMouseDown} onMouseUp={onMouseUp} onMouseMove={onMouseMove}>
+                    <Stage height={300} width={stageWidth} className="bg-gray-200 max-w-full" onMouseDown={onMouseDown} onMouseUp={onMouseUp} onMouseMove={e => onMouseMove(e)}>
                       <Layer fill={"#333"}>
                         <Rect {...rect} draggable>
 
