@@ -64,8 +64,8 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
       <TeachAlgoModal algorithm={selectedAlgorithm} visible={teachingOpen} onClose={() => setTeachingOpen(false)} />
       <InputDesignerModal visible={designerOpen} 
         onClose={() => setDesignerOpen(false)} 
-        input={dimensionsStorage} 
-        setInput={setDimensionsStorage}/>
+        existingRects={dimensionsStorage} 
+        setExistingRects={setDimensionsStorage}/>
       <SideBarSection title="Algorithms">
         <div className="flex flex-row items-center justify-between">
           <Select<PackingAlgorithmEnum>
