@@ -16,6 +16,8 @@ import { generateData } from '../../utils/generateData';
 import Sidebar from './Sidebar';
 import TeachAlgoModal from '../playground/TeachAlgoModal';
 import { AcademicCapIcon } from '@heroicons/react/solid';
+import useInputDesignerStore from '../../store/inputDesigner.store';
+import InputDesignerModal from './InputDesignerModal';
 
 interface SidebarProps {
   placeNext(): void;
@@ -50,6 +52,7 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
   const [genNum, setGenNum] = useState(30);
   const [previousData, setPreviousData] = useState<Dimensions[]>([]);
   const [teachingOpen, setTeachingOpen] = useState(false);
+  const [designerOpen, setDesignerOpen] = useState(false);
   const makeRndData = () => {
     setDimensionsStorage(generateData(genNum, stripWidth * 0.52, 5));
   };
@@ -59,6 +62,10 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
   return (
     <Sidebar className="inline-flex flex-col overflow-hidden">
       <TeachAlgoModal algorithm={selectedAlgorithm} visible={teachingOpen} onClose={() => setTeachingOpen(false)} />
+      <InputDesignerModal visible={designerOpen} 
+        onClose={() => setDesignerOpen(false)} 
+        input={dimensionsStorage} 
+        setInput={setDimensionsStorage}/>
       <SideBarSection title="Algorithms">
         <div className="flex flex-row items-center justify-between">
           <Select<PackingAlgorithmEnum>
@@ -161,6 +168,15 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
               </button>
             </div>
           }
+        />
+        <SideBarItem 
+        text={'Advanced input design'} 
+        element={
+          <button className={`px-2 py-1 font-medium text-white rounded shadow bg-blue-700 ${isStarted ? 'opacity-60' : 'hover:bg-blue-800'}`}
+            onClick={() => setDesignerOpen(true)}>
+            Input designer
+          </button>
+        }
         />
       </SideBarSection>
 
