@@ -133,7 +133,8 @@ const DesignStripOfflineGame: React.FC<DesignStripOfflineGameProps> = ({}) => {
 
     const interactiveInventory = compressedInv.filter(r => !r.removed);
     setRenderInventory(interactiveInventory);
-    setRectanglesLeft(renderInventory.length - 1);
+    renderInventory.pop();
+    setRectanglesLeft(renderInventory.length);
 
     // give the order of placement to the starting state
     setStartingInventory(compressedInv);
@@ -251,6 +252,7 @@ const DesignStripOfflineGame: React.FC<DesignStripOfflineGameProps> = ({}) => {
         setRects={(ds => {setDims(ds); setEvent(Events.RESTART)})} 
         startDisabled={state === "RUNNING"} 
         inputDesignerDisabled={state === "RUNNING"}  
+        resetDisabled={state === "RUNNING"}
       />
       <StripPackingGameIntroModal />
       {/* <TimeBar /> */}
