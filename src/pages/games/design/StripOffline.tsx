@@ -35,8 +35,8 @@ interface DesignStripOfflineGameProps {}
 const NUM_ITEMS = 25;
 const DesignStripOfflineGame: React.FC<DesignStripOfflineGameProps> = ({}) => {
   const { width: wWidth, height: wHeight } = useWindowSize();
-  const stripWidth = wWidth * 0.2;
-  const inventoryWidth = wWidth * 0.6;
+  const stripWidth = wWidth * 0.3;
+  const inventoryWidth = wWidth * 0.7;
   const gameHeight = wHeight - NAV_HEIGHT;
 
   const { algorithm } = useOnGameStart<PackingAlgorithmEnum>(Gamemodes.STRIP_PACKING, PackingAlgorithmEnum.NEXT_FIT_DECREASING_HEIGHT);
@@ -170,8 +170,8 @@ const DesignStripOfflineGame: React.FC<DesignStripOfflineGameProps> = ({}) => {
       // inventory part
       defaultScrollHandler({
         activeArea: {
-          minX: stripWidth,
-          maxX: stripWidth + inventoryWidth,
+          minX: 0,
+          maxX: inventoryWidth,
         },
         visibleHeight: gameHeight,
         layerRef: inventoryLayer,
@@ -179,20 +179,20 @@ const DesignStripOfflineGame: React.FC<DesignStripOfflineGameProps> = ({}) => {
         scrollableHeight,
       }),
       // interactive part
+      // defaultScrollHandler({
+      //   activeArea: {
+      //     minX: 0,
+      //     maxX: stripWidth,
+      //   },
+      //   visibleHeight: gameHeight,
+      //   layerRef: interactiveLayerRef,
+      //   scrollBarRef: interactiveScrollBarRef,
+      //   scrollableHeight,
+      // }),
       defaultScrollHandler({
         activeArea: {
-          minX: 0,
-          maxX: stripWidth,
-        },
-        visibleHeight: gameHeight,
-        layerRef: interactiveLayerRef,
-        scrollBarRef: interactiveScrollBarRef,
-        scrollableHeight,
-      }),
-      defaultScrollHandler({
-        activeArea: {
-          minX: stripWidth + inventoryWidth,
-          maxX: stripWidth * 2 + inventoryWidth,
+          minX: inventoryWidth,
+          maxX: stripWidth + inventoryWidth,
         },
         visibleHeight: gameHeight,
         layerRef: algorithmLayerRef,
@@ -212,13 +212,13 @@ const DesignStripOfflineGame: React.FC<DesignStripOfflineGameProps> = ({}) => {
         <Stage onWheel={handleWheel} width={window.innerWidth} height={gameHeight}>
           <Layer>
             {/* Strip canvas */}
-            <Rect fill="#555" x={0} width={stripWidth} height={gameHeight} />
+            {/* <Rect fill="#555" x={0} width={stripWidth} height={gameHeight} /> */}
             {/* Inventory */}
-            <Rect fill="#333" x={stripWidth} width={inventoryWidth} height={gameHeight} />
+            <Rect fill="#333" width={inventoryWidth} height={gameHeight} />
             {/* Algorithm canvas */}
-            <Rect fill="#555" x={inventoryWidth + stripWidth} width={stripWidth} height={gameHeight} />
+            <Rect fill="#555" x={inventoryWidth} width={stripWidth} height={gameHeight} />
           </Layer>
-          <StripPackingInteractive
+          {/* <StripPackingInteractive
             scrollableHeight={scrollableHeight}
             ref={interactiveRef}
             layerRef={interactiveLayerRef}
@@ -229,7 +229,7 @@ const DesignStripOfflineGame: React.FC<DesignStripOfflineGameProps> = ({}) => {
             snap={snapInteractive}
             stripRectChangedCallback={stripRectChangedCallback}
             staticInvLength={startingInventory.length}
-          />
+          /> */}
           <Inventory
             ref={inventoryLayer}
             staticInventory={startingInventory}
@@ -239,7 +239,7 @@ const DesignStripOfflineGame: React.FC<DesignStripOfflineGameProps> = ({}) => {
             stripRects={stripRects}
             {...{
               onDraggedToStrip,
-              stripWidth: stripWidth,
+              stripWidth: 0,
               inventoryWidth: inventoryWidth,
               gameHeight,
             }}
@@ -262,11 +262,11 @@ const DesignStripOfflineGame: React.FC<DesignStripOfflineGameProps> = ({}) => {
               startPosition="top"
               ref={inventoryScrollBarRef}
               scrollableHeight={scrollableHeight}
-              x={stripWidth + inventoryWidth - PADDING - SCROLLBAR_WIDTH}
+              x={inventoryWidth - PADDING - SCROLLBAR_WIDTH}
               gameHeight={gameHeight}
               onYChanged={newY => inventoryLayer.current?.y(newY)}
             />
-            <ScrollBar
+            {/* <ScrollBar
               startPosition="bottom"
               ref={interactiveScrollBarRef}
               scrollableHeight={scrollableHeight}
@@ -275,13 +275,13 @@ const DesignStripOfflineGame: React.FC<DesignStripOfflineGameProps> = ({}) => {
               onYChanged={newY => {
                 interactiveLayerRef.current?.y(newY);
               }}
-            />
+            /> */}
             <ScrollBar
               key="algo scrollbar"
               startPosition="bottom"
               ref={algorithmScrollbarRef}
               scrollableHeight={scrollableHeight}
-              x={inventoryWidth + stripWidth * 2 - PADDING - SCROLLBAR_WIDTH}
+              x={inventoryWidth + stripWidth - PADDING - SCROLLBAR_WIDTH}
               gameHeight={gameHeight}
               onYChanged={newY => {
                 algorithmLayerRef.current?.y(newY);
