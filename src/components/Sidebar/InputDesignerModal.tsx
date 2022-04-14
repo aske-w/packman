@@ -10,8 +10,10 @@ import { ColorRect } from "../../types/ColorRect.interface";
 import { Dimensions } from "../../types/Dimensions.interface";
 import { RectangleConfig } from "../../types/RectangleConfig.interface";
 import { clamp } from "../../utils/clamp";
+import { generateData } from "../../utils/generateData";
 import BoxInput from "../BoxInput"
 import RangeSlider from "../RangeSlider";
+import RectInput from "../RectInput";
 
 interface InputDesignerModalProps {
   existingRects: Dimensions[]
@@ -43,6 +45,7 @@ const InputDesignerModal: React.FC<InputDesignerModalProps> = ({ existingRects, 
   const [currPosition, setCurrPosition] = useState<Vector2d>();
   const [rect, setRect] = useState<ColorRect<RectangleConfig>>() 
   const [scale, setScale] = useState(50);
+  const [genNum, setGenNum] = useState("1");
 
   const onMouseDown = (e: KonvaEventObject<MouseEvent>) => {
     const pointerPos = e.target.getStage()!.getPointerPosition()!;
@@ -104,10 +107,12 @@ const InputDesignerModal: React.FC<InputDesignerModalProps> = ({ existingRects, 
     }
     setNewDimensions(prevState => {
       // put new dimensions at the top
-      return [{width: scaledWidth, height: scaledHeight}].concat(prevState);
+      return insertInFront({width: scaledWidth, height: scaledHeight}, prevState);
     });
     clearUserRect();
   }
+
+  const insertInFront = (item: Dimensions, rest: Dimensions[]) => [item].concat(rest);
   
   const [stage, setStage] = useState<HTMLDivElement>();
   const [stageWidth, setStageWidth] = useState(0);
@@ -124,6 +129,24 @@ const InputDesignerModal: React.FC<InputDesignerModalProps> = ({ existingRects, 
   const getScaledValue = useCallback((dimension: number) => {
     return Math.round(dimension * (scale * 2) / 100)
   }, [scale])
+
+  const onRemoveAll = () => setNewDimensions([]);
+  const onDuplicateAll = () => setNewDimensions(newDimensions.concat(newDimensions))
+  const onCreateRandom = () => {
+    const parsedNumber = Number.parseInt(genNum);
+    if(parsedNumber !== parsedNumber) { // true if genNum couldn't be parsed
+      toast("Input was not a number", {type: "error"})
+      return;
+    }
+
+    let max = maxWidth;
+    // set smallest limit to max
+    if(maxHeight)
+      if(max)
+        max = maxHeight < max ? maxHeight : max;
+
+    setNewDimensions(generateData(parsedNumber, max, 5).concat(newDimensions))
+  }
 
   return (
     <>
@@ -159,6 +182,38 @@ const InputDesignerModal: React.FC<InputDesignerModalProps> = ({ existingRects, 
               <div className="inline-block w-full max-w-4xl p-6 my-8 overflow-hidden prose text-left align-middle transition-all transform bg-zinc-600 shadow-xl rounded-2xl h-[40rem] overflow-y-hidden">
                 <div className="flex justify-between h-[38rem]">
                   <div className="w-2/5 h-full overflow-y-scroll">
+                    <div className="ml-4">
+                      <button
+                        type="button"
+                        className="inline-flex justify-center mr-2 px-4 py-2 text-sm font-medium text-blue-900 bg-blue-100 border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+                        onClick={onDuplicateAll}
+                      >
+                        Duplicate all
+                      </button>
+                      <button
+                        type="button"
+                        className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-red-500 border border-transparent rounded-md hover:bg-red-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+                        onClick={onRemoveAll}
+                      >
+                        Remove all
+                      </button>
+                      <div className="flex justify-right mt-2">
+                        <button
+                          onClick={onCreateRandom}
+                          className={`inline-flex justify-center mr-2 px-4 py-2 text-sm font-medium text-blue-900 bg-blue-100 border border-transparent rounded-md  focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 ${!visible ? 'opacity-60' : 'hover:bg-blue-200'}`}
+                          disabled={!visible}
+                        >
+                          Generate N
+                        </button>
+                        <RectInput
+                          disabled={!visible}
+                          value={genNum}
+                          onChange={e => setGenNum(e.target.value)}
+                          className="w-4/12 px-3 select-none"
+                          sec="N"
+                        />
+                      </div>
+                    </div>
                     <BoxInput dimensionsStorage={newDimensions} setDimensionsStorage={setNewDimensions} allowDuplication={true} iconSizeClass="w-20" />
                   </div>
                   <div className="w-3/5 text-white" ref={interactiveRef}>
