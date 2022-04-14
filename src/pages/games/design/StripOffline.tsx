@@ -11,23 +11,29 @@ import Inventory from '../../../components/games/stripPacking/Inventory';
 import StripPackingAlgorithm, { StripPackingAlgorithmHandle } from '../../../components/games/stripPacking/StripPackingAlgorithm';
 import StripPackingGameIntroModal from '../../../components/games/stripPacking/StripPackingGameIntroModal';
 import StripPackingInteractive, { StripPackingInteractiveHandle } from '../../../components/games/stripPacking/StripPackingInteractive';
+import DesignInputNav from '../../../components/Nav/DesignInputNav';
 import StripPackingNav from '../../../components/Nav/StripPackingNav';
 import TimeBar from '../../../components/TimeBar';
 import { ALGO_MOVE_ANIMATION_DURATION, NAV_HEIGHT, PADDING, SCROLLBAR_WIDTH } from '../../../config/canvasConfig';
+import { useAutoPlace } from '../../../hooks/useAutoPlace';
 import { useGameEnded } from '../../../hooks/useGameEnded';
 import { defaultScrollHandler, useKonvaWheelHandler } from '../../../hooks/useKonvaWheelHandler';
 import { useOnGameStart } from '../../../hooks/useOnGameStart';
+import { AlgoStates } from '../../../hooks/usePackingAlgorithms';
 import { useRestartStripPacking } from '../../../hooks/useRestartStripPacking';
 import { useSnap } from '../../../hooks/useSnap';
 import { useWindowSize } from '../../../hooks/useWindowSize';
+import useEventStore from '../../../store/event.store';
 import useScoreStore from '../../../store/score.store';
 import { ColorRect } from '../../../types/ColorRect.interface';
+import { Dimensions } from '../../../types/Dimensions.interface';
+import { Events } from '../../../types/enums/Events.enum';
 import { Gamemodes } from '../../../types/enums/Gamemodes.enum';
 import { PackingAlgorithmEnum } from '../../../types/enums/OfflineStripPackingAlgorithm.enum';
 import { Rectangle } from '../../../types/Rectangle.interface';
 import { RectangleConfig } from '../../../types/RectangleConfig.interface';
 import { pushItemToBack } from '../../../utils/array';
-import { compressInventory, generateInventory } from '../../../utils/generateData';
+import { compressInventory, generateInventory, generateInventoryFromDimensions } from '../../../utils/generateData';
 import { intersects } from '../../../utils/intersects';
 import { sleep } from '../../../utils/utils';
 
@@ -43,7 +49,11 @@ const DesignStripOfflineGame: React.FC<DesignStripOfflineGameProps> = ({}) => {
 
   const setRectanglesLeft = useScoreStore(useCallback(({ setRectanglesLeft }) => setRectanglesLeft, []));
 
+  const { setEvent } = useEventStore(useCallback(({ setEvent }) => ({ setEvent }), []));
+
   const [stripRects, setStripRects] = useState<ColorRect[]>([]);
+  const [dims, setDims] = useState<Dimensions[]>([]);
+
   /**
    * This is the immutable inventory, used for rendering the ghosts
    */
@@ -93,18 +103,49 @@ const DesignStripOfflineGame: React.FC<DesignStripOfflineGameProps> = ({}) => {
 
   const resetFuncs = [
     () => {
-      const newInv = generateInventory(inventoryWidth, NUM_ITEMS);
+      const newInv = generateInventoryFromDimensions(inventoryWidth, dims);
       setStartingInventory(newInv);
     },
     () => setInventoryChanged(true),
-    interactiveRef.current?.reset,
     algoRef.current?.reset,
   ];
 
   useRestartStripPacking(resetFuncs, algorithm, {});
 
-  const stripRectChangedCallback = () => {}; // TODO figure out if this is needed?
+  const [state, setState] = useState<AlgoStates>("STOPPED")
 
+  const onStart = () => setState("RUNNING")
+  
+  const place = () => {
+    const res = algoRef.current?.next();
+    if (!res) {
+      setState("STOPPED")
+      return;
+    }
+    const [placedRect, order, recIdx] = res;
+    const inv = [...startingInventory];
+
+    inv[recIdx].removed = true;
+    inv[recIdx].order = order;
+
+    let newRectIdx = 0;
+    const compressedInv = compressInventory(inv, inventoryWidth, (rect, i) => rect.name === placedRect.name && (newRectIdx = i));
+
+    const interactiveInventory = compressedInv.filter(r => !r.removed);
+    setRenderInventory(interactiveInventory);
+    setRectanglesLeft(renderInventory.length - 1);
+
+    // give the order of placement to the starting state
+    setStartingInventory(compressedInv);
+
+    /**
+     * Let inventory compress before animating
+     */
+    sleep(ALGO_MOVE_ANIMATION_DURATION * 100).then(() => algoRef.current?.place(placedRect, newRectIdx));
+  }
+
+  const { updateSpeed } = useAutoPlace(state === "RUNNING", place, state)
+  useEffect(() => updateSpeed(90),[])
   /**
    * Pos is absolute position in the canvas
    */
@@ -204,9 +245,15 @@ const DesignStripOfflineGame: React.FC<DesignStripOfflineGameProps> = ({}) => {
 
   return (
     <div className="w-full h-full ">
-      <StripPackingNav />
+      <DesignInputNav 
+        start={onStart} 
+        rects={startingInventory} 
+        setRects={(ds => {setDims(ds); setEvent(Events.RESTART)})} 
+        startDisabled={state === "RUNNING"} 
+        inputDesignerDisabled={state === "RUNNING"}  
+      />
       <StripPackingGameIntroModal />
-      <TimeBar />
+      {/* <TimeBar /> */}
       <GameEndModal />
       <div className="flex items-center justify-between w-full">
         <Stage onWheel={handleWheel} width={window.innerWidth} height={gameHeight}>
@@ -249,7 +296,7 @@ const DesignStripOfflineGame: React.FC<DesignStripOfflineGameProps> = ({}) => {
             getInventoryScrollOffset={() => -1 * inventoryLayer.current!.y()}
             ref={algoRef}
             inventoryWidth={inventoryWidth}
-            x={inventoryWidth + stripWidth}
+            x={inventoryWidth}
             width={stripWidth}
             height={gameHeight}
             inventory={startingInventory}

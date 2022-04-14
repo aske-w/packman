@@ -18,7 +18,7 @@ export const generateData = (amount = 10, max = 100, min = 50): Dimensions[] => 
   });
 };
 
-export const generateInventoryFromDimensions = <T = RectangleConfig>(dims: Dimensions[]): ColorRect<T>[]  => {
+export const generateInventoryFromDimensions = <T = RectangleConfig>(inventorySize: number, dims: Dimensions[]): ColorRect<T>[]  => {
   return dims.reduce<Acc<T>>(
     (acc, attrs, i) => {
       const { height, width } = attrs;
@@ -38,7 +38,7 @@ export const generateInventoryFromDimensions = <T = RectangleConfig>(dims: Dimen
       } else {
         const prev = acc.rects[i - 1];
         const x = PADDING + prev.x + prev.width;
-        if (x + width >= dims.length) {
+        if (x + width >= inventorySize) {
           // should create new row
           acc.row.y = acc.row.prevRowHeight + PADDING;
           rect.y = acc.row.prevRowHeight + PADDING * 2;

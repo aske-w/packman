@@ -37,6 +37,7 @@ const InputDesignerModal: React.FC<InputDesignerModalProps> = ({ existingRects, 
     onClose();
   }
   const onDiscard = () => {
+    setNewDimensions([])
     onClose();
   }
  
@@ -149,7 +150,7 @@ const InputDesignerModal: React.FC<InputDesignerModalProps> = ({ existingRects, 
       if(max)
         max = maxHeight < max ? maxHeight : max;
 
-    setNewDimensions(generateData(parsedNumber, max, 5).concat(newDimensions))
+    setNewDimensions(generateData(parsedNumber, max, 25).concat(newDimensions))
   }
 
   return (
