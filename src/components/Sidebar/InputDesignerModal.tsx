@@ -5,6 +5,7 @@ import { KonvaEventObject } from "konva/lib/Node";
 import { Vector2d } from "konva/lib/types";
 import React, { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { KonvaNodeComponent, Layer, Rect, Stage } from "react-konva";
+import { toast, ToastOptions } from "react-toastify";
 import useInputDesignerStore from "../../store/inputDesigner.store";
 import { ColorRect } from "../../types/ColorRect.interface";
 import { Dimensions } from "../../types/Dimensions.interface";
@@ -82,9 +83,19 @@ const InputDesignerModal: React.FC<InputDesignerModalProps> = ({ existingRects, 
     setRect(undefined);
   }
   const saveUserRect = () => {
+    if(rect == undefined) {
+      toast("No rectangle drawn", {type: "error"})
+      return;
+    }
+    const scaledWidth = getScaledValue(rect!.width);
+    const scaledHeight = getScaledValue(rect!.height);
+    if(scaledWidth < 1 || scaledHeight < 1) {
+      toast("Width or height below 1 is not allowed", {type: "error"})
+      return;
+    }
     setNewDimensions(prevState => {
       // put new dimensions at the top
-      return [{width: rect!.width * (scale * 2) / 100, height: rect!.height * (scale * 2) / 100}].concat(prevState);
+      return [{width: scaledWidth, height: scaledHeight}].concat(prevState);
     });
     clearUserRect();
   }
@@ -100,6 +111,10 @@ const InputDesignerModal: React.FC<InputDesignerModalProps> = ({ existingRects, 
     if(stage != null)
       setStageWidth(stage.clientWidth);
   }, [stage?.clientWidth]);
+
+  const getScaledValue = useCallback((dimension: number) => {
+    return Math.round(dimension * (scale * 2) / 100)
+  }, [scale])
 
   return (
     <>
@@ -141,7 +156,7 @@ const InputDesignerModal: React.FC<InputDesignerModalProps> = ({ existingRects, 
                     <h3 className="mt-4 text-center text-white">Interactive</h3>
                     <div className="grid grid-cols-12 mb-3">
                       <div className="col-span-6">
-                        Rect: {rect ? "Width: " + rect.width + ", height: " + rect.height : "None yet"}
+                        Rect: {rect ? "Width: " + getScaledValue(rect!.width) + ", height: " + getScaledValue(rect!.height) : "None yet"}
                       </div>
                       <div className="col-span-3">
                         Scale: {scale * 2}%
