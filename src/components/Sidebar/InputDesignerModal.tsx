@@ -10,6 +10,7 @@ import useInputDesignerStore from "../../store/inputDesigner.store";
 import { ColorRect } from "../../types/ColorRect.interface";
 import { Dimensions } from "../../types/Dimensions.interface";
 import { RectangleConfig } from "../../types/RectangleConfig.interface";
+import { clamp } from "../../utils/clamp";
 import BoxInput from "../BoxInput"
 import RangeSlider from "../RangeSlider";
 
@@ -18,9 +19,11 @@ interface InputDesignerModalProps {
   setExistingRects: (newInput: Dimensions[]) => void;
   visible: boolean;
   onClose: () => void;
+  maxWidth?: number;
+  maxHeight?: number;
 }
 
-const InputDesignerModal: React.FC<InputDesignerModalProps> = ({ existingRects, setExistingRects, visible, onClose }) => {
+const InputDesignerModal: React.FC<InputDesignerModalProps> = ({ existingRects, setExistingRects, visible, onClose, maxWidth, maxHeight }) => {
   const [newDimensions, setNewDimensions] = useState<Dimensions[]>([])
   useEffect(() => {
     if(visible)
@@ -69,8 +72,15 @@ const InputDesignerModal: React.FC<InputDesignerModalProps> = ({ existingRects, 
     const pointerPos = e.target.getStage()!.getPointerPosition()!;
     setCurrPosition(pointerPos);
 
-    const width = -(startPosition!.x - pointerPos.x)
-    const height = -(startPosition!.y - pointerPos.y)
+    let width = -(startPosition!.x - pointerPos.x)
+    let height = -(startPosition!.y - pointerPos.y)
+    const scaledWidth = getScaledValue(width);
+    const scaledHeight = getScaledValue(height);
+
+    if(maxWidth)
+      width = clamp(scaledWidth, -maxWidth, maxWidth);
+    if(maxHeight)
+      height = clamp(scaledHeight, -maxHeight, maxHeight);
 
     setRect({...rect!, width, height})
   }
@@ -87,8 +97,8 @@ const InputDesignerModal: React.FC<InputDesignerModalProps> = ({ existingRects, 
       toast("No rectangle drawn", {type: "error"})
       return;
     }
-    const scaledWidth = getScaledValue(rect!.width);
-    const scaledHeight = getScaledValue(rect!.height);
+    const scaledWidth = Math.abs(getScaledValue(rect!.width));
+    const scaledHeight = Math.abs(getScaledValue(rect!.height));
     if(scaledWidth < 1 || scaledHeight < 1) {
       toast("Width or height below 1 is not allowed", {type: "error"})
       return;
@@ -156,7 +166,7 @@ const InputDesignerModal: React.FC<InputDesignerModalProps> = ({ existingRects, 
                     <h3 className="mt-4 text-center text-white">Interactive</h3>
                     <div className="grid grid-cols-12 mb-3">
                       <div className="col-span-6">
-                        Rect: {rect ? "Width: " + getScaledValue(rect!.width) + ", height: " + getScaledValue(rect!.height) : "None yet"}
+                        Rect: {rect ? "Width: " + Math.abs(getScaledValue(rect!.width)) + ", height: " + Math.abs(getScaledValue(rect!.height)) : "None yet"}
                       </div>
                       <div className="col-span-3">
                         Scale: {scale * 2}%
