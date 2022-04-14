@@ -16,7 +16,6 @@ import { generateData } from '../../utils/generateData';
 import Sidebar from './Sidebar';
 import TeachAlgoModal from '../playground/TeachAlgoModal';
 import { AcademicCapIcon } from '@heroicons/react/solid';
-import useInputDesignerStore from '../../store/inputDesigner.store';
 import InputDesignerModal from './InputDesignerModal';
 
 interface SidebarProps {

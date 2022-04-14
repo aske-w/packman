@@ -6,7 +6,6 @@ import { Vector2d } from "konva/lib/types";
 import React, { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { KonvaNodeComponent, Layer, Rect, Stage } from "react-konva";
 import { toast, ToastOptions } from "react-toastify";
-import useInputDesignerStore from "../../store/inputDesigner.store";
 import { ColorRect } from "../../types/ColorRect.interface";
 import { Dimensions } from "../../types/Dimensions.interface";
 import { RectangleConfig } from "../../types/RectangleConfig.interface";
