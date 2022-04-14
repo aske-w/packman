@@ -42,7 +42,6 @@ const InputDesignerModal: React.FC<InputDesignerModalProps> = ({ existingRects, 
  
   const [dragStarted, setDragStarted] = useState(false);
   const [startPosition, setStartPosition] = useState<Vector2d>();
-  const [currPosition, setCurrPosition] = useState<Vector2d>();
   const [rect, setRect] = useState<ColorRect<RectangleConfig>>() 
   const [scale, setScale] = useState(50);
   const [genNum, setGenNum] = useState("1");
@@ -60,7 +59,6 @@ const InputDesignerModal: React.FC<InputDesignerModalProps> = ({ existingRects, 
 
     setDragStarted(true);
     setStartPosition(pointerPos);
-    setCurrPosition(pointerPos);
     setRect({x: pointerPos.x, y: pointerPos.y, width: 0, height: 0, name: "userRect", fill: "#555"})
   }
   const onMouseUp = (e: KonvaEventObject<MouseEvent>) => {
@@ -72,7 +70,7 @@ const InputDesignerModal: React.FC<InputDesignerModalProps> = ({ existingRects, 
       return;
 
     const pointerPos = e.target.getStage()!.getPointerPosition()!;
-    setCurrPosition(pointerPos);
+    // setCurrPosition(pointerPos);
 
     let width = -(startPosition!.x - pointerPos.x)
     let height = -(startPosition!.y - pointerPos.y)
@@ -86,9 +84,15 @@ const InputDesignerModal: React.FC<InputDesignerModalProps> = ({ existingRects, 
 
     setRect({...rect!, width, height})
   }
+  const handleDragMove = (e: KonvaEventObject<DragEvent>) => {
+    return;
+  }
+  const handleDragEnd = (e: KonvaEventObject<DragEvent>) => {
+    const {x, y} = e.target._lastPos;
+    setRect({...rect!, x, y})
+  }
   const clearPositions = () => {
     setStartPosition(undefined);
-    setCurrPosition(undefined);
   }
   const clearUserRect = () => {
     clearPositions();
@@ -233,7 +237,12 @@ const InputDesignerModal: React.FC<InputDesignerModalProps> = ({ existingRects, 
                     </div>
                     <Stage height={300} width={stageWidth} className="bg-gray-200 max-w-full" onMouseDown={onMouseDown} onMouseUp={onMouseUp} onMouseMove={e => onMouseMove(e)}>
                       <Layer fill={"#333"}>
-                        <Rect {...rect} draggable>
+                        <Rect 
+                          {...rect} 
+                          draggable
+                          onDragEnd={handleDragEnd}
+                          onDragMove={handleDragMove}
+                        >
 
                         </Rect>
                       </Layer>
