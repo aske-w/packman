@@ -194,12 +194,6 @@ const Home: React.FC<HomeProps> = ({}) => {
                 <p className="text-sm text-gray-800">You have to use the least amount of bins.</p>
               </div>
             </Link>
-            <Link to={pathName.DESIGN_STRIP_GAME}>
-              <div className="max-w-sm p-5 transition rounded-md shadow bg-gray-50/80 hover:bg-gray-50">
-                <h3 className="text-xl font-semibold text-gray-800 ">Strip Packing Input design</h3>
-                <p className="text-sm text-gray-800">You have to design the input to impact the algorithm performance.</p>
-              </div>
-            </Link>
           </div>
         </div>
       </div>

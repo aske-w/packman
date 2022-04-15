@@ -6,7 +6,6 @@ export const pathKey = {
   ONLINE_STRIP: 'online-strip',
   ACHIEVEMENTS: 'achievements',
   ABOUT: 'about',
-  DESIGN_STRIP: "design-strip"
 };
 
 export const pathName = {
@@ -18,5 +17,4 @@ export const pathName = {
   ONLINE_STRIP_GAME: `/game/${pathKey.ONLINE_STRIP}`,
   ACHIEVEMENTS: '/achievements',
   ABOUT: `${pathKey.ABOUT}`,
-  DESIGN_STRIP_GAME: `/game/${pathKey.DESIGN_STRIP}`
 };

@@ -7,7 +7,6 @@ import './index.css';
 import About from './pages/About';
 import Achievement from './pages/achievement/Achievement';
 import BinPackingGame from './pages/games/BinPackingGame';
-import DesignStripOfflineGame from './pages/games/design/StripOffline';
 import OnlineStripPackingGame from './pages/games/OnlineStripPackingGame';
 import StripPackingGame from './pages/games/StripPackingGame';
 import Home from './pages/Home';
@@ -31,7 +30,6 @@ ReactDOM.render(
             <Route path={pathKey.STRIP} element={<StripPackingGame />} />
             <Route path={pathKey.BIN} element={<BinPackingGame />} />
             <Route path={pathKey.ONLINE_STRIP} element={<OnlineStripPackingGame />} />
-            <Route path={pathKey.DESIGN_STRIP} element={<DesignStripOfflineGame />} />
           </Route>
           <Route path={pathKey.ACHIEVEMENTS} element={<Achievement />} />
           <Route path={pathKey.ABOUT} element={<About />} />
