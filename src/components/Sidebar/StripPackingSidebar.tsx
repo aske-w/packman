@@ -64,7 +64,8 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
       <InputDesignerModal visible={designerOpen} 
         onClose={() => setDesignerOpen(false)} 
         existingRects={dimensionsStorage} 
-        setExistingRects={setDimensionsStorage}/>
+        setExistingRects={setDimensionsStorage}
+        maxWidth={stripWidth}/>
       <SideBarSection title="Algorithms">
         <div className="flex flex-row items-center justify-between">
           <Select<PackingAlgorithmEnum>
