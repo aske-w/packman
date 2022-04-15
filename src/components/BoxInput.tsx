@@ -1,4 +1,4 @@
-import { FormEvent, useRef, useState } from 'react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 import RectInput from './RectInput';
 import React from 'react';
 import { TrashIcon } from '@heroicons/react/outline';
@@ -13,11 +13,9 @@ interface BoxInputProps {
 }
 
 const BoxInput: React.FC<BoxInputProps> = ({ dimensionsStorage, setDimensionsStorage, disabled = false }) => {
-  const rectangles = dimensionsStorage;
-  const setRectangles = setDimensionsStorage;
   const [width, setWidth] = useState<string>('');
   const [height, setHeight] = useState<string>('');
-
+  
   const inputRef = useRef<HTMLInputElement>(null);
 
   const parseRectangleProperties = (width: string, height: string): { parsedWidth: number; parsedHeight: number } => {
@@ -28,16 +26,13 @@ const BoxInput: React.FC<BoxInputProps> = ({ dimensionsStorage, setDimensionsSto
   };
 
   const saveRectangle = (width: number, height: number) => {
-    if (!disabled) {
-      let newRects = rectangles;
-      newRects.push({ width, height });
-      setRectangles(newRects);
-    }
+    if (!disabled)
+      setDimensionsStorage([{width, height}].concat(dimensionsStorage));
   };
 
   const removeRectangle = (index: number) => {
     if (!disabled) {
-      setRectangles(r => {
+      setDimensionsStorage(r => {
         const temp = [...r];
         temp.splice(index, 1);
         return temp;
@@ -77,7 +72,7 @@ const BoxInput: React.FC<BoxInputProps> = ({ dimensionsStorage, setDimensionsSto
               <CheckCircleIcon className="w-6 h-6 " />
             </button>
           </form>
-          {rectangles.map((r, index) => (
+          {dimensionsStorage.map((r, index) => (
             <div key={index} className="flex flex-row items-center w-full space-x-6">
               <RectInput readonly={true} value={r.width} sec="w"></RectInput>
               <RectInput readonly={true} value={r.height} sec="h"></RectInput>
