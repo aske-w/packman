@@ -18,7 +18,7 @@ export const generateData = (amount = 10, max = 100, min = 50): Dimensions[] => 
   });
 };
 
-export const generateInventoryFromDimensions = <T = RectangleConfig>(inventorySize: number, dims: Dimensions[]): ColorRect<T>[]  => {
+export const generateInventoryFromDimensions = <T = RectangleConfig>(inventorySize: number, dims: Dimensions[]): ColorRect<T>[] => {
   return dims.reduce<Acc<T>>(
     (acc, attrs, i) => {
       const { height, width } = attrs;

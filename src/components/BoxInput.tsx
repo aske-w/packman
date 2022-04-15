@@ -14,7 +14,13 @@ interface BoxInputProps {
   setDimensionsStorage: React.Dispatch<React.SetStateAction<Dimensions[]>>;
 }
 
-const BoxInput: React.FC<BoxInputProps> = ({ dimensionsStorage, setDimensionsStorage, disabled = false, allowDuplication = false, iconSizeClass = "w-14" }) => {
+const BoxInput: React.FC<BoxInputProps> = ({
+  dimensionsStorage,
+  setDimensionsStorage,
+  disabled = false,
+  allowDuplication = false,
+  iconSizeClass = 'w-14',
+}) => {
   const rectangles = dimensionsStorage;
   const setRectangles = setDimensionsStorage;
   const [width, setWidth] = useState<string>('');
@@ -62,16 +68,18 @@ const BoxInput: React.FC<BoxInputProps> = ({ dimensionsStorage, setDimensionsSto
     }
   };
 
-  const duplicate = useCallback((rect: Dimensions, index: number) => {
-    // insert duplicate dimensions where the user clicked on duplication button
-    let newDimensions = [];
-    for (let i = 0; i < rectangles.length; i++) {
-      newDimensions.push(rectangles[i])
-      if(index == i)
-        newDimensions.push(rect)
-    }
-    setDimensionsStorage(newDimensions);
-  }, [rectangles])
+  const duplicate = useCallback(
+    (rect: Dimensions, index: number) => {
+      // insert duplicate dimensions where the user clicked on duplication button
+      let newDimensions = [];
+      for (let i = 0; i < rectangles.length; i++) {
+        newDimensions.push(rectangles[i]);
+        if (index == i) newDimensions.push(rect);
+      }
+      setDimensionsStorage(newDimensions);
+    },
+    [rectangles]
+  );
 
   return (
     // <div className="flex flex-col items-center justify-start w-full space-y-4 overflow-y-scroll rounded custom-scrollbar">
@@ -94,13 +102,12 @@ const BoxInput: React.FC<BoxInputProps> = ({ dimensionsStorage, setDimensionsSto
             <div key={index} className="flex flex-row items-center w-full space-x-6">
               <RectInput readonly={true} value={r.width} sec="w"></RectInput>
               <RectInput readonly={true} value={r.height} sec="h"></RectInput>
-              { allowDuplication 
-                ? <DuplicateIcon 
-                    className={`${iconSizeClass} ${disabled ? 'text-gray-500' : 'hover:cursor-pointer hover:scale-110 text-gray-200'}`} 
-                    onClick={() => duplicate(r, index)}
-                  /> 
-                : undefined
-              }
+              {allowDuplication ? (
+                <DuplicateIcon
+                  className={`${iconSizeClass} ${disabled ? 'text-gray-500' : 'hover:cursor-pointer hover:scale-110 text-gray-200'}`}
+                  onClick={() => duplicate(r, index)}
+                />
+              ) : undefined}
               <TrashIcon
                 className={`${iconSizeClass} ${disabled ? 'text-gray-500' : 'hover:cursor-pointer hover:text-red-400 hover:scale-110 text-gray-200'}`}
                 onClick={e => removeRectangle(index)}

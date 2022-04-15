@@ -72,12 +72,14 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
   return (
     <Sidebar className="inline-flex flex-col overflow-hidden">
       <TeachAlgoModal algorithm={algorithm} visible={teachingOpen} onClose={() => setTeachingOpen(false)} />
-      <InputDesignerModal visible={designerOpen} 
-        onClose={() => setDesignerOpen(false)} 
-        existingRects={dimensionsStorage} 
+      <InputDesignerModal
+        visible={designerOpen}
+        onClose={() => setDesignerOpen(false)}
+        existingRects={dimensionsStorage}
         setExistingRects={setDimensionsStorage}
         maxHeight={binDimensions.height}
-        maxWidth={binDimensions.width}/>
+        maxWidth={binDimensions.width}
+      />
 
       <SideBarSection title="Algorithms">
         <div className="flex flex-row items-center justify-between">
@@ -208,14 +210,16 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
             </div>
           }
         />
-        <SideBarItem 
-        text={'Advanced input design'} 
-        element={
-          <button className={`px-2 py-1 font-medium text-white rounded shadow bg-blue-700 ${isStarted ? 'opacity-60' : 'hover:bg-blue-800'}`}
-            onClick={() => setDesignerOpen(true)}>
-            Input designer
-          </button>
-        }
+        <SideBarItem
+          text={'Advanced input design'}
+          element={
+            <button
+              className={`px-2 py-1 font-medium text-white rounded shadow bg-blue-700 ${isStarted ? 'opacity-60' : 'hover:bg-blue-800'}`}
+              onClick={() => setDesignerOpen(true)}
+            >
+              Input designer
+            </button>
+          }
         />
       </SideBarSection>
 
