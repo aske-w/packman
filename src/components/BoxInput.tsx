@@ -15,7 +15,7 @@ interface BoxInputProps {
 const BoxInput: React.FC<BoxInputProps> = ({ dimensionsStorage, setDimensionsStorage, disabled = false }) => {
   const [width, setWidth] = useState<string>('');
   const [height, setHeight] = useState<string>('');
-  
+
   const inputRef = useRef<HTMLInputElement>(null);
 
   const parseRectangleProperties = (width: string, height: string): { parsedWidth: number; parsedHeight: number } => {
@@ -26,8 +26,7 @@ const BoxInput: React.FC<BoxInputProps> = ({ dimensionsStorage, setDimensionsSto
   };
 
   const saveRectangle = (width: number, height: number) => {
-    if (!disabled)
-      setDimensionsStorage([{width, height}].concat(dimensionsStorage));
+    if (!disabled) setDimensionsStorage([{ width, height }].concat(dimensionsStorage));
   };
 
   const removeRectangle = (index: number) => {
