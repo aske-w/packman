@@ -110,6 +110,14 @@ const InputDesignerModal: React.FC<InputDesignerModalProps> = ({ existingRects, 
       toast("Width or height below 1 is not allowed", {type: "error"})
       return;
     }
+    if(maxWidth && scaledWidth > maxWidth) {
+      toast("Drawn rectangle too wide", {type: "error"})
+      return;
+    }
+    if(maxHeight && scaledHeight > maxHeight) {
+      toast("Drawn rectangle too tall", {type: "error"})
+      return;
+    }
     setNewDimensions(prevState => {
       // put new dimensions at the top
       return insertInFront({width: scaledWidth, height: scaledHeight}, prevState);
