@@ -22,7 +22,6 @@ interface StripPackingInteractiveProps {
   stripRects: ColorRect<RectangleConfig>[];
   setStripRects: React.Dispatch<React.SetStateAction<ColorRect<RectangleConfig>[]>>;
   snap: (destination: Group[], target: Shape) => void;
-  stripRectChangedCallback: () => void;
   staticInvLength: number;
 }
 
@@ -32,7 +31,7 @@ export interface StripPackingInteractiveHandle {
 }
 
 const StripPackingInteractive = React.forwardRef<StripPackingInteractiveHandle, StripPackingInteractiveProps>(
-  ({ layerRef, width, height, scrollableHeight, stripRects, setStripRects, snap, stripRectChangedCallback, staticInvLength }, ref) => {
+  ({ layerRef, width, height, scrollableHeight, stripRects, setStripRects, snap, staticInvLength }, ref) => {
     const setScore = useScoreStore(useCallback(state => state.setScore, []));
 
     const level = useLevelStore(useCallback(state => state.level, []));
@@ -78,6 +77,7 @@ const StripPackingInteractive = React.forwardRef<StripPackingInteractiveHandle, 
     const handleStripDragEnd = (e: KonvaEventObject<DragEvent>) => {
       const target = e.target as Shape;
       const scrollOffset = layerRef.current?.y()!;
+
       stripRects.forEach(r => {
         if (r.name == target.getAttr('name')) return;
 

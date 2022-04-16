@@ -8,6 +8,7 @@ import { FirstFitDecreasingHeight } from '../../../algorithms/strip/FirstFitDecr
 import { NextFitDecreasingHeight } from '../../../algorithms/strip/NextFitDecreasingHeight';
 import { SizeAlternatingStack } from '../../../algorithms/strip/SizeAlternatingStack';
 import { Sleators } from '../../../algorithms/strip/Sleators';
+import { SleatorsOptimized } from '../../../algorithms/strip/SleatorsOptimized';
 import { ALGO_MOVE_ANIMATION_DURATION as ALGO_ENTER_ANIMATION_DURATION } from '../../../config/canvasConfig';
 import useLevelStore from '../../../store/level.store';
 import useScoreStore from '../../../store/score.store';
@@ -16,7 +17,7 @@ import { PackingAlgorithmEnum } from '../../../types/enums/OfflineStripPackingAl
 import { PackingAlgorithm } from '../../../types/PackingAlgorithm.interface';
 import { RectangleConfig } from '../../../types/RectangleConfig.interface';
 
-const { BEST_FIT_DECREASING_HEIGHT, NEXT_FIT_DECREASING_HEIGHT, FIRST_FIT_DECREASING_HEIGHT, SIZE_ALTERNATING_STACK, SLEATORS } =
+const { BEST_FIT_DECREASING_HEIGHT, NEXT_FIT_DECREASING_HEIGHT, FIRST_FIT_DECREASING_HEIGHT, SIZE_ALTERNATING_STACK, SLEATORS, SLEATORS_OPTIMIZED } =
   PackingAlgorithmEnum;
 
 type PrevPos = { prevX: number; prevY: number };
@@ -84,6 +85,10 @@ const StripPackingAlgorithm = React.forwardRef<StripPackingAlgorithmHandle, Stri
         }
         case SLEATORS: {
           const a = new Sleators<ColorRect<RectangleConfig>>(size).load(invCopy);
+          return a;
+        }
+        case SLEATORS_OPTIMIZED: {
+          const a = new SleatorsOptimized<ColorRect<RectangleConfig>>(size).load(invCopy);
           return a;
         }
 

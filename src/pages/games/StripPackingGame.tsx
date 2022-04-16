@@ -1,5 +1,6 @@
 import { Group } from 'konva/lib/Group';
 import { Layer as KonvaLayer } from 'konva/lib/Layer';
+import { Stage as KonvaStage } from 'konva/lib/Stage';
 import { Shape } from 'konva/lib/Shape';
 import { Rect as KonvaRect } from 'konva/lib/shapes/Rect';
 import { Vector2d } from 'konva/lib/types';
@@ -102,8 +103,6 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
   ];
 
   useRestartStripPacking(resetFuncs, algorithm, {});
-
-  const stripRectChangedCallback = () => {}; // TODO figure out if this is needed?
 
   /**
    * Pos is absolute position in the canvas
@@ -227,20 +226,16 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
             stripRects={stripRects}
             setStripRects={setStripRects}
             snap={snapInteractive}
-            stripRectChangedCallback={stripRectChangedCallback}
             staticInvLength={startingInventory.length}
           />
           <Inventory
             ref={inventoryLayer}
             staticInventory={startingInventory}
             dynamicInventory={renderInventory}
-            // onDragging={(target: Shape) => trySnapOrColission(, target, interactiveLayerRef.current?.y()!)}
             snap={(target: Shape) => snapInventory(interactiveLayerRef.current?.children as Group[], target)}
-            stripRects={stripRects}
             {...{
               onDraggedToStrip,
               stripWidth: stripWidth,
-              inventoryWidth: inventoryWidth,
               gameHeight,
             }}
           />

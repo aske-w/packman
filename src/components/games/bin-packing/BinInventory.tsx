@@ -8,6 +8,7 @@ import { Vector2d } from 'konva/lib/types';
 import { Shape, ShapeConfig } from 'konva/lib/Shape';
 import { Stage } from 'konva/lib/Stage';
 import { BinPackingRect } from '../../../types/BinPackingRect.interface';
+import { useKeepOnMouse } from '../../../hooks/useKeepOnMouse';
 
 interface BinInventoryProps {
   staticInventory: BinPackingRect[];
@@ -20,30 +21,42 @@ interface BinInventoryProps {
 
 const BinInventory = forwardRef<KonvaLayer, BinInventoryProps>(
   ({ staticInventory, renderInventory, gameHeight, inventoryWidth, onDraggedToBin, snap }, ref) => {
-    const handleDragEnd = (evt: KonvaEventObject<DragEvent>) => {
-      const rect = evt.target;
-      const { name, width } = rect.getAttrs();
+    const { dragEndMiddleWare } = useKeepOnMouse();
+    const handleDragEnd = (ev: KonvaEventObject<DragEvent>) => {
+      dragEndMiddleWare(
+        ev,
+        evt => {
+          const rect = evt.target;
+          const { name, width } = rect.getAttrs();
 
-      const { x: dropX } = rect.getAbsolutePosition();
-      const { x: x, y: y, fill } = renderInventory.find(r => r.name === name)!;
+          const { x: dropX } = rect.getAbsolutePosition();
+          const { x: x, y: y } = renderInventory.find(r => r.name === name)!;
 
-      const inBinArea = dropX + width > inventoryWidth;
+          const inBinArea = dropX + width > inventoryWidth;
 
-      if (inBinArea) {
-        if (onDraggedToBin(rect, { x, y })) return;
-      }
+          if (inBinArea) {
+            if (onDraggedToBin(rect, { x, y })) return true;
+          }
 
-      // Set back original color
-      rect.setAttr('fill', fill);
+          return false;
+        },
+        evt => {
+          const rect = evt.target;
+          const { name } = rect.getAttrs();
+          const { x: x, y: y, fill } = renderInventory.find(r => r.name === name)!;
+          // Set back original color
+          rect.setAttr('fill', fill);
 
-      // animate back to starting position
-      new Konva.Tween({
-        x,
-        y,
-        node: rect,
-        duration: 0.4,
-        easing: Konva.Easings.EaseOut,
-      }).play();
+          // animate back to starting position
+          new Konva.Tween({
+            x,
+            y,
+            node: rect,
+            duration: 0.4,
+            easing: Konva.Easings.EaseOut,
+          }).play();
+        }
+      );
     };
 
     const handleDragMove = (e: KonvaEventObject<DragEvent>) => {
