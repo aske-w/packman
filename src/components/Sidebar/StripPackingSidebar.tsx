@@ -108,7 +108,8 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
             placeNext,
             disabled: isStarted,
             start: () => {
-              setPreviousData(r => dimensionsStorage);
+              // mapping is necessary, or else previousData and dimensionsStorage will use the same values
+              setPreviousData(dimensionsStorage.map(d => {return {height: d.height, width: d.width}}));
               start(dimensionsStorage);
             },
           }}
