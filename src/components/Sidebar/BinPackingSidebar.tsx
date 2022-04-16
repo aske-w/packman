@@ -19,6 +19,7 @@ import LinkIcon from '@heroicons/react/solid/LinkIcon';
 import TeachAlgoModal from '../playground/TeachAlgoModal';
 import { AcademicCapIcon } from '@heroicons/react/solid';
 import ReactTooltip from 'react-tooltip';
+import InputDesignerModal from './InputDesignerModal';
 
 interface BinPackingSidebarProps<T = BinPackingAlgorithm> {
   setAlgorithm: React.Dispatch<React.SetStateAction<T>>;
@@ -56,6 +57,7 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
   const [genNum, setGenNum] = useState(100);
   const [previousData, setPreviousData] = useState<Dimensions[]>([]);
   const [teachingOpen, setTeachingOpen] = useState(false);
+  const [designerOpen, setDesignerOpen] = useState(false);
   const [dimensionsLinked, setDimensionsLinked] = useState(false);
   const makeRndData = () => {
     setDimensionsStorage(generateData(genNum, 100, 10));
@@ -70,6 +72,14 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
   return (
     <Sidebar className="inline-flex flex-col overflow-hidden">
       <TeachAlgoModal algorithm={algorithm} visible={teachingOpen} onClose={() => setTeachingOpen(false)} />
+      <InputDesignerModal
+        visible={designerOpen}
+        onClose={() => setDesignerOpen(false)}
+        existingRects={dimensionsStorage}
+        setExistingRects={setDimensionsStorage}
+        maxHeight={binDimensions.height}
+        maxWidth={binDimensions.width}
+      />
 
       <SideBarSection title="Algorithms">
         <div className="flex flex-row items-center justify-between">
@@ -198,6 +208,17 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
                 Reuse previous data
               </button>
             </div>
+          }
+        />
+        <SideBarItem
+          text={'Advanced input design'}
+          element={
+            <button
+              className={`px-2 py-1 font-medium text-white rounded shadow bg-blue-700 ${isStarted ? 'opacity-60' : 'hover:bg-blue-800'}`}
+              onClick={() => setDesignerOpen(true)}
+            >
+              Input designer
+            </button>
           }
         />
       </SideBarSection>
