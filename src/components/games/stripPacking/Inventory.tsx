@@ -1,12 +1,14 @@
 import Konva from 'konva';
 import { KonvaEventObject } from 'konva/lib/Node';
 import { Layer as KonvaLayer } from 'konva/lib/Layer';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Layer, Rect, Text } from 'react-konva';
 import { ColorRect } from '../../../types/ColorRect.interface';
 import { Vector2d } from 'konva/lib/types';
 import { Shape } from 'konva/lib/Shape';
 import { useKeepOnMouse } from '../../../hooks/useKeepOnMouse';
+import useEventStore from '../../../store/event.store';
+import { Events } from '../../../types/enums/Events.enum';
 
 interface InventoryProps {
   stripWidth: number;
@@ -14,10 +16,12 @@ interface InventoryProps {
   staticInventory: ReadonlyArray<ColorRect & { order?: number }>;
   snap: (target: Shape) => void;
   onDraggedToStrip: (rectName: string, pos: Vector2d) => boolean;
+  inventoryWidth: number;
+  gameHeight: number;
 }
 
 const Inventory = React.forwardRef<KonvaLayer, InventoryProps>(
-  ({ dynamicInventory, staticInventory, stripWidth: stripWidth, onDraggedToStrip, snap }, ref) => {
+  ({ dynamicInventory, staticInventory, stripWidth: stripWidth, onDraggedToStrip, snap, gameHeight, inventoryWidth }, ref) => {
     const { dragEndMiddleWare } = useKeepOnMouse();
 
     const handleDragEnd = (ev: KonvaEventObject<DragEvent>) => {
@@ -60,6 +64,29 @@ const Inventory = React.forwardRef<KonvaLayer, InventoryProps>(
       rect.setAttr('fill', rect.getAttr('fill').substring(0, 7) + '80');
       snap(rect);
     };
+
+    const { event, setEvent } = useEventStore(useCallback(({ event, setEvent }) => ({ event, setEvent }), []));
+    if (event === Events.GAME_OVER) {
+      return (
+        <Layer x={stripWidth} ref={ref} y={0}>
+          <Rect width={200} height={50} x={inventoryWidth / 2 - 100} cornerRadius={5} y={gameHeight / 2 - 25} fill="red" />
+          <Text
+            onClick={() => setEvent(Events.RESTART)}
+            width={200}
+            fontVariant="bold"
+            height={50}
+            x={inventoryWidth / 2 - 100}
+            cornerRadius={10}
+            y={gameHeight / 2 - 25}
+            align="center"
+            verticalAlign="middle"
+            fontSize={32}
+            fill="white"
+            text="Reset"
+          />
+        </Layer>
+      );
+    }
 
     return (
       <>
