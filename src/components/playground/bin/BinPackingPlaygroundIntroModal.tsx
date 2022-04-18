@@ -4,10 +4,10 @@ import { Fragment, useEffect } from 'react';
 import useHelpStore from '../../../store/help.store';
 
 export default function StripPackingPlaygroundIntroModal() {
-  const { introOpen, setIntroOpen } = useHelpStore();
+  const { introOpen, setIntroOpen, showPlaygroundIntro, setShowPlaygroundIntro } = useHelpStore();
   useEffect(() => {
     // make sure it's opened on mount
-    setIntroOpen(true);
+    setIntroOpen(showPlaygroundIntro);
   }, []);
   return (
     <>
@@ -57,7 +57,18 @@ export default function StripPackingPlaygroundIntroModal() {
                   </p>
                 </div>
 
-                <div className="flex justify-end mt-4">
+                
+
+                <div className="flex justify-between items-center mt-4">
+                  <form className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      className="rounded text-blue-600 h-5 w-5 focus:ring-0"
+                      checked={!showPlaygroundIntro}
+                      onChange={() => setShowPlaygroundIntro(false)}
+                    />
+                    <label className="tracking-wide">Don't show again</label>
+                  </form>
                   <button
                     type="button"
                     className="inline-flex justify-center px-4 py-2 text-sm font-medium text-blue-900 bg-blue-100 border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"

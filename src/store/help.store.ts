@@ -6,18 +6,22 @@ export interface HelpState {
   introOpen: boolean;
   dontShowAgain: boolean;
   setShowMsgAgain: () => void;
+  showPlaygroundIntro: boolean;
+  setShowPlaygroundIntro: (value: boolean) => void;
 }
 
 const useHelpStore = create<HelpState>(
-  persist({ key: 'helpstore', allowlist: ['dontShowAgain'] }, (set, get) => ({
+  persist({ key: 'helpstore', allowlist: ['dontShowAgain','showPlaygroundIntro'] }, (set, get) => ({
     introOpen: get()?.dontShowAgain || false,
     setIntroOpen: open => set(state => ({ ...state, introOpen: open })),
     dontShowAgain: false,
     setShowMsgAgain: () =>
-      set(state => ({
-        ...state,
-        dontShowAgain: !state.dontShowAgain,
-      })),
+    set(state => ({
+      ...state,
+      dontShowAgain: !state.dontShowAgain,
+    })),
+    showPlaygroundIntro: get()?.showPlaygroundIntro || true,
+    setShowPlaygroundIntro: open => set(state => ({ ...state, showPlaygroundIntro: open })),
   }))
 );
 
