@@ -9,6 +9,7 @@ import { ColorRect } from '../../types/ColorRect.interface';
 import { Dimensions } from '../../types/Dimensions.interface';
 import PlaygroundNav from '../../components/Nav/PlaygroundNav';
 import { DimensionsWithConfig } from '../../types/DimensionsWithConfig.type';
+import BinPackingPlaygroundIntroModal from '../../components/playground/bin/BinPackingPlaygroundIntroModal';
 
 interface BinPackingPlaygroundProps {}
 const width = Math.floor(window.innerWidth * 0.2);
@@ -64,6 +65,7 @@ const BinPackingPlayground: React.FC<BinPackingPlaygroundProps> = ({}) => {
     >
       <PlaygroundNav />
       <div className="flex w-full h-full ">
+        <BinPackingPlaygroundIntroModal />
         <BinPackingSidebar
           {...{
             algoState,
