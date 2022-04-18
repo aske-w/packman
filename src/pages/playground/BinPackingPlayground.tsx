@@ -9,6 +9,8 @@ import { ColorRect } from '../../types/ColorRect.interface';
 import { Dimensions } from '../../types/Dimensions.interface';
 import PlaygroundNav from '../../components/Nav/PlaygroundNav';
 import { DimensionsWithConfig } from '../../types/DimensionsWithConfig.type';
+import { Gamemodes } from '../../types/Gamemodes.enum';
+import Joyride from '../../components/playground/Joyride';
 
 interface BinPackingPlaygroundProps {}
 const width = Math.floor(window.innerWidth * 0.2);
@@ -63,6 +65,7 @@ const BinPackingPlayground: React.FC<BinPackingPlaygroundProps> = ({}) => {
       }}
     >
       <PlaygroundNav />
+      <Joyride playground={Gamemodes.BIN_PACKING} />
       <div className="flex w-full h-full ">
         <BinPackingSidebar
           {...{

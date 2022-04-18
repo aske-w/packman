@@ -10,6 +10,8 @@ import { Rectangle } from '../../types/Rectangle.interface';
 import { PackingAlgorithmEnum } from '../../types/enums/OfflineStripPackingAlgorithm.enum';
 import { NAV_HEIGHT } from '../../config/canvasConfig';
 import PlaygroundNav from '../../components/Nav/PlaygroundNav';
+import Joyride from '../../components/playground/Joyride';
+import { Gamemodes } from '../../types/enums/Gamemodes.enum';
 
 function StripPackingPlayground() {
   const [stripWidth, setStripWidth] = useState(400);
@@ -43,43 +45,7 @@ function StripPackingPlayground() {
 
       <div className="flex w-full h-full ">
         <StripPackingPlaygroundIntroModal />
-        <ReactJoyride
-          steps={[
-            {
-              content: "Here you can select which algorithm that you're visualizing.",
-              target: '.strip-playground-algo-select',
-            },
-            {
-              content: "This toggle allows you to enable 'auto place', which makes the algorithm continuously packing rectangles.",
-              target: '.strip-playground-auto-place',
-            },
-            {
-              content: 'This buttons resets the algorithm and removes all test data that has been entered.',
-              target: '.strip-playground-reset',
-            },
-            {
-              content: 'Use this button to start the visualization. After it has been clicked you use it to progress the visualization.',
-              target: '.strip-playground-start',
-            },
-            {
-              content: 'Here you can choose how wide the strip should be',
-              target: '.strip-playground-dimensions',
-            },
-            {
-              content: 'Here you can auto generate test data',
-              target: '.strip-playground-auto-gen',
-            },
-            {
-              content: 'This button populates the test data, with what was previously used. This is useful for comparing to algorithms.',
-              target: '.strip-playground-prev-data',
-            },
-            {
-              content: 'In this section you can add, remove or modify the test data. Just press enter to add it to the data set',
-              target: '.strip-playground-test-data',
-            },
-          ]}
-          continuous
-        />
+        <Joyride playground={Gamemodes.STRIP_PACKING}/>
         <StripPackingSidebar
           {...{
             selectedAlgorithm,
