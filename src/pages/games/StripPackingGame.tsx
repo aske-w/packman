@@ -229,6 +229,7 @@ const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
             staticInvLength={startingInventory.length}
           />
           <Inventory
+            inventoryWidth={inventoryWidth}
             ref={inventoryLayer}
             staticInventory={startingInventory}
             dynamicInventory={renderInventory}
