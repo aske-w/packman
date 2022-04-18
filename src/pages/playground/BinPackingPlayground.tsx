@@ -8,6 +8,7 @@ import { BinPackingAlgorithm } from '../../types/enums/BinPackingAlgorithm.enum'
 import { ColorRect } from '../../types/ColorRect.interface';
 import { Dimensions } from '../../types/Dimensions.interface';
 import PlaygroundNav from '../../components/Nav/PlaygroundNav';
+import { DimensionsWithConfig } from '../../types/DimensionsWithConfig.type';
 
 interface BinPackingPlaygroundProps {}
 const width = Math.floor(window.innerWidth * 0.2);
@@ -21,7 +22,7 @@ const BinPackingPlayground: React.FC<BinPackingPlaygroundProps> = ({}) => {
   });
 
   const [algorithm, setAlgorithm] = useState(BinPackingAlgorithm.HYBRID_FIRST_FIT);
-  const { start, place, isFinished, algoState, pause, reset } = useBinPackingAlgorithm(binDimensions, algorithm);
+  const { start, place, isFinished, algoState, pause, reset: resetFromHook } = useBinPackingAlgorithm(binDimensions, algorithm);
 
   const placeNext = () => {
     const rect = place();
@@ -49,6 +50,11 @@ const BinPackingPlayground: React.FC<BinPackingPlaygroundProps> = ({}) => {
   };
   const [bins, setBins] = useState<ColorRect[][]>([[]]);
 
+  const reset = () => {
+    setBins([[]]);
+    resetFromHook();
+  }
+
   return (
     <div
       style={{
@@ -64,12 +70,12 @@ const BinPackingPlayground: React.FC<BinPackingPlaygroundProps> = ({}) => {
             isFinished,
             algorithm,
             setAlgorithm,
-            start,
-            pause,
-            reset: () => {
-              setBins([[]]);
+            start: (data) => {
               reset();
+              start(data as DimensionsWithConfig[])
             },
+            pause,
+            reset,
             placeNext,
             setDimensionsStorage,
             dimensionsStorage,

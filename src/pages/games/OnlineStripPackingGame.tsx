@@ -184,6 +184,8 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
           staticInvLength={inventory.length}
         />
         <OnlineStripPackingInventory
+          gameHeight={gameHeight}
+          inventoryWidth={inventoryWidth}
           entireInventory={inventory}
           onDraggedToStrip={onDraggedToStrip}
           snap={target => snapInventory(interactiveLayerRef.current?.children as KonvaGroup[], target)}
