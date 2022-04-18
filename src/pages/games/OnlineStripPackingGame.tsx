@@ -31,7 +31,7 @@ import { OnlineStripPackingAlgorithmEnum } from '../../types/enums/OnlineStripPa
 import { Rectangle } from '../../types/Rectangle.interface';
 import { intersects } from '../../utils/intersects';
 interface OnlineStripPackingGameProps {}
-const NUM_ITEMS = 25;
+const NUM_ITEMS = 2;
 
 const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
   const { width: wWidth, height: wHeight } = useWindowSize();
@@ -184,6 +184,8 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
           staticInvLength={inventory.length}
         />
         <OnlineStripPackingInventory
+          gameHeight={gameHeight}
+          inventoryWidth={inventoryWidth}
           entireInventory={inventory}
           onDraggedToStrip={onDraggedToStrip}
           snap={target => snapInventory(interactiveLayerRef.current?.children as KonvaGroup[], target)}

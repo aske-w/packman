@@ -66,7 +66,7 @@ const Inventory = React.forwardRef<KonvaLayer, InventoryProps>(
     };
 
     const { event, setEvent } = useEventStore(useCallback(({ event, setEvent }) => ({ event, setEvent }), []));
-    if (event === Events.GAME_OVER) {
+    if (event === Events.FINISHED || event === Events.GAME_OVER) {
       return (
         <Layer x={stripWidth} ref={ref} y={0}>
           <Rect width={200} height={50} x={inventoryWidth / 2 - 100} cornerRadius={5} y={gameHeight / 2 - 25} fill="red" />

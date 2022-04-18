@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useCallback } from 'react';
 import { Layer, Rect, Text } from 'react-konva';
 import { Layer as KonvaLayer } from 'konva/lib/Layer';
 import { ColorRect } from '../../../types/ColorRect.interface';
@@ -9,6 +9,8 @@ import { Shape, ShapeConfig } from 'konva/lib/Shape';
 import { Stage } from 'konva/lib/Stage';
 import { BinPackingRect } from '../../../types/BinPackingRect.interface';
 import { useKeepOnMouse } from '../../../hooks/useKeepOnMouse';
+import useEventStore from '../../../store/event.store';
+import { Events } from '../../../types/enums/Events.enum';
 
 interface BinInventoryProps {
   staticInventory: BinPackingRect[];
@@ -66,6 +68,29 @@ const BinInventory = forwardRef<KonvaLayer, BinInventoryProps>(
       rect.setAttr('fill', rect.getAttr('fill').substring(0, 7) + '80');
       snap(rect);
     };
+
+    const { event, setEvent } = useEventStore(useCallback(({ event, setEvent }) => ({ event, setEvent }), []));
+    if (event === Events.FINISHED || event === Events.GAME_OVER) {
+      return (
+        <Layer x={0} ref={ref} y={0}>
+          <Rect width={200} height={50} x={inventoryWidth / 2 - 100} cornerRadius={5} y={gameHeight / 2 - 25} fill="red" />
+          <Text
+            onClick={() => setEvent(Events.RESTART)}
+            width={200}
+            fontVariant="bold"
+            height={50}
+            x={inventoryWidth / 2 - 100}
+            cornerRadius={10}
+            y={gameHeight / 2 - 25}
+            align="center"
+            verticalAlign="middle"
+            fontSize={32}
+            fill="white"
+            text="Reset"
+          />
+        </Layer>
+      );
+    }
 
     return (
       <Layer x={0} y={0} ref={ref} name="INVENTORY_LAYER">
