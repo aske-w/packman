@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import React, { ChangeEventHandler, RefObject } from 'react';
 
 interface RectInputProps {
@@ -13,12 +14,14 @@ interface RectInputProps {
 const RectInput: React.FC<RectInputProps> = ({ value, className, reference, readonly = false, onChange: onChangeHandler, disabled = false, sec }) => {
   return (
     <div
-      className={
-        className + (disabled ? ' opacity-40 ' : '') + ' flex flex-row items-center bg-canvas p-2 w-full focus:outline-none border-none rounded-lg'
-      }
+      className={classNames(
+        disabled ? ' opacity-40 ' : '',
+        ' flex flex-row items-center bg-canvas w-full focus:outline-none border-0 rounded-lg overflow-hidden',
+        className
+      )}
     >
       <input
-        className="bg-canvas focus:outline-none border-none text-white font-light text-sm w-10/12 appearance-arrow-none"
+        className="w-10/12 p-2 text-sm font-light text-white border-0 focus:border-0 !focus:shadow-none bg-canvas !focus:outline-none appearance-arrow-none !ring-0"
         type={typeof value}
         value={value}
         onChange={onChangeHandler}
@@ -26,7 +29,7 @@ const RectInput: React.FC<RectInputProps> = ({ value, className, reference, read
         disabled={disabled}
         ref={reference}
       />
-      {sec && <small className="w-2/12 text-xs uppercase text-gray-400">{sec}</small>}
+      {sec && <small className="w-2/12 text-xs text-gray-400 uppercase">{sec}</small>}
     </div>
   );
 };
