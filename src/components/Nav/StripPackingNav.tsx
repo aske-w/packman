@@ -6,10 +6,12 @@ import useAlgorithmStore from '../../store/algorithm.store';
 import useHelpStore from '../../store/help.store';
 import useScoreStore from '../../store/score.store';
 import { ALL_PACKING_ALGORITHMS } from '../../types/enums/OfflineStripPackingAlgorithm.enum';
+import { Gamemodes } from '../../types/Gamemodes.enum';
 import Score from '../Score';
 import LevelSelect from '../select/LevelSelect';
 import Select from '../select/Select';
 import DefaultNav from './DefaultNav';
+import NavJoyride from './NavJoyride';
 
 interface StripPackingNavProps {}
 
@@ -29,27 +31,7 @@ const StripPackingNav: React.FC<StripPackingNavProps> = ({}) => {
 
   return (
     <DefaultNav height={NAV_HEIGHT}>
-      <ReactJoyride
-        continuous
-        steps={[
-          {
-            target: '.user-score',
-            content: 'This is your score.',
-          },
-          {
-            target: '.algorithm-score',
-            content: 'This is the score of the algorithm.',
-          },
-          {
-            target: '.rects-left',
-            content: 'Here you can see how much of your inventory, you still need to pack.',
-          },
-          {
-            target: '.algorithm-select',
-            content: 'Here you can choose which algorithm you play against.',
-          },
-        ]}
-      />
+      <NavJoyride gamemode={Gamemodes.STRIP_PACKING} />
       <div className="flex flex-row items-center justify-between space-x-10 text-white">
         <div className="user-score">
           <Score primary={`Score: ${score.user.height}`} secondary="You" />
@@ -64,7 +46,7 @@ const StripPackingNav: React.FC<StripPackingNavProps> = ({}) => {
         {algorithm && (
           <Select className="text-base font-thin w-72 algorithm-select" options={ALL_PACKING_ALGORITHMS} value={algorithm} onChange={setAlgorithm} />
         )}
-        <LevelSelect />
+        <LevelSelect className='level-select'/>
         <button onClick={() => setIntroOpen(true)}>
           <QuestionMarkCircleIcon className="w-10 h-10 text-white hover:text-gray-200" />
         </button>
