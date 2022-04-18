@@ -3,7 +3,7 @@ import { QuestionMarkCircleIcon } from '@heroicons/react/solid';
 import { Fragment, useEffect } from 'react';
 import useHelpStore from '../../../store/help.store';
 
-export default function StripPackingGameIntroModal() {
+export default function OfflineStripPackingGameIntroModal() {
   const { introOpen, setIntroOpen, dontShowAgainOfflineStrip, setDontShowAgainOfflineStrip } = useHelpStore();
   useEffect(() => {
     // make sure it's opened on mount
