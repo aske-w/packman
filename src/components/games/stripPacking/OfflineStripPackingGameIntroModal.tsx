@@ -42,7 +42,7 @@ export default function OfflineStripPackingGameIntroModal() {
             >
               <div className="inline-block w-full max-w-2xl p-6 my-8 overflow-hidden prose text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl max-h-[40rem] overflow-y-auto">
                 <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
-                  Welcome to Strip Packing
+                  Welcome to Offline Strip Packing
                 </Dialog.Title>
                 <div className="mt-2 ">
                   <h4>Objective</h4>
