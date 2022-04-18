@@ -72,11 +72,11 @@ const Achievement: React.FC<AchievementProps> = ({}) => {
   }, [gameResults]);
 
   return (
-    <div style={{ height: `100% - ${NAV_HEIGHT}px` }} className="w-full text-white overflow-y-scroll custom-scrollbar overflow-x-hidden">
+    <div style={{ height: `100% - ${NAV_HEIGHT}px` }} className="w-full overflow-x-hidden overflow-y-scroll text-white custom-scrollbar">
       <DefaultNav height={NAV_HEIGHT} />
-      <div className="w-full h-full p-4 space-y-4 bg-canvas">
-        <h2 className="font-bold text-2xl">Your Results</h2>
-        <div className="w-full flex space-x-10 m-0">
+      <div className="w-full h-full p-4 space-y-4 ">
+        <h2 className="text-xl font-bold">Your Results</h2>
+        <div className="flex w-full m-0 space-x-10">
           {/* All results */}
           <div className="relative w-8/12">
             <Tabs tabs={gameModes}>
@@ -85,13 +85,13 @@ const Achievement: React.FC<AchievementProps> = ({}) => {
                   return (
                     <div key={mode} className="flex flex-col ">
                       <h2 className="font-medium">You have no results yet</h2>
-                      <small className="text-gray-300">Start playing you punk</small>
+                      <small className="text-gray-300">Start playing, lazy!</small>
                     </div>
                   );
                 }
 
                 return (
-                  <div className="w-full flex-shrink-0" key={mode}>
+                  <div className="flex-shrink-0 w-full" key={mode}>
                     <Table className="w-full" headers={headers} rows={rows[mode]} />
                   </div>
                 );
@@ -102,19 +102,19 @@ const Achievement: React.FC<AchievementProps> = ({}) => {
           </div>
 
           {/* Highlights */}
-          <div className="w-4/12 flex items-center justify-center">
+          <div className="flex items-center justify-center w-4/12">
             <HighlightDonutChart wins={totalWins} losses={totalLosses} />
           </div>
         </div>
         {/* Badge section */}
-        <div className="flex justify-start flex-col font-medium">
-          <h2 className="font-bold text-2xl">Your badges</h2>
+        <div className="flex flex-col justify-start font-medium">
+          <h2 className="text-xl font-bold">Your badges</h2>
           <small className="text-gray-100">
             {badges.length} badge{badges.length === 1 ? '' : 's'}
           </small>
         </div>
-        <div className="flex justify-start flex-row flex-wrap text-white">
-          {userBadges.map(badge => (
+        <div className="flex flex-row flex-wrap justify-start text-white">
+          {badges.map(badge => (
             <Badge key={badge.title} badge={badge} />
           ))}
           {allBadges.map(badge => {

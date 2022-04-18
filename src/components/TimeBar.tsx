@@ -29,8 +29,8 @@ const TimeBar: React.FC<TimeBarProps> = ({ targetFPS = 60, startColor = green, e
   const currWidth = useRef(0);
 
   const { event, setEvent } = useEventStore(useCallback(({ setEvent, event }) => ({ setEvent, event }), []));
-  const { averageTimeUsed, setAverageTimeUsed } = useScoreStore();
-  const permission = useLevelStore(useCallback(state => state.getPermission(), []));
+  const { setAverageTimeUsed } = useScoreStore();
+  const { level, permission } = useLevelStore(useCallback(({ level, getPermission }) => ({ level, permission: getPermission() }), []));
 
   const duration = permission?.time ?? 1;
   const frameTime = 1000 / targetFPS; // 16,67 ms for 60 fps
@@ -38,7 +38,6 @@ const TimeBar: React.FC<TimeBarProps> = ({ targetFPS = 60, startColor = green, e
   const redChange = (endColor.red - startColor.red) / ((duration * 1000) / frameTime);
   const greenChange = (endColor.green - startColor.green) / ((duration * 1000) / frameTime);
   const blueChange = (endColor.blue - startColor.blue) / ((duration * 1000) / frameTime);
-  const { level } = useLevelStore();
 
   // reset timer to initial state without starting
   const reset = (color = startColor) => {

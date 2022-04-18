@@ -11,13 +11,13 @@ export const getPermissions = (level: Levels): Permission => {
     case Levels.NOVICE:
       return {
         allowDrag: true,
-        time: 8, // 8 seconds
+        time: 10, // 8 seconds
       };
 
     case Levels.EXPERT:
       return {
         allowDrag: false,
-        time: 4, // 4 seconds
+        time: 6, // 4 seconds
       };
   }
 };

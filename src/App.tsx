@@ -22,7 +22,7 @@ const App: React.FC<AppProps> = ({}) => {
     () => (
       <PersistGate>
         <BadgeContainer />
-        <div className={`${showModal ? 'blur' : ''} flex flex-col w-screen h-screen bg-canvas`}>
+        <div className={`${showModal ? 'blur' : ''} flex flex-col w-screen min-h-screen bg-canvas`}>
           <Outlet />
         </div>
       </PersistGate>
