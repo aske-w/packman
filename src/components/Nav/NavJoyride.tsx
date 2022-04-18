@@ -3,7 +3,7 @@ import ReactJoyride from "react-joyride";
 import { Gamemodes } from "../../types/enums/Gamemodes.enum";
 
 interface NavJoyrideProps {
-  gamemode: Gamemodes
+  gamemode?: Gamemodes
 }
 
 const NavJoyride: React.FC<NavJoyrideProps> = ({ gamemode }) => {
@@ -34,7 +34,11 @@ const NavJoyride: React.FC<NavJoyrideProps> = ({ gamemode }) => {
   switch (gamemode) {
     case Gamemodes.ONLINE_STRIP_PACKING:
       // insert r-value explainer before level select
-      steps.splice(steps.length - 1, 1, {target: ".r-value", content: "Here you can adjust the value R for the algorithm. It determines the threshold for which items should go on the same shelf."}, steps[steps.length - 1])
+      const newStep = {
+        target: ".r-value", 
+        content: "Here you can adjust the value R for the algorithm. It determines the threshold for which items should go on the same shelf."
+      };
+      steps.splice(steps.length - 1, 1, newStep, steps[steps.length - 1])
       break;
   
     default:

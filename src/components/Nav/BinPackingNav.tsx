@@ -32,6 +32,7 @@ const BinPackingNav: React.FC<BinPackingNavProps> = ({}) => {
 
   return (
     <DefaultNav height={NAV_HEIGHT}>
+    <NavJoyride/>
       <div className="flex flex-row items-center justify-between space-x-10 text-white">
         <div className="user-score">
           <Score primary={`Score: ${score.user.height}`} secondary="You" />
