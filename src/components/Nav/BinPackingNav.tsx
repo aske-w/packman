@@ -10,6 +10,7 @@ import Score from '../Score';
 import LevelSelect from '../select/LevelSelect';
 import Select from '../select/Select';
 import DefaultNav from './DefaultNav';
+import NavJoyride from './NavJoyride';
 
 interface BinPackingNavProps {}
 
@@ -31,12 +32,13 @@ const BinPackingNav: React.FC<BinPackingNavProps> = ({}) => {
 
   return (
     <DefaultNav height={NAV_HEIGHT}>
+    <NavJoyride/>
       <div className="flex flex-row items-center justify-between space-x-10 text-white">
         <div className="user-score">
-          <Score primary={`Score: ${score.user.height}`} secondary="user" />
+          <Score primary={`Score: ${score.user.height}`} secondary="You" />
         </div>
         <div className="algorithm-score">
-          <Score primary={`Score: ${score.algorithm.height}`} secondary="algorithm" />
+          <Score primary={`Score: ${score.algorithm.height}`} secondary="Algorithm" />
         </div>
         <div className="rects-left">
           <Score primary={`Rects left: ${score.rectanglesLeft}`} />

@@ -14,10 +14,14 @@ export interface HelpState {
   setDontShowAgainOnlineStrip: (value: boolean) => void;
   dontShowAgainOfflineBin: boolean;
   setDontShowAgainOfflineBin: (value: boolean) => void;
+  playgroundJoyrideOpen: boolean;
+  setPlaygroundJoyrideOpen: (value: boolean) => void;
+  gamesJoyrideOpen: boolean;
+  setGamesJoyrideOpen: (value: boolean) => void;
 }
 
 const useHelpStore = create<HelpState>(
-  persist({ key: 'helpstore', allowlist: ['dontShowAgain','showPlaygroundIntro'] }, (set, get) => ({
+  persist({ key: 'helpstore', allowlist: ['dontShowAgain',"playgroundJoyrideOpen", "gamesJoyrideOpen",'showPlaygroundIntro'] }, (set, get) => ({
     introOpen: get()?.dontShowAgain || false,
     setIntroOpen: open => set(state => ({ ...state, introOpen: open })),
     dontShowAgain: false,
@@ -34,6 +38,14 @@ const useHelpStore = create<HelpState>(
     setDontShowAgainOnlineStrip: value => set(state => ({ ...state, dontShowAgainOnlineStrip: value })),
     dontShowAgainOfflineBin: get()?.dontShowAgainOfflineBin || false,
     setDontShowAgainOfflineBin: value => set(state => ({ ...state, dontShowAgainOfflineBin: value })),
+    playgroundJoyrideOpen: get()?.playgroundJoyrideOpen || true,
+    setPlaygroundJoyrideOpen: (value: boolean) => set(state => ({
+      ...state, playgroundJoyrideOpen: value
+    })),
+    gamesJoyrideOpen: get()?.gamesJoyrideOpen || true,
+    setGamesJoyrideOpen: (value: boolean) => set(state => ({
+      ...state, gamesJoyrideOpen: value
+    })),
   }))
 );
 

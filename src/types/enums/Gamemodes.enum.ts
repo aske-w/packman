@@ -5,3 +5,5 @@ export enum Gamemodes {
 }
 
 export const ALL_GAMEMODES = [Gamemodes.BIN_PACKING, Gamemodes.STRIP_PACKING, Gamemodes.ONLINE_STRIP_PACKING];
+
+export type PlaygroundGamemodes = Gamemodes.BIN_PACKING | Gamemodes.STRIP_PACKING
