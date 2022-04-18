@@ -1,18 +1,25 @@
-import { FormEvent, useEffect, useRef, useState } from 'react';
+import { FormEvent, useCallback, useRef, useState } from 'react';
 import RectInput from './RectInput';
 import React from 'react';
-import { TrashIcon } from '@heroicons/react/outline';
+import { DuplicateIcon, TrashIcon } from '@heroicons/react/outline';
 import { CheckCircleIcon } from '@heroicons/react/solid';
 import { Dimensions } from '../types/Dimensions.interface';
-import Card from './Card';
 
 interface BoxInputProps {
   disabled?: boolean;
+  allowDuplication?: boolean;
+  iconSizeClass?: string;
   dimensionsStorage: Dimensions[];
   setDimensionsStorage: React.Dispatch<React.SetStateAction<Dimensions[]>>;
 }
 
-const BoxInput: React.FC<BoxInputProps> = ({ dimensionsStorage, setDimensionsStorage, disabled = false }) => {
+const BoxInput: React.FC<BoxInputProps> = ({
+  dimensionsStorage,
+  setDimensionsStorage,
+  disabled = false,
+  allowDuplication = false,
+  iconSizeClass = 'w-14',
+}) => {
   const [width, setWidth] = useState<string>('');
   const [height, setHeight] = useState<string>('');
 
@@ -54,6 +61,19 @@ const BoxInput: React.FC<BoxInputProps> = ({ dimensionsStorage, setDimensionsSto
     }
   };
 
+  const duplicate = useCallback(
+    (rect: Dimensions, index: number) => {
+      // insert duplicate dimensions where the user clicked on duplication button
+      let newDimensions = [];
+      for (let i = 0; i < dimensionsStorage.length; i++) {
+        newDimensions.push(dimensionsStorage[i]);
+        if (index == i) newDimensions.push(rect);
+      }
+      setDimensionsStorage(newDimensions);
+    },
+    [dimensionsStorage]
+  );
+
   return (
     // <div className="flex flex-col items-center justify-start w-full space-y-4 overflow-y-scroll rounded custom-scrollbar">
     <div className="flex-1 min-h-0">
@@ -75,8 +95,14 @@ const BoxInput: React.FC<BoxInputProps> = ({ dimensionsStorage, setDimensionsSto
             <div key={index} className="flex flex-row items-center w-full space-x-6">
               <RectInput readonly={true} value={r.width} sec="w"></RectInput>
               <RectInput readonly={true} value={r.height} sec="h"></RectInput>
+              {allowDuplication ? (
+                <DuplicateIcon
+                  className={`${iconSizeClass} ${disabled ? 'text-gray-500' : 'hover:cursor-pointer hover:scale-110 text-gray-200'}`}
+                  onClick={() => duplicate(r, index)}
+                />
+              ) : undefined}
               <TrashIcon
-                className={`w-14 ${disabled ? 'text-gray-500' : 'hover:cursor-pointer hover:text-red-400 hover:scale-110 text-gray-200'}`}
+                className={`${iconSizeClass} ${disabled ? 'text-gray-500' : 'hover:cursor-pointer hover:text-red-400 hover:scale-110 text-gray-200'}`}
                 onClick={e => removeRectangle(index)}
               />
             </div>
