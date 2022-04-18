@@ -3,9 +3,11 @@ import useLevelStore from '../../store/level.store';
 import { LevelList, Levels } from '../../types/enums/Levels.enum';
 import Select from './Select';
 
-interface LevelSelectProps {}
+interface LevelSelectProps {
+  className?: string
+}
 
-const LevelSelect: React.FC<LevelSelectProps> = ({}) => {
+const LevelSelect: React.FC<LevelSelectProps> = ({ className }) => {
   const { level, setLevel } = useLevelStore(
     useCallback(
       ({ level, setLevel }) => ({
@@ -30,7 +32,7 @@ const LevelSelect: React.FC<LevelSelectProps> = ({}) => {
 
     return (
       <Select
-        className="w-32"
+        className={"w-32 level-select " + className}
         innerClassname={getColor() + ' text-white'}
         selectIconClass={'w-5 h-5'}
         value={level}
