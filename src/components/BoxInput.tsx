@@ -4,7 +4,6 @@ import React from 'react';
 import { DuplicateIcon, TrashIcon } from '@heroicons/react/outline';
 import { CheckCircleIcon } from '@heroicons/react/solid';
 import { Dimensions } from '../types/Dimensions.interface';
-import Card from './Card';
 
 interface BoxInputProps {
   disabled?: boolean;
@@ -21,8 +20,6 @@ const BoxInput: React.FC<BoxInputProps> = ({
   allowDuplication = false,
   iconSizeClass = 'w-14',
 }) => {
-  const rectangles = dimensionsStorage;
-  const setRectangles = setDimensionsStorage;
   const [width, setWidth] = useState<string>('');
   const [height, setHeight] = useState<string>('');
 
@@ -36,16 +33,12 @@ const BoxInput: React.FC<BoxInputProps> = ({
   };
 
   const saveRectangle = (width: number, height: number) => {
-    if (!disabled) {
-      let newRects = rectangles;
-      newRects.push({ width, height });
-      setRectangles(newRects);
-    }
+    if (!disabled) setDimensionsStorage([{ width, height }].concat(dimensionsStorage));
   };
 
   const removeRectangle = (index: number) => {
     if (!disabled) {
-      setRectangles(r => {
+      setDimensionsStorage(r => {
         const temp = [...r];
         temp.splice(index, 1);
         return temp;
@@ -72,13 +65,13 @@ const BoxInput: React.FC<BoxInputProps> = ({
     (rect: Dimensions, index: number) => {
       // insert duplicate dimensions where the user clicked on duplication button
       let newDimensions = [];
-      for (let i = 0; i < rectangles.length; i++) {
-        newDimensions.push(rectangles[i]);
+      for (let i = 0; i < dimensionsStorage.length; i++) {
+        newDimensions.push(dimensionsStorage[i]);
         if (index == i) newDimensions.push(rect);
       }
       setDimensionsStorage(newDimensions);
     },
-    [rectangles]
+    [dimensionsStorage]
   );
 
   return (
@@ -98,7 +91,7 @@ const BoxInput: React.FC<BoxInputProps> = ({
               <CheckCircleIcon className="w-6 h-6 " />
             </button>
           </form>
-          {rectangles.map((r, index) => (
+          {dimensionsStorage.map((r, index) => (
             <div key={index} className="flex flex-row items-center w-full space-x-6">
               <RectInput readonly={true} value={r.width} sec="w"></RectInput>
               <RectInput readonly={true} value={r.height} sec="h"></RectInput>
