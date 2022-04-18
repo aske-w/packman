@@ -1,5 +1,6 @@
 import React from "react";
 import ReactJoyride from "react-joyride";
+import useHelpStore from "../../store/help.store";
 import { Gamemodes } from "../../types/enums/Gamemodes.enum";
 
 interface NavJoyrideProps {
@@ -7,6 +8,7 @@ interface NavJoyrideProps {
 }
 
 const NavJoyride: React.FC<NavJoyrideProps> = ({ gamemode }) => {
+  const { gamesJoyrideOpen, setGamesJoyrideOpen } = useHelpStore();
   const steps = [
     {
       target: '.user-score',
@@ -33,11 +35,11 @@ const NavJoyride: React.FC<NavJoyrideProps> = ({ gamemode }) => {
   // do something extra based on gamemode
   switch (gamemode) {
     case Gamemodes.ONLINE_STRIP_PACKING:
-      // insert r-value explainer before level select
       const newStep = {
         target: ".r-value", 
         content: "Here you can adjust the value R for the algorithm. It determines the threshold for which items should go on the same shelf."
       };
+      // insert r-value explainer before level select
       steps.splice(steps.length - 1, 1, newStep, steps[steps.length - 1])
       break;
   
@@ -48,6 +50,12 @@ const NavJoyride: React.FC<NavJoyrideProps> = ({ gamemode }) => {
   return <ReactJoyride
     continuous
     steps={steps}
+    run={gamesJoyrideOpen}
+    callback={(data) => {
+      const { status } = data;
+      if(status == "finished")
+        setGamesJoyrideOpen(false);
+    }}
   />;
 };
 

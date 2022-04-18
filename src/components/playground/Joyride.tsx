@@ -1,5 +1,6 @@
 import React from "react";
 import ReactJoyride from "react-joyride";
+import useHelpStore from "../../store/help.store";
 import { Gamemodes, PlaygroundGamemodes } from "../../types/enums/Gamemodes.enum";
 
 interface JoyrideProps {
@@ -7,6 +8,7 @@ interface JoyrideProps {
 }
 
 const Joyride: React.FC<JoyrideProps> = ({ playground }) => {
+  const { playgroundJoyrideOpen, setPlaygroundJoyrideOpen } = useHelpStore();
   let canvasConfigText: string;
   switch (playground) {
     case Gamemodes.STRIP_PACKING:
@@ -21,6 +23,12 @@ const Joyride: React.FC<JoyrideProps> = ({ playground }) => {
   }
 
   return <ReactJoyride
+    run={playgroundJoyrideOpen}
+    callback={(data) => {
+      const { status } = data;
+      if(status == "finished")
+        setPlaygroundJoyrideOpen(false);
+    }}
     steps={[
       {
         content: "Here you can select which algorithm that you're visualizing.",
