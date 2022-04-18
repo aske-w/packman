@@ -29,7 +29,6 @@ function StripPackingPlayground() {
 
   const reset = () => {
     setRects([]);
-    setDimensionsStorage([]);
     resetAlgo();
   };
 
@@ -87,7 +86,10 @@ function StripPackingPlayground() {
             setSelectedAlgorithm,
             isFinished,
             placeNext,
-            start,
+            start: (data) => {
+              reset();
+              start(data)
+            },
             dimensionsStorage,
             setDimensionsStorage,
             algoState,
