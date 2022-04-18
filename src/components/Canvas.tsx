@@ -4,6 +4,7 @@ import { TextConfig } from 'konva/lib/shapes/Text';
 import { Stage as KonvaStage } from 'konva/lib/Stage';
 import React, { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 import { KonvaNodeEvents, Label, Layer, Rect, Stage, Tag, Text } from 'react-konva';
+import usePlaygroundStore from '../store/playground.store';
 import { Rectangle } from '../types/Rectangle.interface';
 import { resolveCollision } from '../utils/konva';
 import Card from './Card';
@@ -19,6 +20,7 @@ const HEIGHT = 5000;
 
 const Canvas = forwardRef<CanvasHandle, CanvasProps>(({ width, rects }, handle) => {
   const stageRef = useRef<KonvaStage>(null);
+  const { animateRects } = usePlaygroundStore(useCallback(({ animateRects }) => ({ animateRects }), []));
   const [tooltip, setTooltip] = useState<Partial<TextConfig>>({
     text: '',
     x: 0,
@@ -90,6 +92,7 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(({ width, rects }, handle) 
           {rects.map((rect, i) => {
             return (
               <MyRect
+                animateRect={animateRects}
                 key={i}
                 onMouseMove={() => enableTooltip(rect)}
                 onMouseOut={() => disableTooltip()}
@@ -124,14 +127,11 @@ const Canvas = forwardRef<CanvasHandle, CanvasProps>(({ width, rects }, handle) 
   );
 });
 
-const MyRect: React.FC<RectConfig & KonvaNodeEvents> = ({
-  x,
-  y,
-
-  ...props
-}) => {
+const MyRect: React.FC<RectConfig & KonvaNodeEvents & { animateRect: boolean }> = ({ x, y, animateRect, ...props }) => {
   const ref = useRef<KonvaRect>(null);
   useEffect(() => {
+    if (!animateRect) return;
+
     new Konva.Tween({
       node: ref.current!,
       duration: 0.4,
@@ -143,9 +143,22 @@ const MyRect: React.FC<RectConfig & KonvaNodeEvents> = ({
       scaleY: 1,
       rotation: 0,
     }).play();
-  }, [x, y]);
+  }, [x, y, animateRect]);
 
-  return <Rect ref={ref} x={0} y={800} opacity={0} stroke={'rgba(0,0,0,0.2)'} strokeWidth={1} scaleX={3} scaleY={3} rotation={45} {...props} />;
+  return (
+    <Rect
+      ref={ref}
+      x={animateRect ? 0 : x}
+      y={animateRect ? 800 : y}
+      opacity={animateRect ? 0 : 1}
+      stroke={'rgba(0,0,0,0.2)'}
+      strokeWidth={1}
+      scaleX={animateRect ? 3 : 1}
+      scaleY={animateRect ? 3 : 1}
+      rotation={animateRect ? 45 : 0}
+      {...props}
+    />
+  );
 };
 
 export default Canvas;

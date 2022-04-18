@@ -1,5 +1,5 @@
 import Switch from 'react-switch';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAutoPlace } from '../../hooks/useAutoPlace';
 import { AlgoStates } from '../../hooks/usePackingAlgorithms';
 import { useToggle } from '../../hooks/useToggle';
