@@ -90,7 +90,7 @@ const BinPackingGameIntroModal: React.FC<BinPackingGameIntroModalProps> = ({}) =
                       type="checkbox"
                       className="rounded text-blue-600 h-5 w-5 focus:ring-0"
                       checked={dontShowAgainOfflineBin}
-                      onChange={() => setDontShowAgainOfflineBin(true)}
+                      onChange={() => setDontShowAgainOfflineBin(!dontShowAgainOfflineBin)}
                     />
                     <label className="tracking-wide">Don't show again</label>
                   </form>

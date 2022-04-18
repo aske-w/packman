@@ -83,7 +83,7 @@ export default function OnlineStripPackingGameIntroModal() {
                       type="checkbox"
                       className="rounded text-blue-600 h-5 w-5 focus:ring-0"
                       checked={dontShowAgainOnlineStrip}
-                      onChange={() => setDontShowAgainOnlineStrip(true)}
+                      onChange={() => setDontShowAgainOnlineStrip(!dontShowAgainOnlineStrip)}
                     />
                     <label className="tracking-wide">Don't show again</label>
                   </form>

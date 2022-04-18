@@ -62,7 +62,7 @@ export default function StripPackingPlaygroundIntroModal() {
                       type="checkbox"
                       className="rounded text-blue-600 h-5 w-5 focus:ring-0"
                       checked={!showPlaygroundIntro}
-                      onChange={() => setShowPlaygroundIntro(false)}
+                      onChange={() => setShowPlaygroundIntro(!showPlaygroundIntro)}
                     />
                     <label className="tracking-wide">Don't show again</label>
                   </form>
