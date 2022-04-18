@@ -8,6 +8,12 @@ export interface HelpState {
   setShowMsgAgain: () => void;
   showPlaygroundIntro: boolean;
   setShowPlaygroundIntro: (value: boolean) => void;
+  dontShowAgainOfflineStrip: boolean;
+  setDontShowAgainOfflineStrip: (value: boolean) => void;
+  dontShowAgainOnlineStrip: boolean;
+  setDontShowAgainOnlineStrip: (value: boolean) => void;
+  dontShowAgainOfflineBin: boolean;
+  setDontShowAgainOfflineBin: (value: boolean) => void;
 }
 
 const useHelpStore = create<HelpState>(
@@ -22,6 +28,12 @@ const useHelpStore = create<HelpState>(
     })),
     showPlaygroundIntro: get()?.showPlaygroundIntro || true,
     setShowPlaygroundIntro: open => set(state => ({ ...state, showPlaygroundIntro: open })),
+    dontShowAgainOfflineStrip: get()?.dontShowAgainOfflineStrip || false,
+    setDontShowAgainOfflineStrip: value => set(state => ({ ...state, dontShowAgainOfflineStrip: value })),
+    dontShowAgainOnlineStrip: get()?.dontShowAgainOnlineStrip || false,
+    setDontShowAgainOnlineStrip: value => set(state => ({ ...state, dontShowAgainOnlineStrip: value })),
+    dontShowAgainOfflineBin: get()?.dontShowAgainOfflineBin || false,
+    setDontShowAgainOfflineBin: value => set(state => ({ ...state, dontShowAgainOfflineBin: value })),
   }))
 );
 

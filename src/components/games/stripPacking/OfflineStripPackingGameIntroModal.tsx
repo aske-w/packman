@@ -1,10 +1,14 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { QuestionMarkCircleIcon } from '@heroicons/react/solid';
-import { Fragment } from 'react';
+import { Fragment, useEffect } from 'react';
 import useHelpStore from '../../../store/help.store';
 
 export default function StripPackingGameIntroModal() {
-  const { introOpen, setIntroOpen, dontShowAgain, setShowMsgAgain } = useHelpStore();
+  const { introOpen, setIntroOpen, dontShowAgainOfflineStrip, setDontShowAgainOfflineStrip } = useHelpStore();
+  useEffect(() => {
+    // make sure it's opened on mount
+    setIntroOpen(!dontShowAgainOfflineStrip);
+  }, []);
   return (
     <>
       <Transition appear show={introOpen} as={Fragment}>
@@ -79,8 +83,8 @@ export default function StripPackingGameIntroModal() {
                     <input
                       type="checkbox"
                       className="rounded text-blue-600 h-5 w-5 focus:ring-0"
-                      checked={dontShowAgain}
-                      onChange={() => setShowMsgAgain()}
+                      checked={dontShowAgainOfflineStrip}
+                      onChange={() => setDontShowAgainOfflineStrip(true)}
                     />
                     <label className="tracking-wide">Don't show again</label>
                   </form>

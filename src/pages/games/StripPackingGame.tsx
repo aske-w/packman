@@ -10,7 +10,7 @@ import ScrollBar from '../../components/canvas/ScrollBar';
 import GameEndModal from '../../components/gameEndModal/Modal';
 import Inventory from '../../components/games/stripPacking/Inventory';
 import StripPackingAlgorithm, { StripPackingAlgorithmHandle } from '../../components/games/stripPacking/StripPackingAlgorithm';
-import StripPackingGameIntroModal from '../../components/games/stripPacking/StripPackingGameIntroModal';
+import StripPackingGameIntroModal from '../../components/games/stripPacking/OfflineStripPackingGameIntroModal';
 import StripPackingInteractive, { StripPackingInteractiveHandle } from '../../components/games/stripPacking/StripPackingInteractive';
 import StripPackingNav from '../../components/Nav/StripPackingNav';
 import TimeBar from '../../components/TimeBar';
