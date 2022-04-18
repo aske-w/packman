@@ -36,7 +36,7 @@ import SidewaysScrollBar from '../../components/canvas/SidewaysScrollBar';
 import { useSetSidewaysScrollbar } from '../../hooks/useSetSidewaysScrollbar';
 
 interface BinPackingGameProps {}
-const NUM_ITEMS = 2;
+const NUM_ITEMS = 25;
 // bin dimensions
 const binSize = {
   height: 300,
