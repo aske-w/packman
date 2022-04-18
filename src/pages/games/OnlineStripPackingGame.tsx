@@ -14,6 +14,7 @@ import OnlineStripPackingInteractive, {
   OnlineStripPackingInteractiveHandle,
 } from '../../components/games/onlineStripPacking/OnlineStripPackingInteractive';
 import OnlineStripPackingInventory from '../../components/games/onlineStripPacking/OnlineStripPackingInventory';
+import OnlineStripPackingGameIntroModal from '../../components/games/stripPacking/OnlineStripPackingGameIntroModal';
 import OnlineStripPackingNav from '../../components/Nav/OnlineStripPackingNav';
 import TimeBar from '../../components/TimeBar';
 import { NAV_HEIGHT, PADDING, SCROLLBAR_WIDTH } from '../../config/canvasConfig';
@@ -161,7 +162,7 @@ const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
       <GameEndModal />
       <TimeBar />
       <OnlineStripPackingNav r={r} setR={setR} />
-
+      <OnlineStripPackingGameIntroModal />
       <Stage className="flex justify-center h-full max-w-screen-xl mx-auto " onWheel={handleWheel} width={totalGameWidth} height={gameHeight}>
         <Layer>
           {/* Interactive BG */}
