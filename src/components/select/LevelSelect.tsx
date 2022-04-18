@@ -32,7 +32,7 @@ const LevelSelect: React.FC<LevelSelectProps> = ({ className }) => {
 
     return (
       <Select
-        className={"w-32 " + className}
+        className={"w-32 level-select " + className}
         innerClassname={getColor() + ' text-white'}
         selectIconClass={'w-5 h-5'}
         value={level}

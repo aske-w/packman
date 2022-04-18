@@ -6,10 +6,12 @@ import useAlgorithmStore from '../../store/algorithm.store';
 import useHelpStore from '../../store/help.store';
 import useScoreStore from '../../store/score.store';
 import { ALL_ONLINE_STRIP_PACKING_ALGORITHMS, OnlineStripPackingAlgorithmEnum } from '../../types/enums/OnlineStripPackingAlgorithm.enum';
+import { Gamemodes } from '../../types/enums/Gamemodes.enum';
 import Score from '../Score';
 import LevelSelect from '../select/LevelSelect';
 import Select from '../select/Select';
 import DefaultNav from './DefaultNav';
+import NavJoyride from './NavJoyride';
 
 interface OnlineStripPackingNavProps {
   r: number;
@@ -38,6 +40,7 @@ const OnlineStripPackingNav: React.FC<OnlineStripPackingNavProps> = ({ r, setR }
 
   return (
     <DefaultNav height={NAV_HEIGHT}>
+      <NavJoyride gamemode={Gamemodes.ONLINE_STRIP_PACKING} />
       <div className="flex flex-row items-center justify-between space-x-10 text-white">
         <div className="user-score">
           <Score primary={`Score: ${score.user.height}`} secondary="You" />
@@ -58,7 +61,7 @@ const OnlineStripPackingNav: React.FC<OnlineStripPackingNavProps> = ({ r, setR }
         <input
           defaultValue={r}
           data-tip="R: A value between 0 and 1. Determines the threshold for which items should go on the same shelf"
-          className="w-20 px-2 py-1 font-bold text-white bg-gray-700 rounded focus:outline-none"
+          className="w-20 px-2 py-1 font-bold text-white bg-gray-700 rounded focus:outline-none r-value"
           onBlur={({ target: { value } }) => {
             const valueAsNumber = Number.parseFloat(value);
             if (Number.isFinite(valueAsNumber) && !Number.isNaN(valueAsNumber) && valueAsNumber > 0 && valueAsNumber < 1) {

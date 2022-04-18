@@ -46,7 +46,7 @@ const StripPackingNav: React.FC<StripPackingNavProps> = ({}) => {
         {algorithm && (
           <Select className="text-base font-thin w-72 algorithm-select" options={ALL_PACKING_ALGORITHMS} value={algorithm} onChange={setAlgorithm} />
         )}
-        <LevelSelect className='level-select'/>
+        <LevelSelect/>
         <button onClick={() => setIntroOpen(true)}>
           <QuestionMarkCircleIcon className="w-10 h-10 text-white hover:text-gray-200" />
         </button>
