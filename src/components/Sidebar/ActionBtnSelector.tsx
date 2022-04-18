@@ -26,7 +26,7 @@ const ActionBtnSelector: React.FC<ActionBtnSelectorProps> = ({ algoState, isAuto
     case 'STOPPED':
       return (
         <SideBarItem
-          className="strip-playground-start"
+          className="playground-start"
           element={<Button disabled={disabled} text="Start" onClick={start} className="bg-green-600" />}
           text="Start"
         />

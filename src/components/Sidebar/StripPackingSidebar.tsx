@@ -71,7 +71,7 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
       <SideBarSection title="Algorithms">
         <div className="flex flex-row items-center justify-between">
           <Select<PackingAlgorithmEnum>
-            className="text-base font-thin text-white w-72 strip-playground-algo-select"
+            className="text-base font-thin text-white w-72 playground-algo-select"
             options={ALL_PACKING_ALGORITHMS}
             onChange={setSelectedAlgorithm}
             value={selectedAlgorithm}
@@ -85,13 +85,13 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
 
       <SideBarSection title="Actions panel">
         <SideBarItem
-          className="strip-playground-auto-place"
+          className="playground-auto-place"
           element={<Switch onColor="#34C659" checked={checked} onChange={updateChecked} checkedIcon={false} uncheckedIcon={false} />}
           text="Auto place"
         />
 
         <SideBarItem
-          className="strip-playground-reset"
+          className="playground-reset"
           element={
             <button className="px-2 py-1 font-medium text-white bg-red-600 rounded shadow hover:bg-red-700" onClick={reset}>
               Reset
@@ -124,7 +124,7 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
       </SideBarSection>
 
       <SideBarSection title="Strip size">
-        <div className="flex flex-row space-x-4 strip-playground-dimensions">
+        <div className="flex flex-row space-x-4 playground-dimensions">
           <RectInput
             disabled={isStarted}
             value={stripWidth}
@@ -137,7 +137,7 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
 
       <SideBarSection title="Automatic data set">
         <SideBarItem
-          className="strip-playground-auto-gen"
+          className="playground-auto-gen"
           element={
             <div className="flex items-center space-x-5 justify-right">
               <RectInput
@@ -160,7 +160,7 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
         />
         <SideBarItem
           text="Reuse previous data"
-          className="strip-playground-prev-data"
+          className="playground-prev-data"
           element={
             <div className="flex items-center space-x-5 justify-right">
               <button
@@ -173,6 +173,7 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
           }
         />
         <SideBarItem
+          className='playground-input-designer'
           text={'Advanced input design'}
           element={
             <button
@@ -185,7 +186,7 @@ const StripPackingSidebar: React.FC<SidebarProps> = ({
         />
       </SideBarSection>
 
-      <SideBarSection title={'Data set (' + dimensionsStorage.length + ')'} className="flex flex-col p-0 overflow-hidden strip-playground-test-data">
+      <SideBarSection title={'Data set (' + dimensionsStorage.length + ')'} className="flex flex-col p-0 overflow-hidden playground-test-data">
         <BoxInput dimensionsStorage={dimensionsStorage} setDimensionsStorage={setDimensionsStorage} disabled={algoState === 'RUNNING'}></BoxInput>
       </SideBarSection>
     </Sidebar>

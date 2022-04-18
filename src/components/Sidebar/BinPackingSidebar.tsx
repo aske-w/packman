@@ -84,7 +84,7 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
       <SideBarSection title="Algorithms">
         <div className="flex flex-row items-center justify-between">
           <Select<BinPackingAlgorithm>
-            className="text-base font-thin text-white w-72"
+            className="text-base font-thin text-white w-72 playground-algo-select"
             options={ALL_BIN_PACKING_ALGORITHMS}
             onChange={setAlgorithm}
             value={algorithm}
@@ -97,11 +97,13 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
       </SideBarSection>
       <SideBarSection title="Actions panel">
         <SideBarItem
+          className='playground-auto-place'
           element={<Switch color="#34C659" checked={checked} onChange={updateChecked} checkedIcon={false} uncheckedIcon={false} />}
           text="Auto place"
         />
 
         <SideBarItem
+          className='playground-reset'
           element={
             <button className="px-2 py-1 font-medium text-white bg-red-600 rounded shadow hover:bg-red-700" onClick={reset}>
               Reset
@@ -132,7 +134,7 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
         )}
       </SideBarSection>
       <SideBarSection className={classNames({ 'opacity-50': algoState === 'RUNNING' })} title="Bin dimensions">
-        <div className="flex flex-row items-center space-x-4">
+        <div className="flex flex-row items-center space-x-4 playground-dimensions">
           <RectInput
             disabled={isStarted}
             value={binDimensions.width}
@@ -178,6 +180,7 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
 
       <SideBarSection title="Automatic data set" className="h-2/12">
         <SideBarItem
+          className='playground-auto-gen'
           element={
             <div className="flex items-center space-x-5 justify-right">
               <RectInput
@@ -198,6 +201,7 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
           text="Generate data"
         />
         <SideBarItem
+          className='playground-prev-data'
           text="Reuse previous data"
           element={
             <div className="flex items-center space-x-5 justify-right">
@@ -211,6 +215,7 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
           }
         />
         <SideBarItem
+          className='playground-input-designer'
           text={'Advanced input design'}
           element={
             <button
@@ -223,7 +228,7 @@ const BinPackingSidebar: React.FC<BinPackingSidebarProps> = ({
         />
       </SideBarSection>
 
-      <SideBarSection title={'Data set (' + dimensionsStorage.length + ')'} className="flex flex-col p-0 overflow-hidden">
+      <SideBarSection title={'Data set (' + dimensionsStorage.length + ')'} className="flex flex-col p-0 overflow-hidden playground-test-data">
         <BoxInput dimensionsStorage={dimensionsStorage} setDimensionsStorage={setDimensionsStorage} disabled={algoState === 'RUNNING'}></BoxInput>
       </SideBarSection>
     </Sidebar>
