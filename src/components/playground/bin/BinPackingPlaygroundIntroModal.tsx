@@ -56,9 +56,6 @@ export default function StripPackingPlaygroundIntroModal() {
                     in the top right corner
                   </p>
                 </div>
-
-                
-
                 <div className="flex justify-between items-center mt-4">
                   <form className="flex items-center space-x-2">
                     <input
