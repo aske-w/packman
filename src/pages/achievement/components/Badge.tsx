@@ -12,7 +12,7 @@ const Badge: React.FC<BadgeProps> = ({ badge, disabled = false }) => {
   return (
     <div
       className={
-        (disabled ? ' opacity-50' : 'opacity-100 hover:scale-105') +
+        (disabled ? ' opacity-30' : 'opacity-100 hover:scale-105') +
         ' relative bg-badge h-44 flex flex-col items-center justify-start text-white p-3 w-52 rounded-md ease-in-out duration-200 mr-3 mb-3'
       }
     >
