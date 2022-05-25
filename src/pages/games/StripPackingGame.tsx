@@ -31,10 +31,13 @@ import { pushItemToBack } from '../../utils/array';
 import { compressInventory, generateInventory } from '../../utils/generateData';
 import { intersects } from '../../utils/intersects';
 import { sleep } from '../../utils/utils';
+import useGeneralStore from '../../store/general.store';
 
 interface StripPackingGameProps {}
-const NUM_ITEMS = 25;
+
 const StripPackingGame: React.FC<StripPackingGameProps> = ({}) => {
+  const NUM_ITEMS = useGeneralStore(useCallback(({ numItems }) => numItems, []));
+
   const { width: wWidth, height: wHeight } = useWindowSize();
   const stripWidth = wWidth * 0.2;
   const inventoryWidth = wWidth * 0.6;

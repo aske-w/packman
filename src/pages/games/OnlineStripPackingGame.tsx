@@ -24,6 +24,7 @@ import { useOnlineStripPackingInventory } from '../../hooks/useOnlineStripPackin
 import { useRestartStripPacking } from '../../hooks/useRestartStripPacking';
 import { useSnap } from '../../hooks/useSnap';
 import { useWindowSize } from '../../hooks/useWindowSize';
+import useGeneralStore from '../../store/general.store';
 import useScoreStore from '../../store/score.store';
 import { ColorRect } from '../../types/ColorRect.interface';
 import { Gamemodes } from '../../types/enums/Gamemodes.enum';
@@ -31,9 +32,10 @@ import { OnlineStripPackingAlgorithmEnum } from '../../types/enums/OnlineStripPa
 import { Rectangle } from '../../types/Rectangle.interface';
 import { intersects } from '../../utils/intersects';
 interface OnlineStripPackingGameProps {}
-const NUM_ITEMS = 25;
 
 const OnlineStripPackingGame: React.FC<OnlineStripPackingGameProps> = ({}) => {
+  const NUM_ITEMS = useGeneralStore(useCallback(({ numItems }) => numItems, []));
+
   const { width: wWidth, height: wHeight } = useWindowSize();
   const totalGameWidth = Math.min(wWidth, 1280);
   const gameHeight = wHeight - NAV_HEIGHT;

@@ -1,12 +1,14 @@
 import Konva from 'konva';
 import { Rect as KonvaRect } from 'konva/lib/shapes/Rect';
+import { isNumber } from 'lodash';
 import chunk from 'lodash/chunk';
 import { nanoid } from 'nanoid';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { KeyboardEventHandler, useEffect, useMemo, useRef, useState } from 'react';
 import { Layer, Rect, Stage } from 'react-konva';
 import { Link } from 'react-router-dom';
 import { NextFitDecreasingHeight } from '../algorithms/strip/NextFitDecreasingHeight';
 import { useWindowSize } from '../hooks/useWindowSize';
+import useGeneralStore from '../store/general.store';
 import { ColorRect } from '../types/ColorRect.interface';
 import { pathName } from './routes';
 interface HomeProps {}
@@ -120,6 +122,25 @@ const AnimatedBG = () => {
 };
 
 const Home: React.FC<HomeProps> = ({}) => {
+  const { setNumItems, numItems } = useGeneralStore();
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === '.' && e.metaKey) {
+        e.preventDefault();
+        const value = window.prompt('Enter number of items, the current is: ' + numItems);
+        console.log(value);
+
+        if (value && isNumber(+value) && !isNaN(+value)) {
+          setNumItems(+value);
+        }
+      }
+    };
+    document.addEventListener('keydown', handleKey);
+    return () => {
+      document.removeEventListener('keydown', handleKey);
+    };
+  }, [numItems]);
+
   return (
     <div className="relative flex flex-col items-center w-full h-full min-h-screen p-10 bg-gradient-to-b from-gray-700 to-gray-800 backdrop-blur backdrop-filter">
       <AnimatedBG />
