@@ -3,7 +3,7 @@ import { Rect as KonvaRect } from 'konva/lib/shapes/Rect';
 import { isNumber } from 'lodash';
 import chunk from 'lodash/chunk';
 import { nanoid } from 'nanoid';
-import React, { KeyboardEventHandler, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Layer, Rect, Stage } from 'react-konva';
 import { Link } from 'react-router-dom';
 import { NextFitDecreasingHeight } from '../algorithms/strip/NextFitDecreasingHeight';
