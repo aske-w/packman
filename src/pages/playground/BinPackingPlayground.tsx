@@ -9,6 +9,7 @@ import { ColorRect } from '../../types/ColorRect.interface';
 import { Dimensions } from '../../types/Dimensions.interface';
 import PlaygroundNav from '../../components/Nav/PlaygroundNav';
 import { DimensionsWithConfig } from '../../types/DimensionsWithConfig.type';
+import BinPackingPlaygroundIntroModal from '../../components/playground/bin/BinPackingPlaygroundIntroModal';
 import { Gamemodes } from '../../types/Gamemodes.enum';
 import Joyride from '../../components/playground/Joyride';
 
@@ -67,6 +68,7 @@ const BinPackingPlayground: React.FC<BinPackingPlaygroundProps> = ({}) => {
       <PlaygroundNav />
       <Joyride playground={Gamemodes.BIN_PACKING} />
       <div className="flex w-full h-full ">
+        <BinPackingPlaygroundIntroModal />
         <BinPackingSidebar
           {...{
             algoState,

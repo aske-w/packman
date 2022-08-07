@@ -47,7 +47,7 @@ export default function StripPackingPlaygroundIntroModal() {
                 <div className="mt-2 ">
                   <p>Here you have the ability to visualize different algorithms to learn about how they work.</p>
                   <p>
-                    To the left you see all the options for the visualization and in the center is the strip where the algorithm is going to pack the
+                    To the left you see all the options for the visualization and in the center are the bins where the algorithm is going to pack the
                     rectangles
                   </p>
                   <p className="italic">

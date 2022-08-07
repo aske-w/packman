@@ -7,8 +7,11 @@ import { Gamemodes } from '../../../types/Gamemodes.enum';
 interface BinPackingGameIntroModalProps {}
 
 const BinPackingGameIntroModal: React.FC<BinPackingGameIntroModalProps> = ({}) => {
-  const { introOpen, setIntroOpen, setShowMsgAgain, dontShowAgain } = useHelpStore();
-
+  const { introOpen, setIntroOpen, dontShowAgainOfflineBin, setDontShowAgainOfflineBin } = useHelpStore();
+  useEffect(() => {
+    // make sure it's opened on mount
+    setIntroOpen(!dontShowAgainOfflineBin);
+  }, []);
   return (
     <>
       <Transition appear show={introOpen} as={Fragment}>
@@ -86,8 +89,8 @@ const BinPackingGameIntroModal: React.FC<BinPackingGameIntroModalProps> = ({}) =
                     <input
                       type="checkbox"
                       className="rounded text-blue-600 h-5 w-5 focus:ring-0"
-                      checked={dontShowAgain}
-                      onChange={() => setShowMsgAgain()}
+                      checked={dontShowAgainOfflineBin}
+                      onChange={() => setDontShowAgainOfflineBin(!dontShowAgainOfflineBin)}
                     />
                     <label className="tracking-wide">Don't show again</label>
                   </form>

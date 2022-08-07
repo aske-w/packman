@@ -1,10 +1,14 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { QuestionMarkCircleIcon } from '@heroicons/react/solid';
-import { Fragment } from 'react';
+import { Fragment, useEffect } from 'react';
 import useHelpStore from '../../../store/help.store';
 
-export default function StripPackingGameIntroModal() {
-  const { introOpen, setIntroOpen, dontShowAgain, setShowMsgAgain } = useHelpStore();
+export default function OfflineStripPackingGameIntroModal() {
+  const { introOpen, setIntroOpen, dontShowAgainOfflineStrip, setDontShowAgainOfflineStrip } = useHelpStore();
+  useEffect(() => {
+    // make sure it's opened on mount
+    setIntroOpen(!dontShowAgainOfflineStrip);
+  }, []);
   return (
     <>
       <Transition appear show={introOpen} as={Fragment}>
@@ -38,7 +42,7 @@ export default function StripPackingGameIntroModal() {
             >
               <div className="inline-block w-full max-w-2xl p-6 my-8 overflow-hidden prose text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl max-h-[40rem] overflow-y-auto">
                 <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
-                  Welcome to Strip Packing
+                  Welcome to Offline Strip Packing
                 </Dialog.Title>
                 <div className="mt-2 ">
                   <h4>Objective</h4>
@@ -79,8 +83,8 @@ export default function StripPackingGameIntroModal() {
                     <input
                       type="checkbox"
                       className="rounded text-blue-600 h-5 w-5 focus:ring-0"
-                      checked={dontShowAgain}
-                      onChange={() => setShowMsgAgain()}
+                      checked={dontShowAgainOfflineStrip}
+                      onChange={() => setDontShowAgainOfflineStrip(!dontShowAgainOfflineStrip)}
                     />
                     <label className="tracking-wide">Don't show again</label>
                   </form>

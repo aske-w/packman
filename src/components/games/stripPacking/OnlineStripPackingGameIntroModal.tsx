@@ -3,11 +3,11 @@ import { QuestionMarkCircleIcon } from '@heroicons/react/solid';
 import { Fragment, useEffect } from 'react';
 import useHelpStore from '../../../store/help.store';
 
-export default function StripPackingPlaygroundIntroModal() {
-  const { introOpen, setIntroOpen, showPlaygroundIntro, setShowPlaygroundIntro } = useHelpStore();
+export default function OnlineStripPackingGameIntroModal() {
+  const { introOpen, setIntroOpen, dontShowAgainOnlineStrip, setDontShowAgainOnlineStrip } = useHelpStore();
   useEffect(() => {
     // make sure it's opened on mount
-    setIntroOpen(showPlaygroundIntro);
+    setIntroOpen(!dontShowAgainOnlineStrip);
   }, []);
   return (
     <>
@@ -42,13 +42,33 @@ export default function StripPackingPlaygroundIntroModal() {
             >
               <div className="inline-block w-full max-w-2xl p-6 my-8 overflow-hidden prose text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl max-h-[40rem] overflow-y-auto">
                 <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
-                  Welcome to the playground
+                  Welcome to Online Strip Packing
                 </Dialog.Title>
                 <div className="mt-2 ">
-                  <p>Here you have the ability to visualize different algorithms to learn about how they work.</p>
+                  <h4>Objective</h4>
+                  <p className="">
+                    In this game mode your objective is to get the highest possible score. This is done by packing the rectangles in the
+                    <b>
+                      <em> left </em>
+                    </b>
+                    strip. 
+                  </p>
                   <p>
-                    To the left you see all the options for the visualization and in the center is the strip where the algorithm is going to pack the
-                    rectangles
+                    To get a good score you need to achieve the minimal possible height. Your are competing against an algorithm. It has the same
+                    objective as you.
+                  </p>
+                  <h4>Inventory</h4>
+                  <p className="">
+                    In the middle of the screen you see your inventory. This is a subset, based on the selected level, of the rectangles that you have yet to pack. To pack one of these
+                    simply drag it to your strip.
+                  </p>
+                  <h4>Algorithm</h4>
+                  <p className="">
+                    In the right hand side of the screen you can see another strip. This is the strip where the algorithm packs its rectangles. The algorithm has to 
+                    pack the same rectangles as you. The algorithm is only able to see one rectangle at a time, regardless of difficulty level.
+                  </p>
+                  <p>
+                    After you have placed a rectangle the algorithm will do the same.
                   </p>
                   <p className="italic">
                     You can always open this again by clicking
@@ -56,13 +76,14 @@ export default function StripPackingPlaygroundIntroModal() {
                     in the top right corner
                   </p>
                 </div>
+
                 <div className="flex justify-between items-center mt-4">
                   <form className="flex items-center space-x-2">
                     <input
                       type="checkbox"
                       className="rounded text-blue-600 h-5 w-5 focus:ring-0"
-                      checked={!showPlaygroundIntro}
-                      onChange={() => setShowPlaygroundIntro(!showPlaygroundIntro)}
+                      checked={dontShowAgainOnlineStrip}
+                      onChange={() => setDontShowAgainOnlineStrip(!dontShowAgainOnlineStrip)}
                     />
                     <label className="tracking-wide">Don't show again</label>
                   </form>
