@@ -11,3 +11,6 @@ This app was created as part of a bachelor's thesis from the IT-university of Co
 - Aske Wachs
 - Alexander Wermuth
 - Jacob Mølby
+
+
+### [Website live](https://learnpacking.com/)
